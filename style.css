@@ -1,0 +1,186 @@
+:root {
+    /* typography */
+    --font-sans: 'Inter', sans-serif;
+  
+    /* palette */
+    --bg: #f1f5f9;           /* very light gray page background */
+    --surface: #ffffff;      /* pure white “cards” & panels */
+    --text-default: #1f2937; /* slate-800 */
+    --text-muted: #6b7280;   /* slate-500 */
+    --primary: #4f46e5;      /* indigo-600 */
+    --border: #e5e7eb;       /* slate-200 */
+    --shadow-light: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  /* RESET & BASE */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html, body, #app {
+    height: 100%;
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text-default);
+    line-height: 1.6;
+  }
+
+
+  
+  /* APP GRID */
+  #app {
+    display: grid;
+    grid-template-rows: 64px 1fr;
+  }
+  
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-light);
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 1.5rem;
+    height: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .hamburger span {
+    height: 2px;
+    background: var(--text-default);
+    border-radius: 1px;
+  }
+  .logo {
+    font-weight: 600;
+    font-size: 1.25rem;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .header-right input[type="search"] {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-default);
+  }
+  .header-right .avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+  }
+  .header-right .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* MAIN: two-column */
+  .main {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+  }
+  
+  /* SIDE MENU */
+  .menu {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+  .menu-nav {
+    padding: 1.25rem 0;
+  }
+  .menu-nav ul {
+    list-style: none;
+  }
+  .menu-nav li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: background 0.2s, color 0.2s;
+  }
+  .menu-nav li.active,
+  .menu-nav li:hover {
+    background: var(--bg);
+    color: var(--primary);
+  }
+  .menu-nav .icon {
+    font-size: 1.2rem;
+  }
+  .menu-content {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    color: var(--text-default);
+  }
+  
+  /* GAME AREA */
+  .game {
+    padding: 1rem;
+    background: var(--bg);
+    overflow-y: auto;
+    display: flex;             /* turn on flexbox */
+    flex-direction: column;    /* stack items vertically */
+    align-items: center;       /* center items in the cross-axis (horizontally) */
+    gap: 1rem;                 /* space between each item */
+  }
+  .game-item {
+    width: 70%;
+    min-height: 100px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+  }
+  
+  #game-area {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  /* every screen will fill the parent but start hidden */
+  .screen {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: none;
+    /* optional: flex-centering within each screen */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  /* the “active” screen is shown */
+  .screen.active {
+    display: flex;
+  }

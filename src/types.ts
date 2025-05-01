@@ -1,0 +1,1 @@
+export type ScreenName = 'settlement'| 'character' | 'hunt' | 'inventory' | 'research' | 'train' | 'blacksmith'

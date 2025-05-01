@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Monster Hunter</title>
+
+  <!-- Inter font, weights 400–700 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-left">
+        <button class="hamburger">
+          <!-- simple hamburger icon -->
+          <span></span><span></span><span></span>
+        </button>
+        <h1 class="logo">MH</h1>
+      </div>
+      <div class="header-right">
+        <input type="search" placeholder="Search…" />
+        <div class="avatar">
+          <img src="/avatar-placeholder.png" alt="User avatar" />
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN GRID -->
+    <div class="main">
+      <!-- SIDE MENU -->
+      <aside class="menu">
+        <nav class="menu-nav">
+          <ul>
+            <li class="active">
+              <i class="icon">🎒</i>
+              <span>Inventory</span>
+            </li>
+            <li>
+              <i class="icon">📜</i>
+              <span>Quests</span>
+            </li>
+            <li>
+              <i class="icon">⚙️</i>
+              <span>Settings</span>
+            </li>
+          </ul>
+        </nav>
+        <div class="menu-content">
+          <!-- injected by TS -->
+        </div>
+      </aside>
+
+      <!-- GAME AREA -->
+      <section class="game">
+        <div id="game-area"></div>
+        <!-- injected by TS -->
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
