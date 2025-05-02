@@ -1,14 +1,30 @@
+import { bus } from "./EventBus";
+import { engine } from "./GameEngine";
 import { GameScreen } from "./gameScreen";
 import { ScreenManager } from "./ScreenManager";
+import { Sidebar } from "./ui/Sidebar";
+import "./ui/Header";
 import { ScreenName } from "./types";
+import { UIHeader } from "./ui/Header";
+import "./ResourceManager";
 
-class GameApp{
+export class GameApp{
     private manager = new ScreenManager<ScreenName>();
+    private sidebar: Sidebar;
+    private header: UIHeader;
+
     private screens: GameScreen[] = [];
     private containter = document.getElementById('game-area')!;
-    private navContainer = document.getElementById('sidebar')!;
 
-    constructor(private screenFactories: Record<ScreenName, () => GameScreen>){}
+
+    constructor(private screenFactories: Record<ScreenName, () => GameScreen>){
+        this.sidebar = new Sidebar(
+            document.getElementById("sidebar")!,
+            Object.keys(screenFactories) as ScreenName[],
+            (name) => this.manager.show(name)
+        )
+        this.header = new UIHeader(document.getElementById("header")!);
+    }
 
     // Register all screens with the manager and keep instances around */
     private registerScreens(){
@@ -28,25 +44,13 @@ class GameApp{
         }
     }
 
-    // Build the sidebar UI and wire up clicks to show()
-    private buildNav(){
-        for (const name of Object.keys(this.screenFactories) as ScreenName[]){
-            const btn = document.createElement('button');
-            btn.textContent = this.prettify(name);
-            btn.addEventListener('click', () => this.manager.show(name));
-            this.navContainer.append(btn);
-        }
-    }
-
-    // helper to make “settlement” → “Settlement
-    private prettify(name: string){
-        return name[0].toUpperCase() + name.slice(1);
-    }
 
     public async init(home: ScreenName){
         this.registerScreens();
         this.mountScreens();
-        this.buildNav();
+        this.sidebar.build();
+        this.header.build();
         await this.manager.show(home);
+        engine.start();
     }
 }

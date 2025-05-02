@@ -18,13 +18,16 @@
 <body>
   <div id="app">
     <!-- HEADER -->
-    <header class="header">
+    <header class="header" id="header">
       <div class="header-left">
         <button class="hamburger">
           <!-- simple hamburger icon -->
           <span></span><span></span><span></span>
         </button>
         <h1 class="logo">MH</h1>
+      </div>
+      <div >Renown: 
+        <span id="renown">af</span>
       </div>
       <div class="header-right">
         <input type="search" placeholder="Search…" />
@@ -38,24 +41,7 @@
     <div class="main">
       <!-- SIDE MENU -->
       <aside class="menu">
-        <nav class="menu-nav" id="sidebar">
-          <ul class = "sidebar">
-            <li class="active">
-              <button>
-              <i class="icon">🎒</i>
-              <span>Inventory</span>
-            </button>
-            </li>
-            <li>
-              <i class="icon">📜</i>
-              <span>Quests</span>
-            </li>
-            <li>
-              <i class="icon">⚙️</i>
-              <span>Settings</span>
-            </li>
-          </ul>
-        </nav>
+        <nav class="menu-nav" id="sidebar"></nav>
         <div class="menu-content">
           <!-- injected by TS -->
         </div>
