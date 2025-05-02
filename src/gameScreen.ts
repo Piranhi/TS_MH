@@ -1,4 +1,4 @@
-export interface Screen{
+export interface GameScreen{
     element: HTMLElement;
 
     /** Called once, when the element is first inserted into #game-area */

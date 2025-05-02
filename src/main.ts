@@ -1,49 +1,58 @@
 import { ScreenManager } from "./ScreenManager";
+import { ScreenName } from "./types";
+import { GameScreen } from "./gameScreen";
+
+// Import game screens
 import {SettlementScreen} from "./Screens/SettlementScreen";
-import { HuntScreen } from "./Screens/HuntScreen";
+import {HuntScreen} from "./Screens/HuntScreen";
+import { BlacksmithScreen } from "./Screens/BlacksmithScreen";
+import { CharacterScreen } from "./Screens/CharacterScreen";
+import { InventoryScreen } from "./Screens/InventoryScreen";
+import { ResearchScreen } from "./Screens/ResearchScreen";
+import { TrainScreen } from "./Screens/TrainScreen";
+
+
 
 const manager = new ScreenManager();
+const gameScreenInstances: GameScreen[] = [];
+const container = document.getElementById('game-area')!;
+// Screen Factory
+const screenFactories: Record< ScreenName, () => GameScreen> = {
+  settlement:   () => new SettlementScreen(),
+  hunt:         () => new HuntScreen(),
+  blacksmith:   () => new BlacksmithScreen(),
+  character:    () => new CharacterScreen(),
+  inventory:    () => new InventoryScreen(),
+  research:     () => new ResearchScreen(),
+  train:        () => new TrainScreen()
+}
 
-manager.register('settlement', new SettlementScreen());
-manager.register('hunt', new HuntScreen())
+for (const name of Object.keys(screenFactories) as ScreenName[]){
+  const gameScreen = screenFactories[name]();
+  manager.register(name, gameScreen)
+  gameScreenInstances.push(gameScreen);
+}
+for(const gameScreen of gameScreenInstances){
+  container.appendChild(gameScreen.element);
+  gameScreen.init();
+  gameScreen.element.classList.remove('active')
+}
 
-manager.show('settlement');
-
-// 1) Grab typed references to our DOM nodes.
-//    <HTMLButtonElement> is a TS generic telling querySelectorAll what element type to expect.
-const menuButtons = Array.from(
-  document.querySelectorAll<HTMLButtonElement>('.menu-buttons button')
-);
+await manager.show('settlement');
 const menuContent = document.querySelector<HTMLDivElement>('.menu-content')!;
 const gameContainer = document.querySelector<HTMLDivElement>('.game')!;
 
-// 2) Dummy data for menu sections
-const menuSections: Record<string, string> = {
-  Inventory: 'Your items will show up here.',
-  Quests: 'Quest log is empty.',
-  Settings: 'Adjust your preferences here.',
-};
-
-// 3) When a menu button is clicked, mark it active and swap content
-menuButtons.forEach(btn => {
+const sidebar = document.getElementById('sidebar')!;
+const ul = sidebar.querySelector('.sidebar') as HTMLUListElement
+for (const name of Object.keys(screenFactories) as ScreenName[]){
+  const li = document.createElement('li');
+  const btn = document.createElement('button');
+  btn.textContent = name.charAt(0).toUpperCase() + name.slice(1);
   btn.addEventListener('click', () => {
-    // remove .active from all, then add to our clicked button
-    menuButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    // lookup our dummy text by button label
-    const text = menuSections[btn.textContent || ''] || '';
-    menuContent.textContent = text;
-  });
+    console.log('Clicked', name)
+    manager.show(name)
 });
-
-/* // 4) Populate the game area with 30 demo “game-item” divs
-for (let i = 1; i <= 30; i++) {
-  const item = document.createElement('div');
-  item.className = 'game-item';
-  item.textContent = `Monster ${i}`;
-  gameContainer.appendChild(item);
+  li.appendChild(btn);
+  ul.appendChild(li);
 }
 
-// 5) Kick things off by clicking the first menu button
-menuButtons[0]?.click(); */

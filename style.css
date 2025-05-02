@@ -137,6 +137,19 @@
     overflow-y: auto;
     color: var(--text-default);
   }
+
+  .sidebar button {
+    all: unset;          /* removes margins, borders, etc. */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+  }
+  .sidebar li.active button {
+    background: var(--surface-selected);
+  }
   
   /* GAME AREA */
   .game {
@@ -174,7 +187,7 @@
     top: 0; left: 0; right: 0; bottom: 0;
     display: none;
     /* optional: flex-centering within each screen */
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     gap: 1rem;

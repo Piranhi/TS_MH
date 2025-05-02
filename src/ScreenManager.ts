@@ -1,17 +1,17 @@
-import { Screen } from "./screen";
+import { GameScreen } from "./gameScreen";
 import {ScreenName} from "./types"
 
 type Loader<T> = () => Promise<T>;
 
 export class ScreenManager<Name extends ScreenName>{
-    private current?: Screen;
+    private current?: GameScreen;
     private registry = new Map<
     Name,
-    Screen | Loader<Screen>
+    GameScreen | Loader<GameScreen>
     >();
 
       /** Register either an already-constructed Screen, or a loader that returns one */
-    register(name: Name, screenOrLoader: Screen | Loader<Screen>){
+    register(name: Name, screenOrLoader: GameScreen | Loader<GameScreen>){
         this.registry.set(name, screenOrLoader)
     }
 
@@ -27,7 +27,7 @@ export class ScreenManager<Name extends ScreenName>{
         let entry = this.registry.get(name);
         if(!entry) throw new Error(`No screen: ${name}`);
 
-        let screen: Screen;
+        let screen: GameScreen;
         if (typeof entry === 'function'){
             // lazy loader
             screen = await entry();
