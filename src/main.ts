@@ -1,7 +1,8 @@
 import { GameApp } from "./GameApp";
-import { screenFactories } from "./screenFactories";
 
 (async () =>{
-  const app = new GameApp(screenFactories);
+  const el = document.getElementById("app") as HTMLElement;
+  const app = new GameApp(el);
   await app.init('settlement');
 })();
+

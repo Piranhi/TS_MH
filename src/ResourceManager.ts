@@ -3,7 +3,7 @@ import { Bounded } from "./domain/value-objects/Bounded";
 
 export class ResourceManager{
 
-    public renown: Bounded = {current: 0, min: 0, max:100};
+    //public renown = new Bounded(0,100,0);
 
     constructor(){
         bus.on('Game:GameTick', (dt) => this.handleTick(dt))
@@ -11,13 +11,8 @@ export class ResourceManager{
     }
 
     private handleTick(dt: number){
-        this.modifyRenown(dt)
     }
 
-    public modifyRenown(delta: number){
-        this.renown.current = Math.min((this.renown.current + delta), this.renown.max);
-        bus.emit('Renown:Changed', this.renown);
-    }
 
 
 }

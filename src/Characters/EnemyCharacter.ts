@@ -2,11 +2,11 @@ import { Bounded } from "../domain/value-objects/Bounded";
 import { BaseCharacter } from "./BaseCharacter";
 import { CharacterData } from "../types/character";
 
-export class PlayerCharacter extends BaseCharacter {
+export class EnemyCharacter extends BaseCharacter {
 
-    static createNewPlayer(): PlayerCharacter{
+    static createNewEnemy(name: string): EnemyCharacter{
         const data: CharacterData = {
-            name: "Player",
+            name,
             level: 1,
             health: new Bounded(0, 100, 100),
             CharacterStats: {

@@ -1,195 +1,250 @@
+/* -------------------------------------------------------------
+   0. TOKENS
+   -----------------------------------------------------------*/
 :root {
-    /* typography */
-    --font-sans: 'Inter', sans-serif;
-  
-    /* palette */
-    --bg: #f1f5f9;           /* very light gray page background */
-    --surface: #ffffff;      /* pure white “cards” & panels */
-    --text-default: #1f2937; /* slate-800 */
-    --text-muted: #6b7280;   /* slate-500 */
-    --primary: #4f46e5;      /* indigo-600 */
-    --border: #e5e7eb;       /* slate-200 */
-    --shadow-light: 0 2px 8px rgba(0,0,0,0.05);
-  }
-  
-  /* RESET & BASE */
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  html, body, #app {
-    height: 100%;
-  }
-  body {
-    font-family: var(--font-sans);
-    background: var(--bg);
-    color: var(--text-default);
-    line-height: 1.6;
+	--font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+
+	/* Background */
+	--bg-tint-1: #47565b;
+	--bg-tint-2: #22292b;
+
+	/* Text */
+	--text-strong: hsla(0, 0%, 100%, 0.92);
+	--text-default: hsla(0, 0%, 100%, 0.82);
+	--text-muted: hsla(0, 0%, 100%, 0.6);
+
+	/* Accent */
+	--accent: #4f8ef7;
+
+	/* Glass (taken straight from your snippet) */
+	--glass-gap: 1rem;
+	--glass-radius: 0.3rem;
+	--glass-fill: rgba(255, 255, 255, 0.06);
+	--glass-blur: 14px;
+	--glass-stroke: rgba(255, 255, 255, 0.12);
+	--glass-shadow-rim: rgba(255, 255, 255, 0.04);
+	--glass-shadow-drop: rgba(0, 0, 0, 0.45);
+	--glass-tint: hsla(200, 18%, 50%, 0.08);
+
+	/* Layout */
+	--nav-height: 64px;
+
+	/* Progress bars – unchanged */
+	--mh-bar-height: 0.65rem;
+	--mh-bar-radius: 0;
+	--mh-bar-transition: 260ms;
+	--mh-color-track: rgba(0, 0, 0, 0.5);
+	--mh-color-border: var(--glass-stroke);
+	--mh-color-health-start: #8d6060;
+	--mh-color-health-end: #608d83;
+	--mh-color-generic-start: #7a5171;
+	--mh-color-generic-end: #c77ac7;
+	--mh-color-mana-start: #6580ff;
+	--mh-color-mana-end: #9ba7ff;
+	--mh-color-resource-start: #6580ff;
+	--mh-color-resource-end: #9ba7ff;
+}
+
+/* -------------------------------------------------------------
+	 1. RESET & BASE
+	 -----------------------------------------------------------*/
+*,
+*::before,
+*::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+	height: 100%;
+}
+
+body {
+	font-family: var(--font-sans);
+	background: radial-gradient(at 30% 30%, var(--bg-tint-1) 0%, var(--bg-tint-2) 100%);
+	color: var(--text-default);
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+}
+
+body::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	background: url(noise.png);
+	mix-blend-mode: overlay;
+	opacity: 0.15;
+	pointer-events: none;
+}
+
+h1,
+h2,
+h3 {
+	font-weight: 300;
+	letter-spacing: 0.06em;
+	color: var(--text-strong);
+}
+
+/* -------------------------------------------------------------
+	 2. GLASS UTILITY
+	 -----------------------------------------------------------*/
+.glass {
+	position: relative;
+	margin: var(--glass-gap);
+	background: var(--glass-fill);
+	border: 1px solid var(--glass-stroke);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	border-radius: var(--glass-radius);
+	box-shadow: 0 0 0 1px var(--glass-shadow-rim), 0 6px 18px var(--glass-shadow-drop);
+	overflow: hidden;
+}
+
+.glass--flush {
+	box-shadow: none;
+	width: 90%;
   }
 
+.glass::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: var(--glass-tint);
+	pointer-events: none;
+}
 
-  
-  /* APP GRID */
-  #app {
-    display: grid;
-    grid-template-rows: 64px 1fr;
-  }
-  
-  /* HEADER */
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 1rem;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    box-shadow: var(--shadow-light);
-  }
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  .hamburger {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 1.5rem;
-    height: 1rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  .hamburger span {
-    height: 2px;
-    background: var(--text-default);
-    border-radius: 1px;
-  }
-  .logo {
-    font-weight: 600;
-    font-size: 1.25rem;
-  }
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  .header-right input[type="search"] {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    font-size: 0.9rem;
-    color: var(--text-default);
-  }
-  .header-right .avatar {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 9999px;
-    overflow: hidden;
-    box-shadow: var(--shadow-light);
-  }
-  .header-right .avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  
-  /* MAIN: two-column */
-  .main {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-  }
-  
-  /* SIDE MENU */
-  .menu {
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-  }
-  .menu-nav {
-    padding: 1.25rem 0;
-  }
-  .menu-nav ul {
-    list-style: none;
-  }
-  .menu-nav li {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    color: var(--text-muted);
-    transition: background 0.2s, color 0.2s;
-  }
-  .menu-nav li.active,
-  .menu-nav li:hover {
-    background: var(--bg);
-    color: var(--primary);
-  }
-  .menu-nav .icon {
-    font-size: 1.2rem;
-  }
-  .menu-content {
-    flex: 1;
-    padding: 1rem;
-    overflow-y: auto;
-    color: var(--text-default);
-  }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+	.glass {
+		background: rgba(20, 28, 32, 0.92);
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+	}
+}
 
-  .sidebar button {
-    all: unset;          /* removes margins, borders, etc. */
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-  }
-  .sidebar li.active button {
-    background: var(--surface-selected);
-  }
-  
-  /* GAME AREA */
-  .game {
-    padding: 1rem;
-    background: var(--bg);
-    overflow-y: auto;
-    display: flex;             /* turn on flexbox */
-    flex-direction: column;    /* stack items vertically */
-    align-items: center;       /* center items in the cross-axis (horizontally) */
-    gap: 1rem;                 /* space between each item */
-  }
-  .game-item {
-    width: 70%;
-    min-height: 100px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 1rem;
-    box-shadow: var(--shadow-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 500;
-  }
-  
-  #game-area {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-  
-  /* every screen will fill the parent but start hidden */
-  .screen {
+/* -------------------------------------------------------------
+	 3. HEADER (flush, keeps glass look but no margin)
+	 -----------------------------------------------------------*/
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 1.25rem;
+	height: var(--nav-height);
+	color: var(--text-strong);
+}
+
+/* gap inherits from flex */
+.header.glass {
+	margin: 0;
+}
+
+/* override the glass margin just for header */
+.header-left {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.hamburger {
+	width: 1.5rem;
+	height: 1rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.hamburger span {
+	height: 2px;
+	background: var(--text-strong);
+	border-radius: 1px;
+}
+
+.logo {
+	font-size: 1.1rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.header-right {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.header-right input[type="search"] {
+	padding: 0.45rem 0.9rem;
+	font-size: 0.9rem;
+	border-radius: 0.75rem;
+	color: var(--text-default);
+	border: 1px solid var(--glass-stroke);
+	background: var(--glass-fill);
+	backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
+	-webkit-backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
+	transition: border-color 0.2s;
+}
+
+.header-right input[type="search"]:focus {
+	outline: none;
+	border-color: var(--accent);
+}
+
+.header-right .avatar {
+	width: 2rem;
+	height: 2rem;
+	border-radius: 50%;
+	overflow: hidden;
+	border: 1px solid var(--glass-stroke);
+}
+
+/* -------------------------------------------------------------
+	 4. MAIN GRID (menu | game | player) – 0 gap, spacing handled by .glass
+	 -----------------------------------------------------------*/
+#app {
+	display: grid;
+	grid-template-rows: var(--nav-height) 1fr;
+}
+
+.main {
+	display: grid;
+	grid-template-areas: "menu game player";
+	grid-template-columns: 200px 1fr 320px;
+	gap: 0;
+}
+
+/* gap handled via margin */
+.menu {
+	grid-area: menu;
+	display: flex;
+	flex-direction: column;
+}
+
+.game {
+	grid-area: game;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	padding: 1.5rem;
+	overflow-y: auto;
+
+}
+
+.screen {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     display: none;
     /* optional: flex-centering within each screen */
-    display: none;
-    align-items: center;
-    justify-content: center;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+    justify-content: flex-start;
     gap: 1rem;
   }
   
@@ -197,3 +252,277 @@
   .screen.active {
     display: flex;
   }
+
+  /* Wrapper that controls the visible height */
+.screen-banner {
+	width: 70%;           /* span full card width            */
+	max-height: 180px;     /* adjust this to taste            */
+	overflow: hidden;      /* clip anything below max‑height  */
+	margin: 0;             /* figures carry default margins   */
+	align-self: center;
+  }
+  
+  /* Image behaviour */
+  .screen-banner img {
+	width: 100%;           /* always fill banner width        */
+	height: 100%;          /* follow the wrapper’s height     */
+	object-fit: cover;     /* preserve aspect ratio, crop     */
+	object-position: center; /* keep the focal point centred  */
+	display: block;        /* removes the 4 px baseline gap   */
+
+
+  }
+
+.player {
+	grid-area: player;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1rem;
+}
+
+/* Player specifics */
+.player-avatar img {
+	width: 100%;
+	aspect-ratio: 1;
+	object-fit: cover;
+	border-radius: 1rem;
+}
+
+.player-stats li {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.player-stats .label {
+	font-weight: 500;
+}
+
+.player-name {
+	font-size: 1.125rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+}
+
+/* -------------------------------------------------------------
+	 5. SIDE MENU BUTTON RESET
+	 -----------------------------------------------------------*/
+.menu-nav {
+	padding: 1.25rem 0;
+}
+
+.menu-nav ul {
+	list-style: none;
+}
+
+.menu-nav li {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.75rem 1rem;
+	cursor: pointer;
+	color: var(--text-muted);
+	transition: background 0.25s, color 0.25s;
+	border-radius: 0.25rem;
+}
+
+.menu-nav li.active,
+.menu-nav li:hover {
+	color: var(--accent);
+	background: rgba(255, 255, 255, 0.05);
+}
+
+/* buttons inside list */
+.menu-nav button {
+	all: unset;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+	cursor: pointer;
+	color: inherit;
+}
+
+.menu-nav button:focus-visible {
+	outline: 2px dashed var(--accent);
+	outline-offset: 3px;
+}
+
+.menu-nav button:active {
+	transform: translateY(1px);
+}
+
+/* -------------------------------------------------------------
+	 6. PROGRESS BARS  – unchanged from v2
+	 -----------------------------------------------------------*/
+.mh-progress {
+	position: relative;
+	width: 100%;
+	height: var(--mh-bar-height);
+	background: var(--mh-color-track);
+	border: 1px solid var(--mh-color-border);
+	border-radius: var(--mh-bar-radius);
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.25);
+	backdrop-filter: blur(calc(var(--glass-blur) * 0.6));
+	-webkit-backdrop-filter: blur(calc(var(--glass-blur) * 0.6));
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+	.mh-progress {
+		background: rgba(0, 0, 0, 0.55);
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+	}
+}
+
+.mh-progress__fill {
+	position: absolute;
+	inset: 0 auto 0 0;
+	width: calc(var(--value, 0) * 1%);
+	border-radius: inherit;
+	background-image: linear-gradient(90deg, var(--mh-fill-start), var(--mh-fill-end));
+	transition: width var(--mh-bar-transition) ease-out;
+	will-change: width;
+}
+
+.mh-progress--health {
+	--mh-fill-start: var(--mh-color-health-start);
+	--mh-fill-end: var(--mh-color-health-end);
+}
+
+.mh-progress--generic {
+	--mh-fill-start: var(--mh-color-generic-start);
+	--mh-fill-end: var(--mh-color-generic-end);
+}
+
+.mh-progress--mana {
+	--mh-fill-start: var(--mh-color-mana-start);
+	--mh-fill-end: var(--mh-color-mana-end);
+}
+
+.mh-progress--resource {
+	--mh-fill-start: var(--mh-color-resource-start);
+	--mh-fill-end: var(--mh-color-resource-end);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mh-progress__fill {
+		transition: none;
+	}
+}
+
+/* -------------------------------------------------------------
+	 7. INTERACTIONS
+	 -----------------------------------------------------------*/
+a,
+button,
+.menu-nav li {
+	transition: color 0.25s, background 0.25s, transform 0.25s;
+}
+
+button:focus-visible {
+	outline: 2px dashed var(--accent);
+	outline-offset: 4px;
+}
+
+.menu-nav li:active,
+button:active {
+	transform: scale(0.97);
+}
+
+/* -------------------------------------------------------------
+	 8. RESPONSIVE
+	 -----------------------------------------------------------*/
+@media (max-width: 768px) {
+	.main {
+		grid-template-columns: 1fr;
+		grid-template-areas: "menu" "game" "player";
+	}
+
+	.menu {
+		position: fixed;
+		z-index: 40;
+		left: -100%;
+		transition: left 0.35s;
+	}
+
+	.menu.open {
+		left: var(--glass-gap);
+	}
+
+	/* slide‑in */
+}
+
+.area-select__input {
+	width: 30%;
+	padding: 0.6rem 0.9rem;
+	font: inherit;
+	border-radius: var(--glass-radius);
+	color: var(--text-default);
+	border: 1px solid var(--glass-stroke);
+	background: var(--glass-fill);
+	-webkit-backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
+	backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
+	appearance: none;              /* hides native arrow in most browsers */
+  }
+  .area-select__input:focus {
+	outline: none;
+	background:rgba(82, 74, 74, 0.849);
+	border-color: var(--accent);   /* same blue you use elsewhere */
+  }
+
+/*  Glassy scroll panel for hunt log  */
+.hunt-scroll {
+	/* reuse the existing glass variables */
+	position: relative;
+	width: 100%;
+	max-height: 200px;
+	padding: 1rem 1.5rem;
+	overflow-y: auto;        
+	display: flex;
+	flex-direction: column-reverse; 
+  
+	background: var(--glass-fill);
+	border: 1px solid var(--glass-stroke);
+	border-radius: var(--glass-radius);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	box-shadow: 0 0 0 1px var(--glass-shadow-rim),
+				0 6px 18px var(--glass-shadow-drop);
+  
+	font: 0.65rem/1.0 var(--font-sans);
+	color: var(--text-default);
+  }
+  
+  /* subtle separator between lines */
+  .hunt-scroll li + li {
+	margin-top: 0.4rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.05);
+	padding-top: 0.4rem;
+  }
+  
+  /* ▸ Custom scrollbar – WebKit / Blink */
+  .hunt-scroll::-webkit-scrollbar {
+	width: 8px;
+  }
+  .hunt-scroll::-webkit-scrollbar-track {
+	background: transparent;                /* keep the frosted glass look */
+  }
+  .hunt-scroll::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 4px;
+	transition: background 0.25s;
+  }
+  .hunt-scroll::-webkit-scrollbar-thumb:hover {
+	background: rgba(255, 255, 255, 0.35);
+  }
+  
+  /* ▸ Custom scrollbar – Firefox (Quantum) */
+  @supports (scrollbar-width: thin) {
+	.hunt-scroll {
+	  scrollbar-width: thin;
+	  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+	}
+  }
+  

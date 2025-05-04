@@ -1,20 +1,37 @@
 import { Bounded } from "./domain/value-objects/Bounded";
+import { Player } from "./player";
+import { HuntState } from "./HuntManager";
+import { CombatManager } from "./CombatManager";
+import { PlayerCharacter } from "./Characters/PlayerCharacter";
+import { EnemyCharacter } from "./Characters/EnemyCharacter";
 
 export interface GameEvents {
 	"Game:UITick": number;
 	"Game:GameTick": number;
 	"Renown:Changed" : Bounded;
 	"Resource:Changed": { gold: number };
+	"player:initialized" : Player;
+	"player:level-up" : number;
+	"player:stamina-changed" : Bounded;
+	"hunt:stateChanged": HuntState;
+	"hunt:areaSelected": string;
+	"combat:started": {player: PlayerCharacter, enemy: EnemyCharacter};
+	"combat:ended": string
+
 }
 
 export type EventKey = keyof GameEvents;
 
-type Listener<E extends EventKey> = GameEvents[E] extends void ? () => void : (payload: GameEvents[E]) => void;
+type Listener<E extends EventKey> = (payload: GameEvents[E]) => void;
 
 export class EventBus {
 	private listeners = new Map<EventKey, Set<Listener<any>>>();
+	private lastValue = new Map<EventKey, unknown>();
 
 	public on<E extends EventKey>(event: E, fn: Listener<E>) {
+		if(this.lastValue.has(event)){
+			fn(this.lastValue.get(event) as GameEvents[E]);
+		}
 		if (!this.listeners.has(event)) {
 			this.listeners.set(event, new Set());
 		}

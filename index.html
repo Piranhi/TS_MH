@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
@@ -8,17 +9,33 @@
   <!-- Inter font, weights 400–700 -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="/style.css" />
 </head>
+
 <body>
+
+  <template id="stat-bar-template">
+    <li>
+      <span class="label"></span>
+      <div class="mh-progress" role="progressbar">
+        <span class="mh-progress__fill"></span>
+      </div>
+      <span class="value"></span>
+    </li>
+  </template>
+
+  <template id="stat-num-template">
+    <li>
+      <span class="label">Level</span>
+      <span class="value">1</span>
+    </li>
+  </template>
+
   <div id="app">
     <!-- HEADER -->
-    <header class="header" id="header">
+    <header class="header glass" id="header">
       <div class="header-left">
         <button class="hamburger">
           <!-- simple hamburger icon -->
@@ -26,9 +43,8 @@
         </button>
         <h1 class="logo">MH</h1>
       </div>
-      <div >Renown: 
-        <span id="renown">af</span>
-      </div>
+
+
       <div class="header-right">
         <input type="search" placeholder="Search…" />
         <div class="avatar">
@@ -40,7 +56,7 @@
     <!-- MAIN GRID -->
     <div class="main">
       <!-- SIDE MENU -->
-      <aside class="menu">
+      <aside class="menu" id="menu">
         <nav class="menu-nav" id="sidebar"></nav>
         <div class="menu-content">
           <!-- injected by TS -->
@@ -48,13 +64,26 @@
       </aside>
 
       <!-- GAME AREA -->
-      <section class="game">
-        <div id="game-area"></div>
+      <section class="game glass" id="game-area">
         <!-- injected by TS -->
       </section>
+
+      <!-- PLAYER AREA -->
+      <aside class="player glass" id="player-bar">
+        <!-- player portrait -->
+        <figure class="player-avatar">
+          <img src="/avatar-placeholder.png" alt="Player portrait" />
+          <figcaption class="player-name" id="player-name">Hunter</figcaption>
+        </figure>
+
+        <!-- core stats -->
+        <ul class="player-stats">
+        </ul>
+      </aside>
     </div>
   </div>
 
   <script type="module" src="/src/main.ts"></script>
 </body>
+
 </html>

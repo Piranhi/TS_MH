@@ -1,4 +1,3 @@
-import { bus } from "./EventBus";
 import { engine } from "./GameEngine";
 import { GameScreen } from "./gameScreen";
 import { ScreenManager } from "./ScreenManager";
@@ -7,50 +6,80 @@ import "./ui/Header";
 import { ScreenName } from "./types";
 import { UIHeader } from "./ui/Header";
 import "./ResourceManager";
+import { Player } from "./player";
+import { Playerbar } from "./ui/PlayerBar";
+import { HuntManager } from "./HuntManager";
+import { PlayerCharacter } from "./Characters/PlayerCharacter";
+import { screenFactories } from "./screenFactories";
 
-export class GameApp{
-    private manager = new ScreenManager<ScreenName>();
-    private sidebar: Sidebar;
-    private header: UIHeader;
+export class GameApp {
+	/* ---------- readonly fields ---------- */
+	private readonly screenManager = new ScreenManager();
+	private readonly gameScreens = new Map<ScreenName, GameScreen>();
+	private readonly root: HTMLElement;
 
-    private screens: GameScreen[] = [];
-    private containter = document.getElementById('game-area')!;
+	/* ---------- DOM containers ---------- */
+	private container = document.getElementById("game-area")!;
+	private sidebar!: Sidebar;
+	private header!: UIHeader;
+	private playerBar!: Playerbar;
 
+	/* ---------- game state ---------- */
+	private player!: Player;
+	private playerCharacter!: PlayerCharacter;
+	private huntManager!: HuntManager;
 
-    constructor(private screenFactories: Record<ScreenName, () => GameScreen>){
-        this.sidebar = new Sidebar(
-            document.getElementById("sidebar")!,
-            Object.keys(screenFactories) as ScreenName[],
-            (name) => this.manager.show(name)
-        )
-        this.header = new UIHeader(document.getElementById("header")!);
-    }
+	constructor(root: HTMLElement) {
+		this.root = root;
+		const maybeArea = root.querySelector<HTMLElement>("#game-area");
+		if (!maybeArea) throw new Error("#game-area not found");
+		this.container = maybeArea;
+	}
 
-    // Register all screens with the manager and keep instances around */
-    private registerScreens(){
-        for (const [name, factory] of Object.entries(this.screenFactories) as [ScreenName, ()=>GameScreen][]){
-            const screen = factory();
-            this.manager.register(name, screen);
-            this.screens.push(screen);
-        }
-    }
+	async init(home: ScreenName): Promise<void> {
+		await this.instantiateCore();
+		this.buildUI();
+		this.registerScreens();
+		this.mountScreens();
 
-    // Mount & init every screen exactly once, hidden by default
-    private mountScreens(){
-        for (const screen of this.screens){
-            this.containter.append(screen.element);
-            screen.init();
-            screen.element.classList.remove('active');
-        }
-    }
+		await this.screenManager.show(home);
+		engine.start();
+	}
 
+	/* ---------- private helpers ---------- */
+	private async instantiateCore() {
+		this.player = Player.createNew();
+		this.playerCharacter = PlayerCharacter.createNewPlayer();
+		this.huntManager = new HuntManager(this.playerCharacter);
+		await this.player.init();
+	}
 
-    public async init(home: ScreenName){
-        this.registerScreens();
-        this.mountScreens();
-        this.sidebar.build();
-        this.header.build();
-        await this.manager.show(home);
-        engine.start();
-    }
+	private buildUI() {
+		this.sidebar = new Sidebar(this.root.querySelector("#sidebar")!, Object.keys(screenFactories) as ScreenName[], (name) =>
+			this.screenManager.show(name)
+		);
+		this.header = new UIHeader(this.root.querySelector("#header")!);
+		this.playerBar = new Playerbar(this.root.querySelector("#player-bar")!);
+
+		/* Each component gets its own build so they control their markup */
+		this.sidebar.build();
+		this.header.build();
+		this.playerBar.build();
+	}
+
+	private registerScreens() {
+		Object.entries(screenFactories).forEach(([name, factory]) => {
+			const screen = factory();
+			this.screenManager.register(name as ScreenName, screen);
+			this.gameScreens.set(name as ScreenName, screen);
+		});
+	}
+
+	private mountScreens() {
+		this.gameScreens.forEach((screen) => {
+			this.container.append(screen.element);
+			screen.init();
+			screen.element.classList.remove("active");
+		});
+	}
 }

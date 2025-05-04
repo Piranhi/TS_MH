@@ -1,16 +1,25 @@
-export interface Bounded {
-    min:        number;
-    max:        number;
-    current:    number;
-}
-
-export namespace Bounded{
-
-    export function clamp(b: Bounded, delta: number): void{
-        b.current = Math.min(Math.max(b.current + delta, b.min), b.max)
+export class Bounded{
+    constructor(
+        public min: number,
+        public max: number,
+        current: number
+    ){
+        this.current = current;
     }
 
-    export function initBoundedFromValue(value: number): Bounded{
-        return {min: 0, current: value, max: value};
+    private _current!:number;
+
+    public get current(): number{
+        return this._current;
     }
+
+    public set current(v: number){
+        this._current = Math.min(Math.max(v, this.min), this.max);
+    }
+
+    public adjust(delta: number): void{
+        this.current += delta;
+    }
+
+
 }
