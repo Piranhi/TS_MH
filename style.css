@@ -43,6 +43,12 @@
 	--mh-color-mana-end: #9ba7ff;
 	--mh-color-resource-start: #6580ff;
 	--mh-color-resource-end: #9ba7ff;
+
+	--rarity-common: #aaaaaa;
+	--rarity-uncommon: #4a8057;
+	--rarity-rare: #2e9afe;
+	--rarity-epic: #c44bff;
+	--rarity-legendary: #f1c40f;
 }
 
 /* -------------------------------------------------------------
@@ -106,7 +112,7 @@ h3 {
 .glass--flush {
 	box-shadow: none;
 	width: 90%;
-  }
+}
 
 .glass::before {
 	content: "";
@@ -233,45 +239,45 @@ h3 {
 	gap: 2rem;
 	padding: 1.5rem;
 	overflow-y: auto;
-
 }
 
 .screen {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    display: none;
-    /* optional: flex-centering within each screen */
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: none;
+	/* optional: flex-centering within each screen */
 	flex-direction: column;
 	align-items: center;
 	width: 100%;
-    justify-content: flex-start;
-    gap: 1rem;
-  }
-  
-  /* the “active” screen is shown */
-  .screen.active {
-    display: flex;
-  }
+	justify-content: flex-start;
+	gap: 1rem;
+}
 
-  /* Wrapper that controls the visible height */
+/* the “active” screen is shown */
+.screen.active {
+	display: flex;
+}
+
+/* Wrapper that controls the visible height */
 .screen-banner {
-	width: 70%;           /* span full card width            */
-	max-height: 180px;     /* adjust this to taste            */
-	overflow: hidden;      /* clip anything below max‑height  */
-	margin: 0;             /* figures carry default margins   */
+	width: 70%; /* span full card width            */
+	max-height: 180px; /* adjust this to taste            */
+	overflow: hidden; /* clip anything below max‑height  */
+	margin: 0; /* figures carry default margins   */
 	align-self: center;
-  }
-  
-  /* Image behaviour */
-  .screen-banner img {
-	width: 100%;           /* always fill banner width        */
-	height: 100%;          /* follow the wrapper’s height     */
-	object-fit: cover;     /* preserve aspect ratio, crop     */
+}
+
+/* Image behaviour */
+.screen-banner img {
+	width: 100%; /* always fill banner width        */
+	height: 100%; /* follow the wrapper’s height     */
+	object-fit: cover; /* preserve aspect ratio, crop     */
 	object-position: center; /* keep the focal point centred  */
-	display: block;        /* removes the 4 px baseline gap   */
-
-
-  }
+	display: block; /* removes the 4 px baseline gap   */
+}
 
 .player {
 	grid-area: player;
@@ -464,13 +470,13 @@ button:active {
 	background: var(--glass-fill);
 	-webkit-backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
 	backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
-	appearance: none;              /* hides native arrow in most browsers */
-  }
-  .area-select__input:focus {
+	appearance: none; /* hides native arrow in most browsers */
+}
+.area-select__input:focus {
 	outline: none;
-	background:rgba(82, 74, 74, 0.849);
-	border-color: var(--accent);   /* same blue you use elsewhere */
-  }
+	background: rgba(82, 74, 74, 0.849);
+	border-color: var(--accent); /* same blue you use elsewhere */
+}
 
 /*  Glassy scroll panel for hunt log  */
 .hunt-scroll {
@@ -479,50 +485,69 @@ button:active {
 	width: 100%;
 	max-height: 200px;
 	padding: 1rem 1.5rem;
-	overflow-y: auto;        
+	overflow-y: auto;
 	display: flex;
-	flex-direction: column-reverse; 
-  
+	flex-direction: column-reverse;
+
 	background: var(--glass-fill);
 	border: 1px solid var(--glass-stroke);
 	border-radius: var(--glass-radius);
 	backdrop-filter: blur(var(--glass-blur));
 	-webkit-backdrop-filter: blur(var(--glass-blur));
-	box-shadow: 0 0 0 1px var(--glass-shadow-rim),
-				0 6px 18px var(--glass-shadow-drop);
-  
-	font: 0.65rem/1.0 var(--font-sans);
+	box-shadow: 0 0 0 1px var(--glass-shadow-rim), 0 6px 18px var(--glass-shadow-drop);
+
+	font: 0.65rem/1 var(--font-sans);
 	color: var(--text-default);
-  }
-  
-  /* subtle separator between lines */
-  .hunt-scroll li + li {
+}
+
+/* subtle separator between lines */
+.hunt-scroll li + li {
 	margin-top: 0.4rem;
 	border-top: 1px solid rgba(255, 255, 255, 0.05);
 	padding-top: 0.4rem;
-  }
-  
-  /* ▸ Custom scrollbar – WebKit / Blink */
-  .hunt-scroll::-webkit-scrollbar {
+}
+
+/* ▸ Custom scrollbar – WebKit / Blink */
+.hunt-scroll::-webkit-scrollbar {
 	width: 8px;
-  }
-  .hunt-scroll::-webkit-scrollbar-track {
-	background: transparent;                /* keep the frosted glass look */
-  }
-  .hunt-scroll::-webkit-scrollbar-thumb {
+}
+.hunt-scroll::-webkit-scrollbar-track {
+	background: transparent; /* keep the frosted glass look */
+}
+.hunt-scroll::-webkit-scrollbar-thumb {
 	background: rgba(255, 255, 255, 0.2);
 	border-radius: 4px;
 	transition: background 0.25s;
-  }
-  .hunt-scroll::-webkit-scrollbar-thumb:hover {
+}
+.hunt-scroll::-webkit-scrollbar-thumb:hover {
 	background: rgba(255, 255, 255, 0.35);
-  }
-  
-  /* ▸ Custom scrollbar – Firefox (Quantum) */
-  @supports (scrollbar-width: thin) {
+}
+
+/* ▸ Custom scrollbar – Firefox (Quantum) */
+@supports (scrollbar-width: thin) {
 	.hunt-scroll {
-	  scrollbar-width: thin;
-	  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 	}
-  }
-  
+}
+
+.rarity-common {
+	font-weight:1000;
+	color: var(--rarity-common);
+}
+.rarity-uncommon {
+	font-weight:1000;
+	color: var(--rarity-uncommon);
+}
+.rarity-rare {
+	font-weight:1000;
+	color: var(--rarity-rare);
+}
+.rarity-epic {
+	font-weight:1000;
+	color: var(--rarity-epic);
+}
+.rarity-legendary {
+	font-weight:1000;
+	color: var(--rarity-legendary);
+}

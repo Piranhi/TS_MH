@@ -82,9 +82,8 @@ export class HuntManager {
 				if (elapsed >= 1) {
 					elapsed -= 1;
 					if (this.rollEncounter()) {
-						const spec: Monster = this.area.pickMonster()
-						console.log(spec)
-						const enemy = new EnemyCharacter(spec);
+						// Create Enemy from monster picker
+						const enemy = new EnemyCharacter(this.area.pickMonster());
 						this.startCombat(enemy);
 					}
 				}

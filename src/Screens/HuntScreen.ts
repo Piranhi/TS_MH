@@ -20,8 +20,9 @@ export class HuntScreen extends BaseScreen {
         this.huntUpdateEl = document.getElementById("hunt-update")!;
 
 		bus.on("hunt:stateChanged", (state) => this.areaChanged(state));
+        
         bus.on("combat:started", (combat) => {
-            this.updateOutput(`${combat.player.getName()} is in combat with ${combat.enemy.getName()}`);
+            this.updateOutput(`You are in combat with <span class="rarity-${combat.enemy.spec.rarity}"> ${combat.enemy.getName()}</span>`);
         })
         bus.on("combat:ended", (result) => {
             this.updateOutput(result);
@@ -52,12 +53,10 @@ export class HuntScreen extends BaseScreen {
     }
 
     enterSearch(){
-        this.updateOutput("Searching the area")
 
     }
 
     enterCombat(){
-        this.updateOutput("In combat")
     }
 
     enterRecovery(){
@@ -66,7 +65,7 @@ export class HuntScreen extends BaseScreen {
 
     private updateOutput(s: string){
         const li = document.createElement("li")
-        li.textContent = s;
+        li.innerHTML = s;
         this.huntUpdateEl.append(li)
 
         while(this.huntUpdateEl.children.length > this.MAX_LOG_LINES){
