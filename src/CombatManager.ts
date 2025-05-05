@@ -8,6 +8,8 @@ export class CombatManager {
     private elapsed: number = 0;
     constructor(private readonly playerCharacter: PlayerCharacter, private readonly enemyCharacter: EnemyCharacter) {
         bus.emit("combat:started", { player: this.playerCharacter, enemy: this.enemyCharacter });
+        playerCharacter.beginCombat(enemyCharacter);
+        enemyCharacter.beginCombat(playerCharacter);
     }
 
     public onTick(dt: number) {
@@ -18,8 +20,10 @@ export class CombatManager {
     }
 
     private endCombat() {
+        this.playerCharacter.endCombat();
+        this.enemyCharacter.endCombat();
         this.isFinished = true;
-        this.playerWon = Math.random() < 0.7;
+        this.playerWon = this.playerCharacter.isAlive();
         bus.emit("reward:renown", 10);
         bus.emit("combat:ended", this.playerWon ? "Player Won" : "Player Died");
     }

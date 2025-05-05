@@ -1,20 +1,22 @@
+import { Attack } from "@/models/attack";
 import { Bounded } from "../domain/value-objects/Bounded";
 import { CharacterData } from "../types/character";
 import { CharacterSnapsnot } from "@/Screens/Widgets/CharacterHolder";
-
-type CombatAttack = {
-    name: string;
-    cooldown: number;
-    lastUsed: number;
-    perform: (target: BaseCharacter) => void;
-};
+import { attackById, attackSpecById } from "@/gameData";
+import { bus } from "@/EventBus";
 
 export abstract class BaseCharacter {
     protected target: BaseCharacter;
-    protected attacks: CombatAttack[] = [];
+    protected attacks: Attack[] = [];
+    private inCombat: boolean = false;
 
     constructor(protected data: CharacterData) {
+        const basicMelee = attackSpecById.get("basic_melee");
+        if (basicMelee) {
+            this.attacks.push(new Attack(basicMelee));
+        }
         this.data = data;
+        bus.on("Game:UITick", (dt) => this.handleTick(dt));
     }
 
     static createNew<T extends BaseCharacter>(this: new (data: CharacterData) => T, data: CharacterData): T {
@@ -44,7 +46,15 @@ export abstract class BaseCharacter {
     // COMBAT
 
     public beginCombat(target: BaseCharacter) {
+        for (const attack of this.attacks) {
+            attack.init();
+        }
         this.target = target;
+        this.inCombat = true;
+    }
+
+    public endCombat() {
+        this.inCombat = false;
     }
 
     public attack(target: BaseCharacter): void {
@@ -52,12 +62,13 @@ export abstract class BaseCharacter {
         target.takeDamage(Math.max(1, damage)); // Ensure minimum 1 dmg
     }
 
-    public tick(currentTime: number): void {
+    public handleTick(dt: number): void {
+        if (!this.inCombat) return;
+
         for (const attack of this.attacks) {
-            if (currentTime - attack.lastUsed >= attack.cooldown) {
-                // Find a target and perform attack
-                // attack.perform(someTarget);
-                attack.lastUsed = currentTime;
+            attack.reduceCooldown(dt);
+            if (attack.isReady()) {
+                attack.perform(this, this.target);
             }
         }
     }
