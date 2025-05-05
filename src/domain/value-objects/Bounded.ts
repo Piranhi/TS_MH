@@ -1,25 +1,39 @@
-export class Bounded{
-    constructor(
-        public min: number,
-        public max: number,
-        current: number
-    ){
-        this.current = current;
+export class Bounded {
+    private _current: number;
+
+    constructor(public min: number, public max: number, current: number) {
+        this._current = this.clamp(current);
     }
 
-    private _current!:number;
-
-    public get current(): number{
+    public get current(): number {
         return this._current;
     }
 
-    public set current(v: number){
-        this._current = Math.min(Math.max(v, this.min), this.max);
+    public set current(v: number) {
+        this._current = this.clamp(v);
     }
 
-    public adjust(delta: number): void{
+    public adjust(delta: number): void {
         this.current += delta;
     }
 
+    public increase(amount: number): void {
+        this.current += amount;
+    }
 
+    public decrease(amount: number): void {
+        this.current -= amount;
+    }
+
+    public isEmpty(): boolean {
+        return this.current <= this.min;
+    }
+
+    public isFull(): boolean {
+        return this.current >= this.max;
+    }
+
+    private clamp(value: number): number {
+        return Math.max(this.min, Math.min(value, this.max));
+    }
 }

@@ -19,11 +19,11 @@
 
   <div class="char-holders">
 
-  <div class="char-holder player">
+  <div class="char-holder player" id="player-holder">
     <img class="char-img" src="src\Assets\Images\enemy-example.png" alt="Goblin">
   
     <div class="char-details">
-      <h2 class="char-name">Goblin Scout</h2>
+      <h2 class="char-name">Player</h2>
   
       <div class="char-stats">
         <!-- keeping “stat” flexible so you can add more later -->
@@ -40,7 +40,7 @@
     </div>
   </div>
 
-  <div class="char-holder enemy">
+  <div class="char-holder enemy" id="enemy-holder">
     <img class="char-img" src="src\Assets\Images\enemy-example.png" alt="Goblin">
   
     <div class="char-details">
@@ -85,11 +85,22 @@
   
   /* ---------- Component wrapper ---------- */
 
+  .char-holders {
+  display: flex;          /* makes the children sit in a row       */
+  flex-wrap: wrap;        /* lets them wrap *if* the screen is tiny */
+  gap: 1rem;              /* maintains the nice 16 px gap           */
 
+  /* (stylistic rules you already had) */
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--glass-border);
+  border-radius: .25rem;
+}
 
   .char-holder {
   /* existing visual stuff… */
   display: flex;
+  flex-direction: row;
+  align-items: flex-start;
   gap: 1rem;
   padding: 1rem 1.25rem;
   border-radius: 1rem;
@@ -100,8 +111,10 @@
 
   /* updated sizing + flex behaviour ↓↓↓ */
   flex: 1 1 0;   /* grow+shrink evenly, start from 0 px basis   */
+
   max-width: none;  /* wipe out the old 30 rem cap              */
-  min-width: 0;     /* let the card shrink below its content    */
+  min-width: 16rem;     /* let the card shrink below its content    */
+  width: auto;;
 }
   
   /* ---------- Enemy image ---------- */
