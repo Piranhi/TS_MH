@@ -16,7 +16,8 @@ export interface GameEvents {
 	"hunt:stateChanged": HuntState;
 	"hunt:areaSelected": string;
 	"combat:started": {player: PlayerCharacter, enemy: EnemyCharacter};
-	"combat:ended": string
+	"combat:ended": string;
+	"reward:renown": number;
 
 }
 

@@ -51,11 +51,11 @@ interface PlayerData{
     async init(): Promise<void> {
         bus.emit('player:initialized', this);
         bus.on('Game:GameTick', (dt) => this.handleTick(dt));
+        bus.on("reward:renown", (amt) => this.adjustRenown(amt))
     }
 
     handleTick(dt: number): void {
         this.increaseStamina(dt)
-        this.adjustRenown(dt);
     }
 
     private increaseStamina(delta:number):void{

@@ -5,8 +5,9 @@ import { bus } from "./EventBus";
 import { Player } from "./player";
 import { PlayerCharacter } from "./Characters/PlayerCharacter";
 import { CombatManager } from "./CombatManager";
-import { Area, pickEnemy } from "./Area";
 import { EnemyCharacter } from "./Characters/EnemyCharacter";
+import { Area } from "./models/Area";
+import { Monster } from "./models/Monster";
 
 export enum HuntState {
 	Idle = "Idle",
@@ -28,14 +29,13 @@ interface StateHandler {
 export class HuntManager {
 	private state: HuntState = HuntState.Idle; // current enum value – useful for save files
 	private handler: StateHandler;
-	private area: Area;
+	private area!: Area;
 
 	constructor(
 		private readonly playerCharacter: PlayerCharacter,
 	) {
-		this.area = new Area();
 		this.handler = this.makeIdleState();
-		this.transition(HuntState.Idle, this.makeIdleState())
+		this.transition(HuntState.Idle, this.makeIdleState()) 
 
 		bus.on("Game:UITick", (dt) => this.onTick(dt));
 		bus.on("hunt:areaSelected", (areaId) => this.setArea(areaId))
@@ -43,7 +43,7 @@ export class HuntManager {
 
 	/** Change the hunting grounds without restarting the whole loop. */
 	public setArea(areaId: string) {
-		this.area = Area.createAreaFromId(areaId);;
+		this.area = Area.createArea(areaId);
 		this.transition(HuntState.Search, this.makeSearchState());
 	}
 
@@ -82,8 +82,10 @@ export class HuntManager {
 				if (elapsed >= 1) {
 					elapsed -= 1;
 					if (this.rollEncounter()) {
-						const enemyCharacter = pickEnemy(this.area);
-						this.startCombat(enemyCharacter);
+						const spec: Monster = this.area.pickMonster()
+						console.log(spec)
+						const enemy = new EnemyCharacter(spec);
+						this.startCombat(enemy);
 					}
 				}
 			},

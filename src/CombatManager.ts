@@ -26,6 +26,7 @@ export class CombatManager {
     private endCombat(){
         this.isFinished = true;
         this.playerWon = Math.random() < 0.7;
+        bus.emit("reward:renown", 10)
         bus.emit("combat:ended", this.playerWon? "Player Won" : "Player Died")
     }
 

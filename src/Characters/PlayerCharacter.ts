@@ -3,6 +3,7 @@ import { BaseCharacter } from "./BaseCharacter";
 import { CharacterData } from "../types/character";
 
 export class PlayerCharacter extends BaseCharacter {
+    
 
     static createNewPlayer(): PlayerCharacter{
         const data: CharacterData = {

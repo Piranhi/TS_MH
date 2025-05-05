@@ -1,4 +1,6 @@
 import { GameApp } from "./GameApp";
+import "@/gameData";
+
 
 (async () =>{
   const el = document.getElementById("app") as HTMLElement;
