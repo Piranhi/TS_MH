@@ -2,28 +2,27 @@ import { Attack } from "@/models/attack";
 import { Bounded } from "../domain/value-objects/Bounded";
 import { CharacterData } from "../types/character";
 import { CharacterSnapsnot } from "@/Screens/Widgets/CharacterHolder";
-import { attackById, attackSpecById } from "@/gameData";
+import { attackSpecById } from "@/gameData";
 import { bus } from "@/EventBus";
 
 export abstract class BaseCharacter {
     protected target: BaseCharacter;
     protected attacks: Attack[] = [];
     private inCombat: boolean = false;
+    private readonly onTick = (dt: number) => this.handleTick(dt);
 
     constructor(protected data: CharacterData) {
         const basicMelee = attackSpecById.get("basic_melee");
         if (basicMelee) {
             this.attacks.push(new Attack(basicMelee));
         }
-        this.data = data;
-        bus.on("Game:UITick", (dt) => this.handleTick(dt));
     }
 
     static createNew<T extends BaseCharacter>(this: new (data: CharacterData) => T, data: CharacterData): T {
         return new this(data);
     }
 
-    public getHealth(): Bounded {
+    public getHP(): Bounded {
         return this.data.hp;
     }
 
@@ -46,6 +45,7 @@ export abstract class BaseCharacter {
     // COMBAT
 
     public beginCombat(target: BaseCharacter) {
+        bus.on("Game:UITick", this.onTick);
         for (const attack of this.attacks) {
             attack.init();
         }
@@ -54,6 +54,7 @@ export abstract class BaseCharacter {
     }
 
     public endCombat() {
+        bus.off("Game:UITick", this.onTick);
         this.inCombat = false;
     }
 
