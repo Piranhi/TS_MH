@@ -1,17 +1,26 @@
 import { Bounded } from "../domain/value-objects/Bounded";
-import { BaseCharacter } from "./BaseCharacter";
-import { CharacterData } from "../types/character";
+import { BaseCharacter, CharacterStats, CharacterData } from "./BaseCharacter";
 
 export class PlayerCharacter extends BaseCharacter {
+
+
+    protected getAvatarUrl(): string{
+        return "/assets/avatars/player.png";
+    }
+    
     static createNewPlayer(): PlayerCharacter {
-        return new PlayerCharacter({
+        const defaultStats: CharacterStats = {
+            strength: 10,
+            defence: 2
+        }
+
+        const data: CharacterData = {
             name: "You",
             level: 1,
             hp: new Bounded(0, 100, 100),
-            CharacterStats: {
-                strength: 1,
-                defence: 1,
-            },
-        });
+            stats: defaultStats
+        }
+
+        return new PlayerCharacter(data);
     }
 }

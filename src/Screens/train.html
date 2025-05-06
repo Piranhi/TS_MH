@@ -1,0 +1,40 @@
+<!-- training.html -->
+<section class="game" id="train-root">
+
+    <figure class="screen-banner">
+        <img src="src\Assets\Images\header-smith.png" alt="Smith">
+    </figure>
+    <div id="training-section" class="training-section">
+        <h2 class="section-title">Training Grounds</h2>
+        <div class="training-list">
+        </div>
+    </div>
+
+    <template id="training-item-locked">
+        <div class="training-item locked" data-key="strength">
+            <div class="locked-label">Locked</div>
+        </div>
+    </template>
+
+    <template id="training-item-unlocked">
+        <div class="training-item unlocked" data-key="agility">
+            <div class="training-icon">
+                <img src="icons/agility.svg" alt="Agility" />
+            </div>
+            <div class="training-content">
+                <div class="training-header">
+                    <span class="training-name">Agility</span>
+                    <span class="training-level">Lvl 3</span>
+                </div>
+                <div class="training-bar">
+                    <div class="progress" style="width: 60%;"></div>
+                    <div class="progress-text">60 / 100</div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="control-button minus">−</button>
+                <button class="control-button plus">+</button>
+            </div>
+        </div>
+    </template>
+</section>

@@ -5,6 +5,7 @@ import { HuntState } from "../HuntManager";
 import { PlayerCharacter } from "@/Characters/PlayerCharacter";
 import { EnemyCharacter } from "@/Characters/EnemyCharacter";
 import { CharacterHolder } from "./Widgets/CharacterHolder";
+import { addHTMLtoPage } from "./ScreensUtils";
 
 export class HuntScreen extends BaseScreen {
     // DOM ELEMENTS
@@ -23,7 +24,7 @@ export class HuntScreen extends BaseScreen {
     }
 
     init() {
-        this.addTemplate();
+        addHTMLtoPage(Markup, this);
         this.setupElements();
 
         bus.on("hunt:stateChanged", (state) => this.areaChanged(state));
@@ -43,7 +44,10 @@ export class HuntScreen extends BaseScreen {
             bus.emit("hunt:areaSelected", areaId);
         });
     }
-    show() {}
+    show() {
+        this.playerCard.render();
+        this.enemyCard.render();
+    }
     hide() {}
 
     handleTick(dt: number): void {
@@ -51,20 +55,10 @@ export class HuntScreen extends BaseScreen {
         this.enemyCard.render();
     }
 
-    private addTemplate() {
-        const tpl = document.createElement("template");
-        tpl.innerHTML = Markup.trim();
-        const huntElement = tpl.content.firstElementChild as HTMLElement | null;
-        if (!huntElement) {
-            throw new Error("Settlement template is empty");
-        }
-        this.element.append(huntElement);
-    }
-
     private setupElements() {
         this.huntUpdateEl = document.getElementById("hunt-update")!;
-        this.playerCard = new CharacterHolder(document.getElementById("player-holder")!);
-        this.enemyCard = new CharacterHolder(document.getElementById("enemy-holder")!);
+        this.playerCard = new CharacterHolder(document.getElementById("player-holder")!, true);
+        this.enemyCard = new CharacterHolder(document.getElementById("enemy-holder",)!, false);
     }
 
     private initCharacters(player: PlayerCharacter, enemy: EnemyCharacter) {

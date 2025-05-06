@@ -33,6 +33,10 @@ export class Bounded {
         return this.current >= this.max;
     }
 
+    public getRounded(): number{
+        return Math.floor(this.current);
+    }
+
     private clamp(value: number): number {
         return Math.max(this.min, Math.min(value, this.max));
     }

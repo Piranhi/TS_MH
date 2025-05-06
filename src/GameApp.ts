@@ -1,16 +1,17 @@
+import { player } from "./player";
 import { engine } from "./GameEngine";
-import { GameScreen } from "./gameScreen";
+import { GameScreen } from "./Screens/gameScreen";
 import { ScreenManager } from "./ScreenManager";
 import { Sidebar } from "./ui/Sidebar";
 import "./ui/Header";
 import { ScreenName } from "./types";
 import { UIHeader } from "./ui/Header";
 import "./ResourceManager";
-import { Player } from "./player";
 import { Playerbar } from "./ui/PlayerBar";
 import { HuntManager } from "./HuntManager";
 import { PlayerCharacter } from "./Characters/PlayerCharacter";
 import { screenFactories } from "./screenFactories";
+
 
 export class GameApp {
 	/* ---------- readonly fields ---------- */
@@ -25,8 +26,6 @@ export class GameApp {
 	private playerBar!: Playerbar;
 
 	/* ---------- game state ---------- */
-	private player!: Player;
-	private playerCharacter!: PlayerCharacter;
 	private huntManager!: HuntManager;
 
 	constructor(root: HTMLElement) {
@@ -48,10 +47,8 @@ export class GameApp {
 
 	/* ---------- private helpers ---------- */
 	private async instantiateCore() {
-		this.player = Player.createNew();
-		this.playerCharacter = PlayerCharacter.createNewPlayer();
-		this.huntManager = new HuntManager(this.playerCharacter);
-		await this.player.init();
+		await player.init();
+		this.huntManager = new HuntManager(player.getPlayerCharacter());
 	}
 
 	private buildUI() {

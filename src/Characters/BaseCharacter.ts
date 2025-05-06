@@ -1,85 +1,111 @@
 import { Attack } from "@/models/attack";
 import { Bounded } from "../domain/value-objects/Bounded";
-import { CharacterData } from "../types/character";
-import { CharacterSnapsnot } from "@/Screens/Widgets/CharacterHolder";
 import { attackSpecById } from "@/gameData";
 import { bus } from "@/EventBus";
 
+export type StatKey = keyof CharacterStats;
+
+export interface CharacterData {
+	name: string;
+	level: number;
+	hp: Bounded;
+	stats: CharacterStats;
+}
+
+export interface CharacterStats {
+	strength: number;
+	defence: number;
+}
+
+export type CharacterSnapsnot = Readonly<CharacterData> & {
+	avatarUrl: string;
+	rarity: string;
+};
+
 export abstract class BaseCharacter {
-    protected target: BaseCharacter;
-    protected attacks: Attack[] = [];
-    private inCombat: boolean = false;
-    private readonly onTick = (dt: number) => this.handleTick(dt);
+	readonly name: string;
+	readonly level: number;
+	hp: Bounded;
+	stats: CharacterStats;
 
-    constructor(protected data: CharacterData) {
-        const basicMelee = attackSpecById.get("basic_melee");
-        if (basicMelee) {
-            this.attacks.push(new Attack(basicMelee));
-        }
-    }
+	protected target!: BaseCharacter;
+	protected attacks: Attack[] = [];
+	private inCombat = false;
+	private readonly onTick = (dt: number) => this.handleTick(dt);
 
-    static createNew<T extends BaseCharacter>(this: new (data: CharacterData) => T, data: CharacterData): T {
-        return new this(data);
-    }
+	constructor({ name, level = 1, hp, stats: { strength, defence } }: CharacterData) {
+		this.name = name;
+		this.level = level;
+		this.hp = hp;
+		this.stats = { strength, defence };
 
-    public getHP(): Bounded {
-        return this.data.hp;
-    }
+		const basicMelee = attackSpecById.get("basic_melee");
+		if (basicMelee) {
+			this.attacks.push(new Attack(basicMelee));
+		}
+	}
 
-    public getName(): string {
-        return this.data.name;
-    }
+	public getHP(): Bounded {
+		return this.hp;
+	}
 
-    public takeDamage(amount: number): void {
-        this.data.hp.decrease(amount);
-    }
+	public getName(): string {
+		return this.name;
+	}
 
-    public heal(amount: number): void {
-        this.data.hp.increase(amount);
-    }
+	public takeDamage(amount: number): void {
+		this.hp.decrease(amount);
+	}
 
-    public isAlive(): boolean {
-        return this.data.hp.current > 0;
-    }
+	public heal(amount: number): void {
+		this.hp.increase(amount);
+	}
 
-    // COMBAT
+	public isAlive(): boolean {
+		return this.hp.current > 0;
+	}
 
-    public beginCombat(target: BaseCharacter) {
-        bus.on("Game:UITick", this.onTick);
-        for (const attack of this.attacks) {
-            attack.init();
-        }
-        this.target = target;
-        this.inCombat = true;
-    }
+	// COMBAT
 
-    public endCombat() {
-        bus.off("Game:UITick", this.onTick);
-        this.inCombat = false;
-    }
+	public beginCombat(target: BaseCharacter) {
+		bus.on("Game:UITick", this.onTick);
+		for (const attack of this.attacks) {
+			attack.init();
+		}
+		this.target = target;
+		this.inCombat = true;
+	}
 
-    public attack(target: BaseCharacter): void {
-        const damage = this.data.CharacterStats.strength - target.data.CharacterStats.defence;
-        target.takeDamage(Math.max(1, damage)); // Ensure minimum 1 dmg
-    }
+	public endCombat() {
+		bus.off("Game:UITick", this.onTick);
+		this.inCombat = false;
+	}
 
-    public handleTick(dt: number): void {
-        if (!this.inCombat) return;
+	public attack(target: BaseCharacter): void {
+		const damage = this.stats.strength - target.stats.defence;
+		target.takeDamage(Math.max(1, damage)); // Ensure minimum 1 dmg
+	}
 
-        for (const attack of this.attacks) {
-            attack.reduceCooldown(dt);
-            if (attack.isReady()) {
-                attack.perform(this, this.target);
-            }
-        }
-    }
+	public handleTick(dt: number): void {
+		if (!this.inCombat) return;
 
-    // HELPER CLASSES
+		for (const attack of this.attacks) {
+			attack.reduceCooldown(dt);
+			if (attack.isReady()) {
+				attack.perform(this, this.target);
+			}
+		}
+	}
 
-    snapshot(): CharacterSnapsnot {
-        return {
-            name: this.data.name,
-            hp: this.data.hp,
-        };
-    }
+	// HELPER CLASSES
+	snapshot(): CharacterSnapsnot {
+		return {
+			name: this.name,
+			level: this.level,
+			hp: this.hp,
+			stats: this.stats,
+			avatarUrl: "Todo",
+			rarity: "Todo",
+		};
+	}
 }

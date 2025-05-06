@@ -20,10 +20,11 @@ export class Attack {
     }
 
     perform(self: BaseCharacter, target: BaseCharacter) {
-        console.log("Attacking");
-        target.takeDamage(this.spec.power);
+        target.takeDamage(Math.max((this.spec.power * self.stats.strength) - target.stats.defence, 0));
         this.currentCooldown = this.spec.cooldown;
     }
+
+
 
     get id() {
         return this.spec.id;

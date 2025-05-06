@@ -263,6 +263,8 @@ h3 {
 
 /* Wrapper that controls the visible height */
 .screen-banner {
+	justify-content: center;
+	display: flex;
 	width: 70%; /* span full card width            */
 	max-height: 180px; /* adjust this to taste            */
 	overflow: hidden; /* clip anything below max‑height  */
@@ -551,3 +553,14 @@ button:active {
 	font-weight:1000;
 	color: var(--rarity-legendary);
 }
+
+
+.icon {
+    width: 24px;
+    height: 24px;
+    fill: none;              /* no fill, only strokes */
+    stroke: currentColor;    /* inherits text color */
+    stroke-width: 2;         /* 2px stroke weight */
+    stroke-linecap: round;   /* rounded ends */
+    stroke-linejoin: round;  /* rounded corners */
+  }

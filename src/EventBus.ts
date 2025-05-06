@@ -4,6 +4,7 @@ import { HuntState } from "./HuntManager";
 import { CombatManager } from "./CombatManager";
 import { PlayerCharacter } from "./Characters/PlayerCharacter";
 import { EnemyCharacter } from "./Characters/EnemyCharacter";
+import { TrainedStat } from "./TrainedStat";
 
 export interface GameEvents {
 	"Game:UITick": number;
@@ -13,6 +14,7 @@ export interface GameEvents {
 	"player:initialized" : Player;
 	"player:level-up" : number;
 	"player:stamina-changed" : Bounded;
+	"player:trainedStat-changed" : string;
 	"hunt:stateChanged": HuntState;
 	"hunt:areaSelected": string;
 	"combat:started": {player: PlayerCharacter, enemy: EnemyCharacter};

@@ -22,11 +22,11 @@ export class UIStatBounded<K extends BoundedEventsKey> {
 		this.container.append(li);
 		fill.style.setProperty("--value", String(0)); // or bar.style…
 
-		bus.on<K>(this.eventKey, (payload) => {
+		bus.on<K>(this.eventKey, (payload:Bounded) => {
 			valueEl.textContent = `${payload.current.toString()} / ${payload.max.toString()}`;
 			const percentage = (payload.current / payload.max) * 100;
 			fill.style.setProperty("--value", String(percentage)); // or bar.style…
-			valueEl.textContent = `${payload.current} / ${payload.max}`;
+			valueEl.textContent = `${Math.floor(payload.current)} / ${Math.floor(payload.max)}`;
 		});
 	}
 }

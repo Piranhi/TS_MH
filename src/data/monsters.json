@@ -3,14 +3,14 @@
       "id": "slime_basic",
       "displayName": "Green Slime",
       "rarity": "common",
-      "baseStats": { "hp": 3, "attack": 5, "defense": 1, "speed": 0.9 },
+      "baseStats": { "hp": 4, "attack": 2, "defense": 2, "speed": 0.7 },
       "attacks": ["basic_melee"]
     },
     {
         "id": "wolf_basic",
         "displayName": "Forest Wolf",
         "rarity": "common",
-        "baseStats": { "hp": 3, "attack": 5, "defense": 1, "speed": 0.9 },
+        "baseStats": { "hp": 3, "attack": 4, "defense": 1, "speed": 1 },
         "attacks": ["basic_melee"]
       },
     {

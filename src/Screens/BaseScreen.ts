@@ -1,4 +1,4 @@
-import { GameScreen } from "../gameScreen";
+import { GameScreen } from "./gameScreen";
 import { ScreenName } from "../types";
 
 export abstract class BaseScreen implements GameScreen{

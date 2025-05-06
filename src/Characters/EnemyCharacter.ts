@@ -1,6 +1,5 @@
 import { Bounded } from "../domain/value-objects/Bounded";
-import { BaseCharacter } from "./BaseCharacter";
-import { CharacterData } from "../types/character";
+import { BaseCharacter, CharacterData } from "./BaseCharacter";
 import { Monster } from "@/models/Monster";
 
 export class EnemyCharacter extends BaseCharacter {
@@ -11,7 +10,7 @@ export class EnemyCharacter extends BaseCharacter {
             name: spec.displayName,
             level: 1,
             hp: new Bounded(0, spec.baseStats.hp, spec.baseStats.hp),
-            CharacterStats: {
+            stats: {
                 strength: spec.baseStats.attack,
                 defence: spec.baseStats.defense,
             },
