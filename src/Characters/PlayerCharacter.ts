@@ -10,7 +10,7 @@ export class PlayerCharacter extends BaseCharacter {
     
     static createNewPlayer(): PlayerCharacter {
         const defaultStats: CharacterStats = {
-            strength: 10,
+            strength: 2,
             defence: 2
         }
 

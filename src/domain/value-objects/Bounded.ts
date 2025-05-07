@@ -17,6 +17,7 @@ export class Bounded {
         this.current += delta;
     }
 
+
     public increase(amount: number): void {
         this.current += amount;
     }

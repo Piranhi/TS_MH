@@ -3,21 +3,21 @@
       "id": "slime_basic",
       "displayName": "Green Slime",
       "rarity": "common",
-      "baseStats": { "hp": 4, "attack": 2, "defense": 2, "speed": 0.7 },
+      "baseStats": { "hp": 4, "attack": 2, "defense": 0, "speed": 0.7 },
       "attacks": ["basic_melee"]
     },
     {
         "id": "wolf_basic",
         "displayName": "Forest Wolf",
         "rarity": "common",
-        "baseStats": { "hp": 3, "attack": 4, "defense": 1, "speed": 1 },
+        "baseStats": { "hp": 3, "attack": 3, "defense": 1, "speed": 1 },
         "attacks": ["basic_melee"]
       },
     {
       "id": "rare_treant",
       "displayName": "Ancient Treant",
       "rarity": "rare",
-      "baseStats": { "hp": 10, "attack": 18, "defense": 8, "speed": 0.6 },
+      "baseStats": { "hp": 10, "attack": 18, "defense": 3, "speed": 0.6 },
       "attacks": ["basic_melee", "root_snare", "bark_skin"]
     }
   ]

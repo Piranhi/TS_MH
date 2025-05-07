@@ -20,13 +20,23 @@ export class UIStatBounded<K extends BoundedEventsKey> {
 		bar.classList.add("mh-progress--generic");
 
 		this.container.append(li);
-		fill.style.setProperty("--value", String(0)); // or bar.style…
+		fill.style.setProperty("--value", String(0));
 
-		bus.on<K>(this.eventKey, (payload:Bounded) => {
-			valueEl.textContent = `${payload.current.toString()} / ${payload.max.toString()}`;
-			const percentage = (payload.current / payload.max) * 100;
-			fill.style.setProperty("--value", String(percentage)); // or bar.style…
-			valueEl.textContent = `${Math.floor(payload.current)} / ${Math.floor(payload.max)}`;
+		type Payload = Bounded | {bounded: Bounded; extra: number};
+
+		bus.on<K>(this.eventKey, (payload:Payload) => {
+			// Grab bounded and number based on signature used. 
+			const bounded: Bounded =
+			payload instanceof Bounded ? payload : payload.bounded;
+		  const extra: number =
+			payload instanceof Bounded ? 0 : payload.extra ?? 0;
+
+			const current = (bounded.current ?? 0) - extra;
+			const max = bounded.max ?? 0;
+
+			valueEl.textContent = `${Math.floor(current)} / ${Math.floor(max)}`;
+			const percentage = max > 0?  (current / max) * 100 : 0
+			fill.style.setProperty("--value", String(percentage));
 		});
 	}
 }

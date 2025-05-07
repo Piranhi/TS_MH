@@ -1,6 +1,6 @@
 /* training.css */
 :root {
-  --card-bg: rgba(20, 20, 30, 0.6);
+  --card-bg: rgba(20, 20, 30, 0.418);
   --card-border: rgba(255, 255, 255, 0.1);
   --accent-red: #e53e3e;
   --accent-green: #38a169;
@@ -31,17 +31,17 @@
   width: 100%;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  border-radius: 8px;
   padding: 0.75rem 1rem;
   overflow: hidden;
+  height: 80px;
 }
 
 /* LOCKED STATE */
 .training-item.locked {
   justify-content: center;
-  height: 60px;
 }
 .training-item.locked .locked-label {
   display: flex;
@@ -73,6 +73,16 @@
   gap: 0.5rem;
 }
 
+.training-assigned {
+  flex: .15;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+  align-self: center;
+  text-align: center;
+}
+
 /* HEADER */
 .training-header {
   display: flex;
@@ -85,15 +95,15 @@
 .training-bar {
   position: relative;
   width: 100%;
-  height: 8px;
+  height: 16px;
   background: var(--bar-bg);
-  border-radius: 4px;
+  border-radius: 10px;
   overflow: hidden;
 }
 .progress {
   height: 100%;
   background: var(--accent-red);
-  transition: width 0.3s ease;
+  transition: width 0.15s ease;
 }
 .progress-text {
   position: absolute;
@@ -118,7 +128,7 @@
   width: 32px;
   height: 32px;
   border: none;
-  border-radius: 50%;
+  border-radius: 30%;
   background: var(--card-bg);
   color: #fff;
   font-size: 1.2rem;

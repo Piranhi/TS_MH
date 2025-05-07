@@ -8,7 +8,7 @@ export class TrainedStatHolder {
 	private trainingListEl: HTMLElement;
 	private tmpUnlocked: HTMLTemplateElement;
 	private tmpLocked: HTMLTemplateElement;
-	private statElRoot: HTMLElement
+	private statElRoot!: HTMLElement
 
 	constructor(root: HTMLElement, trainedStat: TrainedStat) {
 		this.trainedStat = trainedStat;
@@ -39,7 +39,7 @@ export class TrainedStatHolder {
 		const clone = template.content.cloneNode(true) as DocumentFragment;
 		this.statElRoot = clone.firstElementChild as HTMLElement;
 		if(!this.statElRoot){
-			console.error("Templatre had no root element", template);
+			console.error("Template had no root element", template);
 			return;
 		}
 
@@ -70,6 +70,10 @@ export class TrainedStatHolder {
 		if(this.trainedStat.status === "Unlocked"){
 			// Setup widget
 			const progEl = this.statElRoot.querySelector<HTMLDivElement>(".progress")
+			const assignedEl  = this.statElRoot.querySelector<HTMLElement>(".training-assigned")!;
+
+			assignedEl.textContent = this.trainedStat.assignedPoints.toString()
+
 			if (!progEl) {
 				console.error("Couldn’t find .progress inside", this.statElRoot);
 			  } else {
@@ -78,6 +82,7 @@ export class TrainedStatHolder {
 				progEl.style.width = `${pct}%`;
 	
 				const txtEl = this.statElRoot.querySelector<HTMLElement>(".progress-text");
+
 				if (txtEl) {
 				  txtEl.textContent = `${Math.floor(this.trainedStat.progress)} / ${this.trainedStat.nextThreshold}`;
 				}

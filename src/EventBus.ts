@@ -13,7 +13,7 @@ export interface GameEvents {
 	"Resource:Changed": { gold: number };
 	"player:initialized" : Player;
 	"player:level-up" : number;
-	"player:stamina-changed" : Bounded;
+	"player:stamina-changed" : {bounded: Bounded, extra: number};
 	"player:trainedStat-changed" : string;
 	"hunt:stateChanged": HuntState;
 	"hunt:areaSelected": string;
