@@ -5,6 +5,7 @@ import { CombatManager } from "./CombatManager";
 import { PlayerCharacter } from "./Characters/PlayerCharacter";
 import { EnemyCharacter } from "./Characters/EnemyCharacter";
 import { TrainedStat } from "./TrainedStat";
+import { poolChangedPayload } from "./domain/value-objects/RegenPool";
 
 export interface GameEvents {
 	"Game:UITick": number;
@@ -13,14 +14,13 @@ export interface GameEvents {
 	"Resource:Changed": { gold: number };
 	"player:initialized" : Player;
 	"player:level-up" : number;
-	"player:stamina-changed" : {bounded: Bounded, extra: number};
+	"player:stamina-changed" : poolChangedPayload;
 	"player:trainedStat-changed" : string;
 	"hunt:stateChanged": HuntState;
 	"hunt:areaSelected": string;
 	"combat:started": {player: PlayerCharacter, enemy: EnemyCharacter};
 	"combat:ended": string;
 	"reward:renown": number;
-
 }
 
 export type EventKey = keyof GameEvents;

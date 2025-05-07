@@ -1,0 +1,58 @@
+import { bus, EventKey, GameEvents } from "@/EventBus";
+
+type Elements = {
+	labelEl: HTMLElement;
+	valueEl: HTMLElement;
+	barEl?: HTMLElement;
+	fillEl?: HTMLElement;
+};
+
+export class UIStat<K extends EventKey> {
+	constructor(
+		private label: string,
+		private eventKey: K,
+		private container: HTMLElement,
+		private templateId: string,
+		private renderer: (payload: GameEvents[K], els: Elements) => void
+	) {}
+
+	public init() {
+		// Clone the correct template
+		const tpl = document.getElementById(this.templateId)! as HTMLTemplateElement;
+		const root = tpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+		this.container.append(root);
+
+		// Grab the bits relevant to our needs
+		const labelEl = root.querySelector(".label");
+		const valueEl = root.querySelector(".value");
+		const barEl = root.querySelector(".mh-progress");
+		const fillEl = root.querySelector(".mh-progress__fill");
+
+		if (!labelEl || !valueEl) {
+			console.error(`Template ${this.templateId} missing .label or .value`);
+			return;
+		}
+
+		const els: Elements = {
+			labelEl: labelEl as HTMLElement,
+			valueEl: valueEl as HTMLElement,
+			barEl: barEl as HTMLElement | undefined,
+			fillEl: fillEl as HTMLElement | undefined,
+		};
+
+		console.log(fillEl);
+
+		// Set static bits
+
+		els.labelEl.textContent = this.label;
+		if (els.fillEl) {
+			els.fillEl.classList.add("mh-progress--generic");
+			els.fillEl.style.setProperty("--value", "0");
+		}
+
+		// Subscribe once and let the renderer do the rest
+		bus.on<K>(this.eventKey, (payload) => {
+			this.renderer(payload, els);
+		});
+	}
+}

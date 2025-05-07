@@ -1,5 +1,6 @@
 import { PlayerCharacter } from "./Characters/PlayerCharacter";
 import { Bounded } from "./domain/value-objects/Bounded";
+import { RegenPool } from "./domain/value-objects/RegenPool";
 import { bus } from "./EventBus";
 import { TrainedStat, TrainedStatData } from "./TrainedStat";
 
@@ -8,7 +9,7 @@ interface PlayerData {
 	renown: Bounded;
 	experience: number;
 	character: PlayerCharacter;
-	stamina: Bounded;
+	stamina: RegenPool;
 	trainedStats: Record<string, TrainedStat>;
 }
 
@@ -20,7 +21,7 @@ export class Player {
 	private renown: Bounded;
 
 	private experience: number;
-	private stamina: Bounded;
+	private stamina: RegenPool;
 	private assignedStamina = 0;
 
 	public trainedStats: Map<string, TrainedStat> = new Map();
@@ -44,7 +45,7 @@ export class Player {
 			renown: new Bounded(0, 1000, 0),
 			experience: 0,
 			character: PlayerCharacter.createNewPlayer(),
-			stamina: new Bounded(0, 10, 0),
+			stamina: new RegenPool( 10, 1, false),
 			trainedStats: {
 				attack: new TrainedStat({
 					id: "attack",
@@ -93,60 +94,47 @@ export class Player {
 		this.trainedStats.forEach((stat) => stat.update(dt));
 	}
 
-	public allocateTrainedStat(id: string, rawDelta: number) {
+    public getPlayerCharacter(): PlayerCharacter {
+		return this.character;
+	}
+
+
+	public allocateTrainedStat(id: string, rawDelta: number): void {
 		const stat = this.trainedStats.get(id);
 		if (!stat) return;
 
         //Only whole point changes
-        const delta = Math.floor(rawDelta);
-        if(delta === 0) return;
+        const delta = Math.trunc(rawDelta);
+        if (delta === 0) return;
 
-		// Don’t allow removing more points than have been assigned
-		if (stat.assignedPoints + delta < 0) return;
-
-		const available = this.stamina.current - this.assignedStamina;
-
-		// If we’re trying to spend points, make sure we have enough un-used stamina
-		if (delta > 0 && available < delta) return;
-
-		// All checks passed—apply the changes:
-		stat.assignedPoints += delta;
-		this.assignedStamina += delta;
-
-		// Spending stamina when assigning, or refunding when un-assigning
-		this.stamina.current -= delta;
-
-		bus.emit("player:trainedStat-changed", stat.id);
-		bus.emit("player:stamina-changed", {
-			bounded: this.stamina,
-			extra: this.assignedStamina,
-		});
+        if (delta > 0) {
+            // spending
+            if (!this.stamina.spend(delta)) return;   // not enough → abort
+            stat.assignedPoints += delta;
+          } else {
+            // refunding
+            const pts = -delta;
+            if (stat.assignedPoints < pts) return;    // can't refund more than there
+            if (!this.stamina.refund(pts))  return;   // should always succeed
+            stat.assignedPoints -= pts;
+          }
+          this.emitStamina();
 	}
 
-	public getPlayerCharacter(): PlayerCharacter {
-		return this.character;
-	}
+    private emitStamina() {
+        bus.emit("player:stamina-changed", {
+          current:   this.stamina.current,
+          allocated: this.stamina.allocated,
+          max:       this.stamina.max,
+          effective: this.stamina.effective,
+        });
+      }
+
 
 	private increaseStamina(delta: number): void {
-		// Compute the highest 'current' we’re allowed to have
-		const effectiveMax = this.stamina.max - this.assignedStamina;
-
-		// Add delta, but never go above that effective cap
-		this.stamina.current = Math.min(this.stamina.current + delta, effectiveMax);
-
-		bus.emit("player:stamina-changed", {
-			bounded: this.stamina,
-			extra: this.assignedStamina,
-		});
+        this.stamina.regen(delta);
+        this.emitStamina();
 	}
-
-	private assignStamina(delta: number) {
-		this.assignedStamina += delta;
-	}
-
-    public get staminaCap(): number {
-        return this.stamina.max - this.assignedStamina;
-      }
 
 	public levelUp(): void {
 		this.level += 1;
