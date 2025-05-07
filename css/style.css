@@ -292,6 +292,7 @@ h3 {
 /* Player specifics */
 .player-avatar img {
 	width: 100%;
+	height: 50%;
 	aspect-ratio: 1;
 	object-fit: cover;
 	border-radius: 1rem;
@@ -300,7 +301,7 @@ h3 {
 .player-stats li {
 	display: flex;
 	flex-direction: column;
-	gap: 0.25rem;
+	gap: 0.5rem;
 }
 
 .player-stats .label {
@@ -308,7 +309,7 @@ h3 {
 }
 
 .player-name {
-	font-size: 1.125rem;
+	font-size: 1.75rem;
 	font-weight: 600;
 	letter-spacing: 0.02em;
 }

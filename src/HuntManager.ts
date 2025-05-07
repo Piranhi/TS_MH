@@ -35,7 +35,7 @@ export class HuntManager {
         this.handler = this.makeIdleState();
         this.transition(HuntState.Idle, this.makeIdleState());
 
-        bus.on("Game:UITick", (dt) => this.onTick(dt));
+        bus.on("Game:GameTick", (dt) => this.onTick(dt));
         bus.on("hunt:areaSelected", (areaId) => this.setArea(areaId));
     }
 
@@ -112,7 +112,7 @@ export class HuntManager {
         return {
             onEnter: () => {},
             onTick: (dt: number) => {
-                this.playerCharacter.heal((HEAL_RATE * dt) / 1000);
+                this.playerCharacter.heal((HEAL_RATE * dt) / 60);
                 if (this.playerCharacter.getHP().current === this.playerCharacter.getHP().max) {
                     this.transition(HuntState.Search, this.makeSearchState());
                 }

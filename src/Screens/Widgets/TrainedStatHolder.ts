@@ -88,7 +88,7 @@ export class TrainedStatHolder {
 			const { prog, progressText, assigned, level, name} = this.els!;
 			const pct = (this.trainedStat.progress / this.trainedStat.nextThreshold) * 100;
 			name.textContent = this.trainedStat.name;
-			level.textContent = this.trainedStat.level.toString();
+			level.textContent = `Lvl ${this.trainedStat.level}`;
 			assigned.textContent = String(this.trainedStat.assignedPoints);
 			prog.style.width = `${pct}%`;
 			progressText.textContent = `${Math.floor(this.trainedStat.progress)} / ${this.trainedStat.nextThreshold}`;

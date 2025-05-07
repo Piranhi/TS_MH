@@ -67,6 +67,16 @@ export class Player {
 					baseGainRate: 0.5,
 					status: "Locked",
 				}),
+                crit: new TrainedStat({
+					id: "crit",
+					name: "Crit",
+					level: 1,
+					progress: 0,
+					nextThreshold: 100,
+					assignedPoints: 0,
+					baseGainRate: 0.5,
+					status: "Unlocked",
+				}),
 			},
 		};
 		return new Player(defaults);

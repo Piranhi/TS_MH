@@ -68,7 +68,7 @@ export abstract class BaseCharacter {
 	// COMBAT
 
 	public beginCombat(target: BaseCharacter) {
-		bus.on("Game:UITick", this.onTick);
+		bus.on("Game:GameTick", this.onTick);
 		for (const attack of this.attacks) {
 			attack.init();
 		}
@@ -77,7 +77,7 @@ export abstract class BaseCharacter {
 	}
 
 	public endCombat() {
-		bus.off("Game:UITick", this.onTick);
+		bus.off("Game:GameTick", this.onTick);
 		this.inCombat = false;
 	}
 

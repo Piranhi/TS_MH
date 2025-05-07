@@ -11,6 +11,7 @@ export interface TrainedStatData {
     status: trainedStatStatus
 }
 
+const GROWTH_VALUE = 1.35;
 export class TrainedStat {
 	id: string;
 	name: string;
@@ -41,11 +42,12 @@ export class TrainedStat {
 		this.progress += this.assignedPoints * this.baseGainRate * deltaTime;
 
 		while (this.progress >= this.nextThreshold) {
+			
 			this.progress -= this.nextThreshold;
 			this.level += 1;
 
 			// e.g. exponential growth: increase threshold by 15% each level
-			this.nextThreshold = Math.floor(this.nextThreshold * 1.15);
+			this.nextThreshold = Math.floor(this.nextThreshold * GROWTH_VALUE);
 		}
 	}
 
