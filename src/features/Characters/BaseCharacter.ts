@@ -1,5 +1,5 @@
 import { Attack } from "@/models/attack";
-import { Bounded } from "../domain/value-objects/Bounded";
+import { Bounded } from "../../domain/value-objects/Bounded";
 import { attackSpecById } from "@/gameData";
 import { bus } from "@/EventBus";
 

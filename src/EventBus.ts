@@ -1,10 +1,10 @@
 import { Bounded } from "./domain/value-objects/Bounded";
 import { Player } from "./player";
-import { HuntState } from "./HuntManager";
-import { CombatManager } from "./CombatManager";
-import { PlayerCharacter } from "./Characters/PlayerCharacter";
-import { EnemyCharacter } from "./Characters/EnemyCharacter";
-import { TrainedStat } from "./TrainedStat";
+import { HuntState } from "./features/hunt/HuntManager";
+import { CombatManager } from "./features/hunt/CombatManager";
+import { PlayerCharacter } from "./features/Characters/PlayerCharacter";
+import { EnemyCharacter } from "./features/Characters/EnemyCharacter";
+import { TrainedStat } from "./features/TrainedStat/TrainedStat";
 import { poolChangedPayload } from "./domain/value-objects/RegenPool";
 
 export interface GameEvents {
@@ -21,6 +21,7 @@ export interface GameEvents {
 	"combat:started": {player: PlayerCharacter, enemy: EnemyCharacter};
 	"combat:ended": string;
 	"reward:renown": number;
+	"classCard:levelUp" : string;
 }
 
 export type EventKey = keyof GameEvents;

@@ -1,4 +1,4 @@
-import { Bounded } from "../domain/value-objects/Bounded";
+import { Bounded } from "../../domain/value-objects/Bounded";
 import { BaseCharacter, CharacterData } from "./BaseCharacter";
 import { Monster } from "@/models/Monster";
 

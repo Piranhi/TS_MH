@@ -1,8 +1,8 @@
-import { PlayerCharacter } from "./Characters/PlayerCharacter";
+import { PlayerCharacter } from "./features/Characters/PlayerCharacter";
 import { Bounded } from "./domain/value-objects/Bounded";
 import { RegenPool } from "./domain/value-objects/RegenPool";
 import { bus } from "./EventBus";
-import { TrainedStat, TrainedStatData } from "./TrainedStat";
+import { TrainedStat, TrainedStatData } from "./features/TrainedStat/TrainedStat";
 
 interface PlayerData {
 	level: number;

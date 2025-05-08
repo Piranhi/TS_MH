@@ -1,4 +1,4 @@
-import { Bounded } from "../domain/value-objects/Bounded";
+import { Bounded } from "../../domain/value-objects/Bounded";
 import { BaseCharacter, CharacterStats, CharacterData } from "./BaseCharacter";
 
 export class PlayerCharacter extends BaseCharacter {

@@ -33,10 +33,10 @@
       <span class="value">1</span>
     </li>
   </template>
-
+  <div class="background"></div>
   <div id="app">
     <!-- HEADER -->
-    <header class="header glass" id="header">
+    <header class="header" id="header">
       <div class="header-left">
         <button class="hamburger">
           <!-- simple hamburger icon -->
@@ -57,14 +57,9 @@
     <!-- MAIN GRID -->
     <div class="main">
       <!-- SIDE MENU -->
-      <aside class="menu" id="menu">
+      <aside class="menu glass" id="menu">
         <nav class="menu-nav" id="sidebar"></nav>
         <div class="menu-content">
-
-          <svg class="icon icon-character" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="7" r="4" />
-            <path d="M4 21 V19 A8 8 0 0 1 20 19 V21" />
-          </svg>
           <!-- injected by TS -->
         </div>
       </aside>
@@ -75,7 +70,7 @@
       </section>
 
       <!-- PLAYER AREA -->
-      <aside class="player " id="player-bar">
+      <aside class="player glass" id="player-bar">
         <!-- player portrait -->
         <figure class="player-avatar">
           <img src="/src/Assets/Images/player-profile.png" alt="Player portrait" />

@@ -1,4 +1,4 @@
-import { BaseCharacter } from "@/Characters/BaseCharacter";
+import { BaseCharacter } from "@/features/Characters/BaseCharacter";
 
 export interface AttackSpec {
     id: string;

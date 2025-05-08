@@ -1,6 +1,6 @@
-import { BaseCharacter } from "@/Characters/BaseCharacter";
+import { BaseCharacter } from "@/features/Characters/BaseCharacter";
 import { Bounded } from "@/domain/value-objects/Bounded";
-import { CharacterSnapsnot, CharacterStats, StatKey } from "@/Characters/BaseCharacter";
+import { CharacterSnapsnot, CharacterStats, StatKey } from "@/features/Characters/BaseCharacter";
 import { player } from "@/player";
 
 export class CharacterHolder {

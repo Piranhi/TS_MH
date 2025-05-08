@@ -3,7 +3,7 @@ import Markup from "./train.html?raw";
 import { addHTMLtoPage } from "./ScreensUtils";
 import { bus } from "@/EventBus";
 import { player } from "@/player";
-import { TrainedStatHolder } from "./Widgets/TrainedStatHolder";
+import { TrainedStatHolder } from "../features/TrainedStat/ui/TrainedStatHolder";
 
 export class TrainScreen extends BaseScreen {
 

@@ -1,5 +1,5 @@
 import { bus } from "@/EventBus";
-import { TrainedStat, trainedStatStatus } from "@/TrainedStat";
+import { TrainedStat, trainedStatStatus } from "@/features/TrainedStat/TrainedStat";
 import { player } from "@/player";
 
 interface UnlockedEls {

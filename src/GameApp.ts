@@ -1,16 +1,16 @@
 import { player } from "./player";
 import { engine } from "./GameEngine";
 import { GameScreen } from "./Screens/gameScreen";
-import { ScreenManager } from "./ScreenManager";
+import { ScreenManager } from "./shared/utils/ScreenManager";
 import { Sidebar } from "./ui/Sidebar";
 import "./ui/Header";
-import { ScreenName } from "./types";
+import { ScreenName } from "./shared/types/types";
 import { UIHeader } from "./ui/Header";
-import "./ResourceManager";
+//import "./features/inventory/ResourceManager";
 import { Playerbar } from "./ui/PlayerBar";
-import { HuntManager } from "./HuntManager";
-import { PlayerCharacter } from "./Characters/PlayerCharacter";
-import { screenFactories } from "./screenFactories";
+import { HuntManager } from "./features/hunt/HuntManager";
+import { PlayerCharacter } from "./features/Characters/PlayerCharacter";
+import { screenFactories } from "./shared/utils/screenFactories";
 
 
 export class GameApp {

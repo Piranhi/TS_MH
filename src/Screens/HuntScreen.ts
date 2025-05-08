@@ -1,10 +1,10 @@
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./hunt.html?raw";
 import { bus } from "../EventBus";
-import { HuntState } from "../HuntManager";
-import { PlayerCharacter } from "@/Characters/PlayerCharacter";
-import { EnemyCharacter } from "@/Characters/EnemyCharacter";
-import { CharacterHolder } from "./Widgets/CharacterHolder";
+import { HuntState } from "@/features/hunt/HuntManager";
+import { PlayerCharacter } from "@/features/Characters/PlayerCharacter";
+import { EnemyCharacter } from "@/features/Characters/EnemyCharacter";
+import { CharacterHolder } from "../features/hunt/ui/CharacterHolder";
 import { addHTMLtoPage } from "./ScreensUtils";
 
 export class HuntScreen extends BaseScreen {

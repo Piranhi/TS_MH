@@ -1,0 +1,18 @@
+[
+	{
+		"id": "warrior_card_01",
+		"name": "warrior",
+		"description": "Increases base attack by 2.",
+		"rarity": "common",
+		"statMod": { "attackBase": 2 },
+		"baseGainRate": 1
+	},
+	{
+		"id": "bulwark_card_01",
+		"name": "bulwark",
+		"description": "Increases base defence by 2.",
+		"rarity": "common",
+		"statMod": { "defenceBase": 2 },
+		"baseGainRate": 1
+	}
+]

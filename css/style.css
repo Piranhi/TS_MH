@@ -17,10 +17,10 @@
 	--accent: #4f8ef7;
 
 	/* Glass (taken straight from your snippet) */
-	--glass-gap: 1rem;
-	--glass-radius: 0.3rem;
+	--glass-gap: 0.25rem;
+	--glass-radius: 0.7rem;
 	--glass-fill: rgba(255, 255, 255, 0.06);
-	--glass-blur: 14px;
+	--glass-blur: 22px;
 	--glass-stroke: rgba(255, 255, 255, 0.12);
 	--glass-shadow-rim: rgba(255, 255, 255, 0.04);
 	--glass-shadow-drop: rgba(0, 0, 0, 0.45);
@@ -93,6 +93,18 @@ h3 {
 	letter-spacing: 0.06em;
 	color: var(--text-strong);
 }
+
+.background {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: url('/src/Assets/Images/background-main.png') no-repeat center center;
+	background-size: cover;
+	z-index: -1;
+  }
+  
 
 /* -------------------------------------------------------------
 	 2. GLASS UTILITY

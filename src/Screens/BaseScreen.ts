@@ -1,5 +1,5 @@
 import { GameScreen } from "./gameScreen";
-import { ScreenName } from "../types";
+import { ScreenName } from "../shared/types/types";
 
 export abstract class BaseScreen implements GameScreen{
     abstract readonly screenName: ScreenName;

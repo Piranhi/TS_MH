@@ -1,6 +1,6 @@
-import { EnemyCharacter } from "./Characters/EnemyCharacter";
-import { PlayerCharacter } from "./Characters/PlayerCharacter";
-import { bus } from "./EventBus";
+import { EnemyCharacter } from "../Characters/EnemyCharacter";
+import { PlayerCharacter } from "../Characters/PlayerCharacter";
+import { bus } from "../../EventBus";
 
 export class CombatManager {
     public isFinished: boolean = false;
