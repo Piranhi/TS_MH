@@ -1,4 +1,4 @@
-import type { Monster } from "./Monster";
+import { Monster } from "./Monster";
 
 export interface AreaSpec {
 	id: string;
@@ -16,41 +16,40 @@ export interface Drop {
 }
 
 export class Area {
-	private static specById = new Map<string, AreaSpec>();
-	private static monsterById = new Map<string, Monster>();
+	//private static monsterById = new Map<string, Monster>();
+		// Registry. 
+		private static specById = new Map<string, AreaSpec>();
+		static registerSpecs(specs: AreaSpec[]){
+		  specs.forEach(s => this.specById.set(s.id, s));
+		}
+	
+		static create(id: string): Area{
+		  const spec = this.specById.get(id);
+		  if(!spec) throw new Error (`Unknown area "${id}"`);
+		  return new Area(spec)
+		}
 
 	/** Called exactly once from gameData.ts */
-	static _bootstrap(specs: AreaSpec[], monsters: Monster[]) {
+/* 	static _bootstrap(specs: AreaSpec[], monsters: Monster[]) {
 		this.specById = new Map(specs.map((s) => [s.id, s]));
 		this.monsterById = new Map(monsters.map((m) => [m.id, m]));
         this.specById.forEach(spec => console.log(spec))
-	}
-
-	static createArea(id: string): Area {
-		const spec = this.specById.get(id);
-        console.log(spec?.displayName)
-		if (!spec) throw new Error(`Unknown area "${id}"`);
-
-		/* Make a fresh stateful copy (e.g. resets kills counter) */
-		return new Area(spec);
-	}
+	} */
 
 	public kills = 0;
 	constructor(private readonly spec: AreaSpec) {}
 
 	pickMonster(): Monster {
-
-
 		const { spawns } = this.spec;
 		const total = spawns.reduce((s, { weight }) => s + weight, 0);
 		let roll = Math.random() * total;
 
 		for (const { monsterId, weight } of spawns) {
 			roll -= weight;
-			if (roll <= 0) return Area.monsterById.get(monsterId)!;
+			if (roll <= 0) return Monster.create(monsterId)!;
 		}
 
-        return Area.monsterById.get(spawns[0].monsterId)!
+        return Monster.create(spawns[0].monsterId)!  // Area.monsterById.get(spawns[0].monsterId)!
 	}
 
 	rollLoot(): Drop[] {

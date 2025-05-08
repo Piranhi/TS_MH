@@ -1,12 +1,11 @@
-import { player } from "./player";
+import { Player } from "./player";
 import { engine } from "./GameEngine";
 import { GameScreen } from "./Screens/gameScreen";
 import { ScreenManager } from "./shared/utils/ScreenManager";
 import { Sidebar } from "./ui/Sidebar";
 import "./ui/Header";
-import { ScreenName } from "./shared/types/types";
+import { ScreenName } from "./shared/types";
 import { UIHeader } from "./ui/Header";
-//import "./features/inventory/ResourceManager";
 import { Playerbar } from "./ui/PlayerBar";
 import { HuntManager } from "./features/hunt/HuntManager";
 import { PlayerCharacter } from "./features/Characters/PlayerCharacter";
@@ -47,8 +46,8 @@ export class GameApp {
 
 	/* ---------- private helpers ---------- */
 	private async instantiateCore() {
-		await player.init();
-		this.huntManager = new HuntManager(player.getPlayerCharacter());
+		await Player.getInstance().init();
+		this.huntManager = new HuntManager(Player.getInstance().getPlayerCharacter());
 	}
 
 	private buildUI() {

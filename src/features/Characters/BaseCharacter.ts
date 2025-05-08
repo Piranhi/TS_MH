@@ -1,6 +1,5 @@
 import { Attack } from "@/models/attack";
 import { Bounded } from "../../domain/value-objects/Bounded";
-import { attackSpecById } from "@/gameData";
 import { bus } from "@/EventBus";
 
 export type StatKey = keyof CharacterStats;
@@ -39,9 +38,9 @@ export abstract class BaseCharacter {
 		this.hp = hp;
 		this.stats = { strength, defence };
 
-		const basicMelee = attackSpecById.get("basic_melee");
+		const basicMelee = Attack.create("basic_melee")
 		if (basicMelee) {
-			this.attacks.push(new Attack(basicMelee));
+			this.attacks.push(basicMelee);
 		}
 	}
 

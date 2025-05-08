@@ -1,4 +1,4 @@
-import { ScreenName } from "../shared/types/types";
+import { ScreenName } from "../shared/types";
 import { BaseScreen } from "./BaseScreen";
 
 export class BlacksmithScreen extends BaseScreen {

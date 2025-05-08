@@ -13,8 +13,8 @@ export class HuntScreen extends BaseScreen {
     private playerHolderEl!: HTMLElement;
     private enemyHolderEl!: HTMLElement;
 
-    private playerCard: CharacterHolder;
-    private enemyCard: CharacterHolder;
+    private playerCard!: CharacterHolder;
+    private enemyCard!: CharacterHolder;
 
     readonly screenName = "hunt";
     private readonly MAX_LOG_LINES = 50;

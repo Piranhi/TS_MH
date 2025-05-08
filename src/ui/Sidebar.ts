@@ -1,4 +1,4 @@
-import { ScreenName } from "../shared/types/types";
+import { ScreenName } from "../shared/types";
 import { prettify } from "../shared/utils/stringUtils";
 
 export class Sidebar {

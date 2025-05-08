@@ -6,7 +6,7 @@ import { CharacterScreen } from "../../Screens/CharacterScreen";
 import { InventoryScreen } from "../../Screens/InventoryScreen";
 import { ResearchScreen } from "../../Screens/ResearchScreen";
 import { TrainScreen } from "../../Screens/TrainScreen";
-import { ScreenName } from "../types/types";
+import { ScreenName } from "../types";
 import { GameScreen } from "../../Screens/gameScreen";
 
 // Screen Factory

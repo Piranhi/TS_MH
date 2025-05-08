@@ -1,6 +1,6 @@
 import { bus } from "@/EventBus";
 import { TrainedStat, trainedStatStatus } from "@/features/TrainedStat/TrainedStat";
-import { player } from "@/player";
+import { Player } from "@/player";
 
 interface UnlockedEls {
 	prog:         HTMLDivElement;
@@ -95,7 +95,7 @@ export class TrainedStatHolder {
 		}
 
 		private adjustAmount(delta: number){
-			player.allocateTrainedStat(this.trainedStat.id, delta);
+			Player.getInstance().allocateTrainedStat(this.trainedStat.id, delta);
 		}
 }
 

@@ -22,6 +22,7 @@ export interface GameEvents {
 	"combat:ended": string;
 	"reward:renown": number;
 	"classCard:levelUp" : string;
+	"inventory:inventoryChanged": void;
 }
 
 export type EventKey = keyof GameEvents;

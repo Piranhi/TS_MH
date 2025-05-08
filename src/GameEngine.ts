@@ -33,21 +33,7 @@ class GameEngine {
         bus.emit('Game:UITick', dt / 1000);
         requestAnimationFrame(this.loop.bind(this))
     }
-/* 
-    private gameloop(){
-        const now = new Date().getTime() / 1000;
-        const dt = now - this.lastSecond;
-        this.lastSecond = now;
-        this.gameLoopLeftOver += dt;
-        
-        const wholeSeconds = Math.floor(this.gameLoopLeftOver);
 
-        if(wholeSeconds >= 1){
-            bus.emit('Game:GameTick', wholeSeconds);
-        }
-
-        this.gameLoopLeftOver -= wholeSeconds;
-    } */
 }
 
 export const engine = new GameEngine();

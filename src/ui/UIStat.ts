@@ -40,8 +40,6 @@ export class UIStat<K extends EventKey> {
 			fillEl: fillEl as HTMLElement | undefined,
 		};
 
-		console.log(fillEl);
-
 		// Set static bits
 
 		els.labelEl.textContent = this.label;

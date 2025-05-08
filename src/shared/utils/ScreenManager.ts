@@ -1,5 +1,5 @@
 import { GameScreen } from "../../Screens/gameScreen";
-import {ScreenName} from "../types/types"
+import {ScreenName} from "../types"
 
 type Loader<T> = () => Promise<T>;
 

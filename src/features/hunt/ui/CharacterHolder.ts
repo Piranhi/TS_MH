@@ -1,7 +1,7 @@
 import { BaseCharacter } from "@/features/Characters/BaseCharacter";
 import { Bounded } from "@/domain/value-objects/Bounded";
 import { CharacterSnapsnot, CharacterStats, StatKey } from "@/features/Characters/BaseCharacter";
-import { player } from "@/player";
+import { Player } from "@/player";
 
 export class CharacterHolder {
 	private root: HTMLElement;
@@ -28,7 +28,7 @@ export class CharacterHolder {
 		this.hpBar = root.querySelector(".health-bar")!;
 		this.hpLabel = root.querySelector(".hp-label")!;
 		this.avatarImg = root.querySelector(".char-img")!;
-        if(isPlayer)this.setup(player.getPlayerCharacter())        
+        if(isPlayer)this.setup(Player.getInstance().getPlayerCharacter())        
 
 		// (optional) guard against missing markup in dev
 		if (!this.nameEl) throw new Error("CharacterHolder: .char-name not found");

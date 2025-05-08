@@ -1,10 +1,12 @@
 import { bus } from "@/EventBus";
+import { InventoryItem, ItemCategory } from "@/shared/types";
 
 // Import data
 export interface CardSpec {
 	id: string;
 	name: string;
 	description: string;
+	iconUrl: string;
 	rarity: CardRarity;
 	statMod: StatMod;
 	baseGainRate: number;
@@ -29,11 +31,42 @@ export type StatMod = Partial<{
 	speedMulti: number;
 }>;
 
-export class ClassCard {
-	private spec: CardSpec;
-	private state: CardState;
+export class ClassCard implements InventoryItem {
 
-	constructor(spec: CardSpec, state: CardState) {
+    // Registry
+    private static specById = new Map<string, CardSpec>();
+    static registerSpecs(specs: CardSpec[]){
+        specs.forEach(s => this.specById.set(s.id, s));
+    }
+    // Build a brand new card with default state;
+    static create(id: string): ClassCard{
+    const spec = this.specById.get(id)
+    if(!spec) throw new Error(`Unknown card "${id}"`);
+
+    const defaultState: CardState = {
+        specId: spec.id,
+        status: "Unequipped",
+        level: 1,
+        progress: 0
+    }
+    return new ClassCard(spec, defaultState);
+    }
+
+
+
+    // Rehydrate from a previous saved JSON state
+    static fromState(state: CardState): ClassCard{
+        const spec = this.specById.get(state.specId);
+        if(!spec) throw new Error(`Unknown card "${state.specId}"`);
+        return new ClassCard(spec, state);
+    }
+
+    private spec: CardSpec;
+	private state: CardState;
+	readonly category: ItemCategory = "classCard";
+
+      /** always private—use the factories below instead */
+	private constructor(spec: CardSpec, state: CardState) {
 		this.spec = spec;
 		this.state = state;
 	}
@@ -65,4 +98,26 @@ export class ClassCard {
 		this.state.level++;
 		bus.emit("classCard:levelUp", this.spec.id);
 	}
+	// ─── InventoryItem members ───────────────────────────
+	get id() {
+		return this.state.specId;
+	}
+	get name() {
+		return this.spec.name;
+	}
+	get iconUrl() {
+		return this.spec.iconUrl;
+	}
+	get rarity() {
+		return this.spec.rarity;
+	}
+	get quantity() {
+		return 1;
+	}
+	// ─────────────────────────────────────────────────────
+
+
+
+
 }
+

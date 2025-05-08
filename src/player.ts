@@ -3,6 +3,7 @@ import { Bounded } from "./domain/value-objects/Bounded";
 import { RegenPool } from "./domain/value-objects/RegenPool";
 import { bus } from "./EventBus";
 import { TrainedStat, TrainedStatData } from "./features/TrainedStat/TrainedStat";
+import { InventoryManager } from "./features/inventory/InventoryManager";
 
 interface PlayerData {
 	level: number;
@@ -14,22 +15,24 @@ interface PlayerData {
 }
 
 export class Player {
-	public character: PlayerCharacter;
+	private static _instance: Player | null = null;
 
 	private readonly name = "Player";
 	private level: number;
 	private renown: Bounded;
-
 	private experience: number;
 	private stamina: RegenPool;
 	private assignedStamina = 0;
-
-	public trainedStats: Map<string, TrainedStat> = new Map();
-
 	private staminaMultiplier: number = 1;
 	private renownMultiplier: number = 1;
 
-	constructor(data: PlayerData) {
+	public character: PlayerCharacter;
+	public inventory: InventoryManager;
+	public trainedStats: Map<string, TrainedStat> = new Map();
+
+
+
+	private constructor(data: PlayerData) {
 		this.level = data.level;
 		this.renown = data.renown;
 		this.experience = data.experience;
@@ -37,9 +40,19 @@ export class Player {
 		this.stamina = data.stamina;
 		this.trainedStats = new Map(Object.entries(data.trainedStats));
 		this.character = PlayerCharacter.createNewPlayer();
+		this.inventory = new InventoryManager();
+		this.inventory.addItem({
+			id: "testID",
+			name: "testName",
+			category:"classCard",
+			rarity: "legendary",
+			iconUrl: "none",
+			quantity: 1
+
+		})
 	}
 
-	static createNew(): Player {
+	public static createNew(): Player {
 		const defaults: PlayerData = {
 			level: 1,
 			renown: new Bounded(0, 1000, 0),
@@ -155,6 +168,13 @@ export class Player {
 		this.renown.adjust(delta);
 		bus.emit("Renown:Changed", this.renown);
 	}
+
+	public static getInstance() : Player{
+		if(!this._instance){
+		this._instance = Player.createNew();
+		}
+		return this._instance
+	}
+
 }
 
-export const player = Player.createNew();

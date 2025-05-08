@@ -41,7 +41,7 @@ export class HuntManager {
 
     /** Change the hunting grounds without restarting the whole loop. */
     public setArea(areaId: string) {
-        this.area = Area.createArea(areaId);
+        this.area = Area.create(areaId);
         this.transition(HuntState.Search, this.makeSearchState());
     }
 
