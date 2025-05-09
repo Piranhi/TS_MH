@@ -6,6 +6,7 @@ import { PlayerCharacter } from "./features/Characters/PlayerCharacter";
 import { EnemyCharacter } from "./features/Characters/EnemyCharacter";
 import { TrainedStat } from "./features/TrainedStat/TrainedStat";
 import { poolChangedPayload } from "./domain/value-objects/RegenPool";
+import { InventoryItem } from "./shared/types";
 
 export interface GameEvents {
 	"Game:UITick": number;
@@ -23,6 +24,8 @@ export interface GameEvents {
 	"reward:renown": number;
 	"classCard:levelUp" : string;
 	"inventory:inventoryChanged": void;
+	"player:equipmentChanged": InventoryItem[];
+	"player:classCardsChanged": InventoryItem[];
 }
 
 export type EventKey = keyof GameEvents;

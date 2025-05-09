@@ -6,6 +6,7 @@ import Markup from "./inventory.html?raw";
 import { InventoryItem } from "@/shared/types";
 import { bus } from "@/EventBus";
 
+
 export class InventoryScreen extends BaseScreen {
 	readonly screenName = "inventory";
 	private rootEl!: HTMLElement;
@@ -41,13 +42,12 @@ export class InventoryScreen extends BaseScreen {
 
 			el.dataset.slotId = slot.id;
             el.dataset.slotType = slot.type;
-            el.textContent= slot.item ? slot.item.name : "Empty"
+            el.textContent= slot.item ? slot.item.name : ""
 
 			if (slot.item) {
 				el.classList.add(`rarity-${slot.item.rarity}`);
 				el.setAttribute("draggable", "true");
 				el.innerHTML = `<div class="item-icon"><img src="${slot.item.iconUrl}" alt="${slot.item.name}" /></div><div class="item-count">${slot.item.quantity}</div>`;
-                console.log(slot.item.iconUrl)
 			}
 			el.addEventListener("click", (e) => this.onInventoryClick(e));
 			switch (slot.type) {
@@ -85,7 +85,6 @@ export class InventoryScreen extends BaseScreen {
 
 		// Store the slots unique ID in the dataTransfer Payload
 		e.dataTransfer!.setData("text/plain", src.dataset.slotId!);
-		console.log("ID: " + src.dataset.slotId);
 		e.dataTransfer!.effectAllowed = "move";
 	};
 
@@ -109,11 +108,8 @@ export class InventoryScreen extends BaseScreen {
 
 		// Get the origin slot ID from the dragstart
 		const fromID = e.dataTransfer!.getData("text/plain");
-		console.log("from: " + fromID);
 		// get the target slot ID out of the element
 		const toId = tgt.dataset.slotId!;
-		console.log("to: " + toId);
-
 		// Ask inventory manager to swap them
 		const moved = this.player.inventory.moveItem(fromID, toId);
 

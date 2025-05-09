@@ -2,6 +2,7 @@ import { bus } from "@/EventBus";
 import { Player } from "@/player";
 import { isClassCardItem, isEquipmentItem } from "@/shared/type-guards";
 import type { equipmentType, InventoryItem, ItemCategory, EquipmentItem } from "@/shared/types";
+import { ClassCard } from "../classcards/ClassCard";
 export type SlotType = "inventory" | "equipment" | "classCard";
 
 interface Slot {
@@ -41,7 +42,7 @@ export class InventoryManager {
 				.fill(0)
 				.map((_, i) => this.makeSlot("classCard", i)),
 		];
-		this.updateSlotMap()
+		this.updateSlotMap();
 	}
 
 	//------------------------ FACTORIES ------------------------------
@@ -57,7 +58,7 @@ export class InventoryManager {
 
 	//------------------------ INVENTORY ------------------------------
 
-	private updateSlotMap(){
+	private updateSlotMap() {
 		this.slotMap.clear();
 		this.slots.forEach((s) => this.slotMap.set(s.id, s));
 	}
@@ -79,14 +80,22 @@ export class InventoryManager {
 		const to = this.getSlot(toId);
 		if (!from?.item || !to) return false;
 		if (!to.accepts.includes(from.item.category)) return false;
-		if(to.type === "equipment"){
-			if(!isEquipmentItem(from.item)) return false;
+		if (to.type === "equipment") {
+			if (!isEquipmentItem(from.item)) return false;
 			if (from.item.equipType !== to.key) return false;
 		}
-
 		// Swap
 		[from.item, to.item] = [to.item, from.item];
 		this.emitChange();
+
+		// Emit smaller bus changes.
+		if (from.type === "equipment" || to.type === "equipment") {
+			bus.emit("player:equipmentChanged", this.getEquippedEquipment());
+		}
+		if (from.type === "classCard" || to.type === "classCard") {
+			bus.emit("player:classCardsChanged", this.getEquippedCards());
+		}
+
 		return true;
 	}
 
@@ -126,14 +135,14 @@ export class InventoryManager {
 
 	//------------------------ EQUIPMENT ------------------------------
 
-	public getEquippedEquipment(): InventoryItem[] {
+	public getEquippedEquipment(): EquipmentItem[] {
 		return this.slots
 			.filter((slot) => slot.type === "equipment" && slot.item !== null)
 			.map((s) => s.item!)
 			.filter(isEquipmentItem);
 	}
 
-	public getEquippedCards(): InventoryItem[] {
+	public getEquippedCards(): ClassCard[] {
 		return this.slots
 			.filter((s) => s.type === "classCard" && s.item !== null)
 			.map((s) => s.item!)

@@ -14,7 +14,11 @@ export interface CharacterData {
 export interface CharacterStats {
 	strength: number;
 	defence: number;
+	attackBase: number;
+	attackMulti: number;
 }
+
+export type StatsModifier = Partial<CharacterStats>;
 
 export type CharacterSnapsnot = Readonly<CharacterData> & {
 	avatarUrl: string;
@@ -36,7 +40,7 @@ export abstract class BaseCharacter {
 		this.name = name;
 		this.level = level;
 		this.hp = hp;
-		this.stats = { strength, defence };
+		this.stats = { strength, defence, attackBase: 1, attackMulti: 1 };
 
 		const basicMelee = Attack.create("basic_melee")
 		if (basicMelee) {

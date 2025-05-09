@@ -7,6 +7,8 @@ import { InventoryManager } from "./features/inventory/InventoryManager";
 import { EquipmentItem, equipmentType } from "./shared/types";
 
 import swordImg from "@/assets/images/equipment/equipment-weapon-sword-01.png";
+import { ClassCardManager } from "./features/classcards/ClassCardManager";
+import { ClassCard } from "./features/classcards/ClassCard";
 
 interface PlayerData {
 	level: number;
@@ -31,6 +33,7 @@ export class Player {
 
 	public character: PlayerCharacter;
 	public inventory: InventoryManager;
+	private cardManager: ClassCardManager;
 	public trainedStats: Map<string, TrainedStat> = new Map();
 
 	private constructor(data: PlayerData) {
@@ -42,6 +45,7 @@ export class Player {
 		this.trainedStats = new Map(Object.entries(data.trainedStats));
 		this.character = PlayerCharacter.createNewPlayer();
 		this.inventory = new InventoryManager();
+		this.cardManager = new ClassCardManager(this.inventory);
 		this.inventory.addItemToInventory({
 			id: "weaponID",
 			name: "Weapon",
@@ -60,14 +64,7 @@ export class Player {
 			quantity: 1,
 					equipType: "chest",
 		} as EquipmentItem);
-		this.inventory.addItemToInventory({
-			id: "testID",
-			name: "Class Card",
-			category: "classCard",
-			rarity: "rare",
-			iconUrl: "none",
-			quantity: 1,
-		});
+		this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
 	}
 
 	public static createNew(): Player {

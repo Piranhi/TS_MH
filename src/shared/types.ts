@@ -25,3 +25,14 @@ export interface InventoryItem {
     equipType: equipmentType;
   }
 
+    export interface classCardItem extends InventoryItem{
+    id: string;
+    category: "equipment";
+    name: string;
+    iconUrl: string;
+    rarity?: Rarity;
+    quantity: number;
+    equipType: equipmentType;
+  }
+
+

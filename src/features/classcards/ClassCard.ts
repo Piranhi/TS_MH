@@ -98,6 +98,10 @@ export class ClassCard implements InventoryItem {
 		this.state.level++;
 		bus.emit("classCard:levelUp", this.spec.id);
 	}
+
+	public getBonuses(): StatMod{
+		return this.spec.statMod;
+	}
 	// ─── InventoryItem members ───────────────────────────
 	get id() {
 		return this.state.specId;

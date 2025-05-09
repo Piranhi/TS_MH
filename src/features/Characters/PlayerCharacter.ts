@@ -11,7 +11,9 @@ export class PlayerCharacter extends BaseCharacter {
     static createNewPlayer(): PlayerCharacter {
         const defaultStats: CharacterStats = {
             strength: 2,
-            defence: 2
+            defence: 2,
+            attackBase: 1,
+            attackMulti: 1,
         }
 
         const data: CharacterData = {

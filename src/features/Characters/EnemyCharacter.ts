@@ -13,6 +13,8 @@ export class EnemyCharacter extends BaseCharacter {
             stats: {
                 strength: spec.baseStats.attack,
                 defence: spec.baseStats.defense,
+                attackBase: 1,
+                attackMulti: 1
             },
         });
         this.spec = spec;
