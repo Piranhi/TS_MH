@@ -4,6 +4,9 @@ import { RegenPool } from "./domain/value-objects/RegenPool";
 import { bus } from "./EventBus";
 import { TrainedStat, TrainedStatData } from "./features/TrainedStat/TrainedStat";
 import { InventoryManager } from "./features/inventory/InventoryManager";
+import { EquipmentItem, equipmentType } from "./shared/types";
+
+import swordImg from "@/assets/images/equipment/equipment-weapon-sword-01.png";
 
 interface PlayerData {
 	level: number;
@@ -30,8 +33,6 @@ export class Player {
 	public inventory: InventoryManager;
 	public trainedStats: Map<string, TrainedStat> = new Map();
 
-
-
 	private constructor(data: PlayerData) {
 		this.level = data.level;
 		this.renown = data.renown;
@@ -42,14 +43,31 @@ export class Player {
 		this.character = PlayerCharacter.createNewPlayer();
 		this.inventory = new InventoryManager();
 		this.inventory.addItemToInventory({
-			id: "testID",
-			name: "testName",
-			category:"classCard",
+			id: "weaponID",
+			name: "Weapon",
+			category: "equipment",
+			rarity: "common",
+			iconUrl: swordImg,
+			quantity: 1,
+			equipType: "weapon",
+		} as EquipmentItem);
+		this.inventory.addItemToInventory({
+			id: "chestID",
+			name: "Chest",
+			category: "equipment",
 			rarity: "legendary",
 			iconUrl: "none",
-			quantity: 1
-
-		})
+			quantity: 1,
+					equipType: "chest",
+		} as EquipmentItem);
+		this.inventory.addItemToInventory({
+			id: "testID",
+			name: "Class Card",
+			category: "classCard",
+			rarity: "rare",
+			iconUrl: "none",
+			quantity: 1,
+		});
 	}
 
 	public static createNew(): Player {
@@ -58,7 +76,7 @@ export class Player {
 			renown: new Bounded(0, 1000, 0),
 			experience: 0,
 			character: PlayerCharacter.createNewPlayer(),
-			stamina: new RegenPool( 10, 1, false),
+			stamina: new RegenPool(10, 1, false),
 			trainedStats: {
 				attack: new TrainedStat({
 					id: "attack",
@@ -80,7 +98,7 @@ export class Player {
 					baseGainRate: 0.5,
 					status: "Locked",
 				}),
-                crit: new TrainedStat({
+				crit: new TrainedStat({
 					id: "crit",
 					name: "Crit",
 					level: 1,
@@ -117,46 +135,44 @@ export class Player {
 		this.trainedStats.forEach((stat) => stat.update(dt));
 	}
 
-    public getPlayerCharacter(): PlayerCharacter {
+	public getPlayerCharacter(): PlayerCharacter {
 		return this.character;
 	}
-
 
 	public allocateTrainedStat(id: string, rawDelta: number): void {
 		const stat = this.trainedStats.get(id);
 		if (!stat) return;
 
-        //Only whole point changes
-        const delta = Math.trunc(rawDelta);
-        if (delta === 0) return;
+		//Only whole point changes
+		const delta = Math.trunc(rawDelta);
+		if (delta === 0) return;
 
-        if (delta > 0) {
-            // spending
-            if (!this.stamina.spend(delta)) return;   // not enough → abort
-            stat.assignedPoints += delta;
-          } else {
-            // refunding
-            const pts = -delta;
-            if (stat.assignedPoints < pts) return;    // can't refund more than there
-            if (!this.stamina.refund(pts))  return;   // should always succeed
-            stat.assignedPoints -= pts;
-          }
-          this.emitStamina();
+		if (delta > 0) {
+			// spending
+			if (!this.stamina.spend(delta)) return; // not enough → abort
+			stat.assignedPoints += delta;
+		} else {
+			// refunding
+			const pts = -delta;
+			if (stat.assignedPoints < pts) return; // can't refund more than there
+			if (!this.stamina.refund(pts)) return; // should always succeed
+			stat.assignedPoints -= pts;
+		}
+		this.emitStamina();
 	}
 
-    private emitStamina() {
-        bus.emit("player:stamina-changed", {
-          current:   this.stamina.current,
-          allocated: this.stamina.allocated,
-          max:       this.stamina.max,
-          effective: this.stamina.effective,
-        });
-      }
-
+	private emitStamina() {
+		bus.emit("player:stamina-changed", {
+			current: this.stamina.current,
+			allocated: this.stamina.allocated,
+			max: this.stamina.max,
+			effective: this.stamina.effective,
+		});
+	}
 
 	private increaseStamina(delta: number): void {
-        this.stamina.regen(delta);
-        this.emitStamina();
+		this.stamina.regen(delta);
+		this.emitStamina();
 	}
 
 	public levelUp(): void {
@@ -169,12 +185,10 @@ export class Player {
 		bus.emit("Renown:Changed", this.renown);
 	}
 
-	public static getInstance() : Player{
-		if(!this._instance){
-		this._instance = Player.createNew();
+	public static getInstance(): Player {
+		if (!this._instance) {
+			this._instance = Player.createNew();
 		}
-		return this._instance
+		return this._instance;
 	}
-
 }
-

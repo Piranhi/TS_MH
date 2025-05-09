@@ -2,25 +2,26 @@ export type ScreenName = 'settlement'| 'character' | 'hunt' | 'inventory' | 'res
 
 export type Rarity = "common"|"uncommon"|"rare"|"epic"|"legendary"|"unique";
 export type ItemCategory = "equipment" | "classCard" | "consumable";
-export type equipmentSlot = "head" | "back" | "chest" | "legs" | "feet" | "hands" | "finger1" | "finger2" | "neck" | "weapon"
+export type equipmentType = "head" | "back" | "chest" | "legs" | "feet" | "hands" | "finger1" | "finger2" | "neck" | "weapon"
 
 
 // Used for inventory items
 export interface InventoryItem {
-    /** Unique across all items in the player’s inventory */
     id: string;
-  
-    /** Used for slot-type checks, e.g. only drop into a `data-slot="head"` */
     category: ItemCategory;
-  
-    /** Display */
     name: string;
     iconUrl: string;
-  
-    /** For border color & sorting */
     rarity?: Rarity;
-  
-    /** How many the player has; equipment & cards would just be 1 */
     quantity: number;
+  }
+
+  export interface EquipmentItem extends InventoryItem{
+    id: string;
+    category: "equipment";
+    name: string;
+    iconUrl: string;
+    rarity?: Rarity;
+    quantity: number;
+    equipType: equipmentType;
   }
 
