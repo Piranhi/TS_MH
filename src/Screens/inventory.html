@@ -1,7 +1,7 @@
-  <section class="game ">
+<section class="game ">
 
-    <figure class="screen-banner">
-      <img src="src\Assets\Images\header-smith.png" alt="Smith">
+  <figure class="screen-banner">
+    <img src="src\Assets\Images\header-smith.png" alt="Smith">
   </figure>
   <div class="inventory-screen" id="inventory-section">
     <!-- TOP ROW: Equipment + Class Cards -->
@@ -11,28 +11,28 @@
         <h2>Equipment</h2>
         <div class="equipment-grid">
           <!-- 3×3 slots for equipped items -->
-          <div class="equip-slot" data-slot="head"></div>
-          <div class="equip-slot" data-slot="chest"></div>
-          <div class="equip-slot" data-slot="legs"></div>
-          <div class="equip-slot" data-slot="hands"></div>
-          <div class="equip-slot" data-slot="feet"></div>
-          <div class="equip-slot" data-slot="ring1"></div>
-          <div class="equip-slot" data-slot="ring2"></div>
-          <div class="equip-slot" data-slot="amulet"></div>
-          <div class="equip-slot" data-slot="belt"></div>
-          
+          <div class="slot slot--equip" data-slot-type="equipment" data-slot="head"></div>
+          <div class="slot slot--equip" data-slot-type="equipment" data-slot="chest"></div>
+          <div class="slot slot--equip" data-slot-type="equipment" data-slot="legs"></div>
+          <div class="slot slot--equip" data-slot-type="equipment" data-slot="hands"></div>
+          <div class="slot slot--equip" data-slot-type="equipment" data-slot="feet"></div>
+          <div class="slot slot--equip" data-slot-type="equipment" data-slot="ring1"></div>
+          <div class="slot slot--equip" data-slot-type="equipment" data-slot="ring2"></div>
+          <div class="slot slot--equip" data-slot-type="equipment" data-slot="amulet"></div>
+          <div class="slot slot--equip" data-slot-type="equipment" data-slot="belt"></div>
+
         </div>
       </section>
 
       <!-- Class Cards Panel -->
       <section class="panel classcards-panel">
         <h2>Class Cards</h2>
-        <div class="classcards-row">
+        <div class="classcards-grid">
           <!-- four equip-slots for cards -->
-          <div class="card-slot"></div>
-          <div class="card-slot"></div>
-          <div class="card-slot"></div>
-          <div class="card-slot"></div>
+          <div class="slot slot--card" data-slot-type="classCard"></div>
+          <div class="slot slot--card" data-slot-type="classCard"></div>
+          <div class="slot slot--card" data-slot-type="classCard"></div>
+          <div class="slot slot--card" data-slot-type="classCard"></div>
         </div>
       </section>
     </div>
@@ -42,21 +42,27 @@
       <h2>Inventory</h2>
       <div class="inventory-grid">
         <!-- generate these dynamically -->
-        <div class="item-slot rarity-common" draggable="true">
-          <div class="item-icon"><img src="assets/potion.png" alt="" /></div>
+        <div class="slot slot--inventory filled rarity-rare" data-slot-type="inventory" data-slot-index="0"
+          draggable="true">
+          <div class="item-icon">
+            <img src="assets/potion.png" alt="Potion" />
+          </div>
           <div class="item-count">12</div>
         </div>
 
-        <div class="item-slot rarity-rare" draggable="true">
-          <div class="item-icon"><img src="assets/potion.png" alt="" /></div>
+        <div class="slot slot--inventory filled rarity-rare" data-slot-type="inventory" data-slot-index="0"
+          draggable="true">
+          <div class="item-icon">
+            <img src="assets/potion.png" alt="Potion" />
+          </div>
           <div class="item-count">12</div>
         </div>
 
-        <div class="item-slot empty"></div>
+        <div class="slot slot--inventory empty" data-slot-type="inventory" data-slot-index="1"></div>
         <!-- …more item‐slots… -->
       </div>
     </section>
   </div>
 
 
-  </section>
+</section>

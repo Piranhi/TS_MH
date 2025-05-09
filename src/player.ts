@@ -41,7 +41,7 @@ export class Player {
 		this.trainedStats = new Map(Object.entries(data.trainedStats));
 		this.character = PlayerCharacter.createNewPlayer();
 		this.inventory = new InventoryManager();
-		this.inventory.addItem({
+		this.inventory.addItemToInventory({
 			id: "testID",
 			name: "testName",
 			category:"classCard",

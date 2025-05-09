@@ -2,6 +2,7 @@ export type ScreenName = 'settlement'| 'character' | 'hunt' | 'inventory' | 'res
 
 export type Rarity = "common"|"uncommon"|"rare"|"epic"|"legendary"|"unique";
 export type ItemCategory = "equipment" | "classCard" | "consumable";
+export type equipmentSlot = "head" | "back" | "chest" | "legs" | "feet" | "hands" | "finger1" | "finger2" | "neck" | "weapon"
 
 
 // Used for inventory items

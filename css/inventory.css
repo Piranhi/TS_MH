@@ -1,143 +1,131 @@
+/* 1) Layout panels */
+.inventory-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  padding: 1rem;
+  gap: 1rem;
+}
 
-  
-  /* Root flex container, full-height */
-  .inventory-screen {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    padding: 1rem;
-    gap: 1rem;
-  }
-  
-  /* TOP SECTION: two panels side-by-side */
-  .top-section {
-    display: flex;
-    gap: 1rem;
-  }
-  
-  /* Generic panel styling */
-  .panel {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    padding: 1rem;
-    flex-shrink: 0;
+.top-section {
+  display: flex;
+  gap: 1rem;
+}
 
-  }
-  
-  /* Equipment panel is fixed-width */
-  .equipment-panel {
-    width: 250px;
-  }
-  
-  /* Class cards panel flexes to its content */
-  .classcards-panel {
-    flex: 1;
-  }
-  
-  /* EQUIPMENT GRID: 3×3 */
-  .equipment-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-  }
-  .equip-slot {
-    height: 64px;
-    width: 64px;
-    border: 2px dashed #555;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.05);
-  }
-  
-  /* CLASS CARDS ROW: 4 in a row */
-  .classcards-row {
-    display: flex;
-    gap: 0.75rem;
+.panel {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  padding: 1rem;
+  flex-shrink: 0;
+}
 
-  }
-  .card-slot {
-    width: 64px; height: 64px;
-    border: 2px dashed #555;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.05);
-  }
-  
-  /* INVENTORY PANEL fills remaining height and scrolls */
-  .inventory-panel {
-    flex: 1;
-    overflow-y: auto;
-  }
-  .inventory-panel h2 {
-    margin-top: 0;
-  }
-  
-  /* INVENTORY GRID: auto-flow many columns */
-  .inventory-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-    gap: 0.75rem;
-    padding-bottom: 1rem; /* extra for scroll */
-  }
-  
-  /* ITEM SLOTS (same as before) */
-  .item-slot {
-    position: relative;
-    width: 64px; height: 64px;
-    border: 2px solid var(--rarity-color, #666);
-    border-radius: 8px;
-    background: rgba(255,255,255,0.05);
-    cursor: grab;
-  }
+.equipment-panel { width: 250px; }
+.classcards-panel { flex: 1; }
 
-  /* Empty slots: dashed border, no icon */
-.item-slot.empty {
-    border: 2px dashed #555;
-  }
-  .item-slot.empty .item-icon,
-  .item-slot.empty .item-count {
-    display: none;
-  }
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 0.75rem;
+}
 
-  /* Filled slots: solid border (rarity), show icon & count */
-.item-slot.filled {
-    border: 2px solid var(--rarity-color, #666);
-    background: rgba(255,255,255,0.1);
-    cursor: grab;
-  }
-  .item-slot.filled:active {
-    cursor: grabbing;
-  }
+.classcards-grid {
+  display: flex;
+  gap: 0.75rem;
+}
 
-  .item-slot:active { cursor: grabbing; }
-  .item-icon img {
-    width: 100%; height: 100%; object-fit: contain;
-    pointer-events: none;
-  }
-  .item-count {
-    position: absolute;
-    bottom: 2px; right: 4px;
-    font-size: 0.75rem;
-    background: rgba(0,0,0,0.6);
-    padding: 0 4px; border-radius: 4px;
-  }
+.inventory-panel {
+  flex: 1;
+  overflow-y: auto;
+}
+.inventory-panel h2 { margin-top: 0; }
 
-  /* Icon & count always hidden on empty, shown on filled */
-.item-icon, .item-count { pointer-events: none; }
-  
-  /* Rarity border colors */
-  .item-slot.rarity-common    { --rarity-color: #888; }
-  .item-slot.rarity-uncommon  { --rarity-color: #4caf50; }
-  .item-slot.rarity-rare      { --rarity-color: #2196f3; }
-  .item-slot.rarity-epic      { --rarity-color: #9c27b0; }
-  .item-slot.rarity-legendary { --rarity-color: #ff9800; }
-  .item-slot.rarity-unique    { --rarity-color: #e91e63; }
-  
-  /* Drag-over effect for dropzones */
-  .equip-slot.drag-over,
-  .card-slot.drag-over {
-    border-color: #fff;
-    background: rgba(255,255,255,0.2);
-  }
-  
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px,1fr));
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+}
+
+/* 2) Base slot styles */
+.slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #555;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+/* drag-over feedback */
+.slot.drag-over {
+  border-color: #fff;
+  background: rgba(255,255,255,0.15);
+}
+
+/* 3) Slot modifiers */
+.slot--equipment,
+.slot--classCard,
+.slot--inventory {
+  width: 64px;
+  height: 64px;
+}
+
+/* choose your layout container to differentiate */
+.slot--inventory { /* nothing extra; container handles grid */ }
+.slot--classCard      { /* container is flex row */ }
+.slot--equipment     { /* container is 3×3 grid */ }
+
+/* 4) Empty vs Filled */
+.slot.empty {
+  border-style: dashed;
+  cursor: default;
+}
+.slot.empty .item-icon,
+.slot.empty .item-count {
+  display: none;
+}
+
+.slot.filled {
+  border-style: solid;
+  background: rgba(255,255,255,0.1);
+  cursor: grab;
+}
+.slot.filled:active {
+  cursor: grabbing;
+}
+
+/* 5) Shared item visuals */
+.item-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.item-count {
+  position: absolute;
+  bottom: 2px; right: 4px;
+  font-size: 0.75rem;
+  background: rgba(0,0,0,0.6);
+  padding: 0 4px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* 6) Rarity borders via CSS-var overrides */
+.slot.rarity-common    { --slot-border: #888; }
+.slot.rarity-uncommon  { --slot-border: #4caf50; }
+.slot.rarity-rare      { --slot-border: #2196f3; }
+.slot.rarity-epic      { --slot-border: #9c27b0; }
+.slot.rarity-legendary { --slot-border: #ff9800; }
+.slot.rarity-unique    { --slot-border: #e91e63; }
+
+/* apply var if filled */
+.slot.filled {
+  border-color: var(--slot-border, #666);
+}
