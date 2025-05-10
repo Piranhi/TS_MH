@@ -111,7 +111,7 @@ export class HuntManager {
             onEnter: () => {},
             onTick: (dt: number) => {
                 this.playerCharacter.heal((HEAL_RATE * dt) / 60);
-                if (this.playerCharacter.getHP().current === this.playerCharacter.getHP().max) {
+                if (this.playerCharacter.currentHp === this.playerCharacter.maxHp) {
                     this.transition(HuntState.Search, this.makeSearchState());
                 }
             },

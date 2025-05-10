@@ -26,7 +26,7 @@ export class CharacterDisplay {
         // CACHE ELEMENTS
         this.nameEl = charDisplayEl.querySelector(".char-name")!;
         this.statsContainerEl = charDisplayEl.querySelector(".char-stats")!;
-        this.atkEl = charDisplayEl.querySelector(".stat--strength")!;
+        this.atkEl = charDisplayEl.querySelector(".stat--attack")!;
         this.defEl = charDisplayEl.querySelector(".stat--defence")!;
         this.hpBar = charDisplayEl.querySelector(".health-bar")!;
         this.hpLabel = charDisplayEl.querySelector(".hp-label")!;
@@ -48,7 +48,7 @@ export class CharacterDisplay {
         const snapshot = this.character.snapshot();
         const { name, hp } = snapshot;
         this.nameEl.textContent = name;
-        this.atkEl.textContent = "⚔️ " + snapshot.stats.strength.toString();
+        this.atkEl.textContent = "⚔️ " + snapshot.stats.attack.toString();
         this.defEl.textContent = "🛡️ " + snapshot.stats.defence.toString();
         const pct = hp.current / hp.max;
 
