@@ -2,8 +2,8 @@ import { BaseScreen } from "./BaseScreen";
 import Markup from "./hunt.html?raw";
 import { bus } from "../../core/EventBus";
 import { HuntState } from "@/features/hunt/HuntManager";
-import { PlayerCharacter } from "@/features/Characters/PlayerCharacter";
-import { EnemyCharacter } from "@/features/Characters/EnemyCharacter";
+import { PlayerCharacter } from "../../models/PlayerCharacter";
+import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { CharacterDisplay } from "../components/CharacterDisplay";
 import { addHTMLtoPage } from "../utils/ScreensUtils";
 

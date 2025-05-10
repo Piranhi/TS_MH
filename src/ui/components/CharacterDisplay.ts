@@ -1,4 +1,4 @@
-import { BaseCharacter, StatKey } from "../../models/BaseCharacter";
+import { BaseCharacter, StatKey } from "@/models/BaseCharacter";
 import { Player } from "@/models/player";
 
 export class CharacterDisplay {
@@ -16,19 +16,19 @@ export class CharacterDisplay {
 		strength: "⚔️",
 		defence: "🛡️",
 		attackBase: "",
-		attackMulti: ""
+		attackMulti: "",
 	};
 
 	constructor(root: HTMLElement, isPlayer: boolean) {
 		this.root = root;
 		this.nameEl = root.querySelector(".char-name")!;
-		this.statsContainerEl = root.querySelector(".char-stats")!;
-		this.atkEl = root.querySelector(".stat--atk .value")!;
-		this.defEl = root.querySelector(".stat--def .value")!;
+		this.statsContainerEl = this.root.querySelector(".char-stats")!;
+		this.atkEl = root.querySelector(".stat--atk")!;
+		this.defEl = root.querySelector(".stat--def")!;
 		this.hpBar = root.querySelector(".health-bar")!;
 		this.hpLabel = root.querySelector(".hp-label")!;
 		this.avatarImg = root.querySelector(".char-img")!;
-        if(isPlayer)this.setup(Player.getInstance().getPlayerCharacter())        
+		if (isPlayer) this.setup(Player.getInstance().getPlayerCharacter());
 
 		// (optional) guard against missing markup in dev
 		if (!this.nameEl) throw new Error("CharacterHolder: .char-name not found");
@@ -36,17 +36,19 @@ export class CharacterDisplay {
 
 	setup(character: BaseCharacter) {
 		this.character = character;
-		this.statsContainerEl.innerHTML = "";
-		const keys = Object.keys(this.character.snapshot().stats) as StatKey[] 
 
-        for (const key of keys){
+		console.log("----found:  " + this.root.innerHTML + "-atk-" + this.atkEl.innerHTML + "-def-" + this.defEl.innerHTML);
+		this.statsContainerEl.innerHTML = "";
+		const keys = Object.keys(this.character.snapshot().stats) as StatKey[];
+
+		for (const key of keys) {
 			const span = document.createElement("span");
 			span.classList.add("stat", `stat--${key}`);
 			span.innerHTML = `${this.STAT_ICONS[key]} <span class="value">${this.character.snapshot().stats[key]}</span>`;
 			if (key === "strength") {
-				this.atkEl = span.querySelector(".stat--strength .value")!;
+				this.atkEl = span.querySelector(".stat--attack .value")!;
 			} else {
-				this.defEl = span.querySelector(".stat--defence .value")!;
+				this.defEl = span.querySelector(".stat--def .value")!;
 			}
 			this.statsContainerEl.appendChild(span);
 		}
@@ -59,6 +61,7 @@ export class CharacterDisplay {
 		const { name, hp } = snapshot;
 		this.nameEl.textContent = name;
 		this.atkEl.innerHTML = snapshot.stats.strength.toString();
+
 		this.defEl.innerHTML = snapshot.stats.defence.toString();
 		const pct = hp.current / hp.max;
 
