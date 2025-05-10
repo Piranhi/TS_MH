@@ -1,7 +1,7 @@
 import { Attack } from "./Attack";
 import { Bounded } from "./value-objects/Bounded";
 import { bus } from "@/core/EventBus";
-import type { CoreStats, StatsModifier } from "@/models/Stats";
+import type { CoreStats } from "@/models/Stats";
 
 export interface CharacterData<S extends CoreStats = CoreStats> {
     name: string;
@@ -14,43 +14,32 @@ export type CharacterSnapsnot = Readonly<CharacterData> & {
     rarity: string;
 };
 
-/**
- * Generic so subclasses decide what their stat‑shape is.
- */
-export abstract class BaseCharacter<S extends CoreStats = CoreStats> {
+export type characterTeam = "player" | "enemy";
+
+
+export abstract class BaseCharacter{
     readonly name: string;
     readonly level: number;
-
-    /** Raw (unmodified) stats */
-    protected readonly baseStats: S;
-    /** Temporary / permanent bonuses */
-    protected readonly modifiers: StatsModifier<S>[] = [];
-
-    /** Bounded wrapper keeps us safe from negatives / overheal */
+    protected readonly base: CoreStats;
     protected readonly hp: Bounded;
+	public team: characterTeam;
 
     // Combat
-    protected target?: BaseCharacter<any>;
+    protected target?: BaseCharacter;
     protected attacks: Attack[] = [];
     private inCombat = false;
     private readonly onTick = (dt: number) => this.handleTick(dt);
 
-    constructor({ name, level, hp, stats }: CharacterData<S>) {
+    constructor(name: string, level: number, baseStats:CoreStats){
         this.name = name;
         this.level = level;
-        this.hp = hp;
-        this.baseStats = stats;
+        this.hp = new Bounded(0, baseStats.maxHp, baseStats.maxHp)
+        this.base = baseStats;
 
         const basicMelee = Attack.create("basic_melee");
         if (basicMelee) {
             this.attacks.push(basicMelee);
         }
-    }
-
-    getStat<K extends keyof S>(key: K): number {
-        const base = this.baseStats[key] as unknown as number;
-        const bonus = this.modifiers.reduce((sum, m) => sum + (m[key] ?? 0), 0);
-        return base + bonus;
     }
 
     get currentHp() {
@@ -73,6 +62,11 @@ export abstract class BaseCharacter<S extends CoreStats = CoreStats> {
         return this.currentHp > 0;
     }
 
+	  /* ---- simple getters for enemies ---- */
+  get attack()  { return this.base.attack;  }
+  get defence() { return this.base.defence; }
+  get speed()   { return this.base.speed;   }
+
     // COMBAT
 
     public beginCombat(target: BaseCharacter) {
@@ -89,10 +83,10 @@ export abstract class BaseCharacter<S extends CoreStats = CoreStats> {
         this.inCombat = false;
     }
 
-    public attack(target: BaseCharacter): void {
+/*     public attack(target: BaseCharacter): void {
         const damage = this.baseStats.attack - target.baseStats.defence;
         target.takeDamage(Math.max(1, damage)); // Ensure minimum 1 dmg
-    }
+    } */
 
     public handleTick(dt: number): void {
         if (!this.inCombat) return;
@@ -111,7 +105,7 @@ export abstract class BaseCharacter<S extends CoreStats = CoreStats> {
             name: this.name,
             level: this.level,
             hp: this.hp,
-            stats: this.baseStats,
+            stats: this.base,
             avatarUrl: "Todo",
             rarity: "Todo",
         };

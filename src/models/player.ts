@@ -41,7 +41,7 @@ export class Player {
         this.experience = data.experience;
         this.stamina = data.stamina;
         this.trainedStats = new Map(Object.entries(data.trainedStats));
-        this.character = PlayerCharacter.createNew();
+        this.character = new PlayerCharacter;
         this.inventory = new InventoryManager();
         this.cardManager = new ClassCardManager(this.inventory);
         this.inventory.addItemToInventory({
@@ -70,7 +70,7 @@ export class Player {
             level: 1,
             renown: new Bounded(0, 1000, 0),
             experience: 0,
-            character: PlayerCharacter.createNew(),
+            character: new PlayerCharacter,
             stamina: new RegenPool(10, 1, false),
             trainedStats: {
                 attack: new TrainedStat({

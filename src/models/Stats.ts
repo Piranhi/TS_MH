@@ -1,5 +1,3 @@
-import { Bounded } from "./value-objects/Bounded";
-
 export interface CoreStats {
     attack: number;
     defence: number;
@@ -9,6 +7,8 @@ export interface CoreStats {
 
 /** Extra stats that only the player uses */
 export interface PlayerExtras {
+    attackFlat: number;
+    defenceFlat: number;
     critChance: number;
     critDamage: number;
     lifesteal: number;
@@ -17,4 +17,11 @@ export interface PlayerExtras {
 
 export type PlayerStats = CoreStats & PlayerExtras;
 
-export type StatsModifier<S extends CoreStats = CoreStats> = Partial<Record<keyof S, number>>;
+export type StatsModifier = Partial<PlayerStats>;
+
+export const defaultCoreStats: CoreStats = {
+    attack: 1,
+    defence: 1,
+    speed: 1,
+    maxHp: 10,
+}

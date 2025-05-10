@@ -1,4 +1,5 @@
 import { bus } from "@/core/EventBus";
+import { StatsModifier } from "@/models/Stats";
 import { InventoryItem, ItemCategory } from "@/shared/types";
 
 // Import data
@@ -8,7 +9,7 @@ export interface CardSpec {
 	description: string;
 	iconUrl: string;
 	rarity: CardRarity;
-	statMod: StatMod;
+	statMod: StatsModifier;
 	baseGainRate: number;
 }
 
@@ -22,14 +23,14 @@ export interface CardState {
 
 export type CardStatus = "Equipped" | "Unequipped" | "Hidden";
 export type CardRarity = "common" | "uncommon" | "rare" | "epic" | "legendary" | "unique";
-export type StatMod = Partial<{
+/* export type StatMod = Partial<{
 	attackBase: number;
 	atClassCardStatModtackMulti: number;
 	defenceBase: number;
 	defenceMulti: number;
 	speedBase: number;
 	speedMulti: number;
-}>;
+}>; */
 
 export class ClassCard implements InventoryItem {
 
@@ -99,7 +100,7 @@ export class ClassCard implements InventoryItem {
 		bus.emit("classCard:levelUp", this.spec.id);
 	}
 
-	public getBonuses(): StatMod{
+	public getBonuses(): StatsModifier{
 		return this.spec.statMod;
 	}
 	// ─── InventoryItem members ───────────────────────────

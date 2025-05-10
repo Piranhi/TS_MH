@@ -1,4 +1,6 @@
 import { BaseCharacter } from "./BaseCharacter";
+import { calcPlayerDamage} from "./DamageCalculator";
+import { PlayerCharacter } from "./PlayerCharacter";
 
 export interface AttackSpec {
     id: string;
@@ -32,7 +34,7 @@ export class Attack {
     }
 
     perform(self: BaseCharacter, target: BaseCharacter) {
-        target.takeDamage(Math.max(this.spec.power * self.getStat("attack") - target.getStat("defence"), 0));
+        target.takeDamage(Math.max(this.spec.power * self.attack - target.defence, 0));
         this.currentCooldown = this.spec.cooldown;
     }
 
