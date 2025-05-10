@@ -42,6 +42,8 @@ export class StatsEngine {
 			agg = mergeStats(agg, fn()) as PlayerStats;
 		}
 		this.current = agg;
+        bus.emit("player:statsChanged")
+
 	}
 
 	public printStats(): void {

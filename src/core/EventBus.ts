@@ -24,6 +24,7 @@ export interface GameEvents {
 	"inventory:inventoryChanged": void;
 	"player:equipmentChanged": InventoryItem[];
 	"player:classCardsChanged": InventoryItem[];
+		"player:statsChanged": PlayerCharacter;
 }
 
 export type EventKey = keyof GameEvents;

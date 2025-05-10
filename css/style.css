@@ -577,3 +577,33 @@ button:active {
     stroke-linecap: round;   /* rounded ends */
     stroke-linejoin: round;  /* rounded corners */
   }
+
+  #player-statlist {
+	display:block;
+  top: 1rem;
+  right: 1rem;
+  width: auto;
+  backdrop-filter: blur(10px);
+  background: rgba(252, 252, 252, 0.199);
+  border-radius: 0.3rem;
+  padding: 1rem;
+  font-family: sans-serif;
+  color: #333;
+}
+
+.stat-section {
+  margin-bottom: 1rem;
+}
+
+.stat-section summary {
+  font-weight: bold;
+  cursor: pointer;
+  list-style: none; /* removes default triangle on some browsers */
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.2rem 0;
+  font-size: 0.9rem;
+}
