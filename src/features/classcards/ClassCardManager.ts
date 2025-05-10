@@ -1,7 +1,6 @@
-import { bus } from "@/EventBus";
+import { bus } from "@/core/EventBus";
 import { InventoryManager } from "../inventory/InventoryManager";
 import { ClassCard } from "./ClassCard";
-import { isClassCardItem } from "@/shared/type-guards";
 
 export class ClassCardManager {
     constructor(private inv: InventoryManager){

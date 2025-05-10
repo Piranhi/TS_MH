@@ -1,9 +1,9 @@
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./train.html?raw";
-import { addHTMLtoPage } from "./ScreensUtils";
-import { bus } from "@/EventBus";
-import { Player } from "@/player";
-import { TrainedStatHolder } from "../features/TrainedStat/ui/TrainedStatHolder";
+import { addHTMLtoPage } from "../utils/ScreensUtils";
+import { bus } from "@/core/EventBus";
+import { Player } from "@/models/player";
+import { TrainedStatDisplay } from "../components/TrainedStatDisplay";
 
 export class TrainScreen extends BaseScreen {
 
@@ -24,7 +24,7 @@ export class TrainScreen extends BaseScreen {
     addStatElements(){
         const trainingListEl = this.rootEl.querySelector(".training-list") as HTMLElement
         Player.getInstance().trainedStats .forEach(stat => {
-            const statHolder = new TrainedStatHolder(this.rootEl, stat)
+            const statHolder = new TrainedStatDisplay(this.rootEl, stat)
             statHolder.init();
         });
     }

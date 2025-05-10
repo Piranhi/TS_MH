@@ -1,10 +1,10 @@
 import { InventoryManager } from "@/features/inventory/InventoryManager";
-import { Player } from "@/player";
+import { Player } from "@/models/player";
 import { BaseScreen } from "./BaseScreen";
-import { addHTMLtoPage } from "./ScreensUtils";
+import { addHTMLtoPage } from "../utils/ScreensUtils";
 import Markup from "./inventory.html?raw";
 import { InventoryItem } from "@/shared/types";
-import { bus } from "@/EventBus";
+import { bus } from "@/core/EventBus";
 
 
 export class InventoryScreen extends BaseScreen {

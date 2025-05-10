@@ -7,7 +7,7 @@ import rawClassCards from "@/data/classCards.json";
 /* ---------- Bring in the class constructors -------------- */
 import { Area, AreaSpec } from "@/models/Area";
 import { Monster, MonsterSpec } from "@/models/Monster";
-import { Attack, AttackSpec } from "@/models/attack";
+import { Attack, AttackSpec } from "@/models/Attack";
 import { ClassCard, CardSpec } from "@/features/classcards/ClassCard";
 
 /* ---------- Register Data ---------------------------- */

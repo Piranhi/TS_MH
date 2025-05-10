@@ -1,13 +1,11 @@
 // HuntManager.ts
 // The finite‑state controller that drives the core idle loop (Search → Combat → Recovery).
 // You will iterate on this; for now it is deliberately minimal but functional.
-import { bus } from "@/EventBus";
-import { player } from "@/player";
-import { PlayerCharacter } from "../Characters/PlayerCharacter";
+import { bus } from "@/core/EventBus";
+import { PlayerCharacter } from "../../models//PlayerCharacter";
 import { CombatManager } from "./CombatManager";
-import { EnemyCharacter } from "../Characters/EnemyCharacter";
+import { EnemyCharacter } from "../../models//EnemyCharacter";
 import { Area } from "@/models/Area";
-import { Monster } from "@/models/Monster";
 
 export enum HuntState {
     Idle = "Idle",

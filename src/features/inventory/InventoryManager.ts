@@ -1,5 +1,4 @@
-import { bus } from "@/EventBus";
-import { Player } from "@/player";
+import { bus } from "@/core/EventBus";
 import { isClassCardItem, isEquipmentItem } from "@/shared/type-guards";
 import type { equipmentType, InventoryItem, ItemCategory, EquipmentItem } from "@/shared/types";
 import { ClassCard } from "../classcards/ClassCard";

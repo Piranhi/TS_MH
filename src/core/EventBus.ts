@@ -1,12 +1,10 @@
-import { Bounded } from "./domain/value-objects/Bounded";
-import { Player } from "./player";
-import { HuntState } from "./features/hunt/HuntManager";
-import { CombatManager } from "./features/hunt/CombatManager";
-import { PlayerCharacter } from "./features/Characters/PlayerCharacter";
-import { EnemyCharacter } from "./features/Characters/EnemyCharacter";
-import { TrainedStat } from "./features/TrainedStat/TrainedStat";
-import { poolChangedPayload } from "./domain/value-objects/RegenPool";
-import { InventoryItem } from "./shared/types";
+import { Bounded } from "../models/value-objects/Bounded";
+import { Player } from "../models/player";
+import { HuntState } from "../features/hunt/HuntManager";
+import { PlayerCharacter } from "../models/PlayerCharacter";
+import { EnemyCharacter } from "../models/EnemyCharacter";
+import { poolChangedPayload } from "../models/value-objects/RegenPool";
+import { InventoryItem } from "../shared/types";
 
 export interface GameEvents {
 	"Game:UITick": number;

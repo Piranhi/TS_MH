@@ -1,4 +1,4 @@
-import { BaseScreen } from "./BaseScreen";
+import { BaseScreen } from "../Screens/BaseScreen";
 
 export function addHTMLtoPage(markup: string, screen: BaseScreen): HTMLElement {
     const tpl = document.createElement("template");

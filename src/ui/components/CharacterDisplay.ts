@@ -1,9 +1,7 @@
-import { BaseCharacter } from "@/features/Characters/BaseCharacter";
-import { Bounded } from "@/domain/value-objects/Bounded";
-import { CharacterSnapsnot, CharacterStats, StatKey } from "@/features/Characters/BaseCharacter";
-import { Player } from "@/player";
+import { BaseCharacter, StatKey } from "../../models/BaseCharacter";
+import { Player } from "@/models/player";
 
-export class CharacterHolder {
+export class CharacterDisplay {
 	private root: HTMLElement;
 	private nameEl: HTMLElement;
 	private atkEl: HTMLElement;
@@ -17,6 +15,8 @@ export class CharacterHolder {
 	private readonly STAT_ICONS: Record<StatKey, string> = {
 		strength: "⚔️",
 		defence: "🛡️",
+		attackBase: "",
+		attackMulti: ""
 	};
 
 	constructor(root: HTMLElement, isPlayer: boolean) {

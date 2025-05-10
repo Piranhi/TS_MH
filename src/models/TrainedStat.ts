@@ -1,4 +1,4 @@
-export type trainedStatStatus = "Unlocked" | "Locked" | "Hidden"
+export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden"
 
 export interface TrainedStatData {
 	id: string;
@@ -8,7 +8,7 @@ export interface TrainedStatData {
 	nextThreshold: number;
 	assignedPoints: number;
 	baseGainRate: number;
-    status: trainedStatStatus
+    status: TrainedStatStatus
 }
 
 const GROWTH_VALUE = 1.35;
@@ -20,7 +20,7 @@ export class TrainedStat {
 	nextThreshold: number;
 	assignedPoints: number;
 	baseGainRate: number;
-    status: trainedStatStatus;
+    status: TrainedStatStatus;
 
 	constructor(data: TrainedStatData) {
 		this.id = data.id;

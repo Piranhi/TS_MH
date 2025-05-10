@@ -1,14 +1,14 @@
-import { Bounded } from "../domain/value-objects/Bounded";
-import { bus, EventKey } from "../EventBus";
-import { UIStat } from "./UIStat";
+import { Bounded } from "../../models/value-objects/Bounded";
+import { bus, EventKey } from "../../core/EventBus";
+import { StatDisplay } from "./StatDisplay";
 
-export class Playerbar {
+export class PlayerbarDisplay {
 	constructor(private container: HTMLElement) {}
 	private PlayerStatsEl: HTMLUListElement = document.querySelector(".player-stats")!;
 
 	public build() {
 
-		const level = new UIStat(
+		const level = new StatDisplay(
 			"Level",
 			"player:level-up",
 			this.PlayerStatsEl,
@@ -18,7 +18,7 @@ export class Playerbar {
 			}
 		).init();
 
-		const stamina = new UIStat(
+		const stamina = new StatDisplay(
 			"Stamina",
 			"player:stamina-changed",
 			this.PlayerStatsEl,
@@ -34,7 +34,7 @@ export class Playerbar {
 			}
 		).init();
 
-		const renown = new UIStat(
+		const renown = new StatDisplay(
 			"Renown",
 			"Renown:Changed",
 			this.PlayerStatsEl,

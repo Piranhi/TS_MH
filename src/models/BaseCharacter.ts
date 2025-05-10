@@ -1,6 +1,6 @@
-import { Attack } from "@/models/attack";
-import { Bounded } from "../../domain/value-objects/Bounded";
-import { bus } from "@/EventBus";
+import { Attack } from "./Attack";
+import { Bounded } from "./value-objects/Bounded";
+import { bus } from "@/core/EventBus";
 
 export type StatKey = keyof CharacterStats;
 

@@ -1,5 +1,4 @@
-import { bus } from "../../EventBus"; 
-import { Bounded } from "../../domain/value-objects/Bounded";
+import { bus } from "../../core/EventBus"; 
 
 export class ResourceManager{
 

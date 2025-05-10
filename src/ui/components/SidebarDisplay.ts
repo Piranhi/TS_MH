@@ -1,7 +1,7 @@
-import { ScreenName } from "../shared/types";
-import { prettify } from "../shared/utils/stringUtils";
+import { ScreenName } from "../../shared/types";
+import { prettify } from "../../shared/utils/stringUtils";
 
-export class Sidebar {
+export class SidebarDisplay {
     private navContainer = document.getElementById('sidebar')!;
 	constructor(
         private container: HTMLElement,

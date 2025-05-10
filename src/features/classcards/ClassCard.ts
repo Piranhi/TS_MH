@@ -1,4 +1,4 @@
-import { bus } from "@/EventBus";
+import { bus } from "@/core/EventBus";
 import { InventoryItem, ItemCategory } from "@/shared/types";
 
 // Import data

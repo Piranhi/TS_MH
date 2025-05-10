@@ -1,6 +1,6 @@
 import { GameScreen } from "./gameScreen";
-import { ScreenName } from "../shared/types";
-import { addHTMLtoPage } from "./ScreensUtils";
+import { ScreenName } from "../../shared/types";
+import { addHTMLtoPage } from "../utils/ScreensUtils";
 
 export abstract class BaseScreen implements GameScreen{
     abstract readonly screenName: ScreenName;

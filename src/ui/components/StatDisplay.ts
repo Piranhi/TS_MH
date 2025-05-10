@@ -1,4 +1,4 @@
-import { bus, EventKey, GameEvents } from "@/EventBus";
+import { bus, EventKey, GameEvents } from "@/core/EventBus";
 
 type Elements = {
 	labelEl: HTMLElement;
@@ -7,7 +7,7 @@ type Elements = {
 	fillEl?: HTMLElement;
 };
 
-export class UIStat<K extends EventKey> {
+export class StatDisplay<K extends EventKey> {
 	constructor(
 		private label: string,
 		private eventKey: K,

@@ -1,6 +1,6 @@
-import { GameApp } from "./GameApp";
-import { initGameData } from "./gameData";
-import { Player } from "./player";
+import { GameApp } from "./core/GameApp";
+import { initGameData } from "./core/gameData";
+import { Player } from "./models/player";
 
 
 (async () =>{

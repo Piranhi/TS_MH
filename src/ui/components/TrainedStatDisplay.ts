@@ -1,6 +1,6 @@
-import { bus } from "@/EventBus";
-import { TrainedStat, trainedStatStatus } from "@/features/TrainedStat/TrainedStat";
-import { Player } from "@/player";
+import { bus } from "@/core/EventBus";
+import { TrainedStat, TrainedStatStatus } from "@/models/TrainedStat";
+import { Player } from "@/models/player";
 
 interface UnlockedEls {
 	prog:         HTMLDivElement;
@@ -11,7 +11,7 @@ interface UnlockedEls {
 	image: 			HTMLImageElement;
   }
 
-export class TrainedStatHolder {
+export class TrainedStatDisplay {
 	private rootEl!: HTMLElement;
 	private offTick!: () => void;
 	private els?: UnlockedEls;
@@ -32,7 +32,7 @@ export class TrainedStatHolder {
 	}
 
 	private createAndBuild(){
-		const templates: Record<trainedStatStatus, HTMLTemplateElement | null> ={
+		const templates: Record<TrainedStatStatus, HTMLTemplateElement | null> ={
 			Unlocked: this.root.querySelector("#training-item-unlocked") as any,
 			Locked: this.root.querySelector("#training-item-locked") as any,
 			Hidden: null,

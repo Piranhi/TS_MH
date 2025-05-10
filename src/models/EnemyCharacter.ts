@@ -1,5 +1,5 @@
-import { Bounded } from "../../domain/value-objects/Bounded";
-import { BaseCharacter, CharacterData } from "./BaseCharacter";
+import { Bounded } from "./value-objects/Bounded";
+import { BaseCharacter } from "./BaseCharacter";
 import { Monster } from "@/models/Monster";
 
 export class EnemyCharacter extends BaseCharacter {

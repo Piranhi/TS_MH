@@ -1,14 +1,13 @@
-import { PlayerCharacter } from "./features/Characters/PlayerCharacter";
-import { Bounded } from "./domain/value-objects/Bounded";
-import { RegenPool } from "./domain/value-objects/RegenPool";
-import { bus } from "./EventBus";
-import { TrainedStat, TrainedStatData } from "./features/TrainedStat/TrainedStat";
-import { InventoryManager } from "./features/inventory/InventoryManager";
-import { EquipmentItem, equipmentType } from "./shared/types";
+import { PlayerCharacter } from "./PlayerCharacter";
+import { Bounded } from "./value-objects/Bounded";
+import { RegenPool } from "./value-objects/RegenPool";
+import { bus } from "../core/EventBus";
+import { TrainedStat } from "./TrainedStat";
+import { InventoryManager } from "../features/inventory/InventoryManager";
+import { EquipmentItem } from "../shared/types";
 
-import swordImg from "@/assets/images/equipment/equipment-weapon-sword-01.png";
-import { ClassCardManager } from "./features/classcards/ClassCardManager";
-import { ClassCard } from "./features/classcards/ClassCard";
+import { ClassCardManager } from "../features/classcards/ClassCardManager";
+import { ClassCard } from "../features/classcards/ClassCard";
 
 interface PlayerData {
 	level: number;
@@ -40,7 +39,6 @@ export class Player {
 		this.level = data.level;
 		this.renown = data.renown;
 		this.experience = data.experience;
-		this.character = data.character;
 		this.stamina = data.stamina;
 		this.trainedStats = new Map(Object.entries(data.trainedStats));
 		this.character = PlayerCharacter.createNewPlayer();
@@ -51,7 +49,7 @@ export class Player {
 			name: "Weapon",
 			category: "equipment",
 			rarity: "common",
-			iconUrl: swordImg,
+			iconUrl: "non",
 			quantity: 1,
 			equipType: "weapon",
 		} as EquipmentItem);

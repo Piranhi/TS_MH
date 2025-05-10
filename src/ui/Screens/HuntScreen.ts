@@ -1,11 +1,11 @@
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./hunt.html?raw";
-import { bus } from "../EventBus";
+import { bus } from "../../core/EventBus";
 import { HuntState } from "@/features/hunt/HuntManager";
 import { PlayerCharacter } from "@/features/Characters/PlayerCharacter";
 import { EnemyCharacter } from "@/features/Characters/EnemyCharacter";
-import { CharacterHolder } from "../features/hunt/ui/CharacterHolder";
-import { addHTMLtoPage } from "./ScreensUtils";
+import { CharacterDisplay } from "../components/CharacterDisplay";
+import { addHTMLtoPage } from "../utils/ScreensUtils";
 
 export class HuntScreen extends BaseScreen {
     // DOM ELEMENTS
@@ -13,8 +13,8 @@ export class HuntScreen extends BaseScreen {
     private playerHolderEl!: HTMLElement;
     private enemyHolderEl!: HTMLElement;
 
-    private playerCard!: CharacterHolder;
-    private enemyCard!: CharacterHolder;
+    private playerCard!: CharacterDisplay;
+    private enemyCard!: CharacterDisplay;
 
     readonly screenName = "hunt";
     private readonly MAX_LOG_LINES = 50;
@@ -57,8 +57,8 @@ export class HuntScreen extends BaseScreen {
 
     private setupElements() {
         this.huntUpdateEl = document.getElementById("hunt-update")!;
-        this.playerCard = new CharacterHolder(document.getElementById("player-holder")!, true);
-        this.enemyCard = new CharacterHolder(document.getElementById("enemy-holder",)!, false);
+        this.playerCard = new CharacterDisplay(document.getElementById("player-holder")!, true);
+        this.enemyCard = new CharacterDisplay(document.getElementById("enemy-holder",)!, false);
     }
 
     private initCharacters(player: PlayerCharacter, enemy: EnemyCharacter) {
