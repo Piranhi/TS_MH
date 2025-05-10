@@ -1,0 +1,124 @@
+
+  /* ---------- Design tokens (easy theme tweaks) ---------- */
+  :root {
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.35);
+    --glass-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    --bar-bg: rgba(255, 255, 255, 0.2);
+    --bar-fill: #f87171;       /* warm red for enemy HP */
+    --bar-height: 0.75rem;     /* reuse across the UI if you wish */
+  }
+  
+  /* ---------- Component wrapper ---------- */
+
+  .char-holders {
+  display: flex;          /* makes the children sit in a row       */
+  flex-wrap: wrap;        /* lets them wrap *if* the screen is tiny */
+  gap: 1rem;              /* maintains the nice 16 px gap           */
+
+  /* (stylistic rules you already had) */
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--glass-border);
+  border-radius: .25rem;
+}
+
+  .char-holder {
+  /* existing visual stuff… */
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--glass-shadow);
+
+  /* updated sizing + flex behaviour ↓↓↓ */
+  flex: 1 1 0;   /* grow+shrink evenly, start from 0 px basis   */
+
+  max-width: none;  /* wipe out the old 30 rem cap              */
+  min-width: 16rem;     /* let the card shrink below its content    */
+  width: auto;;
+}
+  
+  /* ---------- Enemy image ---------- */
+  .char-img {
+    width: 5rem;
+    height: 5rem;
+    object-fit: cover;
+    border-radius: 0.75rem;
+    flex-shrink: 0;
+    border: 1px solid var(--glass-border);
+  }
+  
+  /* ---------- Text / stats container ---------- */
+  .char-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  /* Name */
+  .char-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+    letter-spacing: 0.02em;
+  }
+  
+  /* Stats row */
+  .char-stats {
+    display: flex;
+    gap: 0.75rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+  }
+  
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  
+  /* ---------- Health bar ---------- */
+  /* Key idea: fill span is absolutely positioned; width = --hp custom‑prop */
+  .health-bar {
+    position: relative;
+    height: var(--bar-height);
+    background: var(--bar-bg);
+    border-radius: var(--bar-height);
+    overflow: hidden;
+  }
+  
+  .hp-fill {
+    position: absolute;
+    inset: 0;
+    width: calc(var(--hp) * 100%);
+    background: var(--bar-fill);
+    transition: width 0.25s ease;   /* smooth when JS updates --hp */
+  }
+  
+  .hp-label {
+    align-self: flex-end;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    opacity: 0.8;
+  }
+
+  /* ─── variant: enemy ─── */
+.enemy {
+  --glass-bg:   rgba(248, 113, 113, 0.18);  /* warm red tint */
+  --glass-border: rgba(248, 113, 113, 0.40);
+  --bar-fill:   #f43f5e;                    /* matches the tint */
+}
+
+/* optional: give the player a calm colour */
+.player {
+    --glass-bg:     rgba( 74, 222, 128, 0.18);  /* light green tint */
+    --glass-border: rgba( 74, 222, 128, 0.40);
+    --bar-fill:     #4ade80;                       /* mint green HP bar */
+}

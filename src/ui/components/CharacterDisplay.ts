@@ -1,71 +1,58 @@
-import { BaseCharacter, StatKey } from "@/models/BaseCharacter";
-import { Player } from "@/models/player";
+import { BaseCharacter } from "@/models/BaseCharacter";
 
 export class CharacterDisplay {
-	private root: HTMLElement;
-	private nameEl: HTMLElement;
-	private atkEl: HTMLElement;
-	private defEl: HTMLElement;
-	private statsContainerEl: HTMLElement;
-	private hpBar: HTMLElement;
-	private hpLabel: HTMLElement;
-	private avatarImg: HTMLImageElement;
-	private character!: BaseCharacter;
+    //private root: HTMLElement;
+    private nameEl!: HTMLElement;
+    private atkEl!: HTMLElement;
+    private defEl!: HTMLElement;
+    private statsContainerEl!: HTMLElement;
+    private hpBar!: HTMLElement;
+    private hpLabel!: HTMLElement;
+    private avatarImg!: HTMLImageElement;
+    private character!: BaseCharacter;
 
-	private readonly STAT_ICONS: Record<StatKey, string> = {
-		strength: "⚔️",
-		defence: "🛡️",
-		attackBase: "",
-		attackMulti: "",
-	};
+    constructor(private isPlayer: boolean) {
+        this.createDisplay();
+    }
 
-	constructor(root: HTMLElement, isPlayer: boolean) {
-		this.root = root;
-		this.nameEl = root.querySelector(".char-name")!;
-		this.statsContainerEl = this.root.querySelector(".char-stats")!;
-		this.atkEl = root.querySelector(".stat--atk")!;
-		this.defEl = root.querySelector(".stat--def")!;
-		this.hpBar = root.querySelector(".health-bar")!;
-		this.hpLabel = root.querySelector(".hp-label")!;
-		this.avatarImg = root.querySelector(".char-img")!;
-		if (isPlayer) this.setup(Player.getInstance().getPlayerCharacter());
+    private createDisplay() {
+        // IMPORT TEMPLATE
+        const tmpl = document.getElementById("character-display") as HTMLTemplateElement;
+        if (!tmpl) throw new Error("Template #character-display not found");
+        const frag = tmpl.content.cloneNode(true) as DocumentFragment;
+        const charDisplayEl = frag.querySelector<HTMLElement>(".char-holder");
+        if (!charDisplayEl) throw new Error(".char-holder not found in template");
 
-		// (optional) guard against missing markup in dev
-		if (!this.nameEl) throw new Error("CharacterHolder: .char-name not found");
-	}
+        // CACHE ELEMENTS
+        this.nameEl = charDisplayEl.querySelector(".char-name")!;
+        this.statsContainerEl = charDisplayEl.querySelector(".char-stats")!;
+        this.atkEl = charDisplayEl.querySelector(".stat--strength")!;
+        this.defEl = charDisplayEl.querySelector(".stat--defence")!;
+        this.hpBar = charDisplayEl.querySelector(".health-bar")!;
+        this.hpLabel = charDisplayEl.querySelector(".hp-label")!;
+        this.avatarImg = charDisplayEl.querySelector(".char-img")!;
 
-	setup(character: BaseCharacter) {
-		this.character = character;
+        charDisplayEl.classList.add(this.isPlayer ? "player" : "enemy");
 
-		console.log("----found:  " + this.root.innerHTML + "-atk-" + this.atkEl.innerHTML + "-def-" + this.defEl.innerHTML);
-		this.statsContainerEl.innerHTML = "";
-		const keys = Object.keys(this.character.snapshot().stats) as StatKey[];
+        const container = document.querySelector<HTMLElement>(".char-holders")!;
+        container.appendChild(charDisplayEl);
+    }
 
-		for (const key of keys) {
-			const span = document.createElement("span");
-			span.classList.add("stat", `stat--${key}`);
-			span.innerHTML = `${this.STAT_ICONS[key]} <span class="value">${this.character.snapshot().stats[key]}</span>`;
-			if (key === "strength") {
-				this.atkEl = span.querySelector(".stat--attack .value")!;
-			} else {
-				this.defEl = span.querySelector(".stat--def .value")!;
-			}
-			this.statsContainerEl.appendChild(span);
-		}
-		this.render();
-	}
+    setup(character: BaseCharacter) {
+        this.character = character;
+        this.render();
+    }
 
-	render(): void {
-		if (!this.character) return;
-		const snapshot = this.character.snapshot();
-		const { name, hp } = snapshot;
-		this.nameEl.textContent = name;
-		this.atkEl.innerHTML = snapshot.stats.strength.toString();
+    render(): void {
+        if (!this.character) return;
+        const snapshot = this.character.snapshot();
+        const { name, hp } = snapshot;
+        this.nameEl.textContent = name;
+        this.atkEl.textContent = "⚔️ " + snapshot.stats.strength.toString();
+        this.defEl.textContent = "🛡️ " + snapshot.stats.defence.toString();
+        const pct = hp.current / hp.max;
 
-		this.defEl.innerHTML = snapshot.stats.defence.toString();
-		const pct = hp.current / hp.max;
-
-		this.hpBar.style.setProperty("--hp", pct.toString());
-		this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
-	}
+        this.hpBar.style.setProperty("--hp", pct.toString());
+        this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
+    }
 }

@@ -10,12 +10,8 @@ import { addHTMLtoPage } from "../utils/ScreensUtils";
 export class HuntScreen extends BaseScreen {
     // DOM ELEMENTS
     private huntUpdateEl!: HTMLElement;
-    private playerHolderEl!: HTMLElement;
-    private enemyHolderEl!: HTMLElement;
-
     private playerCard!: CharacterDisplay;
     private enemyCard!: CharacterDisplay;
-
     readonly screenName = "hunt";
     private readonly MAX_LOG_LINES = 50;
 
@@ -57,8 +53,8 @@ export class HuntScreen extends BaseScreen {
 
     private setupElements() {
         this.huntUpdateEl = document.getElementById("hunt-update")!;
-        this.playerCard = new CharacterDisplay(document.getElementById("player-holder")!, true);
-        this.enemyCard = new CharacterDisplay(document.getElementById("enemy-holder",)!, false);
+        this.playerCard = new CharacterDisplay(true);
+        this.enemyCard = new CharacterDisplay(false);
     }
 
     private initCharacters(player: PlayerCharacter, enemy: EnemyCharacter) {
