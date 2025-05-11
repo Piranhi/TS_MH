@@ -8,6 +8,8 @@ import { EquipmentItem } from "../shared/types";
 
 import { ClassCardManager } from "../features/classcards/ClassCardManager";
 import { ClassCard } from "../features/classcards/ClassCard";
+import { isEquipmentItem } from "@/shared/type-guards";
+import { Equipment } from "./Equipment";
 
 interface PlayerData {
     level: number;
@@ -41,7 +43,7 @@ export class Player {
         this.experience = data.experience;
         this.stamina = data.stamina;
         this.trainedStats = new Map(Object.entries(data.trainedStats));
-        this.character = new PlayerCharacter;
+        this.character = new PlayerCharacter();
         this.inventory = new InventoryManager();
         this.cardManager = new ClassCardManager(this.inventory);
         this.inventory.addItemToInventory({
@@ -63,6 +65,8 @@ export class Player {
             equipType: "chest",
         } as EquipmentItem);
         this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
+        this.inventory.addItemToInventory(ClassCard.create("bulwark_card_01"));
+        this.inventory.addItemToInventory(Equipment.create("chest_01"));
     }
 
     public static createNew(): Player {
@@ -70,7 +74,7 @@ export class Player {
             level: 1,
             renown: new Bounded(0, 1000, 0),
             experience: 0,
-            character: new PlayerCharacter,
+            character: new PlayerCharacter(),
             stamina: new RegenPool(10, 1, false),
             trainedStats: {
                 attack: new TrainedStat({

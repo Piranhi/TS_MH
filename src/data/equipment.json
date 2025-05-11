@@ -1,0 +1,12 @@
+[
+    {
+		"id": "chest_01",
+        "category": "equipment",
+		"name": "Rusty Chest",
+		"description": "Todo",
+		"rarity": "Common",
+        "equipType": "chest",
+		"statMod": { "defenceFlat": 2 },
+		"iconUrl": ""
+	}
+]
