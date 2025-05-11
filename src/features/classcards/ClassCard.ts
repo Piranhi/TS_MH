@@ -1,113 +1,95 @@
 import { bus } from "@/core/EventBus";
+import { SpecRegistryBase } from "@/models/SpecRegistryBase";
 import { StatsModifier } from "@/models/Stats";
-import { ClassCardItem, InventoryItem, ItemCategory, ItemEquipStatus, ItemRarity } from "@/shared/types";
+import { ClassCardItemSpec, InventoryItemState, ItemEquipStatus } from "@/shared/types";
 
-// Import data
-export interface CardSpec {
-    id: string;
-    name: string;
-    description: string;
-    iconUrl: string;
-    rarity: ItemRarity;
-    statMod: StatsModifier;
-    baseGainRate: number;
-}
-
-// Instance data
 export interface CardState {
-    specId: string;
-    status: ItemEquipStatus;
-    level: number;
-    progress: number;
+	specId: string;
+	status: ItemEquipStatus;
+	level: number;
+	progress: number;
 }
 
-export class ClassCard implements ClassCardItem {
-    // Registry
-    private static specById = new Map<string, CardSpec>();
-    static registerSpecs(specs: CardSpec[]) {
-        specs.forEach((s) => this.specById.set(s.id, s));
-    }
-    // Build a brand new card with default state;
-    static create(id: string): ClassCard {
-        const spec = this.specById.get(id);
-        if (!spec) throw new Error(`Unknown card "${id}"`);
+export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements ClassCardItemSpec {
+	readonly category = "classCard";
 
-        const defaultState: CardState = {
-            specId: spec.id,
-            status: "Unequipped",
-            level: 1,
-            progress: 0,
-        };
-        return new ClassCard(spec, defaultState);
-    }
+	private constructor(private readonly spec: ClassCardItemSpec, private state: InventoryItemState) {
+		super();
+	}
 
-    // Rehydrate from a previous saved JSON state
-    static fromState(state: CardState): ClassCard {
-        const spec = this.specById.get(state.specId);
-        if (!spec) throw new Error(`Unknown card "${state.specId}"`);
-        return new ClassCard(spec, state);
-    }
+	public init() {}
 
-    private spec: CardSpec;
-    private state: CardState;
-    readonly category = "classCard";
+	public equip() {
+		this.state.status = "Equipped";
+	}
 
-    /** always private—use the factories below instead */
-    private constructor(spec: CardSpec, state: CardState) {
-        this.spec = spec;
-        this.state = state;
-    }
+	public unequip() {
+		this.state.status = "Unequipped";
+	}
 
-    public init() {}
+	public gainExp(monsterExp: number = 1) {
+		const gain = this.spec.baseGainRate * monsterExp;
+		this.state.progress += gain;
+		if (this.state.progress >= this.nextThreshold()) {
+			this.levelUp();
+		}
+	}
 
-    public equip() {
-        this.state.status = "Equipped";
-    }
+	private nextThreshold() {
+		return this.state.level * 100;
+	}
 
-    public unequip() {
-        this.state.status = "Unequipped";
-    }
+	private levelUp() {
+		this.state.progress -= this.nextThreshold();
+		this.state.level++;
+		bus.emit("classCard:levelUp", this.spec.id);
+	}
 
-    public gainExp(monsterExp: number = 1) {
-        const gain = this.spec.baseGainRate * monsterExp;
-        this.state.progress += gain;
-        if (this.state.progress >= this.nextThreshold()) {
-            this.levelUp();
-        }
-    }
+	public getBonuses(): StatsModifier {
+		return this.spec.statMod;
+	}
+	// ─── InventoryItem members ───────────────────────────
+	get id() {
+		return this.state.specId;
+	}
+	get name() {
+		return this.spec.name;
+	}
+	get iconUrl() {
+		return this.spec.iconUrl;
+	}
+	get rarity() {
+		return this.spec.rarity;
+	}
+	get quantity() {
+		return 1;
+	}
 
-    private nextThreshold() {
-        return this.state.level * 100;
-    }
+	get description() {
+		return this.spec.description;
+	}
 
-    private levelUp() {
-        this.state.progress -= this.nextThreshold();
-        this.state.level++;
-        bus.emit("classCard:levelUp", this.spec.id);
-    }
+	get statMod() {
+		return this.spec.statMod;
+	}
 
-    public getBonuses(): StatsModifier {
-        return this.spec.statMod;
-    }
-    // ─── InventoryItem members ───────────────────────────
-    get id() {
-        return this.state.specId;
-    }
-    get name() {
-        return this.spec.name;
-    }
-    get iconUrl() {
-        return this.spec.iconUrl;
-    }
-    get rarity() {
-        return this.spec.rarity;
-    }
-    get quantity() {
-        return 1;
-    }
+	get baseGainRate() {
+		return this.spec.baseGainRate;
+	}
 
-    get description() {
-        return this.spec.description;
-    }
-    // ─────────────────────────────────────────────────────
+	// ─────────────────────────────────────────────────────
+
+	public static override specById = new Map<string, ClassCardItemSpec>();
+	static create(id: string): ClassCard {
+		const spec = this.specById.get(id);
+		if (!spec) throw new Error(`Unknown card "${id}"`);
+
+		const defaultState: CardState = {
+			specId: spec.id,
+			status: "Unequipped",
+			level: 1,
+			progress: 0,
+		};
+		return new ClassCard(spec, defaultState);
+	}
 }

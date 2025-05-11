@@ -2,8 +2,6 @@
 .inventory-screen {
 	display: flex;
 	flex-direction: column;
-	height: 100%;
-	width: 100%;
 	padding: 1rem;
 	gap: 1rem;
 }
@@ -16,8 +14,7 @@
 .panel {
 	background: rgba(255, 255, 255, 0.1);
 	backdrop-filter: blur(10px);
-	border-radius: 12px;
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+	border-radius: 8px;
 	padding: 1rem;
 	flex-shrink: 0;
 }
@@ -105,11 +102,11 @@
 .slot.empty {
 	border-style: dashed;
 	cursor: default;
-    background-size:    contain;
-  background-position: center;
-  background-repeat:   no-repeat;
-  background-color: #ffffff1c;
-  background-blend-mode: lighten;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-color: #ffffff1c;
+	background-blend-mode: lighten;
 }
 .slot.empty .item-icon,
 .slot.empty .item-count {
@@ -185,13 +182,13 @@
 	grid-area: chest;
 }
 .slot--equipment[data-slot="chest"].empty {
-	  background-image: url("/images/equipment/equipment-bg-chest.png");
+	background-image: url("/images/equipment/equipment-bg-chest.png");
 }
 .slot--equipment[data-slot="legs"] {
 	grid-area: legs;
 }
 .slot--equipment[data-slot="legs"].empty {
-	  background-image: url("/images/equipment/equipment-bg-legs.png");
+	background-image: url("/images/equipment/equipment-bg-legs.png");
 }
 .slot--equipment[data-slot="feet"] {
 	grid-area: feet;
@@ -200,6 +197,5 @@
 	grid-area: weapon;
 }
 .slot--equipment[data-slot="weapon"].empty {
-	  background-image: url("/images/equipment/equipment-bg-weapon.png");
+	background-image: url("/images/equipment/equipment-bg-weapon.png");
 }
-

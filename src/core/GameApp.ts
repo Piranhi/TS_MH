@@ -9,7 +9,6 @@ import { PlayerbarDisplay } from "../ui/components/PlayerBarDisplay";
 import { HuntManager } from "../features/hunt/HuntManager";
 import { screenFactories } from "./screenFactories";
 
-
 export class GameApp {
 	/* ---------- readonly fields ---------- */
 	private readonly screenManager = new ScreenManager();
@@ -53,12 +52,10 @@ export class GameApp {
 			this.screenManager.show(name)
 		);
 		this.header = new HeaderDisplay(this.root.querySelector("#header")!);
-		this.playerBar = new PlayerbarDisplay(this.root.querySelector("#player-bar")!);
 
 		/* Each component gets its own build so they control their markup */
 		this.sidebar.build();
 		this.header.build();
-		this.playerBar.build();
 	}
 
 	private registerScreens() {

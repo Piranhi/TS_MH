@@ -5,6 +5,7 @@
 	--font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
 
 	/* Background */
+
 	--bg-tint-1: #47565b;
 	--bg-tint-2: #22292b;
 
@@ -18,9 +19,8 @@
 
 	/* Glass (taken straight from your snippet) */
 	--glass-gap: 0.25rem;
-	--glass-radius: 0.7rem;
-	--glass-fill: rgba(255, 255, 255, 0.06);
-	--glass-blur: 22px;
+	--glass-radius: 0.3rem;
+	--glass-fill: rgba(41, 41, 41, 0.596);
 	--glass-stroke: rgba(255, 255, 255, 0.12);
 	--glass-shadow-rim: rgba(255, 255, 255, 0.04);
 	--glass-shadow-drop: rgba(0, 0, 0, 0.45);
@@ -30,8 +30,8 @@
 	--nav-height: 64px;
 
 	/* Progress bars – unchanged */
-	--mh-bar-height: 0.65rem;
-	--mh-bar-radius: 0;
+	--mh-bar-height: 0.6rem;
+	--mh-bar-radius: 3px;
 	--mh-bar-transition: 260ms;
 	--mh-color-track: rgba(0, 0, 0, 0.5);
 	--mh-color-border: var(--glass-stroke);
@@ -63,9 +63,16 @@
 }
 
 html,
-body,
+body {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
 #app {
 	height: 100%;
+	display: block;
+	width: 100%;
 }
 
 body {
@@ -96,15 +103,13 @@ h3 {
 
 .background {
 	position: fixed;
-	top: 0;
-	left: 0;
 	width: 100vw;
 	height: 100vh;
-	background: url('/src/Assets/Images/background-main.png') no-repeat center center;
+	/* background: url('/src/Assets/Images/background-main.png') no-repeat center center; */
+	background-color: #474a4b;
 	background-size: cover;
 	z-index: -1;
-  }
-  
+}
 
 /* -------------------------------------------------------------
 	 2. GLASS UTILITY
@@ -113,11 +118,7 @@ h3 {
 	position: relative;
 	margin: var(--glass-gap);
 	background: var(--glass-fill);
-	border: 1px solid var(--glass-stroke);
-	backdrop-filter: blur(var(--glass-blur));
-	-webkit-backdrop-filter: blur(var(--glass-blur));
 	border-radius: var(--glass-radius);
-	box-shadow: 0 0 0 1px var(--glass-shadow-rim), 0 6px 18px var(--glass-shadow-drop);
 	overflow: hidden;
 }
 
@@ -152,11 +153,6 @@ h3 {
 	padding: 0 1.25rem;
 	height: var(--nav-height);
 	color: var(--text-strong);
-}
-
-/* gap inherits from flex */
-.header.glass {
-	margin: 0;
 }
 
 /* override the glass margin just for header */
@@ -199,18 +195,48 @@ h3 {
 .header-right input[type="search"] {
 	padding: 0.45rem 0.9rem;
 	font-size: 0.9rem;
-	border-radius: 0.75rem;
+	border-radius: 0.55rem;
 	color: var(--text-default);
 	border: 1px solid var(--glass-stroke);
-	background: var(--glass-fill);
-	backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
-	-webkit-backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
+	background: #0000003d;
 	transition: border-color 0.2s;
 }
 
 .header-right input[type="search"]:focus {
 	outline: none;
 	border-color: var(--accent);
+}
+
+.header-right ul.player-stats {
+	/* lay out each <li> as its own column */
+	display: flex;
+	gap: 1rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.header-right ul.player-stats li {
+	/* stack label, bar, value vertically, centered */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 80px; /* gives them some breathing room */
+}
+
+.header-right ul.player-stats li .label {
+	font-size: 0.75rem;
+	color: var(--text-muted);
+}
+
+.header-right ul.player-stats li .mh-progress {
+	width: 100%; /* fill that 80px slot (or whatever you choose) */
+	margin: 0.25rem 0; /* tighten up the spacing */
+}
+
+.header-right ul.player-stats li .value {
+	font-weight: 500;
+	font-size: 0.9rem;
 }
 
 .header-right .avatar {
@@ -222,18 +248,25 @@ h3 {
 }
 
 /* -------------------------------------------------------------
-	 4. MAIN GRID (menu | game | player) – 0 gap, spacing handled by .glass
+	 4. MAIN GRID
 	 -----------------------------------------------------------*/
-#app {
-	display: grid;
-	grid-template-rows: var(--nav-height) 1fr;
-}
 
 .main {
 	display: grid;
-	grid-template-areas: "menu game player";
-	grid-template-columns: 200px 1fr 320px;
-	gap: 0;
+	grid-template-areas: "menu game";
+	grid-template-columns: 200px 1fr;
+	height: 100%;
+	width: 100%;
+}
+
+.game-container {
+	grid-column: 2 / -1;
+	grid-area: game; /* occupy the 2nd column */
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	min-width: 0;
+	height: 100%;
 }
 
 /* gap handled via margin */
@@ -244,28 +277,18 @@ h3 {
 }
 
 .game {
-	grid-area: game;
+	flex: 1; /* fill all leftover space */
+	width: 100%; /* full width of its parent */
+	overflow-y: auto; /* scroll if content overflows */
 	min-width: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 2rem;
-	padding: 1.5rem;
-	overflow-y: auto;
 }
 
 .screen {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
 	display: none;
-	/* optional: flex-centering within each screen */
 	flex-direction: column;
-	align-items: center;
 	width: 100%;
-	justify-content: flex-start;
-	gap: 1rem;
+	margin: 0;
+	gap: 0rem;
 }
 
 /* the “active” screen is shown */
@@ -293,44 +316,11 @@ h3 {
 	display: block; /* removes the 4 px baseline gap   */
 }
 
-.player {
-	grid-area: player;
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	padding: 1rem;
-}
-
-/* Player specifics */
-.player-avatar img {
-	width: 100%;
-	height: 50%;
-	aspect-ratio: 1;
-	object-fit: cover;
-	border-radius: 1rem;
-}
-
-.player-stats li {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-}
-
-.player-stats .label {
-	font-weight: 500;
-}
-
-.player-name {
-	font-size: 1.75rem;
-	font-weight: 600;
-	letter-spacing: 0.02em;
-}
-
 /* -------------------------------------------------------------
 	 5. SIDE MENU BUTTON RESET
 	 -----------------------------------------------------------*/
 .menu-nav {
-	padding: 1.25rem 0;
+	padding: 0.1rem 0;
 }
 
 .menu-nav ul {
@@ -341,7 +331,7 @@ h3 {
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
-	padding: 0.75rem 1rem;
+	padding: 0.55rem 1rem;
 	cursor: pointer;
 	color: var(--text-muted);
 	transition: background 0.25s, color 0.25s;
@@ -383,18 +373,8 @@ h3 {
 	height: var(--mh-bar-height);
 	background: var(--mh-color-track);
 	border: 1px solid var(--mh-color-border);
-	border-radius: var(--mh-bar-radius);
-	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.25);
-	backdrop-filter: blur(calc(var(--glass-blur) * 0.6));
-	-webkit-backdrop-filter: blur(calc(var(--glass-blur) * 0.6));
-}
 
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-	.mh-progress {
-		background: rgba(0, 0, 0, 0.55);
-		backdrop-filter: none;
-		-webkit-backdrop-filter: none;
-	}
+	border-radius: var(--mh-bar-radius);
 }
 
 .mh-progress__fill {
@@ -426,184 +406,7 @@ h3 {
 	--mh-fill-start: var(--mh-color-resource-start);
 	--mh-fill-end: var(--mh-color-resource-end);
 }
-
-@media (prefers-reduced-motion: reduce) {
-	.mh-progress__fill {
-		transition: none;
-	}
-}
-
-/* -------------------------------------------------------------
-	 7. INTERACTIONS
-	 -----------------------------------------------------------*/
-a,
-button,
-.menu-nav li {
-	transition: color 0.25s, background 0.25s, transform 0.25s;
-}
-
-button:focus-visible {
-	outline: 2px dashed var(--accent);
-	outline-offset: 4px;
-}
-
-.menu-nav li:active,
-button:active {
-	transform: scale(0.97);
-}
-
-/* -------------------------------------------------------------
-	 8. RESPONSIVE
-	 -----------------------------------------------------------*/
-@media (max-width: 768px) {
-	.main {
-		grid-template-columns: 1fr;
-		grid-template-areas: "menu" "game" "player";
-	}
-
-	.menu {
-		position: fixed;
-		z-index: 40;
-		left: -100%;
-		transition: left 0.35s;
-	}
-
-	.menu.open {
-		left: var(--glass-gap);
-	}
-
-	/* slide‑in */
-}
-
-.area-select__input {
-	width: 30%;
-	padding: 0.6rem 0.9rem;
-	font: inherit;
-	border-radius: var(--glass-radius);
-	color: var(--text-default);
-	border: 1px solid var(--glass-stroke);
-	background: var(--glass-fill);
-	-webkit-backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
-	backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
-	appearance: none; /* hides native arrow in most browsers */
-}
-.area-select__input:focus {
-	outline: none;
-	background: rgba(82, 74, 74, 0.849);
-	border-color: var(--accent); /* same blue you use elsewhere */
-}
-
-/*  Glassy scroll panel for hunt log  */
-.hunt-scroll {
-	/* reuse the existing glass variables */
-	position: relative;
+#game-area,
+.game {
 	width: 100%;
-	max-height: 200px;
-	padding: 1rem 1.5rem;
-	overflow-y: auto;
-	display: flex;
-	flex-direction: column-reverse;
-
-	background: var(--glass-fill);
-	border: 1px solid var(--glass-stroke);
-	border-radius: var(--glass-radius);
-	backdrop-filter: blur(var(--glass-blur));
-	-webkit-backdrop-filter: blur(var(--glass-blur));
-	box-shadow: 0 0 0 1px var(--glass-shadow-rim), 0 6px 18px var(--glass-shadow-drop);
-
-	font: 0.65rem/1 var(--font-sans);
-	color: var(--text-default);
-}
-
-/* subtle separator between lines */
-.hunt-scroll li + li {
-	margin-top: 0.4rem;
-	border-top: 1px solid rgba(255, 255, 255, 0.05);
-	padding-top: 0.4rem;
-}
-
-/* ▸ Custom scrollbar – WebKit / Blink */
-.hunt-scroll::-webkit-scrollbar {
-	width: 8px;
-}
-.hunt-scroll::-webkit-scrollbar-track {
-	background: transparent; /* keep the frosted glass look */
-}
-.hunt-scroll::-webkit-scrollbar-thumb {
-	background: rgba(255, 255, 255, 0.2);
-	border-radius: 4px;
-	transition: background 0.25s;
-}
-.hunt-scroll::-webkit-scrollbar-thumb:hover {
-	background: rgba(255, 255, 255, 0.35);
-}
-
-/* ▸ Custom scrollbar – Firefox (Quantum) */
-@supports (scrollbar-width: thin) {
-	.hunt-scroll {
-		scrollbar-width: thin;
-		scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-	}
-}
-
-.rarity-common {
-	font-weight:1000;
-	color: var(--rarity-common);
-}
-.rarity-uncommon {
-	font-weight:1000;
-	color: var(--rarity-uncommon);
-}
-.rarity-rare {
-	font-weight:1000;
-	color: var(--rarity-rare);
-}
-.rarity-epic {
-	font-weight:1000;
-	color: var(--rarity-epic);
-}
-.rarity-legendary {
-	font-weight:1000;
-	color: var(--rarity-legendary);
-}
-
-
-.icon {
-    width: 24px;
-    height: 24px;
-    fill: none;              /* no fill, only strokes */
-    stroke: currentColor;    /* inherits text color */
-    stroke-width: 2;         /* 2px stroke weight */
-    stroke-linecap: round;   /* rounded ends */
-    stroke-linejoin: round;  /* rounded corners */
-  }
-
-  #player-statlist {
-	display:block;
-  top: 1rem;
-  right: 1rem;
-  width: auto;
-  backdrop-filter: blur(10px);
-  background: rgba(252, 252, 252, 0.199);
-  border-radius: 0.3rem;
-  padding: 1rem;
-  font-family: sans-serif;
-  color: #333;
-}
-
-.stat-section {
-  margin-bottom: 1rem;
-}
-
-.stat-section summary {
-  font-weight: bold;
-  cursor: pointer;
-  list-style: none; /* removes default triangle on some browsers */
-}
-
-.stat-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.2rem 0;
-  font-size: 0.9rem;
 }

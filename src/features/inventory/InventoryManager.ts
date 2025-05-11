@@ -1,21 +1,16 @@
 import { bus } from "@/core/EventBus";
 import { isClassCardItem, isEquipmentItem } from "@/shared/type-guards";
-import type { EquipmentType, InventoryItem, ItemCategory, EquipmentItem } from "@/shared/types";
+import type { EquipmentType, InventoryItemSpec, ItemCategory, EquipmentItemSpec } from "@/shared/types";
 import { ClassCard } from "../classcards/ClassCard";
 export type SlotType = "inventory" | "equipment" | "classCard";
 
 interface Slot {
-    /** Unique ID—e.g. "inv-0", "equip-chest", "card-2" */
     id: string;
-
-    type: SlotType; //"inventory" | "equipment" | "classCard";
+    type: SlotType;
     /** For equipment: "head"|"chest"|"legs" etc.; for cards: 0,1,2…; unused for inventory */
     key?: string | number;
-
-    /** What category of items this slot accepts */
     accepts: ItemCategory[];
-    /** The item (or null if empty) */
-    item: InventoryItem | null;
+    item: InventoryItemSpec | null;
 }
 
 export class InventoryManager {
@@ -107,7 +102,7 @@ export class InventoryManager {
         this.emitChange();
     }
 
-    public addItemToInventory(item: InventoryItem): boolean {
+    public addItemToInventory(item: InventoryItemSpec): boolean {
         const slot = this.slots.find((s) => s.type === "inventory" && s.item === null);
         if (!slot) {
             // Inventory is full
@@ -118,7 +113,7 @@ export class InventoryManager {
         return true;
     }
 
-    public removeItemFromInventory(item: InventoryItem): boolean {
+    public removeItemFromInventory(item: InventoryItemSpec): boolean {
         const slot = this.slots.find((s) => s.item === item);
         if (!slot) {
             return false; //Item not found
@@ -134,7 +129,7 @@ export class InventoryManager {
 
     //------------------------ EQUIPMENT ------------------------------
 
-    public getEquippedEquipment(): EquipmentItem[] {
+    public getEquippedEquipment(): EquipmentItemSpec[] {
         return this.slots
             .filter((slot) => slot.type === "equipment" && slot.item !== null)
             .map((s) => s.item!)

@@ -4,7 +4,7 @@ import { HuntState } from "../features/hunt/HuntManager";
 import { PlayerCharacter } from "../models/PlayerCharacter";
 import { EnemyCharacter } from "../models/EnemyCharacter";
 import { poolChangedPayload } from "../models/value-objects/RegenPool";
-import { InventoryItem } from "../shared/types";
+import { InventoryItemSpec } from "../shared/types";
 
 export interface GameEvents {
 	"Game:UITick": number;
@@ -22,8 +22,8 @@ export interface GameEvents {
 	"reward:renown": number;
 	"classCard:levelUp" : string;
 	"inventory:inventoryChanged": void;
-	"player:equipmentChanged": InventoryItem[];
-	"player:classCardsChanged": InventoryItem[];
+	"player:equipmentChanged": InventoryItemSpec[];
+	"player:classCardsChanged": InventoryItemSpec[];
 		"player:statsChanged": PlayerCharacter;
 }
 

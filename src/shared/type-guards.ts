@@ -1,11 +1,11 @@
 import { ClassCard } from "@/features/classcards/ClassCard";
-import type { EquipmentItem, InventoryItem, ItemCategory } from "@/shared/types";
+import type { EquipmentItemSpec, InventoryItemSpec, ItemCategory } from "@/shared/types";
 
-export function isEquipmentItem(item: InventoryItem): item is EquipmentItem & { category: "equipment" } {
+export function isEquipmentItem(item: InventoryItemSpec): item is EquipmentItemSpec & { category: "equipment" } {
     return item.category === "equipment";
 }
 
-export function isClassCardItem(item: InventoryItem): item is ClassCard {
+export function isClassCardItem(item: InventoryItemSpec): item is ClassCard {
     if (item.category !== "classCard") return false;
     return item instanceof ClassCard;
 }

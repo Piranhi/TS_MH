@@ -1,4 +1,5 @@
 import { Monster } from "./Monster";
+import { SpecRegistryBase } from "./SpecRegistryBase";
 
 export interface AreaSpec {
 	id: string;
@@ -15,29 +16,11 @@ export interface Drop {
 	qty: number;
 }
 
-export class Area {
-	//private static monsterById = new Map<string, Monster>();
-		// Registry. 
-		private static specById = new Map<string, AreaSpec>();
-		static registerSpecs(specs: AreaSpec[]){
-		  specs.forEach(s => this.specById.set(s.id, s));
-		}
-	
-		static create(id: string): Area{
-		  const spec = this.specById.get(id);
-		  if(!spec) throw new Error (`Unknown area "${id}"`);
-		  return new Area(spec)
-		}
-
-	/** Called exactly once from gameData.ts */
-/* 	static _bootstrap(specs: AreaSpec[], monsters: Monster[]) {
-		this.specById = new Map(specs.map((s) => [s.id, s]));
-		this.monsterById = new Map(monsters.map((m) => [m.id, m]));
-        this.specById.forEach(spec => console.log(spec))
-	} */
-
+export class Area extends SpecRegistryBase<AreaSpec> {
 	public kills = 0;
-	constructor(private readonly spec: AreaSpec) {}
+	constructor(private readonly spec: AreaSpec) {
+		super();
+	}
 
 	pickMonster(): Monster {
 		const { spawns } = this.spec;
@@ -49,7 +32,7 @@ export class Area {
 			if (roll <= 0) return Monster.create(monsterId)!;
 		}
 
-        return Monster.create(spawns[0].monsterId)!  // Area.monsterById.get(spawns[0].monsterId)!
+		return Monster.create(spawns[0].monsterId)!; // Area.monsterById.get(spawns[0].monsterId)!
 	}
 
 	rollLoot(): Drop[] {
@@ -69,5 +52,11 @@ export class Area {
 		return this.spec.displayName;
 	}
 
-	/* ---------- Convenience factories ------------------------ */
+	// Registry.
+	public static override specById = new Map<string, AreaSpec>();
+	static create(id: string): Area {
+		const spec = this.specById.get(id);
+		if (!spec) throw new Error(`Unknown area "${id}"`);
+		return new Area(spec);
+	}
 }

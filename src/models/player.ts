@@ -4,7 +4,7 @@ import { RegenPool } from "./value-objects/RegenPool";
 import { bus } from "../core/EventBus";
 import { TrainedStat } from "./TrainedStat";
 import { InventoryManager } from "../features/inventory/InventoryManager";
-import { EquipmentItem } from "../shared/types";
+import { EquipmentItemSpec } from "../shared/types";
 
 import { ClassCardManager } from "../features/classcards/ClassCardManager";
 import { ClassCard } from "../features/classcards/ClassCard";
@@ -54,7 +54,7 @@ export class Player {
             iconUrl: "non",
             quantity: 1,
             equipType: "weapon",
-        } as EquipmentItem);
+        } as EquipmentItemSpec);
         this.inventory.addItemToInventory({
             id: "chestID",
             name: "Chest",
@@ -63,7 +63,7 @@ export class Player {
             iconUrl: "none",
             quantity: 1,
             equipType: "chest",
-        } as EquipmentItem);
+        } as EquipmentItemSpec);
         this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
         this.inventory.addItemToInventory(ClassCard.create("bulwark_card_01"));
         this.inventory.addItemToInventory(Equipment.create("chest_01"));
