@@ -7,17 +7,18 @@ import { bus } from "@/core/EventBus";
 
 export class PlayerCharacter extends BaseCharacter {
 	readonly stats: StatsEngine;
-    private readonly newPlayerStats: PlayerStats = {
-			attack: 2,
-			defence: 2,
-			speed: 1,
-			maxHp: 120,
-            attackFlat: 0,
-            defenceFlat: 0,
-			critChance: 0.05,
-			critDamage: 0.5,
-			lifesteal: 0,
-    }
+	private readonly RECOVERY_HEAL = 0.01;
+	private readonly newPlayerStats: PlayerStats = {
+		attack: 2,
+		defence: 2,
+		speed: 1,
+		maxHp: 120,
+		attackFlat: 0,
+		defenceFlat: 0,
+		critChance: 0.05,
+		critDamage: 0.5,
+		lifesteal: 0,
+	};
 
 	constructor() {
 		const base: PlayerStats = {
@@ -25,8 +26,8 @@ export class PlayerCharacter extends BaseCharacter {
 			defence: 2,
 			speed: 1,
 			maxHp: 120,
-            attackFlat: 0,
-            defenceFlat: 0,
+			attackFlat: 0,
+			defenceFlat: 0,
 			critChance: 0.05,
 			critDamage: 0.5,
 			lifesteal: 0,
@@ -34,7 +35,7 @@ export class PlayerCharacter extends BaseCharacter {
 
 		super("You", 1, base);
 
-        this.team = "player"
+		this.team = "player";
 		this.stats = new StatsEngine(base);
 
 		/* pre‑register empty layers */
@@ -42,11 +43,15 @@ export class PlayerCharacter extends BaseCharacter {
 		this.stats.setLayer("classCard", () => ({}));
 		this.stats.setLayer("buffs", () => ({}));
 
-        bus.emit("player:statsChanged")
+		bus.emit("player:statsChanged");
+	}
+
+	healInRecovery() {
+		this.hp.increase(this.hp.max * this.RECOVERY_HEAL);
 	}
 
 	get attack() {
-		return calcPlayerDamage(this)
+		return calcPlayerDamage(this);
 	}
 	get defence() {
 		return this.stats.get("defence");

@@ -10,35 +10,40 @@ export type EquipmentType = "head" | "back" | "chest" | "legs" | "feet" | "hands
 export type ItemEquipStatus = "Equipped" | "Unequipped";
 
 export interface InventoryItemSpec extends Identifiable {
-    id: string;
-    category: ItemCategory;
-    name: string;
-    description: string;
-    iconUrl: string;
-    rarity?: ItemRarity;
-    quantity?: number;
+	id: string;
+	category: ItemCategory;
+	name: string;
+	description: string;
+	iconUrl: string;
+	rarity?: ItemRarity;
+	quantity?: number;
 }
 
 export interface EquipmentItemSpec extends InventoryItemSpec {
-    category: "equipment";
-    equipType: EquipmentType;
-    statMod: StatsModifier;
+	category: "equipment";
+	equipType: EquipmentType;
+	statMod: StatsModifier;
 }
 
 export interface ClassCardItemSpec extends InventoryItemSpec {
-    category: "classCard";
-    statMod: StatsModifier;
-    baseGainRate: number;
+	category: "classCard";
+	statMod: StatsModifier;
+	baseGainRate: number;
 }
 
 export interface LootSource {
-    getItemSpecs(): InventoryItemSpec;
+	getItemSpecs(): InventoryItemSpec;
 }
 
 // Instance data
 export interface InventoryItemState {
-    specId: string;
-    status: ItemEquipStatus;
-    level: number;
-    progress: number;
+	specId: string;
+	status: ItemEquipStatus;
+	level: number;
+	progress: number;
+}
+
+// Just 
+export interface InventoryItem extends InventoryItemSpec {
+	quantity: number;
 }

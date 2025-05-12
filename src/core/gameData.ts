@@ -12,6 +12,7 @@ import { Attack } from "@/models/Attack";
 import { ClassCard } from "@/features/classcards/ClassCard";
 import { Equipment } from "@/models/Equipment";
 import { ClassCardItemSpec, EquipmentItemSpec } from "@/shared/types";
+import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 //import
 
 /* ---------- Register Data ---------------------------- */
@@ -22,4 +23,6 @@ export function initGameData() {
 	Monster.registerSpecs(rawMonsters);
 	Area.registerSpecs(rawAreas);
 	Attack.registerSpecs(rawAttacks);
+
+	InventoryRegistry.init();
 }

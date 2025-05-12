@@ -1,7 +1,7 @@
-import { EquipmentItemSpec, InventoryItemState, ItemEquipStatus } from "@/shared/types";
+import { EquipmentItemSpec, InventoryItem, InventoryItemState, ItemEquipStatus } from "@/shared/types";
 import { SpecRegistryBase } from "./SpecRegistryBase";
 
-export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements EquipmentItemSpec {
+export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements EquipmentItemSpec, InventoryItem {
 	readonly category = "equipment";
 
 	private constructor(private readonly spec: EquipmentItemSpec, private state: InventoryItemState) {

@@ -1,7 +1,7 @@
 import { bus } from "@/core/EventBus";
 import { SpecRegistryBase } from "@/models/SpecRegistryBase";
 import { StatsModifier } from "@/models/Stats";
-import { ClassCardItemSpec, InventoryItemState, ItemEquipStatus } from "@/shared/types";
+import { ClassCardItemSpec, InventoryItem, InventoryItemState, ItemEquipStatus } from "@/shared/types";
 
 export interface CardState {
 	specId: string;
@@ -10,7 +10,7 @@ export interface CardState {
 	progress: number;
 }
 
-export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements ClassCardItemSpec {
+export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements ClassCardItemSpec, InventoryItem {
 	readonly category = "classCard";
 
 	private constructor(private readonly spec: ClassCardItemSpec, private state: InventoryItemState) {
