@@ -5,6 +5,8 @@ import { StatsEngine } from "@/core/StatsEngine";
 import { calcPlayerDamage } from "./DamageCalculator";
 import { bus } from "@/core/EventBus";
 
+interface PlayerCharacterSaveState {}
+
 export class PlayerCharacter extends BaseCharacter {
 	readonly stats: StatsEngine;
 	private readonly RECOVERY_HEAL = 0.01;
@@ -61,4 +63,10 @@ export class PlayerCharacter extends BaseCharacter {
 	protected getAvatarUrl(): string {
 		return "/assets/avatars/player.png";
 	}
+
+	loadCharacterState() {}
+	//TO ADD
+	/* 	saveCharacterState(): PlayerCharacterSaveState {
+		return;
+	} */
 }

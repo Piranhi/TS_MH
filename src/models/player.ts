@@ -25,7 +25,6 @@ interface PlayerSaveState {
 	level: number;
 	renown: Bounded;
 	stamina: RegenPool;
-	assignedStamina: number;
 }
 
 export class Player implements Saveable {
@@ -179,4 +178,14 @@ export class Player implements Saveable {
 		}
 		return this._instance;
 	}
+
+	save(): PlayerSaveState {
+		return {
+			level: this.level,
+			renown: this.renown,
+			stamina: this.stamina,
+		};
+	}
+
+	load(state: PlayerSaveState): void {}
 }
