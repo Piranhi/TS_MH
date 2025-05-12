@@ -34,8 +34,6 @@ export class PlayerCharacter extends BaseCharacter {
 		};
 
 		super("You", 1, base);
-
-		this.team = "player";
 		this.stats = new StatsEngine(base);
 
 		/* pre‑register empty layers */

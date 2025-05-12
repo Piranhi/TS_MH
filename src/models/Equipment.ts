@@ -36,6 +36,18 @@ export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements Eq
 		return this.spec.statMod;
 	}
 
+	toJSON() {
+		return {
+			__type: "Equipment",
+			spec: this.spec,
+			state: this.state,
+		};
+	}
+
+	static fromJSON(raw: any) {
+		return new Equipment(raw.spec, raw.state);
+	}
+
 	public static override specById = new Map<string, EquipmentItemSpec>();
 	static create(id: string): Equipment {
 		const spec = this.specById.get(id);

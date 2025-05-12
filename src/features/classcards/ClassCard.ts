@@ -79,6 +79,18 @@ export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements Cl
 
 	// ─────────────────────────────────────────────────────
 
+	toJSON() {
+		return {
+			__type: "ClassCard",
+			spec: this.spec,
+			state: this.state,
+		};
+	}
+
+	static fromJSON(raw: any) {
+		return new ClassCard(raw.spec, raw.state);
+	}
+
 	public static override specById = new Map<string, ClassCardItemSpec>();
 	static create(id: string): ClassCard {
 		const spec = this.specById.get(id);

@@ -8,6 +8,8 @@ import { HeaderDisplay } from "../ui/components/HeaderDisplay";
 import { PlayerbarDisplay } from "../ui/components/PlayerBarDisplay";
 import { HuntManager } from "../features/hunt/HuntManager";
 import { screenFactories } from "./screenFactories";
+import { DebugMenu } from "@/ui/components/Debug-Menu";
+import { SaveManager } from "./SaveManager";
 
 export class GameApp {
 	/* ---------- readonly fields ---------- */
@@ -39,6 +41,7 @@ export class GameApp {
 
 		await this.screenManager.show(home);
 		engine.start();
+		this.buildDebugMenu();
 	}
 
 	/* ---------- private helpers ---------- */
@@ -56,6 +59,11 @@ export class GameApp {
 		/* Each component gets its own build so they control their markup */
 		this.sidebar.build();
 		this.header.build();
+	}
+
+	private buildDebugMenu() {
+		const debugMenu = new DebugMenu();
+		debugMenu.build();
 	}
 
 	private registerScreens() {

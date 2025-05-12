@@ -4,6 +4,8 @@ import type { EquipmentType, InventoryItemSpec, ItemCategory, EquipmentItemSpec,
 import { ClassCard } from "../classcards/ClassCard";
 import { InventoryRegistry } from "./InventoryRegistry";
 import { Equipment } from "@/models/Equipment";
+import { Saveable } from "@/shared/storage-types";
+import { saveManager } from "@/core/SaveManager";
 export type SlotType = "inventory" | "equipment" | "classCard";
 
 interface Slot {
@@ -15,7 +17,11 @@ interface Slot {
 	item: InventoryItem | null;
 }
 
-export class InventoryManager {
+export interface InventorySaveState {
+	slots: Slot[];
+}
+
+export class InventoryManager implements Saveable {
 	private maxInventorySlots: number = 20;
 	private maxCardSlots: number = 1;
 	private unlockedEquipmentSlots: EquipmentType[] = ["chest", "legs", "weapon"];
@@ -39,6 +45,7 @@ export class InventoryManager {
 				.map((_, i) => this.makeSlot("classCard", i)),
 		];
 		this.updateSlotMap();
+		saveManager.register("inventory", this);
 	}
 
 	//------------------------ FACTORIES ------------------------------
@@ -155,5 +162,17 @@ export class InventoryManager {
 
 	private emitChange() {
 		bus.emit("inventory:inventoryChanged");
+	}
+
+	//-----------------------------------SAVE/LOAD ----------------------------------------
+
+	save(): InventorySaveState {
+		return { slots: this.slots };
+	}
+
+	load(state: InventorySaveState): void {
+		this.slots = state?.slots;
+		this.updateSlotMap();
+		this.emitChange();
 	}
 }

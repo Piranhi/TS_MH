@@ -6,6 +6,8 @@ import { PlayerCharacter } from "../../models//PlayerCharacter";
 import { CombatManager } from "./CombatManager";
 import { EnemyCharacter } from "../../models//EnemyCharacter";
 import { Area } from "@/models/Area";
+import { Saveable } from "@/shared/storage-types";
+import { saveManager } from "@/core/SaveManager";
 
 export enum HuntState {
 	Idle = "Idle",
@@ -14,6 +16,11 @@ export enum HuntState {
 	Recovery = "Recovery",
 }
 
+interface HuntSaveState {
+	huntState: HuntState;
+	areaId: string;
+	areaIndex: number;
+}
 /**
  * Minimal interface every concrete state must implement.
  * `tick` is called every game‑loop iteration; `dt` is milliseconds elapsed since the previous call.
@@ -24,7 +31,7 @@ interface StateHandler {
 	onTick(dt: number): void;
 }
 
-export class HuntManager {
+export class HuntManager implements Saveable {
 	private state: HuntState = HuntState.Idle; // current enum value – useful for save files
 	private handler: StateHandler;
 	private area!: Area;
@@ -32,7 +39,7 @@ export class HuntManager {
 	constructor(private readonly playerCharacter: PlayerCharacter) {
 		this.handler = this.makeIdleState();
 		this.transition(HuntState.Idle, this.makeIdleState());
-
+		saveManager.register("huntManager", this);
 		bus.on("Game:GameTick", (dt) => this.onTick(dt));
 		bus.on("hunt:areaSelected", (areaId) => this.setArea(areaId));
 	}
@@ -119,6 +126,22 @@ export class HuntManager {
 			},
 			onExit: () => {},
 		};
+	}
+	save(): HuntSaveState {
+		const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
+
+		return {
+			huntState: this.state,
+			areaId: this.area.id,
+			areaIndex: areaSelector.selectedIndex,
+		};
+	}
+
+	load(state: HuntSaveState): void {
+		this.state = state?.huntState;
+		this.setArea(state?.areaId);
+		const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
+		areaSelector.selectedIndex = state?.areaIndex;
 	}
 
 	// ────────────────────────────────────────────────────────────────────────────

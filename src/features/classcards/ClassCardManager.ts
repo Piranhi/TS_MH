@@ -7,6 +7,7 @@ import { PlayerStats, StatsModifier } from "@/models/Stats";
 export class ClassCardManager {
 	constructor(private inv: InventoryManager) {
 		bus.on("player:classCardsChanged", () => this.recalculate());
+		bus.on("game:gameLoaded", () => this.recalculate());
 	}
 
 	private getEquippedCards(): ClassCard[] {

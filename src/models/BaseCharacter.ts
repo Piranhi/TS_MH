@@ -14,14 +14,11 @@ export type CharacterSnapsnot = Readonly<CharacterData> & {
 	rarity: string;
 };
 
-export type characterTeam = "player" | "enemy";
-
 export abstract class BaseCharacter {
 	readonly name: string;
 	readonly level: number;
 	protected readonly base: CoreStats;
 	protected readonly hp: Bounded;
-	public team: characterTeam;
 
 	// Combat
 	protected target?: BaseCharacter;
@@ -57,7 +54,7 @@ export abstract class BaseCharacter {
 	heal(amount: number) {
 		this.hp.increase(amount);
 	}
-    
+
 	isAlive(): boolean {
 		return this.currentHp > 0;
 	}

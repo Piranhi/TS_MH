@@ -10,6 +10,7 @@ import { ClassCardManager } from "../features/classcards/ClassCardManager";
 import { ClassCard } from "../features/classcards/ClassCard";
 import { isEquipmentItem } from "@/shared/type-guards";
 import { Equipment } from "./Equipment";
+import { Saveable } from "@/shared/storage-types";
 
 interface PlayerData {
 	level: number;
@@ -20,7 +21,14 @@ interface PlayerData {
 	trainedStats: Record<string, TrainedStat>;
 }
 
-export class Player {
+interface PlayerSaveState {
+	level: number;
+	renown: Bounded;
+	stamina: RegenPool;
+	assignedStamina: number;
+}
+
+export class Player implements Saveable {
 	private static _instance: Player | null = null;
 
 	private readonly name = "Player";
@@ -28,7 +36,6 @@ export class Player {
 	private renown: Bounded;
 	private experience: number;
 	private stamina: RegenPool;
-	private assignedStamina = 0;
 	private staminaMultiplier: number = 1;
 	private renownMultiplier: number = 1;
 

@@ -14,7 +14,6 @@ export class EnemyCharacter extends BaseCharacter {
 			maxHp: spec.baseStats.hp,
 		};
 		super(spec.displayName, 1, stats);
-		this.team = "enemy";
 		this.spec = spec;
 	}
 }

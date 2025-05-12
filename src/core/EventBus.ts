@@ -9,22 +9,24 @@ import { InventoryItemSpec } from "../shared/types";
 export interface GameEvents {
 	"Game:UITick": number;
 	"Game:GameTick": number;
-	"Renown:Changed" : Bounded;
+	"game:gameLoaded": void;
+	"game:gameSaved": void;
+	"Renown:Changed": Bounded;
 	"Resource:Changed": { gold: number };
-	"player:initialized" : Player;
-	"player:level-up" : number;
-	"player:stamina-changed" : poolChangedPayload;
-	"player:trainedStat-changed" : string;
+	"player:initialized": Player;
+	"player:level-up": number;
+	"player:stamina-changed": poolChangedPayload;
+	"player:trainedStat-changed": string;
 	"hunt:stateChanged": HuntState;
 	"hunt:areaSelected": string;
-	"combat:started": {player: PlayerCharacter, enemy: EnemyCharacter};
+	"combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };
 	"combat:ended": string;
 	"reward:renown": number;
-	"classCard:levelUp" : string;
+	"classCard:levelUp": string;
 	"inventory:inventoryChanged": void;
 	"player:equipmentChanged": InventoryItemSpec[];
 	"player:classCardsChanged": InventoryItemSpec[];
-		"player:statsChanged": PlayerCharacter;
+	"player:statsChanged": PlayerCharacter;
 }
 
 export type EventKey = keyof GameEvents;
@@ -36,7 +38,7 @@ export class EventBus {
 	private lastValue = new Map<EventKey, unknown>();
 
 	public on<E extends EventKey>(event: E, fn: Listener<E>) {
-		if(this.lastValue.has(event)){
+		if (this.lastValue.has(event)) {
 			fn(this.lastValue.get(event) as GameEvents[E]);
 		}
 		if (!this.listeners.has(event)) {
