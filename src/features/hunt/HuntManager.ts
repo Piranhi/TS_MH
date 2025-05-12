@@ -89,7 +89,7 @@ export class HuntManager {
     // COMBAT STATE
     private makeCombatState(enemy: EnemyCharacter): StateHandler {
         // fresh CombatManager per fight keeps combat math isolated and stateless
-        const combatManager = new CombatManager(this.playerCharacter, enemy);
+        const combatManager = new CombatManager(this.playerCharacter, enemy, this.area);
 
         return {
             onEnter: () => {},
