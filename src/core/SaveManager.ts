@@ -6,6 +6,12 @@ export class SaveManager {
 	private readonly SAVE_KEY = "monster-hunter-save";
 	private registry = new Map<string, Saveable<any>>();
 
+	constructor() {
+		setInterval(() => {
+			this.saveAll();
+		}, 30000);
+	}
+
 	register(key: string, system: Saveable): void {
 		if (this.registry.has(key)) {
 			throw new Error(`Duplicate save key: ${key}`);
@@ -49,6 +55,11 @@ export class SaveManager {
 		}
 
 		bus.emit("game:gameLoaded");
+	}
+
+	startNewGame(): void {
+		localStorage.removeItem(this.SAVE_KEY);
+		window.location.reload();
 	}
 }
 export const saveManager = new SaveManager();

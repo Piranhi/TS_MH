@@ -23,21 +23,9 @@ export class HeaderDisplay {
 			}
 		).init();
 
-		const renown = new StatDisplay(
-			"Renown",
-			"Renown:Changed",
-			this.PlayerStatsEl,
-			"stat-bar-template",
-			(payload, { valueEl, fillEl }) => {
-				const curr = Math.floor(payload.current);
-				const mx = Math.floor(payload.max);
-				valueEl.textContent = `${curr} / ${mx}`;
-
-				if (fillEl) {
-					const pct = mx > 0 ? (curr / mx) * 100 : 0;
-					fillEl.style.setProperty("--value", `${pct}%`);
-				}
-			}
-		).init();
+		const renown = new StatDisplay("Renown", "renown:changed", this.PlayerStatsEl, "stat-num-template", (payload, { valueEl }) => {
+			console.log(payload);
+			valueEl.textContent = payload.toString();
+		}).init();
 	}
 }

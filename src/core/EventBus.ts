@@ -5,13 +5,17 @@ import { PlayerCharacter } from "../models/PlayerCharacter";
 import { EnemyCharacter } from "../models/EnemyCharacter";
 import { poolChangedPayload } from "../models/value-objects/RegenPool";
 import { InventoryItemSpec } from "../shared/types";
+import { LifetimeStatType } from "@/models/LifetimeStats";
+import { BigNumber } from "@/models/utils/BigNumber";
 
 export interface GameEvents {
 	"Game:UITick": number;
 	"Game:GameTick": number;
 	"game:gameLoaded": void;
 	"game:gameSaved": void;
-	"Renown:Changed": Bounded;
+	"game:newGameCalled": void;
+	"renown:changed": BigNumber;
+	"renown:award": BigNumber;
 	"Resource:Changed": { gold: number };
 	"player:initialized": Player;
 	"player:level-up": number;
@@ -21,12 +25,12 @@ export interface GameEvents {
 	"hunt:areaSelected": string;
 	"combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };
 	"combat:ended": string;
-	"reward:renown": number;
 	"classCard:levelUp": string;
 	"inventory:inventoryChanged": void;
 	"player:equipmentChanged": InventoryItemSpec[];
 	"player:classCardsChanged": InventoryItemSpec[];
 	"player:statsChanged": PlayerCharacter;
+	"lifetimeStat:add": { stat: LifetimeStatType; amt: number };
 }
 
 export type EventKey = keyof GameEvents;

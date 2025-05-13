@@ -22,5 +22,11 @@ export class DebugMenu {
 		loadBtn.textContent = "Load";
 		this.rootEl.appendChild(loadBtn);
 		loadBtn.addEventListener("click", () => saveManager.loadAll());
+
+		const newGameBtn = document.createElement("button");
+		newGameBtn.classList.add("button");
+		newGameBtn.textContent = "New Game";
+		this.rootEl.appendChild(newGameBtn);
+		newGameBtn.addEventListener("click", () => saveManager.startNewGame());
 	}
 }

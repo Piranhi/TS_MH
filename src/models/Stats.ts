@@ -14,6 +14,8 @@ export interface PlayerExtras {
 	critChance: number;
 	critDamage: number;
 	lifesteal: number;
+    encounterChance: number;
+    
 	// add more as the design grows
 }
 

@@ -3,6 +3,7 @@ import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { bus } from "../../core/EventBus";
 import { Area } from "@/models/Area";
 import { Player } from "@/models/player";
+import { BigNumber } from "@/models/utils/BigNumber";
 
 export class CombatManager {
 	public isFinished: boolean = false;
@@ -27,14 +28,18 @@ export class CombatManager {
 		this.isFinished = true;
 		this.playerWon = this.playerCharacter.isAlive();
 		if (this.playerWon) {
+			bus.emit("lifetimeStat:add", { stat: "monstersKilled", amt: 1 });
 			this.rewardPlayer();
 		}
-		bus.emit("reward:renown", 10);
+		const renownAward = new BigNumber(10);
+		bus.emit("renown:award", renownAward);
 		bus.emit("combat:ended", this.playerWon ? "Player Won" : "Player Died");
 	}
 
 	private rewardPlayer() {
 		const loot = this.area.rollLoot();
+		console.log(this.area.getScaledValue(this.enemyCharacter.spec.renownMulti, "renown"));
+		Player.getInstance().adjustRenown(this.area.getScaledValue(this.enemyCharacter.spec.renownMulti, "renown"));
 		loot.forEach((l) => {
 			Player.getInstance().inventory.addLootById(l.itemId, l.qty);
 		});

@@ -14,10 +14,12 @@ import { Saveable } from "@/shared/storage-types";
 import { EquipmentManager } from "./EquipmentManager";
 import { makeDefaultTrainedStats } from "./Stats";
 import { saveManager } from "@/core/SaveManager";
+import { LifetimeStats } from "./LifetimeStats";
+import { BigNumber } from "./utils/BigNumber";
 
 interface PlayerData {
 	level: number;
-	renown: Bounded;
+	renown: BigNumber;
 	experience: number;
 	character: PlayerCharacter;
 	stamina: RegenPool;
@@ -26,7 +28,7 @@ interface PlayerData {
 
 interface PlayerSaveState {
 	level: number;
-	renown: Bounded;
+	renown: BigNumber;
 	stamina: RegenPool;
 	experience: number;
 	trainedStats: [string, TrainedStat][];
@@ -37,7 +39,7 @@ export class Player implements Saveable {
 
 	private readonly name = "Player";
 	private level: number;
-	private renown: Bounded;
+	private renown: BigNumber;
 	private experience: number = 0;
 	private stamina: RegenPool;
 	private staminaMultiplier: number = 1;
@@ -48,6 +50,7 @@ export class Player implements Saveable {
 	private cardManager: ClassCardManager;
 	private equipmentManager: EquipmentManager;
 	public trainedStats: Map<string, TrainedStat> = new Map();
+	private lifetimeStats: LifetimeStats;
 
 	private constructor(data: PlayerData) {
 		this.level = data.level;
@@ -59,6 +62,8 @@ export class Player implements Saveable {
 		this.inventory = new InventoryManager();
 		this.cardManager = new ClassCardManager(this.inventory);
 		this.equipmentManager = new EquipmentManager(this.inventory);
+		this.lifetimeStats = new LifetimeStats();
+
 		this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
 		this.inventory.addItemToInventory(ClassCard.create("bulwark_card_01"));
 		this.inventory.addItemToInventory(Equipment.create("chest_01"));
@@ -67,7 +72,7 @@ export class Player implements Saveable {
 	public static createNew(): Player {
 		const defaults: PlayerData = {
 			level: 1,
-			renown: new Bounded(0, 1000, 0),
+			renown: new BigNumber(0),
 			experience: 0,
 			character: new PlayerCharacter(),
 			stamina: new RegenPool(10, 1, false),
@@ -84,7 +89,7 @@ export class Player implements Saveable {
 		bus.emit("player:initialized", this);
 		bus.on("Game:GameTick", (dt) => this.handleGameTick(dt));
 		bus.on("Game:UITick", (dt) => this.handleUITick(dt));
-		bus.on("reward:renown", (amt) => this.adjustRenown(amt));
+		bus.on("renown:award", (amt) => this.adjustRenown(amt));
 		saveManager.register("Player", this);
 	}
 
@@ -144,9 +149,10 @@ export class Player implements Saveable {
 		bus.emit("player:level-up", this.level);
 	}
 
-	public adjustRenown(delta: number): void {
-		this.renown.adjust(delta);
-		bus.emit("Renown:Changed", this.renown);
+	public adjustRenown(delta: BigNumber | number): void {
+		console.log("renown incoming: " + delta);
+		this.renown.add(delta);
+		bus.emit("renown:changed", this.renown);
 	}
 
 	public static getInstance(): Player {
@@ -173,6 +179,6 @@ export class Player implements Saveable {
 		this.experience = state.experience;
 		this.trainedStats = new Map(state.trainedStats);
 		this.emitStamina();
-		bus.emit("Renown:Changed", this.renown);
+		bus.emit("renown:changed", this.renown);
 	}
 }

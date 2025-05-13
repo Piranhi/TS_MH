@@ -1,6 +1,14 @@
 import { Monster } from "./Monster";
 import { SpecRegistryBase } from "./SpecRegistryBase";
-
+import { BigNumber } from "./utils/BigNumber";
+export interface AreaScaling {
+	hp: number;
+	attack: number;
+	defence: number;
+	speed: number;
+	dropChance: number;
+	renown: number;
+}
 export interface AreaSpec {
 	id: string;
 	displayName: string;
@@ -8,7 +16,7 @@ export interface AreaSpec {
 	levelRange: { min: number; max: number };
 	spawns: { monsterId: string; weight: number }[];
 	drops: { itemId: string; chance: number; qty: { min: number; max: number } }[];
-	scaling: { hp: number; attack: number; defense: number; speed: number };
+	scaling: AreaScaling;
 }
 
 export interface Drop {
@@ -42,6 +50,14 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 				itemId: d.itemId,
 				qty: d.qty.min + Math.floor(Math.random() * (d.qty.max - d.qty.min + 1)),
 			}));
+	}
+
+	getScaledValue(base: number | BigNumber, prop: keyof AreaScaling): number | BigNumber {
+		if (typeof base === "number") {
+			return base * this.spec.scaling[prop];
+		} else {
+			return base.multiply(this.spec.scaling[prop]);
+		}
 	}
 
 	/* getters */

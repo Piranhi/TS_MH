@@ -114,8 +114,6 @@ export class HuntManager implements Saveable {
 
 	// RECOVERY STATE
 	private makeRecoveryState(): StateHandler {
-		const HEAL_RATE = 0.05;
-
 		return {
 			onEnter: () => {},
 			onTick: (dt: number) => {
@@ -165,7 +163,6 @@ export class HuntManager implements Saveable {
 
 	private rollEncounter(): boolean {
 		const BASE_CHANCE = 0.5;
-		console.log("Rolling");
 		return Math.random() < BASE_CHANCE;
 	}
 }

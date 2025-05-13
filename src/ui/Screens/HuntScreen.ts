@@ -6,93 +6,119 @@ import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { CharacterDisplay } from "../components/CharacterDisplay";
 import { addHTMLtoPage } from "../utils/ScreensUtils";
+import { Area } from "@/models/Area";
 
 export class HuntScreen extends BaseScreen {
-    // DOM ELEMENTS
-    private huntUpdateEl!: HTMLElement;
-    private playerCard!: CharacterDisplay;
-    private enemyCard!: CharacterDisplay;
-    readonly screenName = "hunt";
-    private readonly MAX_LOG_LINES = 50;
+	readonly screenName = "hunt";
+	private readonly MAX_LOG_LINES = 50;
 
-    constructor() {
-        super();
-    }
+	// DOM ELEMENTS
+	private huntUpdateEl!: HTMLElement;
+	private playerCard!: CharacterDisplay;
+	private enemyCard!: CharacterDisplay;
+	private areaSelectEl!: HTMLSelectElement;
 
-    init() {
-        addHTMLtoPage(Markup, this);
-        this.setupElements();
+	init() {
+		addHTMLtoPage(Markup, this);
+		this.setupElements();
+		this.bindEvents();
+	}
 
-        bus.on("hunt:stateChanged", (state) => this.areaChanged(state));
+	show() {
+		this.playerCard.render();
+		this.enemyCard.render();
+	}
 
-        bus.on("combat:started", (combat) => {
-            this.initCharacters(combat.player, combat.enemy);
-            this.updateOutput(`You are in combat with <span class="rarity-${combat.enemy.spec.rarity}"> ${combat.enemy.getName()}</span>`);
-        });
-        bus.on("combat:ended", (result) => {
-            this.updateOutput(result);
-        });
+	hide() {}
 
-        bus.on("Game:UITick", (dt) => this.handleTick(dt));
+	handleTick(dt: number): void {
+		this.playerCard.render();
+		this.enemyCard.render();
+	}
 
-        document.getElementById("area-select")!.addEventListener("change", (e) => {
-            const areaId = (e.target as HTMLSelectElement).value;
-            bus.emit("hunt:areaSelected", areaId);
-        });
-    }
-    show() {
-        this.playerCard.render();
-        this.enemyCard.render();
-    }
-    hide() {}
+	private setupElements() {
+		this.huntUpdateEl = document.getElementById("hunt-update-log") as HTMLElement;
+		this.buildAreaSelect();
+		// Setup Player Cards
+		this.playerCard = new CharacterDisplay(true);
+		this.enemyCard = new CharacterDisplay(false);
+	}
 
-    handleTick(dt: number): void {
-        this.playerCard.render();
-        this.enemyCard.render();
-    }
+	private buildAreaSelect() {
+		// Setup Area select based on all Areas from JSON
+		this.areaSelectEl = document.getElementById("area-select") as HTMLSelectElement;
+		this.areaSelectEl.innerHTML = "";
 
-    private setupElements() {
-        this.huntUpdateEl = document.getElementById("hunt-update")!;
-        this.playerCard = new CharacterDisplay(true);
-        this.enemyCard = new CharacterDisplay(false);
-    }
+		const defaultArea = document.createElement("option");
+		defaultArea.textContent = "Select an area…";
+		defaultArea.value = "";
+		defaultArea.disabled = true;
+		this.areaSelectEl.options.add(defaultArea);
+		this.areaSelectEl.selectedIndex = 0;
 
-    private initCharacters(player: PlayerCharacter, enemy: EnemyCharacter) {
-        this.playerCard.setup(player);
-        this.enemyCard.setup(enemy);
-    }
+		const Areas = Area.getAllSpecs();
+		Areas.forEach((area) => {
+			const areaSelect = document.createElement("option");
+			areaSelect.value = area.id;
+			areaSelect.textContent = `[T${area.tier}] - ${area.displayName}`;
+			this.areaSelectEl.options.add(areaSelect);
+		});
+		this.areaSelectEl.addEventListener("change", (e) => {
+			const areaId = (e.target as HTMLSelectElement).value;
+			bus.emit("hunt:areaSelected", areaId);
+		});
+	}
 
-    areaChanged(state: HuntState) {
-        switch (state) {
-            case HuntState.Idle:
-                break;
-            case HuntState.Search:
-                this.enterSearch();
-                break;
-            case HuntState.Combat:
-                this.enterCombat();
-                break;
-            case HuntState.Recovery:
-                this.enterRecovery();
-                break;
-        }
-    }
+	private bindEvents() {
+		bus.on("hunt:stateChanged", (state) => this.areaChanged(state));
+		bus.on("Game:UITick", (dt) => this.handleTick(dt));
+		bus.on("combat:started", (combat) => {
+			this.initCharacters(combat.player, combat.enemy);
+			this.updateOutput(
+				`You are in combat with <span class="rarity-${combat.enemy.spec.rarity}"> ${combat.enemy.getName()}</span>`
+			);
+		});
+		bus.on("combat:ended", (result) => {
+			this.updateOutput(result);
+		});
+	}
 
-    enterSearch() {}
+	private initCharacters(player: PlayerCharacter, enemy: EnemyCharacter) {
+		this.playerCard.setup(player);
+		this.enemyCard.setup(enemy);
+	}
 
-    enterCombat() {}
+	areaChanged(state: HuntState) {
+		switch (state) {
+			case HuntState.Idle:
+				break;
+			case HuntState.Search:
+				this.enterSearch();
+				break;
+			case HuntState.Combat:
+				this.enterCombat();
+				break;
+			case HuntState.Recovery:
+				this.enterRecovery();
+				break;
+		}
+	}
 
-    enterRecovery() {
-        this.updateOutput("In Recovery");
-    }
+	enterSearch() {}
 
-    private updateOutput(s: string) {
-        const li = document.createElement("li");
-        li.innerHTML = s;
-        this.huntUpdateEl.append(li);
+	enterCombat() {}
 
-        while (this.huntUpdateEl.children.length > this.MAX_LOG_LINES) {
-            this.huntUpdateEl.removeChild(this.huntUpdateEl.firstElementChild!);
-        }
-    }
+	enterRecovery() {
+		this.updateOutput("In Recovery");
+	}
+
+	private updateOutput(s: string) {
+		const li = document.createElement("li");
+		li.innerHTML = s;
+		this.huntUpdateEl.append(li);
+
+		while (this.huntUpdateEl.children.length > this.MAX_LOG_LINES) {
+			this.huntUpdateEl.removeChild(this.huntUpdateEl.firstElementChild!);
+		}
+	}
 }

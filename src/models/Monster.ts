@@ -1,9 +1,19 @@
 import { SpecRegistryBase } from "./SpecRegistryBase";
 
+export type MonsterRarity = "common" | "uncommon" | "rare" | "terrifying" | "nightmare";
+
+const renownMultipliers: Record<MonsterRarity, number> = {
+	common: 1.0,
+	uncommon: 1.2,
+	rare: 1.5,
+	terrifying: 2.0,
+	nightmare: 3.0,
+};
+
 export interface MonsterSpec {
 	id: string;
 	displayName: string;
-	rarity: "common" | "uncommon" | "rare";
+	rarity: MonsterRarity;
 	baseStats: { hp: number; attack: number; defence: number; speed: number };
 	attacks: string[];
 }
@@ -25,6 +35,10 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 	}
 	get baseStats() {
 		return this.spec.baseStats;
+	}
+
+	get renownMulti(): number {
+		return renownMultipliers[this.rarity];
 	}
 
 	// Registry.
