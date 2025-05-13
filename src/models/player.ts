@@ -11,6 +11,7 @@ import { ClassCard } from "../features/classcards/ClassCard";
 import { isEquipmentItem } from "@/shared/type-guards";
 import { Equipment } from "./Equipment";
 import { Saveable } from "@/shared/storage-types";
+import { EquipmentManager } from "./EquipmentManager";
 import { makeDefaultTrainedStats } from "./Stats";
 import { saveManager } from "@/core/SaveManager";
 
@@ -45,6 +46,7 @@ export class Player implements Saveable {
 	public character: PlayerCharacter;
 	public inventory: InventoryManager;
 	private cardManager: ClassCardManager;
+	private equipmentManager: EquipmentManager;
 	public trainedStats: Map<string, TrainedStat> = new Map();
 
 	private constructor(data: PlayerData) {
@@ -56,6 +58,7 @@ export class Player implements Saveable {
 		this.character = new PlayerCharacter();
 		this.inventory = new InventoryManager();
 		this.cardManager = new ClassCardManager(this.inventory);
+		this.equipmentManager = new EquipmentManager(this.inventory);
 		this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
 		this.inventory.addItemToInventory(ClassCard.create("bulwark_card_01"));
 		this.inventory.addItemToInventory(Equipment.create("chest_01"));
