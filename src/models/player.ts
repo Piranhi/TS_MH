@@ -11,6 +11,8 @@ import { ClassCard } from "../features/classcards/ClassCard";
 import { isEquipmentItem } from "@/shared/type-guards";
 import { Equipment } from "./Equipment";
 import { Saveable } from "@/shared/storage-types";
+import { makeDefaultTrainedStats } from "./Stats";
+import { saveManager } from "@/core/SaveManager";
 
 interface PlayerData {
 	level: number;
@@ -25,6 +27,8 @@ interface PlayerSaveState {
 	level: number;
 	renown: Bounded;
 	stamina: RegenPool;
+	experience: number;
+	trainedStats: [string, TrainedStat][];
 }
 
 export class Player implements Saveable {
@@ -33,7 +37,7 @@ export class Player implements Saveable {
 	private readonly name = "Player";
 	private level: number;
 	private renown: Bounded;
-	private experience: number;
+	private experience: number = 0;
 	private stamina: RegenPool;
 	private staminaMultiplier: number = 1;
 	private renownMultiplier: number = 1;
@@ -64,63 +68,33 @@ export class Player implements Saveable {
 			experience: 0,
 			character: new PlayerCharacter(),
 			stamina: new RegenPool(10, 1, false),
-			trainedStats: {
-				attack: new TrainedStat({
-					id: "attack",
-					name: "Attack",
-					level: 1,
-					progress: 0,
-					nextThreshold: 50,
-					assignedPoints: 0,
-					baseGainRate: 1,
-					status: "Unlocked",
-				}),
-				agility: new TrainedStat({
-					id: "agility",
-					name: "Agility",
-					level: 1,
-					progress: 0,
-					nextThreshold: 100,
-					assignedPoints: 0,
-					baseGainRate: 0.5,
-					status: "Locked",
-				}),
-				crit: new TrainedStat({
-					id: "crit",
-					name: "Crit",
-					level: 1,
-					progress: 0,
-					nextThreshold: 100,
-					assignedPoints: 0,
-					baseGainRate: 0.5,
-					status: "Unlocked",
-				}),
-			},
+			trainedStats: makeDefaultTrainedStats(),
 		};
 		return new Player(defaults);
 	}
 
-	static loadFromSave(data: PlayerData): Player {
+	/* 	static loadFromSave(data: PlayerData): Player {
 		return new Player(data);
-	}
+	} */
 
 	async init(): Promise<void> {
 		bus.emit("player:initialized", this);
 		bus.on("Game:GameTick", (dt) => this.handleGameTick(dt));
 		bus.on("Game:UITick", (dt) => this.handleUITick(dt));
 		bus.on("reward:renown", (amt) => this.adjustRenown(amt));
+		saveManager.register("Player", this);
 	}
 
-	handleGameTick(dt: number): void {}
-
-	handleUITick(dt: number): void {
+	handleGameTick(dt: number): void {
 		this.increaseStamina(dt);
-		this.updateStats(dt);
+		//this.updateStats(dt); - DON'T NEED, STATS LISTEN TO BUS THEMSELVES
 	}
 
-	private updateStats(dt: number) {
+	handleUITick(dt: number): void {}
+
+	/* 	private updateStats(dt: number) {
 		this.trainedStats.forEach((stat) => stat.update(dt));
-	}
+	} */
 
 	public getPlayerCharacter(): PlayerCharacter {
 		return this.character;
@@ -184,8 +158,18 @@ export class Player implements Saveable {
 			level: this.level,
 			renown: this.renown,
 			stamina: this.stamina,
+			experience: this.experience,
+			trainedStats: Array.from(this.trainedStats.entries()),
 		};
 	}
 
-	load(state: PlayerSaveState): void {}
+	load(state: PlayerSaveState): void {
+		this.level = state.level;
+		this.stamina = state.stamina;
+		this.renown = state.renown;
+		this.experience = state.experience;
+		this.trainedStats = new Map(state.trainedStats);
+		this.emitStamina();
+		bus.emit("Renown:Changed", this.renown);
+	}
 }

@@ -40,4 +40,12 @@ export class Bounded {
 	private clamp(value: number): number {
 		return Math.floor(Math.max(this.min, Math.min(value, this.max)));
 	}
+
+	toJSON() {
+		return { __type: "Bounded", min: this.min, max: this.max, current: this.current };
+	}
+
+	static fromJSON(raw: any): Bounded {
+		return new Bounded(raw.min, raw.max, raw.current);
+	}
 }

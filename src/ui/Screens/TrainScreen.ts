@@ -6,27 +6,27 @@ import { Player } from "@/models/player";
 import { TrainedStatDisplay } from "../components/TrainedStatDisplay";
 
 export class TrainScreen extends BaseScreen {
+	readonly screenName = "train";
+	private rootEl!: HTMLElement;
+	private trainingListEl!: HTMLElement;
 
-    readonly screenName = 'train';
-    private rootEl!: HTMLElement;
+	init() {
+		this.rootEl = addHTMLtoPage(Markup, this);
+		this.trainingListEl = document.getElementById("trained-stats-list") as HTMLElement;
+		bus.on("Game:UITick", (dt) => this.handleTick(dt));
+		bus.on("game:gameLoaded", () => this.addStatElements());
+		this.addStatElements();
+	}
 
-    init(){
-        this.rootEl = addHTMLtoPage(Markup, this)
-        bus.on("Game:UITick", (dt) => this.handleTick(dt));
-        this.addStatElements();
-    };
+	handleTick(dt: number) {}
+	show() {}
+	hide() {}
 
-    handleTick(dt: number){}
-    show(){    
-    };
-    hide(){};
-
-    addStatElements(){
-        const trainingListEl = this.rootEl.querySelector(".training-list") as HTMLElement
-        Player.getInstance().trainedStats .forEach(stat => {
-            const statHolder = new TrainedStatDisplay(this.rootEl, stat)
-            statHolder.init();
-        });
-    }
-
+	addStatElements() {
+		this.trainingListEl.innerHTML = "";
+		Player.getInstance().trainedStats.forEach((stat) => {
+			const statHolder = new TrainedStatDisplay(this.rootEl, this.trainingListEl, stat);
+			statHolder.init();
+		});
+	}
 }

@@ -132,16 +132,19 @@ export class HuntManager implements Saveable {
 
 		return {
 			huntState: this.state,
-			areaId: this.area.id,
+			areaId: this.area ? this.area.id : "null",
 			areaIndex: areaSelector.selectedIndex,
 		};
 	}
 
 	load(state: HuntSaveState): void {
-		this.state = state?.huntState;
-		this.setArea(state?.areaId);
-		const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
-		areaSelector.selectedIndex = state?.areaIndex;
+		if (state.areaId !== "null") {
+			// Only setup if player was in an area
+			this.state = state?.huntState;
+			this.setArea(state?.areaId);
+			const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
+			areaSelector.selectedIndex = state?.areaIndex;
+		}
 	}
 
 	// ────────────────────────────────────────────────────────────────────────────

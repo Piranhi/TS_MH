@@ -1,26 +1,16 @@
-export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden"
-
-export interface TrainedStatData {
-	id: string;
-	name: string;
-	level: number;
-	progress: number;
-	nextThreshold: number;
-	assignedPoints: number;
-	baseGainRate: number;
-    status: TrainedStatStatus
-}
+import { bus } from "@/core/EventBus";
+import { TrainedStatData, TrainedStatStatus, TrainedStatType } from "./Stats";
 
 const GROWTH_VALUE = 1.35;
 export class TrainedStat {
-	id: string;
+	id: TrainedStatType;
 	name: string;
 	level: number;
 	progress: number;
 	nextThreshold: number;
 	assignedPoints: number;
 	baseGainRate: number;
-    status: TrainedStatStatus;
+	status: TrainedStatStatus;
 
 	constructor(data: TrainedStatData) {
 		this.id = data.id;
@@ -28,9 +18,10 @@ export class TrainedStat {
 		this.level = data.level;
 		this.progress = data.progress;
 		this.nextThreshold = data.nextThreshold;
-		this.assignedPoints = data.assignedPoints;
+		this.assignedPoints = 0;
 		this.baseGainRate = data.baseGainRate;
-        this.status = data.status;
+		this.status = data.status;
+		bus.on("Game:GameTick", (dt) => this.update(dt));
 	}
 
 	/**
@@ -39,10 +30,11 @@ export class TrainedStat {
 	 * and handles leveling up.
 	 */
 	public update(deltaTime: number) {
+		if (this.assignedPoints === 0) return;
+		
 		this.progress += this.assignedPoints * this.baseGainRate * deltaTime;
 
 		while (this.progress >= this.nextThreshold) {
-			
 			this.progress -= this.nextThreshold;
 			this.level += 1;
 
@@ -51,7 +43,38 @@ export class TrainedStat {
 		}
 	}
 
-	public adjustAssignedPoints(delta: number){
-		
+	public adjustAssignedPoints(delta: number) {}
+
+	toJSON() {
+		return {
+			__type: "TrainedStat", // for your reviver
+			id: this.id,
+			name: this.name,
+			level: this.level,
+			progress: this.progress,
+			nextThreshold: this.nextThreshold,
+			assignedPoints: this.assignedPoints,
+			baseGainRate: this.baseGainRate,
+			status: this.status,
+		};
+	}
+
+	static fromJSON(raw: any): TrainedStat {
+		// Create with the minimal shape (you might have a dedicated
+		// constructor or helper that takes the full state)
+		const dummy: TrainedStatData = {
+			id: raw.id,
+			name: raw.name,
+			level: raw.level,
+			progress: raw.progress,
+			nextThreshold: raw.nextThreshold,
+			assignedPoints: raw.assignedPoints,
+			baseGainRate: raw.baseGainRate,
+			status: raw.status,
+		};
+		const stat = new TrainedStat(dummy);
+		// overwrite anything the constructor didn’t set
+		stat.assignedPoints = raw.assignedPoints;
+		return stat;
 	}
 }
