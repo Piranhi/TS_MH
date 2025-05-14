@@ -1,34 +1,30 @@
 [
-	{
-		"id": "forest_easy",
-		"displayName": "Easy Forest",
-		"tier": 1,
-		"levelRange": { "min": 1, "max": 5 },
+    {
+        "id": "forest_easy",
+        "displayName": "Easy Forest",
+        "tier": 1,
+        "levelRange": { "min": 1, "max": 5 },
 
-		"spawns": [
-			{ "monsterId": "slime_basic", "weight": 10 },
-			{ "monsterId": "wolf_basic", "weight": 10 },
-			{ "monsterId": "rare_treant", "weight": 1 }
-		],
+        "spawns": [
+            { "monsterId": "slime_basic", "weight": 10, "drops": [{ "tags": ["t1"], "chance": 0.5 }] },
+            { "monsterId": "wolf_basic", "weight": 10, "drops": [{ "tags": ["t1"], "chance": 0.5 }] },
+            { "monsterId": "rare_treant", "weight": 1, "drops": [{ "tags": ["t1"], "chance": 0.5 }] }
+        ],
 
-		"drops": [{ "itemId": "chest_01", "chance": 0.5, "qty": { "min": 1, "max": 1 } }],
+        "areaScaling": { "hp": 1.0, "attack": 1.0, "defence": 1.0, "speed": 1.0, "dropChance": 1.0, "renown": 1 }
+    },
+    {
+        "id": "forest_hard",
+        "displayName": "Hard Forest",
+        "tier": 2,
+        "levelRange": { "min": 1, "max": 5 },
 
-		"areaScaling": { "hp": 1.0, "attack": 1.0, "defence": 1.0, "speed": 1.0, "dropChance": 1.0, "renown": 1 }
-	},
-	{
-		"id": "forest_hard",
-		"displayName": "Hard Forest",
-		"tier": 2,
-		"levelRange": { "min": 1, "max": 5 },
+        "spawns": [
+            { "monsterId": "slime_basic", "weight": 10, "drops": [{ "tags": ["t1"], "chance": 0.5 }] },
+            { "monsterId": "wolf_basic", "weight": 10, "drops": [{ "tags": ["t1"], "chance": 0.5 }] },
+            { "monsterId": "rare_treant", "weight": 1, "drops": [{ "tags": ["t1"], "chance": 0.5 }] }
+        ],
 
-		"spawns": [
-			{ "monsterId": "slime_basic", "weight": 10 },
-			{ "monsterId": "wolf_basic", "weight": 10 },
-			{ "monsterId": "rare_treant", "weight": 1 }
-		],
-
-		"drops": [{ "itemId": "chest_01", "chance": 0.5, "qty": { "min": 1, "max": 1 } }],
-
-		"areaScaling": { "hp": 3.0, "attack": 3.0, "defence": 3.0, "speed": 3.0, "dropChance": 0.01, "renown": 2 }
-	}
+        "areaScaling": { "hp": 3.0, "attack": 3.0, "defence": 3.0, "speed": 3.0, "dropChance": 0.01, "renown": 2 }
+    }
 ]

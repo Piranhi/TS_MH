@@ -1,12 +1,46 @@
 [
     {
-		"id": "chest_01",
+        "id": "tier1_chest",
         "category": "equipment",
-		"name": "Rusty Chest",
-		"description": "Todo",
-		"rarity": "Common",
+        "name": "Worn padded vest",
+        "description": "Todo",
+        "rarity": "Common",
         "equipType": "chest",
-		"statMod": { "defenceFlat": 2 },
-		"iconUrl": ""
-	}
+        "statMod": { "defenceFlat": 1 },
+        "iconUrl": "",
+        "tags": ["t1"]
+    },
+    {
+        "id": "tier1_head",
+        "category": "equipment",
+        "name": "Worn padded vest",
+        "description": "Todo",
+        "rarity": "Common",
+        "equipType": "head",
+        "statMod": { "defenceFlat": 1 },
+        "iconUrl": "",
+        "tags": ["t1"]
+    },
+    {
+        "id": "tier1_weapon",
+        "category": "equipment",
+        "name": "Cracked Sword",
+        "description": "Todo",
+        "rarity": "Common",
+        "equipType": "weapon",
+        "statMod": { "attackflat": 1 },
+        "iconUrl": "",
+        "tags": ["t1"]
+    },
+    {
+        "id": "tier1_legs",
+        "category": "equipment",
+        "name": "Ripped shorts",
+        "description": "Todo",
+        "rarity": "Common",
+        "equipType": "legs",
+        "statMod": { "defenceFlat": 1 },
+        "iconUrl": "",
+        "tags": ["t1"]
+    }
 ]

@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Equipment",
+    "type": "array",
+    "properties": {
+        "id": { "type": "string" },
+        "category": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "rarity": { "type": "string" },
+        "equipType": { "type": "string" },
+        "statMod": {
+            "type": "array",
+            "items": {
+                "attackFlat": { "type": "number" },
+                "attackMulti": { "type": "number" },
+                "defenceFlat": { "type": "number" },
+                "defenceMulti": { "type": "number" },
+                "critChance": { "type": "number" },
+                "critDamage": { "type": "number" },
+                "speedMulti": { "type": "number" },
+                "encounterChance": { "type": "number" },
+                "lifeSteal": { "type": "number" }
+            },
+
+            "additionalProperties": false
+        },
+        "iconUrl": { "type": "string" },
+        "tags": { "type": "string" }
+    },
+    "required": ["id", "category", "name", "description", "rarity", "equipType", "iconUrl", "tags"]
+}
