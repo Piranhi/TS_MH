@@ -4,16 +4,20 @@
   <template id="character-display">
     <div class="char-holder">
       <img class="char-img" src="src\Assets\Images\enemy-example.png" alt="Goblin">
-    
+
       <div class="char-details">
         <h2 class="char-name">Player</h2>
-  
+
         <div class="char-stats">
           <!-- keeping “stat” flexible so you can add more later -->
           <span class="stat stat--attack">⚔️ 0</span>
           <span class="stat stat--defence">🛡️ 0</span>
         </div>
-    
+
+        <!-- Speed bar -->
+        <div class="speed-bar" style="--speed: 0.50">
+          <span class="speed-fill"></span>
+        </div>
         <!-- Health bar -->
         <div class="health-bar" style="--hp: 0">
           <span class="hp-fill"></span>
@@ -39,7 +43,7 @@
   </div>
 
   <div class="char-holders">
-</div>
+  </div>
 
 
   <h3>Combat Log</h3>

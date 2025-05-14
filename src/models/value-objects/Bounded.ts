@@ -13,6 +13,14 @@ export class Bounded {
 		this._current = this.clamp(v);
 	}
 
+	public get percent(): number {
+		return this._current > 0 ? this._current / this.max : 0;
+	}
+
+	public setToMax(): void {
+		this.current = this.max;
+	}
+
 	public adjust(delta: number): void {
 		this.current += delta;
 	}

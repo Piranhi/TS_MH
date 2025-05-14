@@ -1,7 +1,8 @@
-import { Tooltip } from "./Tooltip";
+import { Tooltip, TooltipData } from "./Tooltip";
 import { bus } from "@/core/EventBus";
-import { InventoryItem } from "@/shared/types";
+import { getItemCategoryLabel, InventoryItem } from "@/shared/types";
 import { SlotType } from "@/features/inventory/InventoryManager";
+import { prettify } from "@/shared/utils/stringUtils";
 
 /** Pure UI component – no game logic */
 export class InventorySlot {
@@ -44,10 +45,11 @@ export class InventorySlot {
 		if (!this.item) return;
 		Tooltip.instance.show(this.el, {
 			icon: this.item.iconUrl,
-			name: this.item.name,
-			rarity: this.item.rarity,
-			type: this.item.category,
+			name: prettify(this.item.name),
+			rarity: prettify(this.item.rarity!),
+			type: getItemCategoryLabel(this.item.category),
 			description: this.item.description,
+			tintColour: this.item.rarity,
 		});
 	}
 

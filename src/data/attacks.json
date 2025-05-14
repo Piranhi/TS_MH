@@ -1,17 +1,18 @@
 [
-    {
-      "id": "basic_melee",
-      "displayName": "Slam",
-      "type": "physical",
-      "power": 1.0,
-      "cooldown": 2
-    },
-    {
-      "id": "root_snare",
-      "displayName": "Root Snare",
-      "type": "physical",
-      "power": 0.6,
-      "cooldown": 6
-    }
-  ]
-  
+	{
+		"id": "basic_melee",
+		"displayName": "Slam",
+		"type": "physical",
+		"power": 1.0,
+		"cooldown": 2,
+		"priority": "Low"
+	},
+	{
+		"id": "root_snare",
+		"displayName": "Root Snare",
+		"type": "physical",
+		"power": 0.6,
+		"cooldown": 6,
+		"priority": "High"
+	}
+]

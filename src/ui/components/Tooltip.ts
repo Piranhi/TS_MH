@@ -5,6 +5,7 @@ export interface TooltipData {
 	type?: string;
 	stats?: string[];
 	description?: string;
+	tintColour?: string;
 }
 
 export class Tooltip {
@@ -48,6 +49,13 @@ export class Tooltip {
 		this.fillStats(data.stats ?? []);
 		this.$(".tooltip-description").textContent = data.description ?? "";
 
+		// Optional tint
+		if (data.tintColour) {
+			this.root.style.setProperty("--tooltip-tint", this.getRarityColor(data.tintColour));
+		} else {
+			this.root.style.removeProperty("--tooltip-tint");
+		}
+
 		// Position
 		const r = target.getBoundingClientRect();
 		this.root.style.top = `${r.top + window.scrollY}px`;
@@ -77,5 +85,24 @@ export class Tooltip {
 
 	private $(sel: string) {
 		return this.root.querySelector(sel)!;
+	}
+
+	private getRarityColor(rarity: string): string {
+		switch (rarity) {
+			case "common":
+				return "rgba(136,136,136,0.15)";
+			case "uncommon":
+				return "rgba(76,175,80,0.15)";
+			case "rare":
+				return "rgba(33,150,243,0.15)";
+			case "epic":
+				return "rgba(156,39,176,0.15)";
+			case "legendary":
+				return "rgba(255,215,0,0.12)";
+			case "unique":
+				return "rgba(233,30,99,0.15)";
+			default:
+				return "rgba(255,255,255,0.05)";
+		}
 	}
 }

@@ -163,7 +163,7 @@ export class InventoryManager implements Saveable {
 	}
 
 	private emitChange() {
-		bus.emit("inventory:inventoryChanged");
+		bus.emit("inventory:changed");
 	}
 
 	//-----------------------------------SAVE/LOAD ----------------------------------------

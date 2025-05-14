@@ -1,40 +1,35 @@
 import { bus } from "@/core/EventBus";
 import { saveManager } from "@/core/SaveManager";
+import { HuntManager } from "@/features/hunt/HuntManager";
+import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
+import { Player } from "@/models/player";
 import { BigNumber } from "@/models/utils/BigNumber";
 
 export class DebugMenu {
-    private rootEl!: HTMLElement;
-    constructor() {}
+	private rootEl!: HTMLElement;
+	constructor() {}
 
-    build() {
-        this.rootEl = document.getElementById("debug-menu")!;
-        this.rootEl.innerHTML = "";
-        this.addOptions();
-    }
+	build() {
+		this.rootEl = document.getElementById("debug-menu")!;
+		this.rootEl.innerHTML = "";
+		this.addOptions();
+	}
 
-    addOptions() {
-        const saveBtn = document.createElement("button");
-        saveBtn.classList.add("button");
-        saveBtn.textContent = "Save";
-        this.rootEl.appendChild(saveBtn);
-        saveBtn.addEventListener("click", () => saveManager.saveAll());
+	addOptions() {
+		this.addButton("Save", () => saveManager.saveAll());
+		this.addButton("Load", () => saveManager.loadAll());
+		this.addButton("New Game", () => saveManager.startNewGame());
+		this.addButton("Add Renown", () => bus.emit("renown:award", new BigNumber(100000)));
+		this.addButton("Kill Player", () => Player.getInstance().character.takeDamage(1000000));
+		this.addButton("Kill Enemy", () => bus.emit("debug:killEnemy"));
+		this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"]))); //  Player.getInstance().inventory.addItemToInventory);
+	}
 
-        const loadBtn = document.createElement("button");
-        loadBtn.classList.add("button");
-        loadBtn.textContent = "Load";
-        this.rootEl.appendChild(loadBtn);
-        loadBtn.addEventListener("click", () => saveManager.loadAll());
-
-        const newGameBtn = document.createElement("button");
-        newGameBtn.classList.add("button");
-        newGameBtn.textContent = "New Game";
-        this.rootEl.appendChild(newGameBtn);
-        newGameBtn.addEventListener("click", () => saveManager.startNewGame());
-
-        const addRenownBtn = document.createElement("button");
-        addRenownBtn.classList.add("button");
-        addRenownBtn.textContent = "Add Renown";
-        this.rootEl.appendChild(addRenownBtn);
-        addRenownBtn.addEventListener("click", () => bus.emit("renown:award", new BigNumber(100000)));
-    }
+	private addButton(name: string, onClick: () => void) {
+		const btn = document.createElement("button");
+		btn.classList.add("button");
+		btn.textContent = name;
+		this.rootEl.appendChild(btn);
+		btn.addEventListener("click", onClick);
+	}
 }

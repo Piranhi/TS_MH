@@ -10,7 +10,7 @@ export interface AreaSpec {
 	displayName: string;
 	tier: number;
 	levelRange: { min: number; max: number };
-	spawns: { monsterId: string; weight: number; drops: { tags: string[]; weight: number } }[];
+	spawns: Array<{ monsterId: string; weight: number; drops: { tags: string[]; chance: number } }>;
 	areaScaling: AreaScaling;
 }
 
@@ -31,7 +31,7 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 		const spawns = this.spec.spawns;
 		const total = spawns.reduce((s, { weight }) => s + weight, 0);
 		let roll = Math.random() * total;
-		printLog(this.spec.areaScaling.hp.toString(), 3);
+		printLog("Picking Monster - HP:" + this.spec.areaScaling.hp.toString(), 3, "Area.ts");
 
 		for (const spawn of spawns) {
 			roll -= spawn.weight;
@@ -51,15 +51,17 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 			throw new Error("No monster picked — cannot roll loot");
 		}
 
-		const droppedIds: string[] = [];
+		const { tags, chance } = this.selectedSpawn.drops;
+		const ids: string[] = [];
 
-		const candidates = InventoryRegistry.getSpecsByTags(this.selectedSpawn.drops.tags);
+		// get every spec matching these tags
+		const candidates = InventoryRegistry.getSpecsByTags(tags);
 		for (const spec of candidates) {
-			if (Math.random() < this.selectedSpawn.drops.weight * this.spec.areaScaling.dropChance) {
-				droppedIds.push(spec.id);
+			if (Math.random() < chance * this.spec.areaScaling.dropChance) {
+				ids.push(spec.id);
 			}
 		}
-		return droppedIds;
+		return ids;
 	}
 
 	getScaledValue(base: number | BigNumber, prop: keyof AreaScaling): number | BigNumber {

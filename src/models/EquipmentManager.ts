@@ -5,35 +5,35 @@ import { Equipment } from "./Equipment";
 import { InventoryManager } from "@/features/inventory/InventoryManager";
 
 export class EquipmentManager {
-    constructor(private inv: InventoryManager) {
-        bus.on("player:equipmentChanged", () => this.recalculate());
-        bus.on("game:gameLoaded", () => this.recalculate());
-    }
+	constructor(private inv: InventoryManager) {
+		bus.on("player:equipmentChanged", () => this.recalculate());
+		bus.on("game:gameLoaded", () => this.recalculate());
+	}
 
-    private getEquippedEquipment(): Equipment[] {
-        return this.inv.getEquippedEquipment();
-    }
+	private getEquippedEquipment(): Equipment[] {
+		return this.inv.getEquippedEquipment();
+	}
 
-    private recalculate() {
-        this.clearBonuses();
-        const merged = this.getEquippedEquipment()
-            .map((eq) => eq.statMod)
-            .reduce(mergeStats, {} as StatsModifier);
+	private recalculate() {
+		this.clearBonuses();
+		const merged = this.getEquippedEquipment()
+			.map((eq) => eq.statMod)
+			.reduce(mergeStats, {} as StatsModifier);
 
-        const pc = Player.getInstance().getPlayerCharacter();
-        pc.stats.setLayer("equipment", () => merged);
-    }
+		const pc = Player.getInstance().getPlayerCharacter();
+		pc.stats.setLayer("equipment", () => merged);
+	}
 
-    private clearBonuses() {}
+	private clearBonuses() {}
 
-    public combineDuplicates() {}
+	public combineDuplicates() {}
 }
 
 function mergeStats(a: StatsModifier, b: StatsModifier): StatsModifier {
-    const out: StatsModifier = { ...a };
-    for (const k in b) {
-        const key = k as keyof PlayerStats;
-        out[key] = (out[key] ?? 0) + (b[key] ?? 0);
-    }
-    return out;
+	const out: StatsModifier = { ...a };
+	for (const k in b) {
+		const key = k as keyof PlayerStats;
+		out[key] = (out[key] ?? 0) + (b[key] ?? 0);
+	}
+	return out;
 }

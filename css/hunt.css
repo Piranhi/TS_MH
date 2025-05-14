@@ -1,11 +1,15 @@
 /* ---------- Design tokens (easy theme tweaks) ---------- */
 :root {
 	--glass-bg: rgba(255, 255, 255, 0.15);
+	--glass-bg-speed: rgba(255, 255, 255, 0.288);
 	--glass-border: rgba(255, 255, 255, 0.35);
 	--glass-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 	--bar-bg: rgba(255, 255, 255, 0.2);
+	--bar-bg-speed: rgba(255, 255, 255, 0.096);
 	--bar-fill: #f87171; /* warm red for enemy HP */
-	--bar-height: 0.75rem; /* reuse across the UI if you wish */
+	--bar-fill-speed: #bbbd9c;
+	--bar-height: 0.75rem;
+	--bar-height-small: 0.15rem; /* reuse across the UI if you wish */
 }
 
 /* ---------- Component wrapper ---------- */
@@ -38,19 +42,11 @@
 	max-width: none; /* wipe out the old 30 rem cap              */
 	min-width: 16rem; /* let the card shrink below its content    */
 	width: auto;
-	visibility: hidden;
+	visibility: visible;
 }
 
-.active {
-	visibility: visible;
-	opacity: 100%;
-}
 .inactive {
 	opacity: 25%;
-}
-
-.hidden {
-	visibility: hidden;
 }
 
 /* ---------- Enemy image ---------- */
@@ -113,6 +109,32 @@
 }
 
 .hp-label {
+	align-self: flex-end;
+	font-size: 0.75rem;
+	margin-top: 0.25rem;
+	opacity: 0.8;
+}
+
+/* ---------- Health bar ---------- */
+/* Key idea: fill span is absolutely positioned; width = --hp custom‑prop */
+.speed-bar {
+	position: relative;
+	height: var(--bar-height-small);
+	background: var(--bar-bg-speed);
+	border-radius: var(--bar-height-small);
+	margin: 2px;
+	overflow: hidden;
+}
+
+.speed-fill {
+	position: absolute;
+	inset: 0;
+	width: calc(var(--speed) * 100%);
+	background: var(--bar-fill-speed);
+	transition: width 0.25s ease; /* smooth when JS updates --hp */
+}
+
+.speed-label {
 	align-self: flex-end;
 	font-size: 0.75rem;
 	margin-top: 0.25rem;

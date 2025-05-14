@@ -1,7 +1,7 @@
-import { BaseCharacter } from "./BaseCharacter";
+import { BaseCharacter, CharacterSnapsnot } from "./BaseCharacter";
 import { defaultPlayerStats, PlayerStats } from "./Stats";
 import { StatsEngine } from "@/core/StatsEngine";
-import { calcPlayerDamage } from "./DamageCalculator";
+import { calcPlayerDamage, calcPlayerDefence } from "./DamageCalculator";
 import { bus } from "@/core/EventBus";
 import { Saveable } from "@/shared/storage-types";
 
@@ -27,16 +27,17 @@ export class PlayerCharacter extends BaseCharacter {
 	}
 
 	healInRecovery() {
-		this.hp.increase(this.hp.max * this.RECOVERY_HEAL);
+		this.hp.increase(Math.max(this.maxHp * this.RECOVERY_HEAL, 1)); // Always heal at least 1
 	}
 
 	get attack() {
 		return calcPlayerDamage(this);
 	}
 	get defence() {
-		return this.stats.get("defence");
+		return calcPlayerDefence(this);
 	}
 	get speed() {
+
 		return this.stats.get("speed");
 	}
 

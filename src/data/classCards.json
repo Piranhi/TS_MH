@@ -6,7 +6,8 @@
 		"rarity": "rare",
 		"statMod": { "attackFlat": 2 },
 		"baseGainRate": 1,
-		"iconUrl": "/images/class-cards/classcard-bg-warrior.png"
+		"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+		"tags": ["t1"]
 	},
 	{
 		"id": "bulwark_card_01",
@@ -15,6 +16,7 @@
 		"rarity": "common",
 		"statMod": { "defenceFlat": 2 },
 		"baseGainRate": 1,
-		"iconUrl": "/images/class-cards/classcard-bg-warrior.png"
+		"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+		"tags": ["t1"]
 	}
 ]

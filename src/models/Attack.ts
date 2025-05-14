@@ -5,10 +5,17 @@ import { SpecRegistryBase } from "./SpecRegistryBase";
 export interface AttackSpec {
 	id: string;
 	displayName: string;
-	type: "physical" | "magical";
+	type: AttackTypes;
 	power: number;
 	cooldown: number;
+	priority: AttackPriority;
 }
+
+export interface AttackState {}
+
+export type AttackTypes = "physical" | "magical";
+
+export type AttackPriority = "Immediate" | "High" | "Low";
 
 export class Attack extends SpecRegistryBase<AttackSpec> {
 	public currentCooldown: number = 0;
@@ -32,12 +39,16 @@ export class Attack extends SpecRegistryBase<AttackSpec> {
 		return this.spec.displayName;
 	}
 
+	get priority() {
+		return this.spec.priority;
+	}
+
 	init() {
 		this.currentCooldown = this.spec.cooldown;
 	}
 
 	reduceCooldown(dt: number) {
-		this.currentCooldown -= dt;
+		this.currentCooldown -= Math.max(this.currentCooldown - dt, 0);
 	}
 
 	isReady() {

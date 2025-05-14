@@ -1,6 +1,8 @@
+import { bus } from "@/core/EventBus";
+import { HuntState } from "@/features/hunt/HuntManager";
 import { BaseCharacter } from "@/models/BaseCharacter";
 
-export type HolderStatus = "active" | "inactive" | "hidden";
+export type HolderStatus = "inactive" | "active";
 
 export class CharacterDisplay {
 	private root!: HTMLElement;
@@ -9,6 +11,7 @@ export class CharacterDisplay {
 	private defEl!: HTMLElement;
 	private statsContainerEl!: HTMLElement;
 	private hpBar!: HTMLElement;
+	private speedBar!: HTMLElement;
 	private hpLabel!: HTMLElement;
 	private avatarImg!: HTMLImageElement;
 	private character!: BaseCharacter;
@@ -17,6 +20,23 @@ export class CharacterDisplay {
 	constructor(private holderStatus: HolderStatus, private isPlayer: boolean) {
 		this.createDisplay();
 		this.setHolderStatus(holderStatus);
+		//bus.on("player:statsChanged", )
+		bus.on("hunt:stateChanged", (state) => {
+			switch (state) {
+				case HuntState.Recovery:
+					this.setHolderStatus(isPlayer ? "inactive" : "inactive");
+					break;
+				case HuntState.Search:
+					this.setHolderStatus(isPlayer ? "active" : "inactive");
+					break;
+				case HuntState.Combat:
+					this.setHolderStatus(isPlayer ? "active" : "active");
+					break;
+				case HuntState.Idle:
+					this.setHolderStatus(isPlayer ? "active" : "inactive");
+					break;
+			}
+		});
 	}
 
 	private createDisplay() {
@@ -33,6 +53,7 @@ export class CharacterDisplay {
 		this.atkEl = this.root.querySelector(".stat--attack")!;
 		this.defEl = this.root.querySelector(".stat--defence")!;
 		this.hpBar = this.root.querySelector(".health-bar")!;
+		this.speedBar = this.root.querySelector(".speed-bar")!;
 		this.hpLabel = this.root.querySelector(".hp-label")!;
 		this.avatarImg = this.root.querySelector(".char-img")!;
 		const container = document.querySelector<HTMLElement>(".char-holders")!;
@@ -42,34 +63,29 @@ export class CharacterDisplay {
 
 	setup(character: BaseCharacter) {
 		this.character = character;
-		this.setHolderStatus("active");
 		this.render();
 	}
 
-	clearCharacter(): void {
-		this.setHolderStatus("hidden");
-	}
+	clearCharacter(): void {}
 
 	render(): void {
 		if (!this.character) return;
-
-		this.root.classList.remove("inactive");
 		const snapshot = this.character.snapshot();
-		const { name, hp } = snapshot;
+		const { name, hp, cooldown } = snapshot;
 		this.nameEl.textContent = name;
-		this.atkEl.textContent = "⚔️ " + snapshot.stats.attack.toString();
-		this.defEl.textContent = "🛡️ " + snapshot.stats.defence.toString();
-		const pct = hp.current / hp.max;
-
-		this.hpBar.style.setProperty("--hp", pct.toString());
+		this.atkEl.textContent = "⚔️ " + snapshot.attack.toString();
+		this.defEl.textContent = "🛡️ " + snapshot.defence.toString();
+		const hpPercent = hp.current / hp.max;
+		this.hpBar.style.setProperty("--hp", hpPercent.toString());
+		this.speedBar.style.setProperty("--speed", cooldown.percent.toString());
 		this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
 	}
 
 	private setHolderStatus(newStatus: HolderStatus) {
-		const oldStatus = this.holderStatus;
-		this.holderStatus = newStatus;
-
-		this.root.classList.remove(oldStatus);
-		this.root.classList.add(this.holderStatus);
+		if (newStatus === "active") {
+			this.root.classList.remove("inactive");
+		} else {
+			this.root.classList.add("inactive");
+		}
 	}
 }

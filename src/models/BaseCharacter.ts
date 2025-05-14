@@ -1,4 +1,4 @@
-import { Attack } from "./Attack";
+import { Attack, AttackPriority } from "./Attack";
 import { Bounded } from "./value-objects/Bounded";
 import { bus } from "@/core/EventBus";
 import type { CoreStats } from "@/models/Stats";
@@ -9,12 +9,20 @@ export interface CharacterData<S extends CoreStats = CoreStats> {
 	hp: Bounded;
 	stats: S;
 }
-export type CharacterSnapsnot = Readonly<CharacterData> & {
+export interface CharacterSnapsnot {
+	name: string;
+	level: number;
+	cooldown: Bounded;
+	hp: Bounded;
+	attack: number;
+	defence: number;
 	avatarUrl: string;
-	rarity: string;
-};
+	rarity?: string;
+}
 
 export abstract class BaseCharacter {
+	private readonly MAX_COOLDOWN = 300;
+	private cooldown: Bounded;
 	readonly name: string;
 	readonly level: number;
 	protected readonly base: CoreStats;
@@ -31,6 +39,7 @@ export abstract class BaseCharacter {
 		this.level = level;
 		this.hp = new Bounded(0, baseStats.hp, baseStats.hp);
 		this.base = baseStats;
+		this.cooldown = new Bounded(0, this.MAX_COOLDOWN, this.MAX_COOLDOWN);
 
 		const basicMelee = Attack.create("basic_melee");
 		if (basicMelee) {
@@ -90,29 +99,47 @@ export abstract class BaseCharacter {
 		this.inCombat = false;
 	}
 
-	/*     public attack(target: BaseCharacter): void {
-        const damage = this.baseStats.attack - target.baseStats.defence;
-        target.takeDamage(Math.max(1, damage)); // Ensure minimum 1 dmg
-    } */
-
 	public handleTick(dt: number): void {
 		if (!this.inCombat) return;
 
+		// Global Tick
+		const adjustedCd = dt * 10 * this.speed;
+		this.cooldown.adjust(adjustedCd * -1);
+
+		// Tick down all attacks
 		for (const attack of this.attacks) {
 			attack.reduceCooldown(dt);
-			if (attack.isReady() && this.target) {
-				attack.perform(this, this.target);
+		}
+
+		if (this.cooldown.current === 0 && this.target) {
+			// Find next availbale attack, splice, perform and reinsert.
+			const index = this.attacks.findIndex((atk) => atk.isReady());
+			if (index !== 1) {
+				const [nextAttack] = this.attacks.splice(index, 1);
+				nextAttack.perform(this, this.target);
+				this.attacks.push(nextAttack);
+				this.cooldown.setToMax();
 			}
 		}
 	}
+	/* 	// TO USE IN FUTURE FOR ATTACK PRIORITIES
+	private findNextAttackIndexByPriority(): number {
+		for (const p of [AttackPriority.Immediate, AttackPriority.High, AttackPriority.Low]) {
+			const idx = this.attacks.findIndex((a) => a.priority === p && a.isReady());
+			if (idx !== -1) return idx;
+		}
+		return -1;
+	} */
 
 	// HELPER CLASSES
 	snapshot(): CharacterSnapsnot {
 		return {
 			name: this.name,
 			level: this.level,
+			cooldown: this.cooldown,
 			hp: this.hp,
-			stats: this.base,
+			attack: this.attack,
+			defence: this.defence,
 			avatarUrl: "Todo",
 			rarity: "Todo",
 		};
