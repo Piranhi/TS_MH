@@ -45,11 +45,10 @@ export class CombatManager {
 	}
 
 	private rewardPlayer() {
-		const loot = this.area.rollLoot();
-		console.log(this.area.getScaledValue(this.enemyCharacter.monster.renownMulti, "renown"));
+		const lootArray = this.area.rollLoot();
 		Player.getInstance().adjustRenown(this.area.getScaledValue(this.enemyCharacter.monster.renownMulti, "renown"));
-		loot.forEach((l) => {
-			Player.getInstance().inventory.addLootById(l.itemId, l.qty);
+		lootArray.forEach((loot) => {
+			Player.getInstance().inventory.addLootById(loot, 1);
 		});
 	}
 }

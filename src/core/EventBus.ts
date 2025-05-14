@@ -26,7 +26,10 @@ export interface GameEvents {
 	"combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };
 	"combat:ended": string;
 	"classCard:levelUp": string;
-	"inventory:inventoryChanged": void;
+	"inventory:changed": void;
+	"slot:drop": { fromId: string; toId: string };
+	"slot:drag-start": { slotId: string };
+	"slot:click": string;
 	"player:equipmentChanged": InventoryItemSpec[];
 	"player:classCardsChanged": InventoryItemSpec[];
 	"player:statsChanged": PlayerCharacter;

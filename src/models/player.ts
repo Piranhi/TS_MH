@@ -64,7 +64,7 @@ export class Player implements Saveable {
 
 		this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
 		this.inventory.addItemToInventory(ClassCard.create("bulwark_card_01"));
-		this.inventory.addItemToInventory(Equipment.create("chest_01"));
+		this.inventory.addItemToInventory(Equipment.create("tier1_chest"));
 	}
 
 	public static createNew(): Player {
@@ -89,7 +89,6 @@ export class Player implements Saveable {
 
 	handleGameTick(dt: number): void {
 		this.increaseStamina(dt);
-		//this.updateStats(dt); - DON'T NEED, STATS LISTEN TO BUS THEMSELVES
 	}
 
 	handleUITick(dt: number): void {}

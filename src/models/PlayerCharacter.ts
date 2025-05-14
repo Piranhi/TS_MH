@@ -1,42 +1,19 @@
-import { Bounded } from "./value-objects/Bounded";
 import { BaseCharacter } from "./BaseCharacter";
-import { PlayerStats } from "./Stats";
+import { defaultPlayerStats, PlayerStats } from "./Stats";
 import { StatsEngine } from "@/core/StatsEngine";
 import { calcPlayerDamage } from "./DamageCalculator";
 import { bus } from "@/core/EventBus";
+import { Saveable } from "@/shared/storage-types";
 
 interface PlayerCharacterSaveState {}
 
 export class PlayerCharacter extends BaseCharacter {
 	readonly stats: StatsEngine;
 	private readonly RECOVERY_HEAL = 0.01;
-	private readonly newPlayerStats: PlayerStats = {
-		attack: 2,
-		defence: 2,
-		speed: 1,
-		hp: 120,
-		attackFlat: 0,
-		defenceFlat: 0,
-		critChance: 0.05,
-		critDamage: 0.5,
-		lifesteal: 0,
-		encounterChance: 1,
-	};
+	//private readonly newPlayerStats: PlayerStats = defaultPlayerStats;
 
 	constructor() {
-		const base: PlayerStats = {
-			attack: 2,
-			defence: 2,
-			speed: 1,
-			hp: 120,
-			attackFlat: 0,
-			defenceFlat: 0,
-			critChance: 0.05,
-			critDamage: 0.5,
-			lifesteal: 0,
-			encounterChance: 1,
-		};
-
+		const base: PlayerStats = defaultPlayerStats;
 		super("You", 1, base);
 		this.stats = new StatsEngine(base);
 

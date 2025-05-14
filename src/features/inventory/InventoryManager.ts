@@ -6,6 +6,7 @@ import { InventoryRegistry } from "./InventoryRegistry";
 import { Equipment } from "@/models/Equipment";
 import { Saveable } from "@/shared/storage-types";
 import { saveManager } from "@/core/SaveManager";
+import { printLog } from "@/core/DebugManager";
 export type SlotType = "inventory" | "equipment" | "classCard";
 
 interface Slot {
@@ -73,7 +74,7 @@ export class InventoryManager implements Saveable {
 		return this.slots.filter((s) => s.type === type);
 	}
 
-	private getSlot(id: string): Slot | undefined {
+	public getSlot(id: string): Slot | undefined {
 		return this.slotMap.get(id);
 	}
 
@@ -114,6 +115,7 @@ export class InventoryManager implements Saveable {
 
 	public addLootById(itemId: string, qty = 1): boolean {
 		const item = InventoryRegistry.createItem(itemId, qty);
+		printLog(`${qty} item [${item.id}] added to inventory`, 3, "InventoryManager.ts");
 		return this.addItemToInventory(item);
 	}
 

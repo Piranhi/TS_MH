@@ -23,6 +23,13 @@ export class InventoryRegistry {
 		return { ...spec, quantity };
 	}
 
+	public static getSpecsByTags(filterTags: string[]): InventoryItemSpec[] {
+		return [...this.specMap.values()].filter((spec) =>
+			// ensure spec.tags exists and contains all requested tags
+			filterTags.every((tag) => spec.tags?.includes(tag) ?? false)
+		);
+	}
+
 	public static hasItem(id: string): boolean {
 		return this.specMap.has(id);
 	}
