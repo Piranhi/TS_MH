@@ -4,7 +4,7 @@ export interface CoreStats {
 	attack: number;
 	defence: number;
 	speed: number;
-	maxHp: number;
+	hp: number;
 }
 
 /** Extra stats that only the player uses */
@@ -14,8 +14,8 @@ export interface PlayerExtras {
 	critChance: number;
 	critDamage: number;
 	lifesteal: number;
-    encounterChance: number;
-    
+	encounterChance: number;
+
 	// add more as the design grows
 }
 
@@ -34,13 +34,31 @@ export const defaultCoreStats: CoreStats = {
 	attack: 1,
 	defence: 1,
 	speed: 1,
-	maxHp: 10,
+	hp: 10,
 };
+
+export interface AreaScaling {
+	hp: number;
+	attack: number;
+	defence: number;
+	speed: number;
+	dropChance: number;
+	renown: number;
+}
 
 export type PlayerStats = CoreStats & PlayerExtras;
 export type StatsModifier = Partial<PlayerStats>;
 export type TrainedStatType = "attack" | "agility" | "crit";
 export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden";
+
+export function scaleStats(base: CoreStats, scale: AreaScaling): CoreStats {
+	return {
+		hp: Math.round(base.hp * scale.hp),
+		attack: Math.round(base.attack * scale.attack),
+		defence: Math.round(base.defence * scale.defence),
+		speed: Math.round(base.speed * scale.speed),
+	};
+}
 
 export function makeDefaultTrainedStats(): Record<TrainedStatType, TrainedStat> {
 	return {

@@ -35,6 +35,6 @@ export class DebugMenu {
         addRenownBtn.classList.add("button");
         addRenownBtn.textContent = "Add Renown";
         this.rootEl.appendChild(addRenownBtn);
-        addRenownBtn.addEventListener("click", () => bus.emit("renown:award", new BigNumber(10)));
+        addRenownBtn.addEventListener("click", () => bus.emit("renown:award", new BigNumber(100000)));
     }
 }

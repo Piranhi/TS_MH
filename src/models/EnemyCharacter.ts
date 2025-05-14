@@ -1,19 +1,21 @@
 import { Bounded } from "./value-objects/Bounded";
 import { BaseCharacter } from "./BaseCharacter";
-import { Monster as MonsterJSON } from "@/models/Monster";
+import { Monster } from "@/models/Monster";
 import { CoreStats } from "./Stats";
+import { printLog } from "@/core/DebugManager";
 
 export class EnemyCharacter extends BaseCharacter {
-	public readonly spec: MonsterJSON;
+	public readonly monster: Monster;
 
-	constructor(spec: MonsterJSON) {
+	constructor(monster: Monster) {
 		const stats: CoreStats = {
-			attack: spec.baseStats.attack,
-			defence: spec.baseStats.defence,
-			speed: spec.baseStats.speed,
-			maxHp: spec.baseStats.hp,
+			attack: monster.scaledStats.attack,
+			defence: monster.scaledStats.defence,
+			speed: monster.scaledStats.speed,
+			hp: monster.scaledStats.hp,
 		};
-		super(spec.displayName, 1, stats);
-		this.spec = spec;
+		super(monster.displayName, 1, stats);
+		this.monster = monster;
+		printLog("Monster created: " + JSON.stringify(stats), 3, "EnemyCharacter.ts");
 	}
 }

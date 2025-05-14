@@ -84,6 +84,7 @@ export class HuntManager implements Saveable {
 					elapsed -= 1;
 					if (this.rollEncounter()) {
 						// Create Enemy from monster picker
+						console.log(this.area.getScaledValue);
 						const enemy = new EnemyCharacter(this.area.pickMonster());
 						this.startCombat(enemy);
 					}
@@ -108,7 +109,11 @@ export class HuntManager implements Saveable {
 						: this.transition(HuntState.Recovery, this.makeRecoveryState());
 				}
 			},
-			onExit: () => {},
+			onExit: () => {
+				if (!combatManager.isFinished) {
+					combatManager.endCombatEarly();
+				}
+			},
 		};
 	}
 

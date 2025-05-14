@@ -1,14 +1,9 @@
+import { printLog } from "@/core/DebugManager";
 import { Monster } from "./Monster";
 import { SpecRegistryBase } from "./SpecRegistryBase";
+import { AreaScaling } from "./Stats";
 import { BigNumber } from "./utils/BigNumber";
-export interface AreaScaling {
-	hp: number;
-	attack: number;
-	defence: number;
-	speed: number;
-	dropChance: number;
-	renown: number;
-}
+
 export interface AreaSpec {
 	id: string;
 	displayName: string;
@@ -16,7 +11,7 @@ export interface AreaSpec {
 	levelRange: { min: number; max: number };
 	spawns: { monsterId: string; weight: number }[];
 	drops: { itemId: string; chance: number; qty: { min: number; max: number } }[];
-	scaling: AreaScaling;
+	areaScaling: AreaScaling;
 }
 
 export interface Drop {
@@ -34,13 +29,14 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 		const { spawns } = this.spec;
 		const total = spawns.reduce((s, { weight }) => s + weight, 0);
 		let roll = Math.random() * total;
+		printLog(this.spec.areaScaling.hp.toString(), 3);
 
 		for (const { monsterId, weight } of spawns) {
 			roll -= weight;
-			if (roll <= 0) return Monster.create(monsterId)!;
+			if (roll <= 0) return Monster.create(monsterId, this.spec.areaScaling)!;
 		}
 
-		return Monster.create(spawns[0].monsterId)!; // Area.monsterById.get(spawns[0].monsterId)!
+		return Monster.create(spawns[0].monsterId, this.spec.areaScaling)!;
 	}
 
 	rollLoot(): Drop[] {
@@ -54,9 +50,9 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 
 	getScaledValue(base: number | BigNumber, prop: keyof AreaScaling): number | BigNumber {
 		if (typeof base === "number") {
-			return base * this.spec.scaling[prop];
+			return base * this.spec.areaScaling[prop];
 		} else {
-			return base.multiply(this.spec.scaling[prop]);
+			return base.multiply(this.spec.areaScaling[prop]);
 		}
 	}
 

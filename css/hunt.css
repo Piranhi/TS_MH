@@ -28,18 +28,29 @@
 	align-items: flex-start;
 	gap: 1rem;
 	padding: 1rem 1.25rem;
-	border-radius: 1rem;
+	border-radius: 0.4rem;
 	background: var(--glass-bg);
 	border: 1px solid var(--glass-border);
-	backdrop-filter: blur(12px);
 	box-shadow: var(--glass-shadow);
 
 	/* updated sizing + flex behaviour ↓↓↓ */
 	flex: 1 1 0; /* grow+shrink evenly, start from 0 px basis   */
-
 	max-width: none; /* wipe out the old 30 rem cap              */
 	min-width: 16rem; /* let the card shrink below its content    */
 	width: auto;
+	visibility: hidden;
+}
+
+.active {
+	visibility: visible;
+	opacity: 100%;
+}
+.inactive {
+	opacity: 25%;
+}
+
+.hidden {
+	visibility: hidden;
 }
 
 /* ---------- Enemy image ---------- */

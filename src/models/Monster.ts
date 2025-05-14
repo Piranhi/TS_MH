@@ -1,4 +1,5 @@
 import { SpecRegistryBase } from "./SpecRegistryBase";
+import { AreaScaling, CoreStats, scaleStats } from "./Stats";
 
 export type MonsterRarity = "common" | "uncommon" | "rare" | "terrifying" | "nightmare";
 
@@ -19,8 +20,13 @@ export interface MonsterSpec {
 }
 
 export class Monster extends SpecRegistryBase<MonsterSpec> {
-	private constructor(private readonly spec: MonsterSpec) {
+	//private areaScaling: AreaScaling;
+	private constructor(private readonly spec: MonsterSpec, private readonly areaScaling: AreaScaling) {
 		super();
+	}
+
+	get scaledStats(): CoreStats {
+		return scaleStats(this.spec.baseStats, this.areaScaling);
 	}
 
 	/* --- simple getters --- */
@@ -44,9 +50,9 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 	// Registry.
 	public static override specById = new Map<string, MonsterSpec>();
 
-	static create(id: string): Monster {
+	static create(id: string, areaScaling: AreaScaling): Monster {
 		const spec = this.specById.get(id);
 		if (!spec) throw new Error(`Unknown monster "${id}"`);
-		return new Monster(spec);
+		return new Monster(spec, areaScaling);
 	}
 }

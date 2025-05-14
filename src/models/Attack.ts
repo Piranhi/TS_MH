@@ -1,3 +1,4 @@
+import { printLog } from "@/core/DebugManager";
 import { BaseCharacter } from "./BaseCharacter";
 import { SpecRegistryBase } from "./SpecRegistryBase";
 
@@ -17,7 +18,10 @@ export class Attack extends SpecRegistryBase<AttackSpec> {
 	}
 
 	perform(self: BaseCharacter, target: BaseCharacter) {
-		target.takeDamage(Math.max(this.spec.power * self.attack - target.defence, 0));
+		const totalDamage = Math.max(this.spec.power * self.attack - target.defence, 0);
+		target.takeDamage(totalDamage);
+		printLog(self.name + " attacks " + target.name + " for " + totalDamage.toString(), 3, "Attack.ts");
+
 		this.currentCooldown = this.spec.cooldown;
 	}
 

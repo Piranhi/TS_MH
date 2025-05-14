@@ -40,8 +40,8 @@ export class HuntScreen extends BaseScreen {
 		this.huntUpdateEl = document.getElementById("hunt-update-log") as HTMLElement;
 		this.buildAreaSelect();
 		// Setup Player Cards
-		this.playerCard = new CharacterDisplay(true);
-		this.enemyCard = new CharacterDisplay(false);
+		this.playerCard = new CharacterDisplay("active", true);
+		this.enemyCard = new CharacterDisplay("inactive", false);
 	}
 
 	private buildAreaSelect() {
@@ -75,7 +75,7 @@ export class HuntScreen extends BaseScreen {
 		bus.on("combat:started", (combat) => {
 			this.initCharacters(combat.player, combat.enemy);
 			this.updateOutput(
-				`You are in combat with <span class="rarity-${combat.enemy.spec.rarity}"> ${combat.enemy.getName()}</span>`
+				`You are in combat with <span class="rarity-${combat.enemy.monster.rarity}"> ${combat.enemy.getName()}</span>`
 			);
 		});
 		bus.on("combat:ended", (result) => {
@@ -104,11 +104,15 @@ export class HuntScreen extends BaseScreen {
 		}
 	}
 
-	enterSearch() {}
+	enterSearch() {
+		this.enemyCard.clearCharacter();
+	}
 
 	enterCombat() {}
 
 	enterRecovery() {
+		this.enemyCard.clearCharacter();
+		this.playerCard.clearCharacter();
 		this.updateOutput("In Recovery");
 	}
 

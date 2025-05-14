@@ -1,5 +1,4 @@
 import { StatsModifier, CoreStats, PlayerStats } from "@/models/Stats";
-import { PlayerbarDisplay } from "@/ui/components/PlayerBarDisplay";
 import { bus } from "./EventBus";
 
 export type LayerFn = () => StatsModifier;

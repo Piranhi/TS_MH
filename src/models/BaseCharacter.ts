@@ -29,7 +29,7 @@ export abstract class BaseCharacter {
 	constructor(name: string, level: number, baseStats: CoreStats) {
 		this.name = name;
 		this.level = level;
-		this.hp = new Bounded(0, baseStats.maxHp, baseStats.maxHp);
+		this.hp = new Bounded(0, baseStats.hp, baseStats.hp);
 		this.base = baseStats;
 
 		const basicMelee = Attack.create("basic_melee");

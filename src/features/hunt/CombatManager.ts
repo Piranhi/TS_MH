@@ -6,40 +6,50 @@ import { Player } from "@/models/player";
 import { BigNumber } from "@/models/utils/BigNumber";
 
 export class CombatManager {
-    public isFinished: boolean = false;
-    public playerWon: boolean = false;
-    private elapsed: number = 0;
-    constructor(private readonly playerCharacter: PlayerCharacter, private readonly enemyCharacter: EnemyCharacter, private readonly area: Area) {
-        bus.emit("combat:started", { player: this.playerCharacter, enemy: this.enemyCharacter });
-        playerCharacter.beginCombat(enemyCharacter);
-        enemyCharacter.beginCombat(playerCharacter);
-    }
+	public isFinished: boolean = false;
+	public playerWon: boolean = false;
+	private elapsed: number = 0;
+	private combatEndOverride = false;
+	constructor(private readonly playerCharacter: PlayerCharacter, private readonly enemyCharacter: EnemyCharacter, private readonly area: Area) {
+		bus.emit("combat:started", { player: this.playerCharacter, enemy: this.enemyCharacter });
+		playerCharacter.beginCombat(enemyCharacter);
+		enemyCharacter.beginCombat(playerCharacter);
+	}
 
-    public onTick(dt: number) {
-        this.elapsed += dt;
-        if (this.playerCharacter.isAlive() === false || this.enemyCharacter.isAlive() === false) {
-            this.endCombat();
-        }
-    }
+	public onTick(dt: number) {
+		if (this.combatEndOverride) return;
+		this.elapsed += dt;
+		if (this.playerCharacter.isAlive() === false || this.enemyCharacter.isAlive() === false) {
+			this.endCombat();
+		}
+	}
 
-    private endCombat() {
-        this.playerCharacter.endCombat();
-        this.enemyCharacter.endCombat();
-        this.isFinished = true;
-        this.playerWon = this.playerCharacter.isAlive();
-        if (this.playerWon) {
-            bus.emit("lifetimeStat:add", { stat: "monstersKilled", amt: 1 });
-            this.rewardPlayer();
-        }
-        bus.emit("combat:ended", this.playerWon ? "Player Won" : "Player Died");
-    }
+	public endCombatEarly() {
+		//Prevent ticking, end combat
+		this.combatEndOverride = true;
+		this.playerCharacter.endCombat();
+		this.enemyCharacter.endCombat();
+		bus.emit("combat:ended", "Changing Areas");
+	}
 
-    private rewardPlayer() {
-        const loot = this.area.rollLoot();
-        console.log(this.area.getScaledValue(this.enemyCharacter.spec.renownMulti, "renown"));
-        Player.getInstance().adjustRenown(this.area.getScaledValue(this.enemyCharacter.spec.renownMulti, "renown"));
-        loot.forEach((l) => {
-            Player.getInstance().inventory.addLootById(l.itemId, l.qty);
-        });
-    }
+	private endCombat() {
+		this.playerCharacter.endCombat();
+		this.enemyCharacter.endCombat();
+		this.isFinished = true;
+		this.playerWon = this.playerCharacter.isAlive();
+		if (this.playerWon) {
+			bus.emit("lifetimeStat:add", { stat: "monstersKilled", amt: 1 });
+			this.rewardPlayer();
+		}
+		bus.emit("combat:ended", this.playerWon ? "Player Won" : "Player fled");
+	}
+
+	private rewardPlayer() {
+		const loot = this.area.rollLoot();
+		console.log(this.area.getScaledValue(this.enemyCharacter.monster.renownMulti, "renown"));
+		Player.getInstance().adjustRenown(this.area.getScaledValue(this.enemyCharacter.monster.renownMulti, "renown"));
+		loot.forEach((l) => {
+			Player.getInstance().inventory.addLootById(l.itemId, l.qty);
+		});
+	}
 }
