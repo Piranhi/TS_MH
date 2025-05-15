@@ -8,7 +8,7 @@ import rawEquipment from "@/data/equipment.json" assert { type: "json" };
 /* ---------- Bring in the class constructors -------------- */
 import { Area } from "@/models/Area";
 import { Monster, MonsterSpecRaw } from "@/models/Monster";
-import { Ability, AbilitySpec } from "@/models/Ability";
+import { Ability } from "@/models/Ability";
 import { ClassCard } from "@/features/classcards/ClassCard";
 import { Equipment } from "@/models/Equipment";
 import { ClassCardItemSpec, ClassCardItemSpecRaw, EquipmentItemSpec, EquipmentItemSpecRaw } from "@/shared/types";
@@ -42,7 +42,7 @@ export function initGameData() {
 	Equipment.registerSpecs(equipmentSpecs);
 	ClassCard.registerSpecs(classCardSpecs);
 	Area.registerSpecs(rawAreas);
-	Ability.registerSpecs(rawAbilities as AbilitySpec[]);
+	Ability.registerSpecs(rawAbilities);
 
 	InventoryRegistry.init();
 }

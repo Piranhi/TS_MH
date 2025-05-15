@@ -20,6 +20,7 @@ export class PlayerCharacter extends BaseCharacter {
 
 		/* pre‑register empty layers */
 		this.statsEngine.setLayer("level", () => ({}));
+		this.statsEngine.setLayer("trainedStats", () => ({}));
 		this.statsEngine.setLayer("equipment", () => ({}));
 		this.statsEngine.setLayer("classCard", () => ({}));
 		this.statsEngine.setLayer("buffs", () => ({}));

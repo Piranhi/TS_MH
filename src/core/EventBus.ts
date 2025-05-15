@@ -20,7 +20,7 @@ export interface GameEvents {
 	"player:initialized": Player;
 	"player:level-up": number;
 	"player:stamina-changed": poolChangedPayload;
-	"player:trainedStat-changed": string;
+	"player:trainedStatChanged": string;
 	"hunt:stateChanged": HuntState;
 	"hunt:areaSelected": string;
 	"combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };

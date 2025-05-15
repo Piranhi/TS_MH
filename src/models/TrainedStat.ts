@@ -1,5 +1,7 @@
 import { bus } from "@/core/EventBus";
-import { TrainedStatData, TrainedStatStatus, TrainedStatType } from "./Stats";
+import { PlayerStats, StatsModifier, TrainedStatData, TrainedStatStatus, TrainedStatType } from "./Stats";
+import { Player } from "./player";
+import { BigNumber } from "./utils/BigNumber";
 
 const GROWTH_VALUE = 1.35;
 export class TrainedStat {
@@ -8,9 +10,10 @@ export class TrainedStat {
 	level: number;
 	progress: number;
 	nextThreshold: number;
-	assignedPoints: number;
+	private _assignedPoints: number;
 	baseGainRate: number;
 	status: TrainedStatStatus;
+	statMod: Partial<StatsModifier>;
 
 	constructor(data: TrainedStatData) {
 		this.id = data.id;
@@ -18,9 +21,11 @@ export class TrainedStat {
 		this.level = data.level;
 		this.progress = data.progress;
 		this.nextThreshold = data.nextThreshold;
-		this.assignedPoints = 0;
+		this._assignedPoints = 0;
 		this.baseGainRate = data.baseGainRate;
 		this.status = data.status;
+		this.statMod = data.statMod;
+
 		bus.on("Game:GameTick", (dt) => this.update(dt));
 	}
 
@@ -30,20 +35,45 @@ export class TrainedStat {
 	 * and handles leveling up.
 	 */
 	public update(deltaTime: number) {
-		if (this.assignedPoints === 0) return;
-		
-		this.progress += this.assignedPoints * this.baseGainRate * deltaTime;
+		if (this._assignedPoints === 0) return;
+
+		this.progress += this._assignedPoints * this.baseGainRate * deltaTime;
 
 		while (this.progress >= this.nextThreshold) {
 			this.progress -= this.nextThreshold;
-			this.level += 1;
+			this.levelUp();
 
 			// e.g. exponential growth: increase threshold by 15% each level
 			this.nextThreshold = Math.floor(this.nextThreshold * GROWTH_VALUE);
 		}
 	}
 
-	public adjustAssignedPoints(delta: number) {}
+	public adjustAssignedPoints(delta: number) {
+		this._assignedPoints += delta;
+	}
+
+	private levelUp() {
+		this.level += 1;
+		bus.emit("player:trainedStatChanged", this.id);
+	}
+
+	get assignedPoints() {
+		return this._assignedPoints;
+	}
+
+	public getBonuses() {
+		return Object.fromEntries(
+			Object.entries(this.statMod).map(([k, v]) => {
+				if (typeof v === "number") {
+					return [k, v * this.level];
+				} else if (v instanceof BigNumber) {
+					// Multiply by number or another BigNumber as appropriate
+					return [k, v.multiply(this.level)];
+				}
+				return [k, v];
+			})
+		) as Partial<StatsModifier>;
+	}
 
 	toJSON() {
 		return {
@@ -53,9 +83,10 @@ export class TrainedStat {
 			level: this.level,
 			progress: this.progress,
 			nextThreshold: this.nextThreshold,
-			assignedPoints: this.assignedPoints,
+			assignedPoints: this._assignedPoints,
 			baseGainRate: this.baseGainRate,
 			status: this.status,
+			statMod: this.statMod,
 		};
 	}
 
@@ -71,10 +102,11 @@ export class TrainedStat {
 			assignedPoints: raw.assignedPoints,
 			baseGainRate: raw.baseGainRate,
 			status: raw.status,
+			statMod: raw.statMod,
 		};
 		const stat = new TrainedStat(dummy);
 		// overwrite anything the constructor didn’t set
-		stat.assignedPoints = raw.assignedPoints;
+		stat._assignedPoints = raw.assignedPoints;
 		return stat;
 	}
 }

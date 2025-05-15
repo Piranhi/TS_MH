@@ -1,6 +1,7 @@
 import { bus } from "@/core/EventBus";
 import { TrainedStatStatus } from "@/models/Stats";
 import { TrainedStat } from "@/models/TrainedStat";
+import { TrainedStatManager } from "@/models/TrainedStatManager";
 import { Player } from "@/models/player";
 
 interface UnlockedEls {
@@ -16,12 +17,14 @@ export class TrainedStatDisplay {
 	private rootEl!: HTMLElement;
 	private offTick!: () => void;
 	private els?: UnlockedEls;
+	private manager!: TrainedStatManager;
 
 	constructor(private root: HTMLElement, private trainingListEl: HTMLElement, private trainedStat: TrainedStat) {}
 
 	public init() {
 		this.createAndBuild();
 		this.offTick = bus.on("Game:GameTick", () => this.updateElement());
+		this.manager = Player.getInstance().trainedStatManager;
 	}
 
 	public destroy() {
@@ -91,6 +94,6 @@ export class TrainedStatDisplay {
 	}
 
 	private adjustAmount(delta: number) {
-		Player.getInstance().allocateTrainedStat(this.trainedStat.id, delta);
+		this.manager.allocateTrainedStat(this.trainedStat.id, delta);
 	}
 }

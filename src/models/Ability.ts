@@ -26,7 +26,7 @@ export class Ability extends SpecRegistryBase<AbilitySpec> {
 			if (!factory) {
 				throw new Error(`Unknown effect type ${spec.type}`);
 			}
-			return factory(spec); //(...Object.values(spec).slice(1));
+			return factory(spec);
 		});
 	}
 
@@ -59,6 +59,7 @@ export class Ability extends SpecRegistryBase<AbilitySpec> {
 	}
 
 	// Registry.
+	// USE THIS FOR CREATING ABILITIES
 	public static override specById = new Map<string, AbilitySpec>();
 	static create(id: string): Ability {
 		const spec = this.specById.get(id);

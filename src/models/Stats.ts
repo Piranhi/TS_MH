@@ -48,6 +48,7 @@ export interface TrainedStatData {
 	assignedPoints: number;
 	baseGainRate: number;
 	status: TrainedStatStatus;
+	statMod: Partial<StatsModifier>;
 }
 
 export const defaultPlayerStats: PlayerStats = {
@@ -111,6 +112,7 @@ export function makeDefaultTrainedStats(): Record<TrainedStatType, TrainedStat> 
 			assignedPoints: 0,
 			baseGainRate: 1,
 			status: "Unlocked",
+			statMod: { attackFlat: new BigNumber(1) },
 		}),
 		agility: new TrainedStat({
 			id: "agility",
@@ -121,6 +123,7 @@ export function makeDefaultTrainedStats(): Record<TrainedStatType, TrainedStat> 
 			assignedPoints: 0,
 			baseGainRate: 0.5,
 			status: "Unlocked",
+			statMod: { attackMulti: new BigNumber(1) },
 		}),
 		crit: new TrainedStat({
 			id: "crit",
@@ -131,6 +134,7 @@ export function makeDefaultTrainedStats(): Record<TrainedStatType, TrainedStat> 
 			assignedPoints: 0,
 			baseGainRate: 0.5,
 			status: "Hidden",
+			statMod: { critChance: new BigNumber(1) },
 		}),
 	};
 }

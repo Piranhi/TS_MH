@@ -1,19 +1,17 @@
 import { PlayerCharacter } from "./PlayerCharacter";
-import { BoundedNumber } from "./value-objects/Bounded";
 import { RegenPool } from "./value-objects/RegenPool";
 import { bus } from "../core/EventBus";
-import { TrainedStat } from "./TrainedStat";
 import { InventoryManager } from "../features/inventory/InventoryManager";
 import { ClassCardManager } from "../features/classcards/ClassCardManager";
 import { ClassCard } from "../features/classcards/ClassCard";
 import { Equipment } from "./Equipment";
 import { Saveable } from "@/shared/storage-types";
 import { EquipmentManager } from "./EquipmentManager";
-import { makeDefaultTrainedStats } from "./Stats";
 import { saveManager } from "@/core/SaveManager";
 import { LifetimeStats } from "./LifetimeStats";
 import { BigNumber } from "./utils/BigNumber";
 import { printLog } from "@/core/DebugManager";
+import { TrainedStatManager } from "./TrainedStatManager";
 
 interface PlayerData {
 	level: number;
@@ -21,7 +19,6 @@ interface PlayerData {
 	experience: number;
 	character: PlayerCharacter;
 	stamina: RegenPool;
-	trainedStats: Record<string, TrainedStat>;
 }
 
 interface PlayerSaveState {
@@ -29,7 +26,6 @@ interface PlayerSaveState {
 	renown: BigNumber;
 	stamina: RegenPool;
 	experience: number;
-	trainedStats: [string, TrainedStat][];
 }
 
 export class Player implements Saveable {
@@ -47,7 +43,7 @@ export class Player implements Saveable {
 	public inventory: InventoryManager;
 	private cardManager: ClassCardManager;
 	private equipmentManager: EquipmentManager;
-	public trainedStats: Map<string, TrainedStat> = new Map();
+	public trainedStatManager: TrainedStatManager;
 	private lifetimeStats: LifetimeStats;
 
 	private constructor(data: PlayerData) {
@@ -55,11 +51,11 @@ export class Player implements Saveable {
 		this.renown = data.renown;
 		this.experience = data.experience;
 		this.stamina = data.stamina;
-		this.trainedStats = new Map(Object.entries(data.trainedStats));
 		this.character = new PlayerCharacter();
 		this.inventory = new InventoryManager();
 		this.cardManager = new ClassCardManager(this.inventory);
 		this.equipmentManager = new EquipmentManager(this.inventory);
+		this.trainedStatManager = new TrainedStatManager(this);
 		this.lifetimeStats = new LifetimeStats();
 
 		this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
@@ -74,9 +70,20 @@ export class Player implements Saveable {
 			experience: 0,
 			character: new PlayerCharacter(),
 			stamina: new RegenPool(10, 1, false),
-			trainedStats: makeDefaultTrainedStats(),
 		};
 		return new Player(defaults);
+	}
+
+	public spendStamina(delta: number): boolean {
+		if (!this.stamina.spend(delta)) return false;
+		this.emitStamina();
+		return true;
+	}
+
+	public refundStamina(delta: number): boolean {
+		if (!this.stamina.refund(delta)) return false;
+		this.emitStamina();
+		return true;
 	}
 
 	async init(): Promise<void> {
@@ -95,28 +102,6 @@ export class Player implements Saveable {
 
 	public getPlayerCharacter(): PlayerCharacter {
 		return this.character;
-	}
-
-	public allocateTrainedStat(id: string, rawDelta: number): void {
-		const stat = this.trainedStats.get(id);
-		if (!stat) return;
-
-		//Only whole point changes
-		const delta = Math.trunc(rawDelta);
-		if (delta === 0) return;
-
-		if (delta > 0) {
-			// spending
-			if (!this.stamina.spend(delta)) return; // not enough → abort
-			stat.assignedPoints += delta;
-		} else {
-			// refunding
-			const pts = -delta;
-			if (stat.assignedPoints < pts) return; // can't refund more than there
-			if (!this.stamina.refund(pts)) return; // should always succeed
-			stat.assignedPoints -= pts;
-		}
-		this.emitStamina();
 	}
 
 	private emitStamina() {
@@ -157,7 +142,6 @@ export class Player implements Saveable {
 			renown: this.renown,
 			stamina: this.stamina,
 			experience: this.experience,
-			trainedStats: Array.from(this.trainedStats.entries()),
 		};
 	}
 
@@ -166,7 +150,6 @@ export class Player implements Saveable {
 		this.stamina = state.stamina;
 		this.renown = state.renown;
 		this.experience = state.experience;
-		this.trainedStats = new Map(state.trainedStats);
 		this.emitStamina();
 		bus.emit("renown:changed", this.renown);
 	}

@@ -1,4 +1,4 @@
-import { CoreStats, CoreStatsNumbers } from "@/models/Stats";
+import { CoreStats, CoreStatsNumbers, PlayerStats, StatsModifier } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
 
 // Convert any object of numbers to BigNumbers
@@ -34,4 +34,24 @@ function toCoreStats(stats: CoreStatsNumbers): CoreStats {
 		speed: new BigNumber(stats.speed),
 		hp: new BigNumber(stats.hp),
 	};
+}
+
+// Assumes every field in a and b is a BigNumber or undefined
+export function mergeStatModifiers(a: StatsModifier, b: StatsModifier): StatsModifier {
+	const out: StatsModifier = { ...a };
+	for (const k in b) {
+		const key = k as keyof PlayerStats;
+		const aVal = out[key];
+		const bVal = b[key];
+
+		// Defensive: if either is missing, treat as zero
+		if (aVal === undefined && bVal === undefined) continue;
+
+		const left = aVal ?? new BigNumber(0);
+		const right = bVal ?? new BigNumber(0);
+
+		// All stats are BigNumber now, so just add
+		out[key] = left.add(right);
+	}
+	return out;
 }

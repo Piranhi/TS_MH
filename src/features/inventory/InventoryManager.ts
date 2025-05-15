@@ -25,7 +25,7 @@ export interface InventorySaveState {
 export class InventoryManager implements Saveable {
 	private maxInventorySlots: number = 20;
 	private maxCardSlots: number = 1;
-	private unlockedEquipmentSlots: EquipmentType[] = ["chest", "legs", "weapon"];
+	private unlockedEquipmentSlots: EquipmentType[] = ["chest", "legs", "weapon", "head", "hands", "back"];
 	private slots: Slot[];
 	private slotMap = new Map<string, Slot>();
 

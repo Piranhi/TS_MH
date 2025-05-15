@@ -24,7 +24,7 @@ export class TrainScreen extends BaseScreen {
 
 	addStatElements() {
 		this.trainingListEl.innerHTML = "";
-		Player.getInstance().trainedStats.forEach((stat) => {
+		Player.getInstance().trainedStatManager.stats.forEach((stat) => {
 			const statHolder = new TrainedStatDisplay(this.rootEl, this.trainingListEl, stat);
 			statHolder.init();
 		});
