@@ -3,15 +3,14 @@
 <section class="game">
   <template id="character-display">
     <div class="char-holder">
-      <img class="char-img" src="src\Assets\Images\enemy-example.png" alt="Goblin">
+      <img class="char-img" src="src/Assets/Images/enemy-example.png" alt="Goblin">
 
       <div class="char-details">
         <h2 class="char-name">Player</h2>
 
         <div class="char-stats">
-          <!-- keeping “stat” flexible so you can add more later -->
-          <span class="stat stat--attack">⚔️ 0</span>
-          <span class="stat stat--defence">🛡️ 0</span>
+          <span class="stat stat--attack">⚔️ 0</span>
+          <span class="stat stat--defence">🛡️ 0</span>
         </div>
 
         <!-- Speed bar -->
@@ -19,13 +18,22 @@
           <span class="speed-fill"></span>
         </div>
         <!-- Health bar -->
-        <div class="health-bar" style="--hp: 0">
+        <div class="health-bar" style="--hp: 0.66">
           <span class="hp-fill"></span>
         </div>
-        <small class="hp-label">132 / 200 HP</small>
+        <small class="hp-label">132 / 200 HP</small>
+      </div>
+
+      <!-- Attack Bars -->
+      <div class="attack-bars">
+        <div class="attack-bar" style="--cd:0.25" data-name="Fireball">
+          <span class="attack-fill"></span>
+          <small class="attack-label"></small>
+        </div>
       </div>
     </div>
   </template>
+
   <figure class="screen-banner">
     <img src="src\Assets\Images\header-hunt.png" alt="Settlement">
   </figure>

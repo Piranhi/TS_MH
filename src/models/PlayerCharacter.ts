@@ -4,6 +4,7 @@ import { StatsEngine } from "@/core/StatsEngine";
 import { calcPlayerDamage, calcPlayerDefence } from "./DamageCalculator";
 import { bus } from "@/core/EventBus";
 import { Saveable } from "@/shared/storage-types";
+import { Attack } from "./Attack";
 
 interface PlayerCharacterSaveState {}
 
@@ -16,6 +17,7 @@ export class PlayerCharacter extends BaseCharacter {
 		const base: PlayerStats = defaultPlayerStats;
 		super("You", 1, base);
 		this.stats = new StatsEngine(base);
+		this.attacks.push(Attack.create("basic_heal"));
 
 		/* pre‑register empty layers */
 		this.stats.setLayer("level", () => ({}));
@@ -37,7 +39,6 @@ export class PlayerCharacter extends BaseCharacter {
 		return calcPlayerDefence(this);
 	}
 	get speed() {
-
 		return this.stats.get("speed");
 	}
 

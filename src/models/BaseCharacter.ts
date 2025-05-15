@@ -17,6 +17,7 @@ export interface CharacterSnapsnot {
 	attack: number;
 	defence: number;
 	avatarUrl: string;
+	attacks: Attack[];
 	rarity?: string;
 }
 
@@ -56,6 +57,10 @@ export abstract class BaseCharacter {
 
 	public getName(): string {
 		return this.name;
+	}
+
+	public getAttacks() {
+		return this.attacks;
 	}
 	takeDamage(amount: number) {
 		this.hp.decrease(amount);
@@ -140,6 +145,7 @@ export abstract class BaseCharacter {
 			hp: this.hp,
 			attack: this.attack,
 			defence: this.defence,
+			attacks: this.attacks,
 			avatarUrl: "Todo",
 			rarity: "Todo",
 		};

@@ -141,6 +141,51 @@
 	opacity: 0.8;
 }
 
+/* ─── Attack‐cooldown bars container ─── */
+.attack-bars {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-left: auto; /* push to the right edge */
+	align-self: stretch; /* match card height */
+	padding-left: 1rem; /* breathing room */
+	height: 20px;
+	width: 200px;
+}
+
+/* ─── Individual attack bar ─── */
+.attack-bar {
+	position: relative;
+	flex: 1; /* let it grow if you want taller bars */
+	min-height: var(--bar-height-small);
+
+	background: var(--bar-bg-speed);
+	border-radius: var(--bar-height-small);
+	overflow: hidden;
+}
+
+/* fill per‐attack cooldown */
+.attack-fill {
+	position: absolute;
+	inset: 0;
+	width: calc(var(--cd) * 100%);
+	background: var(--bar-fill-speed);
+	transition: width 0.2s ease;
+}
+
+/* label overlaid on the bar */
+.attack-label {
+	position: absolute;
+	top: 50%;
+	left: 0.5rem;
+	transform: translateY(-50%);
+	font-size: 0.65rem;
+	font-weight: 500;
+	color: white;
+	text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+	pointer-events: none;
+}
+
 /* ─── variant: enemy ─── */
 .enemy {
 	--glass-bg: rgba(248, 113, 113, 0.18); /* warm red tint */

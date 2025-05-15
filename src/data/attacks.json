@@ -4,7 +4,15 @@
 		"displayName": "Slam",
 		"type": "physical",
 		"power": 1.0,
-		"cooldown": 2,
+		"cooldown": 5,
+		"priority": "Low"
+	},
+	{
+		"id": "basic_heal",
+		"displayName": "Heal",
+		"type": "magical",
+		"power": 1.0,
+		"cooldown": 8,
 		"priority": "Low"
 	},
 	{

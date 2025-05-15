@@ -13,15 +13,17 @@ export interface AttackSpec {
 
 export interface AttackState {}
 
-export type AttackTypes = "physical" | "magical";
+export type AttackTypes = "physical" | "magical" | "heal" | "defence" | "lifesteal";
 
 export type AttackPriority = "Immediate" | "High" | "Low";
 
 export class Attack extends SpecRegistryBase<AttackSpec> {
 	public currentCooldown: number = 0;
+	public maxCooldown: number = 0;
 	private constructor(private readonly spec: AttackSpec) {
 		super();
 		this.currentCooldown = spec.cooldown;
+		this.maxCooldown = spec.cooldown;
 	}
 
 	perform(self: BaseCharacter, target: BaseCharacter) {
@@ -29,7 +31,7 @@ export class Attack extends SpecRegistryBase<AttackSpec> {
 		target.takeDamage(totalDamage);
 		printLog(self.name + " attacks " + target.name + " for " + totalDamage.toString(), 3, "Attack.ts");
 
-		this.currentCooldown = this.spec.cooldown;
+		this.currentCooldown = this.maxCooldown;
 	}
 
 	get id() {
@@ -48,7 +50,7 @@ export class Attack extends SpecRegistryBase<AttackSpec> {
 	}
 
 	reduceCooldown(dt: number) {
-		this.currentCooldown -= Math.max(this.currentCooldown - dt, 0);
+		this.currentCooldown = Math.max(this.currentCooldown - dt, 0);
 	}
 
 	isReady() {

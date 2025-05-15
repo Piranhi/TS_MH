@@ -15,7 +15,8 @@ export class CharacterDisplay {
 	private hpLabel!: HTMLElement;
 	private avatarImg!: HTMLImageElement;
 	private character!: BaseCharacter;
-	//private holderStatus = "hidden";
+	private barsContainer!: HTMLElement;
+	private attackBarMap = new Map<string, HTMLElement>();
 
 	constructor(private holderStatus: HolderStatus, private isPlayer: boolean) {
 		this.createDisplay();
@@ -40,6 +41,7 @@ export class CharacterDisplay {
 	}
 
 	private createDisplay() {
+		const container = document.querySelector<HTMLElement>(".char-holders")!;
 		// IMPORT TEMPLATE
 		const tmpl = document.getElementById("character-display") as HTMLTemplateElement;
 		if (!tmpl) throw new Error("Template #character-display not found");
@@ -56,13 +58,35 @@ export class CharacterDisplay {
 		this.speedBar = this.root.querySelector(".speed-bar")!;
 		this.hpLabel = this.root.querySelector(".hp-label")!;
 		this.avatarImg = this.root.querySelector(".char-img")!;
-		const container = document.querySelector<HTMLElement>(".char-holders")!;
 		this.root.classList.add(this.isPlayer ? "player" : "enemy");
+		this.barsContainer = this.root.querySelector(".attack-bars")!;
+
 		container.appendChild(this.root);
 	}
 
 	setup(character: BaseCharacter) {
 		this.character = character;
+		this.attackBarMap.clear();
+		this.barsContainer.innerHTML = "";
+		const attacks = this.character.getAttacks();
+		attacks.forEach((attack) => {
+			const bar = document.createElement("div");
+			this.attackBarMap.set(attack.id, bar);
+			bar.className = "attack-bar";
+			bar.style.setProperty("--cd", String(attack.currentCooldown / attack.maxCooldown));
+			bar.dataset.name = attack.name;
+
+			const fill = document.createElement("span");
+			fill.className = "attack-fill";
+			bar.appendChild(fill);
+
+			const label = document.createElement("small");
+			label.className = "attack-label";
+			label.textContent = attack.name;
+			bar.appendChild(label);
+
+			this.barsContainer.appendChild(bar);
+		});
 		this.render();
 	}
 
@@ -71,7 +95,7 @@ export class CharacterDisplay {
 	render(): void {
 		if (!this.character) return;
 		const snapshot = this.character.snapshot();
-		const { name, hp, cooldown } = snapshot;
+		const { name, hp, cooldown, attacks } = snapshot;
 		this.nameEl.textContent = name;
 		this.atkEl.textContent = "⚔️ " + snapshot.attack.toString();
 		this.defEl.textContent = "🛡️ " + snapshot.defence.toString();
@@ -79,6 +103,12 @@ export class CharacterDisplay {
 		this.hpBar.style.setProperty("--hp", hpPercent.toString());
 		this.speedBar.style.setProperty("--speed", cooldown.percent.toString());
 		this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
+		attacks.forEach((attack) => {
+			const bar = this.attackBarMap.get(attack.id);
+			if (!bar) return;
+			const ratio = attack.currentCooldown / attack.maxCooldown;
+			bar.style.setProperty("--cd", ratio.toString());
+		});
 	}
 
 	private setHolderStatus(newStatus: HolderStatus) {
