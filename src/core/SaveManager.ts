@@ -17,7 +17,6 @@ export class SaveManager {
 			throw new Error(`Duplicate save key: ${key}`);
 		}
 		this.registry.set(key, system);
-		console.log("Registered");
 	}
 
 	saveAll(): GameSave {
@@ -34,7 +33,6 @@ export class SaveManager {
 
 	loadAll(): void {
 		const raw = localStorage.getItem(this.SAVE_KEY);
-		console.log("[SaveManager] raw from storage:", raw);
 		if (!raw || raw === "undefined") return;
 
 		let data: GameSave;
@@ -44,13 +42,12 @@ export class SaveManager {
 				throw new Error("parsed data is null or undefined");
 			}
 		} catch (err) {
-			//console.error("[SaveManager] could not parse save data:", err);
+			console.error("[SaveManager] could not parse save data:", err);
 			return;
 		}
 
 		for (const [key, sys] of this.registry) {
 			if (!(key in data)) continue;
-			//console.log(`…loading slice "${key}":`, data[key]);
 			sys.load(data[key]);
 		}
 

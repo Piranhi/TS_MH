@@ -1,5 +1,15 @@
+import { printLog } from "@/core/DebugManager";
 import { Identifiable } from "@/models/SpecRegistryBase";
 import { StatsModifier, StatsModifierNumber } from "@/models/Stats";
+
+const rarityChances: [ItemRarity, number][] = [
+	["unique", 1],
+	["legendary", 50],
+	["epic", 150],
+	["rare", 300],
+	["uncommon", 500],
+	["common", 10000],
+];
 
 export type ScreenName = "settlement" | "character" | "hunt" | "inventory" | "research" | "train" | "blacksmith";
 
@@ -20,7 +30,6 @@ export interface InventoryItemSpec extends Identifiable {
 	name: string;
 	description: string;
 	iconUrl: string;
-	rarity?: ItemRarity;
 	quantity?: number;
 	tags?: string[];
 }
@@ -57,13 +66,25 @@ export interface InventoryItemState {
 	status: ItemEquipStatus;
 	level: number;
 	progress: number;
+	rarity: ItemRarity;
 }
 
 // Just
 export interface InventoryItem extends InventoryItemSpec {
 	quantity: number;
+	rarity?: ItemRarity;
 }
 
 export function getItemCategoryLabel(category: ItemCategory): string {
 	return ItemCategoryDisplay[category];
+}
+
+export function getItemRarity(): ItemRarity {
+	const chance = Math.random() * 10000;
+	printLog("Rarity Chance: " + chance, 3, "types.ts");
+	for (const [rarity, max] of rarityChances) {
+		if (chance <= max) return rarity;
+	}
+	// Fallback if none match (shouldn't happen)
+	return "common";
 }

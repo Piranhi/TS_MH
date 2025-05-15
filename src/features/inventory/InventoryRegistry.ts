@@ -1,5 +1,5 @@
 import { Equipment } from "@/models/Equipment";
-import { InventoryItem, InventoryItemSpec } from "@/shared/types";
+import { getItemRarity, InventoryItem, InventoryItemSpec } from "@/shared/types";
 import { ClassCard } from "../classcards/ClassCard";
 
 export class InventoryRegistry {
@@ -20,7 +20,8 @@ export class InventoryRegistry {
 		if (!spec) {
 			throw new Error(`No spec registered for item ID "${id}"`);
 		}
-		return { ...spec, quantity };
+		const rarity = getItemRarity();
+		return { ...spec, quantity, rarity };
 	}
 
 	public static getSpecsByTags(filterTags: string[]): InventoryItemSpec[] {

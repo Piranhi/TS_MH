@@ -54,7 +54,7 @@ export const defaultPlayerStats: PlayerStats = {
 	attack: new BigNumber(1),
 	defence: new BigNumber(1),
 	speed: new BigNumber(1),
-	hp: new BigNumber(10),
+	hp: new BigNumber(1000),
 	attackFlat: new BigNumber(1),
 	attackMulti: new BigNumber(1),
 	defenceFlat: new BigNumber(1),
@@ -90,8 +90,6 @@ export function toCoreStats(numbers: CoreStatsNumbers): CoreStats {
 		speed: new BigNumber(numbers.speed),
 	};
 }
-
-
 
 export function scaleEnemyStatsByArea(base: CoreStats, scale: AreaScaling): CoreStats {
 	return {

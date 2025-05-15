@@ -1,14 +1,7 @@
 import { bus } from "@/core/EventBus";
 import { SpecRegistryBase } from "@/models/SpecRegistryBase";
 import { StatsModifier } from "@/models/Stats";
-import { ClassCardItemSpec, InventoryItem, InventoryItemState, ItemEquipStatus } from "@/shared/types";
-
-export interface CardState {
-	specId: string;
-	status: ItemEquipStatus;
-	level: number;
-	progress: number;
-}
+import { ClassCardItemSpec, getItemRarity, InventoryItem, InventoryItemState } from "@/shared/types";
 
 export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements ClassCardItemSpec, InventoryItem {
 	readonly category = "classCard";
@@ -59,7 +52,7 @@ export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements Cl
 		return this.spec.iconUrl;
 	}
 	get rarity() {
-		return this.spec.rarity;
+		return this.state.rarity;
 	}
 	get quantity() {
 		return 1;
@@ -96,11 +89,12 @@ export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements Cl
 		const spec = this.specById.get(id);
 		if (!spec) throw new Error(`Unknown card "${id}"`);
 
-		const defaultState: CardState = {
+		const defaultState: InventoryItemState = {
 			specId: spec.id,
 			status: "Unequipped",
 			level: 1,
 			progress: 0,
+			rarity: getItemRarity(),
 		};
 		return new ClassCard(spec, defaultState);
 	}

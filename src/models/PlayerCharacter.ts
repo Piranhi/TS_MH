@@ -32,6 +32,7 @@ export class PlayerCharacter extends BaseCharacter {
 	}
 
 	get attack() {
+		return this.statsEngine.get("attack");
 		return calcPlayerDamage(this);
 	}
 

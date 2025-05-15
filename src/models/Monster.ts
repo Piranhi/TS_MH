@@ -1,5 +1,7 @@
+import { printLog } from "@/core/DebugManager";
 import { SpecRegistryBase } from "./SpecRegistryBase";
-import { AreaScaling, CoreStats, scaleEnemyStatsByArea } from "./Stats";
+import { AreaScaling, CoreStats, CoreStatsNumbers, scaleEnemyStatsByArea } from "./Stats";
+import { BigNumber } from "./utils/BigNumber";
 
 export type MonsterRarity = "common" | "uncommon" | "rare" | "terrifying" | "nightmare";
 
@@ -11,11 +13,19 @@ const renownMultipliers: Record<MonsterRarity, number> = {
 	nightmare: 3.0,
 };
 
+export interface MonsterSpecRaw {
+	id: string;
+	displayName: string;
+	rarity: MonsterRarity;
+	baseStats: CoreStatsNumbers;
+	attacks: string[];
+}
+
 export interface MonsterSpec {
 	id: string;
 	displayName: string;
 	rarity: MonsterRarity;
-	baseStats: { hp: number; attack: number; defence: number; speed: number };
+	baseStats: CoreStats; // all BigNumbers!
 	attacks: string[];
 }
 
@@ -53,6 +63,7 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 	static create(id: string, areaScaling: AreaScaling): Monster {
 		const spec = this.specById.get(id);
 		if (!spec) throw new Error(`Unknown monster "${id}"`);
+		printLog("Spawned new Monster: " + spec.id, 3, "Monster.ts");
 		return new Monster(spec, areaScaling);
 	}
 }

@@ -8,6 +8,7 @@ import { EnemyCharacter } from "../../models//EnemyCharacter";
 import { Area } from "@/models/Area";
 import { Saveable } from "@/shared/storage-types";
 import { saveManager } from "@/core/SaveManager";
+import { printLog } from "@/core/DebugManager";
 
 export enum HuntState {
 	Idle = "Idle",
@@ -48,6 +49,7 @@ export class HuntManager implements Saveable {
 	public setArea(areaId: string) {
 		this.area = Area.create(areaId);
 		this.transition(HuntState.Search, this.makeSearchState());
+		printLog("Setting new Area to: " + this.area.id, 3, "HuntManager.ts");
 	}
 
 	public onTick(dt: number) {
@@ -84,7 +86,6 @@ export class HuntManager implements Saveable {
 					elapsed -= 1;
 					if (this.rollEncounter()) {
 						// Create Enemy from monster picker
-						console.log(this.area.getScaledValue);
 						const enemy = new EnemyCharacter(this.area.pickMonster());
 						this.startCombat(enemy);
 					}

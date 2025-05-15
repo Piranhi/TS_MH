@@ -31,7 +31,7 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 		const spawns = this.spec.spawns;
 		const total = spawns.reduce((s, { weight }) => s + weight, 0);
 		let roll = Math.random() * total;
-		printLog("Picking Monster - HP:" + this.spec.areaScaling.hp.toString(), 3, "Area.ts");
+
 
 		for (const spawn of spawns) {
 			roll -= spawn.weight;

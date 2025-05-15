@@ -1,3 +1,4 @@
+import { CoreStats, CoreStatsNumbers } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
 
 // Convert any object of numbers to BigNumbers
@@ -23,4 +24,14 @@ export function toBigNumberModifier<T extends Record<string, number | BigNumber 
 		}
 	}
 	return out;
+}
+
+// Helper:
+function toCoreStats(stats: CoreStatsNumbers): CoreStats {
+	return {
+		attack: new BigNumber(stats.attack),
+		defence: new BigNumber(stats.defence),
+		speed: new BigNumber(stats.speed),
+		hp: new BigNumber(stats.hp),
+	};
 }

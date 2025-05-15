@@ -28,8 +28,8 @@ export class StatsEngine {
 		this.recalculate();
 	}
 
-	get<K extends keyof PlayerStats>(key: K): BigNumber {
-		return (this.current[key] as BigNumber) || 0;
+	get<K extends keyof PlayerStats>(key: K): PlayerStats[K] {
+		return this.current[key] ?? new BigNumber(0);
 	}
 
 	getAll(): PlayerStats {
@@ -50,11 +50,13 @@ export class StatsEngine {
 	}
 }
 
-function mergeStats(a: CoreStats, b: Partial<CoreStats>): CoreStats {
-	return {
-		hp: a.hp.add(b.hp ?? 0),
-		attack: a.attack.add(b.attack ?? 0),
-		defence: a.defence.add(b.defence ?? 0),
-		speed: a.speed.add(b.speed ?? 0),
-	};
+function mergeStats(a: PlayerStats, b: Partial<PlayerStats>): PlayerStats {
+	const out = { ...a } as PlayerStats;
+	for (const k in b) {
+		const key = k as keyof PlayerStats;
+		const aVal = out[key];
+		const bVal = b[key];
+		out[key] = (aVal ?? new BigNumber(0)).add(bVal ?? new BigNumber(0));
+	}
+	return out;
 }

@@ -24,7 +24,6 @@ export class HeaderDisplay {
 		).init();
 
 		const renown = new StatDisplay("Renown", "renown:changed", this.PlayerStatsEl, "stat-num-template", (payload, { valueEl }) => {
-			console.log(payload);
 			valueEl.textContent = payload.toString();
 		}).init();
 	}

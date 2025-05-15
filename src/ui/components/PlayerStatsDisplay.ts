@@ -1,6 +1,7 @@
 import { bus } from "@/core/EventBus";
 import { Player } from "@/models/player";
 import { PlayerStats } from "@/models/Stats";
+import { BigNumber } from "@/models/utils/BigNumber";
 
 export class PlayerStatsDisplay {
 	private coreKeys: (keyof PlayerStats)[] = ["attack", "defence", "speed", "hp"];
@@ -46,7 +47,17 @@ export class PlayerStatsDisplay {
 			nameSpan.textContent = key;
 
 			const valueSpan = document.createElement("span");
-			//valueSpan.textContent = String(Math.round((stats[key] + Number.EPSILON) * 100) / 100); (FIX UP)
+			const val = stats[key];
+			let valueStr: string;
+			if (val instanceof BigNumber) {
+				// To display as a rounded number
+				valueStr = val.toNumber().toFixed(2); // 2 decimals, or whatever you want
+				// Or if you want prettified scientific display:
+				// valueStr = val.toString();
+			} else {
+				valueStr = String(val); // fallback for non-BigNumber
+			}
+			valueSpan.textContent = valueStr; //String(Math.round((stats[key] + Number.EPSILON) * 100) / 100); // (FIX UP)
 
 			row.append(nameSpan, valueSpan);
 			details.appendChild(row);

@@ -1,4 +1,4 @@
-import { EquipmentItemSpec, InventoryItem, InventoryItemState, ItemEquipStatus } from "@/shared/types";
+import { EquipmentItemSpec, getItemRarity, InventoryItem, InventoryItemState } from "@/shared/types";
 import { SpecRegistryBase } from "./SpecRegistryBase";
 
 export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements EquipmentItemSpec, InventoryItem {
@@ -18,7 +18,7 @@ export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements Eq
 		return this.spec.iconUrl;
 	}
 	get rarity() {
-		return this.spec.rarity;
+		return this.state.rarity;
 	}
 	get quantity() {
 		return 1;
@@ -58,6 +58,7 @@ export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements Eq
 			status: "Unequipped",
 			level: 1,
 			progress: 0,
+			rarity: getItemRarity(),
 		};
 		return new Equipment(spec, defaultState);
 	}

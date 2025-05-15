@@ -15,6 +15,5 @@ export class EnemyCharacter extends BaseCharacter {
 		};
 		super(spec.displayName, 1, stats);
 		this.spec = spec;
-		printLog("Monster created: " + JSON.stringify(stats), 3, "EnemyCharacter.ts");
 	}
 }

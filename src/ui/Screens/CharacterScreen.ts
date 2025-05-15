@@ -11,7 +11,6 @@ export class CharacterScreen extends BaseScreen {
 	init() {
 		addHTMLtoPage(Markup, this);
 		this.rootEl = document.getElementById("character-container")!;
-		console.log(this.rootEl);
 		this.playerStatsDiplay = new PlayerStatsDisplay(document.getElementById("player-statlist")!);
 	}
 	show() {}
