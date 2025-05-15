@@ -34,15 +34,15 @@ export interface TrainedStatData {
 export const defaultCoreStats: CoreStats = {
 	attack: 1,
 	defence: 1,
-	speed: 4,
+	speed: 1,
 	hp: 10,
 };
 
 export const defaultPlayerStats: PlayerStats = {
 	attack: 1,
 	defence: 1,
-	speed: 5,
-	hp: 100,
+	speed: 1,
+	hp: 10,
 	attackFlat: 1,
 	attackMulti: 1,
 	defenceFlat: 1,

@@ -7,9 +7,9 @@
 	--bar-bg: rgba(255, 255, 255, 0.2);
 	--bar-bg-speed: rgba(255, 255, 255, 0.096);
 	--bar-fill: #f87171; /* warm red for enemy HP */
-	--bar-fill-speed: #bbbd9c;
+	--bar-fill-speed: #64a5b9;
 	--bar-height: 0.75rem;
-	--bar-height-small: 0.15rem; /* reuse across the UI if you wish */
+	--bar-height-small: 0.75rem; /* reuse across the UI if you wish */
 }
 
 /* ---------- Component wrapper ---------- */
@@ -124,6 +124,7 @@
 	border-radius: var(--bar-height-small);
 	margin: 2px;
 	overflow: hidden;
+	visibility: collapse;
 }
 
 .speed-fill {
@@ -158,7 +159,6 @@
 	position: relative;
 	flex: 1; /* let it grow if you want taller bars */
 	min-height: var(--bar-height-small);
-
 	background: var(--bar-bg-speed);
 	border-radius: var(--bar-height-small);
 	overflow: hidden;
@@ -181,7 +181,7 @@
 	transform: translateY(-50%);
 	font-size: 0.65rem;
 	font-weight: 500;
-	color: white;
+	color: rgb(255, 255, 255);
 	text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
 	pointer-events: none;
 }

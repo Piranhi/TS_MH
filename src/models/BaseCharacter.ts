@@ -1,4 +1,4 @@
-import { Attack, AttackPriority } from "./Attack";
+import { Ability, AbilityPriority } from "./Ability";
 import { Bounded } from "./value-objects/Bounded";
 import { bus } from "@/core/EventBus";
 import type { CoreStats } from "@/models/Stats";
@@ -14,15 +14,15 @@ export interface CharacterSnapsnot {
 	level: number;
 	cooldown: Bounded;
 	hp: Bounded;
-	attack: number;
+	ability: number;
 	defence: number;
 	avatarUrl: string;
-	attacks: Attack[];
+	abilities: Ability[];
 	rarity?: string;
 }
 
 export abstract class BaseCharacter {
-	private readonly MAX_COOLDOWN = 300;
+	private readonly MAX_COOLDOWN = 100;
 	private cooldown: Bounded;
 	readonly name: string;
 	readonly level: number;
@@ -31,7 +31,7 @@ export abstract class BaseCharacter {
 
 	// Combat
 	protected target?: BaseCharacter;
-	protected attacks: Attack[] = [];
+	protected abilities: Ability[] = [];
 	private inCombat = false;
 	private readonly onTick = (dt: number) => this.handleTick(dt);
 
@@ -42,9 +42,9 @@ export abstract class BaseCharacter {
 		this.base = baseStats;
 		this.cooldown = new Bounded(0, this.MAX_COOLDOWN, this.MAX_COOLDOWN);
 
-		const basicMelee = Attack.create("basic_melee");
+		const basicMelee = Ability.create("basic_melee");
 		if (basicMelee) {
-			this.attacks.push(basicMelee);
+			this.abilities.push(basicMelee);
 		}
 	}
 
@@ -59,14 +59,16 @@ export abstract class BaseCharacter {
 		return this.name;
 	}
 
-	public getAttacks() {
-		return this.attacks;
+	public getAbilities() {
+		return this.abilities;
 	}
-	takeDamage(amount: number) {
-		this.hp.decrease(amount);
+	takeDamage(incoming: number) {
+		const net = Math.max(incoming - this.defence, 0);
+		this.hp.decrease(net);
 	}
-	heal(amount: number) {
-		this.hp.increase(amount);
+	heal(incoming: number) {
+		const net = Math.max(this.currentHp + incoming, 0);
+		this.hp.increase(net);
 	}
 
 	isAlive(): boolean {
@@ -78,7 +80,7 @@ export abstract class BaseCharacter {
 	}
 
 	/* ---- simple getters for enemies ---- */
-	get attack() {
+	get ability() {
 		return this.base.attack;
 	}
 	get defence() {
@@ -92,8 +94,8 @@ export abstract class BaseCharacter {
 
 	public beginCombat(target: BaseCharacter) {
 		bus.on("Game:GameTick", this.onTick);
-		for (const attack of this.attacks) {
-			attack.init();
+		for (const ability of this.abilities) {
+			ability.init();
 		}
 		this.target = target;
 		this.inCombat = true;
@@ -106,26 +108,28 @@ export abstract class BaseCharacter {
 
 	public handleTick(dt: number): void {
 		if (!this.inCombat) return;
-
+		if (!this.target) return;
 		// Global Tick
 		const adjustedCd = dt * 10 * this.speed;
 		this.cooldown.adjust(adjustedCd * -1);
 
 		// Tick down all attacks
-		for (const attack of this.attacks) {
-			attack.reduceCooldown(dt);
+		for (const ability of this.abilities) {
+			ability.reduceCooldown(dt * this.speed);
+			if (ability.isReady()) ability.perform(this, this.target);
 		}
 
-		if (this.cooldown.current === 0 && this.target) {
+		//if (this.cooldown.current === 0 && this.target) { (DISABLE GLOBAL GC FOR NOW)
+		/* 		if (this.target) {
 			// Find next availbale attack, splice, perform and reinsert.
-			const index = this.attacks.findIndex((atk) => atk.isReady());
+			const index = this.abilities.findIndex((ability) => ability.isReady());
 			if (index !== 1) {
-				const [nextAttack] = this.attacks.splice(index, 1);
-				nextAttack.perform(this, this.target);
-				this.attacks.push(nextAttack);
+				const [nextAbility] = this.abilities.splice(index, 1);
+				nextAbility.perform(this, this.target);
+				this.abilities.push(nextAbility);
 				this.cooldown.setToMax();
 			}
-		}
+		} */
 	}
 	/* 	// TO USE IN FUTURE FOR ATTACK PRIORITIES
 	private findNextAttackIndexByPriority(): number {
@@ -143,9 +147,9 @@ export abstract class BaseCharacter {
 			level: this.level,
 			cooldown: this.cooldown,
 			hp: this.hp,
-			attack: this.attack,
+			ability: this.ability,
 			defence: this.defence,
-			attacks: this.attacks,
+			abilities: this.abilities,
 			avatarUrl: "Todo",
 			rarity: "Todo",
 		};

@@ -2,24 +2,36 @@
 	{
 		"id": "basic_melee",
 		"displayName": "Slam",
-		"type": "physical",
-		"power": 1.0,
+		"effects": [
+			{
+				"type": "damage",
+				"value": 3
+			}
+		],
 		"cooldown": 5,
 		"priority": "Low"
 	},
 	{
 		"id": "basic_heal",
 		"displayName": "Heal",
-		"type": "magical",
-		"power": 1.0,
-		"cooldown": 8,
+		"effects": [
+			{
+				"type": "heal",
+				"value": 2
+			}
+		],
+		"cooldown": 10,
 		"priority": "Low"
 	},
 	{
 		"id": "root_snare",
 		"displayName": "Root Snare",
-		"type": "physical",
-		"power": 0.6,
+		"effects": [
+			{
+				"type": "damage",
+				"value": 5
+			}
+		],
 		"cooldown": 6,
 		"priority": "High"
 	}
