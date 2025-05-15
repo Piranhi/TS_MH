@@ -1,4 +1,5 @@
 import { BaseCharacter } from "./BaseCharacter";
+import { BigNumber } from "./utils/BigNumber";
 
 export interface EffectSpec {
 	type: EffectType;
@@ -14,14 +15,14 @@ export type EffectType = "physical" | "magical" | "heal" | "defence" | "lifestea
 export class DamageEffect implements Effect {
 	constructor(public amount: number) {}
 	apply(user: BaseCharacter, target: BaseCharacter) {
-		target.takeDamage(this.amount);
+		target.takeDamage(user.calculateAbilityDamage(this.amount));
 	}
 }
 
 export class HealEffect implements Effect {
 	constructor(public amount: number) {}
 	apply(user: BaseCharacter, target: BaseCharacter) {
-		user.heal(this.amount);
+		user.heal(new BigNumber(this.amount));
 	}
 }
 

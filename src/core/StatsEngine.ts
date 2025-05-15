@@ -1,5 +1,6 @@
 import { StatsModifier, CoreStats, PlayerStats } from "@/models/Stats";
 import { bus } from "./EventBus";
+import { BigNumber } from "@/models/utils/BigNumber";
 
 export type LayerFn = () => StatsModifier;
 
@@ -27,8 +28,8 @@ export class StatsEngine {
 		this.recalculate();
 	}
 
-	get<K extends keyof PlayerStats>(key: K): number {
-		return (this.current[key] as number) || 0;
+	get<K extends keyof PlayerStats>(key: K): BigNumber {
+		return (this.current[key] as BigNumber) || 0;
 	}
 
 	getAll(): PlayerStats {
@@ -41,8 +42,7 @@ export class StatsEngine {
 			agg = mergeStats(agg, fn()) as PlayerStats;
 		}
 		this.current = agg;
-        bus.emit("player:statsChanged")
-
+		bus.emit("player:statsChanged");
 	}
 
 	public printStats(): void {
@@ -50,11 +50,11 @@ export class StatsEngine {
 	}
 }
 
-function mergeStats(a: StatsModifier, b: StatsModifier): StatsModifier {
-	const out: StatsModifier = { ...a };
-	for (const k in b) {
-		const key = k as keyof PlayerStats;
-		out[key] = (out[key] ?? 0) + (b[key] ?? 0);
-	}
-	return out;
+function mergeStats(a: CoreStats, b: Partial<CoreStats>): CoreStats {
+	return {
+		hp: a.hp.add(b.hp ?? 0),
+		attack: a.attack.add(b.attack ?? 0),
+		defence: a.defence.add(b.defence ?? 0),
+		speed: a.speed.add(b.speed ?? 0),
+	};
 }

@@ -1,19 +1,20 @@
 import { PlayerCharacter } from "./PlayerCharacter";
+import { BigNumber } from "./utils/BigNumber";
 
-export function calcPlayerDamage(player: PlayerCharacter): number {
-	const base = player.stats.get("attack");
-	const flat = player.stats.get("attackFlat");
-	const multi = player.stats.get("attackMulti");
+export function calcPlayerDamage(player: PlayerCharacter, abilityDamage: number = 0): BigNumber {
+	const base = player.statsEngine.get("attack").add(abilityDamage);
+	const flat = player.statsEngine.get("attackFlat");
+	const multi = player.statsEngine.get("attackMulti");
 
-	const result = (base + flat) * multi;
+	const result: BigNumber = base.add(flat).multiply(multi);
 	return result;
 }
 
-export function calcPlayerDefence(player: PlayerCharacter): number {
-	const base = player.stats.get("defence");
-	const flat = player.stats.get("defenceFlat");
-	const multi = player.stats.get("defenceMulti");
+export function calcPlayerDefence(player: PlayerCharacter): BigNumber {
+	const base = player.statsEngine.get("defence");
+	const flat = player.statsEngine.get("defenceFlat");
+	const multi = player.statsEngine.get("defenceMulti");
 
-	const result = (base + flat) * multi;
+	const result: BigNumber = base.add(flat).multiply(multi);
 	return result;
 }

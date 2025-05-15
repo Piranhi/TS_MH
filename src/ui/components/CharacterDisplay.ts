@@ -95,13 +95,11 @@ export class CharacterDisplay {
 	render(): void {
 		if (!this.character) return;
 		const snapshot = this.character.snapshot();
-		const { name, hp, cooldown, abilities: attacks } = snapshot;
+		const { name, hp, abilities: attacks } = snapshot;
 		this.nameEl.textContent = name;
-		this.atkEl.textContent = "⚔️ " + snapshot.ability.toString();
+		this.atkEl.textContent = "⚔️ " + snapshot.attack.toString();
 		this.defEl.textContent = "🛡️ " + snapshot.defence.toString();
-		const hpPercent = hp.current / hp.max;
-		this.hpBar.style.setProperty("--hp", hpPercent.toString());
-		this.speedBar.style.setProperty("--speed", cooldown.percent.toString());
+		this.hpBar.style.setProperty("--hp", hp.percent);
 		this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
 		attacks.forEach((attack) => {
 			const bar = this.attackBarMap.get(attack.id);

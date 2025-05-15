@@ -1,0 +1,26 @@
+import { BigNumber } from "@/models/utils/BigNumber";
+
+// Convert any object of numbers to BigNumbers
+export function toBigNumberStats<T extends Record<string, number>>(raw: T): { [K in keyof T]: BigNumber } {
+	const out = {} as { [K in keyof T]: BigNumber };
+	for (const k in raw) {
+		out[k] = new BigNumber(raw[k]);
+	}
+	return out;
+}
+
+// Accepts mixed types, skips anything already a BigNumber
+export function toBigNumberModifier<T extends Record<string, number | BigNumber | undefined>>(raw: T): { [K in keyof T]: BigNumber } {
+	const out = {} as { [K in keyof T]: BigNumber };
+	for (const k in raw) {
+		const val = raw[k];
+		if (val instanceof BigNumber) {
+			out[k] = val;
+		} else if (typeof val === "number") {
+			out[k] = new BigNumber(val);
+		} else {
+			out[k] = new BigNumber(0); // default for undefined, or skip this line if you want sparse
+		}
+	}
+	return out;
+}

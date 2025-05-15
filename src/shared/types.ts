@@ -1,5 +1,5 @@
 import { Identifiable } from "@/models/SpecRegistryBase";
-import { StatsModifier } from "@/models/Stats";
+import { StatsModifier, StatsModifierNumber } from "@/models/Stats";
 
 export type ScreenName = "settlement" | "character" | "hunt" | "inventory" | "research" | "train" | "blacksmith";
 
@@ -25,15 +25,25 @@ export interface InventoryItemSpec extends Identifiable {
 	tags?: string[];
 }
 
+export interface EquipmentItemSpecRaw extends InventoryItemSpec {
+	category: "equipment";
+	equipType: EquipmentType;
+	statMod: StatsModifierNumber;
+}
 export interface EquipmentItemSpec extends InventoryItemSpec {
 	category: "equipment";
 	equipType: EquipmentType;
 	statMod: StatsModifier;
 }
 
+export interface ClassCardItemSpecRaw extends InventoryItemSpec {
+	category: "classCard";
+	statMod: StatsModifierNumber; // All numbers
+	baseGainRate: number;
+}
 export interface ClassCardItemSpec extends InventoryItemSpec {
 	category: "classCard";
-	statMod: StatsModifier;
+	statMod: StatsModifier; // All BigNumbers
 	baseGainRate: number;
 }
 

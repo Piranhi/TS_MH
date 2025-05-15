@@ -1,5 +1,5 @@
 import { PlayerCharacter } from "./PlayerCharacter";
-import { Bounded } from "./value-objects/Bounded";
+import { BoundedNumber } from "./value-objects/Bounded";
 import { RegenPool } from "./value-objects/RegenPool";
 import { bus } from "../core/EventBus";
 import { TrainedStat } from "./TrainedStat";

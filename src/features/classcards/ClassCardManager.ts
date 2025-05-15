@@ -3,6 +3,7 @@ import { InventoryManager } from "../inventory/InventoryManager";
 import { ClassCard } from "./ClassCard";
 import { Player } from "@/models/player";
 import { PlayerStats, StatsModifier } from "@/models/Stats";
+import { BigNumber } from "@/models/utils/BigNumber";
 
 export class ClassCardManager {
 	constructor(private inv: InventoryManager) {
@@ -21,7 +22,7 @@ export class ClassCardManager {
 			.reduce(mergeStats, {} as StatsModifier);
 
 		const pc = Player.getInstance().getPlayerCharacter();
-		pc.stats.setLayer("classCards", () => merged);
+		pc.statsEngine.setLayer("classCards", () => merged);
 	}
 
 	private clearBonuses() {}
@@ -29,11 +30,22 @@ export class ClassCardManager {
 	public combineDuplicates() {}
 }
 
+// Assumes every field in a and b is a BigNumber or undefined
 function mergeStats(a: StatsModifier, b: StatsModifier): StatsModifier {
 	const out: StatsModifier = { ...a };
 	for (const k in b) {
 		const key = k as keyof PlayerStats;
-		out[key] = (out[key] ?? 0) + (b[key] ?? 0);
+		const aVal = out[key];
+		const bVal = b[key];
+
+		// Defensive: if either is missing, treat as zero
+		if (aVal === undefined && bVal === undefined) continue;
+
+		const left = aVal ?? new BigNumber(0);
+		const right = bVal ?? new BigNumber(0);
+
+		// All stats are BigNumber now, so just add
+		out[key] = left.add(right);
 	}
 	return out;
 }

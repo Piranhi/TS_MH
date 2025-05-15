@@ -11,8 +11,9 @@ import { Monster } from "@/models/Monster";
 import { Ability, AbilitySpec } from "@/models/Ability";
 import { ClassCard } from "@/features/classcards/ClassCard";
 import { Equipment } from "@/models/Equipment";
-import { ClassCardItemSpec, EquipmentItemSpec } from "@/shared/types";
+import { ClassCardItemSpec, ClassCardItemSpecRaw, EquipmentItemSpec, EquipmentItemSpecRaw } from "@/shared/types";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
+import { toBigNumberModifier } from "@/shared/utils/stat-utils";
 //import
 
 //const abilities = (rawAbilities as any[]).map((a) => new Ability(a.id, a.displayName, a.cooldown, a.effects));
@@ -20,8 +21,19 @@ import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 /* ---------- Register Data ---------------------------- */
 export function initGameData() {
 	console.log("📦 Registering game data…");
-	Equipment.registerSpecs(rawEquipment as EquipmentItemSpec[]);
-	ClassCard.registerSpecs(rawClassCards as ClassCardItemSpec[]);
+
+	const equipmentSpecs: EquipmentItemSpec[] = (rawEquipment as EquipmentItemSpecRaw[]).map((raw) => ({
+		...raw,
+		statMod: toBigNumberModifier(raw.statMod),
+	}));
+
+	const classCardSpecs: ClassCardItemSpec[] = (rawClassCards as ClassCardItemSpecRaw[]).map((raw) => ({
+		...raw,
+		statMod: toBigNumberModifier(raw.statMod),
+	}));
+
+	Equipment.registerSpecs(equipmentSpecs);
+	ClassCard.registerSpecs(classCardSpecs);
 	Monster.registerSpecs(rawMonsters);
 	Area.registerSpecs(rawAreas);
 	Ability.registerSpecs(rawAbilities as AbilitySpec[]);

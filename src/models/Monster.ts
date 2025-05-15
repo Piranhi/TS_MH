@@ -1,5 +1,5 @@
 import { SpecRegistryBase } from "./SpecRegistryBase";
-import { AreaScaling, CoreStats, scaleStats } from "./Stats";
+import { AreaScaling, CoreStats, scaleEnemyStatsByArea } from "./Stats";
 
 export type MonsterRarity = "common" | "uncommon" | "rare" | "terrifying" | "nightmare";
 
@@ -26,7 +26,7 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 	}
 
 	get scaledStats(): CoreStats {
-		return scaleStats(this.spec.baseStats, this.areaScaling);
+		return scaleEnemyStatsByArea(this.spec.baseStats, this.areaScaling);
 	}
 
 	/* --- simple getters --- */

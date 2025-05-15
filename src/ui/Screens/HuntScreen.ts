@@ -75,7 +75,7 @@ export class HuntScreen extends BaseScreen {
 		bus.on("combat:started", (combat) => {
 			this.initCharacters(combat.player, combat.enemy);
 			this.updateOutput(
-				`You are in combat with <span class="rarity-${combat.enemy.monster.rarity}"> ${combat.enemy.getName()}</span>`
+				`You are in combat with <span class="rarity-${combat.enemy.spec.rarity}"> ${combat.enemy.getName()}</span>`
 			);
 		});
 		bus.on("combat:ended", (result) => {

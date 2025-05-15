@@ -1,6 +1,14 @@
 import { TrainedStat } from "./TrainedStat";
+import { BigNumber } from "./utils/BigNumber";
 
 export interface CoreStats {
+	attack: BigNumber;
+	defence: BigNumber;
+	speed: BigNumber;
+	hp: BigNumber;
+}
+
+export interface CoreStatsNumbers {
 	attack: number;
 	defence: number;
 	speed: number;
@@ -9,6 +17,17 @@ export interface CoreStats {
 
 /** Extra stats that only the player uses */
 export interface PlayerExtras {
+	attackFlat: BigNumber;
+	attackMulti: BigNumber;
+	defenceFlat: BigNumber;
+	defenceMulti: BigNumber;
+	critChance: BigNumber;
+	critDamage: BigNumber;
+	speedMulti: BigNumber;
+	lifesteal: BigNumber;
+	encounterChance: BigNumber;
+}
+export interface PlayerExtraNumbers {
 	attackFlat: number;
 	attackMulti: number;
 	defenceFlat: number;
@@ -31,27 +50,20 @@ export interface TrainedStatData {
 	status: TrainedStatStatus;
 }
 
-export const defaultCoreStats: CoreStats = {
-	attack: 1,
-	defence: 1,
-	speed: 1,
-	hp: 10,
-};
-
 export const defaultPlayerStats: PlayerStats = {
-	attack: 1,
-	defence: 1,
-	speed: 1,
-	hp: 10,
-	attackFlat: 1,
-	attackMulti: 1,
-	defenceFlat: 1,
-	defenceMulti: 1,
-	critChance: 1,
-	critDamage: 1,
-	speedMulti: 1,
-	lifesteal: 1,
-	encounterChance: 1,
+	attack: new BigNumber(1),
+	defence: new BigNumber(1),
+	speed: new BigNumber(1),
+	hp: new BigNumber(10),
+	attackFlat: new BigNumber(1),
+	attackMulti: new BigNumber(1),
+	defenceFlat: new BigNumber(1),
+	defenceMulti: new BigNumber(1),
+	critChance: new BigNumber(1),
+	critDamage: new BigNumber(1),
+	speedMulti: new BigNumber(1),
+	lifesteal: new BigNumber(1),
+	encounterChance: new BigNumber(1),
 };
 
 export interface AreaScaling {
@@ -64,16 +76,29 @@ export interface AreaScaling {
 }
 
 export type PlayerStats = CoreStats & PlayerExtras;
+export type PlayerStatsNumber = CoreStatsNumbers & PlayerExtraNumbers;
 export type StatsModifier = Partial<PlayerStats>;
+export type StatsModifierNumber = Partial<PlayerStatsNumber>;
 export type TrainedStatType = "attack" | "agility" | "crit";
 export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden";
 
-export function scaleStats(base: CoreStats, scale: AreaScaling): CoreStats {
+export function toCoreStats(numbers: CoreStatsNumbers): CoreStats {
 	return {
-		hp: Math.round(base.hp * scale.hp),
-		attack: Math.round(base.attack * scale.attack),
-		defence: Math.round(base.defence * scale.defence),
-		speed: Math.round(base.speed * scale.speed),
+		hp: new BigNumber(numbers.hp),
+		attack: new BigNumber(numbers.attack),
+		defence: new BigNumber(numbers.defence),
+		speed: new BigNumber(numbers.speed),
+	};
+}
+
+
+
+export function scaleEnemyStatsByArea(base: CoreStats, scale: AreaScaling): CoreStats {
+	return {
+		hp: base.hp.multiply(scale.hp),
+		attack: base.attack.multiply(scale.attack),
+		defence: base.defence.multiply(scale.defence),
+		speed: base.speed.multiply(scale.speed),
 	};
 }
 

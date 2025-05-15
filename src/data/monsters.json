@@ -14,10 +14,10 @@
 		"attacks": ["basic_melee"]
 	},
 	{
-		"id": "rare_treant",
-		"displayName": "Ancient Treant",
-		"rarity": "rare",
-		"baseStats": { "hp": 10, "attack": 18, "defence": 3, "speed": 0.5 },
-		"attacks": ["basic_melee", "root_snare", "bark_skin"]
+		"id": "large_rat",
+		"displayName": "Large Rat",
+		"rarity": "common",
+		"baseStats": { "hp": 3, "attack": 2, "defence": 1, "speed": 2 },
+		"attacks": ["basic_melee"]
 	}
 ]
