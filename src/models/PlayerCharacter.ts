@@ -51,4 +51,15 @@ export class PlayerCharacter extends BaseCharacter {
 	protected getAvatarUrl(): string {
 		return "/assets/avatars/player.png";
 	}
+
+	    override public getActiveAbilities(): Ability[] {
+        // 1. Default abilities from character spec
+        const defaultAbilityIds = this.defaultAbilities;
+        // 2. Abilities from equipped class cards
+        const classCardAbilityIds =  Pla this.equippedClassCards.flatMap((card) => card.spec.abilities ?? []);
+        // 3. Merge (and optionally dedupe)
+        const allAbilityIds = Array.from(new Set([...defaultAbilityIds, ...classCardAbilityIds]));
+        // 4. Convert to Ability objects (or IDs, as you need)
+        return allAbilityIds.map((id) => AbilityRegistry.create(id));
+    }
 }

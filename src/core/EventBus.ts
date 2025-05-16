@@ -4,37 +4,38 @@ import { HuntState } from "../features/hunt/HuntManager";
 import { PlayerCharacter } from "../models/PlayerCharacter";
 import { EnemyCharacter } from "../models/EnemyCharacter";
 import { poolChangedPayload } from "../models/value-objects/RegenPool";
-import { InventoryItemSpec } from "../shared/types";
+import { InventoryItem, InventoryItemSpec } from "../shared/types";
 import { LifetimeStatType } from "@/models/LifetimeStats";
 import { BigNumber } from "@/models/utils/BigNumber";
 
 export interface GameEvents {
-	"Game:UITick": number;
-	"Game:GameTick": number;
-	"game:gameLoaded": void;
-	"game:gameSaved": void;
-	"game:newGameCalled": void;
-	"renown:changed": BigNumber;
-	"renown:award": BigNumber;
-	"Resource:Changed": { gold: number };
-	"player:initialized": Player;
-	"player:level-up": number;
-	"player:stamina-changed": poolChangedPayload;
-	"player:trainedStatChanged": string;
-	"hunt:stateChanged": HuntState;
-	"hunt:areaSelected": string;
-	"combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };
-	"combat:ended": string;
-	"classCard:levelUp": string;
-	"inventory:changed": void;
-	"slot:drop": { fromId: string; toId: string };
-	"slot:drag-start": { slotId: string };
-	"slot:click": string;
-	"player:equipmentChanged": InventoryItemSpec[];
-	"player:classCardsChanged": InventoryItemSpec[];
-	"player:statsChanged": PlayerCharacter;
-	"lifetimeStat:add": { stat: LifetimeStatType; amt: number };
-	"debug:killEnemy": void;
+    "Game:UITick": number;
+    "Game:GameTick": number;
+    "game:gameLoaded": void;
+    "game:gameSaved": void;
+    "game:newGameCalled": void;
+    "renown:changed": BigNumber;
+    "renown:award": BigNumber;
+    "Resource:Changed": { gold: number };
+    "player:initialized": Player;
+    "player:level-up": number;
+    "player:stamina-changed": poolChangedPayload;
+    "player:trainedStatChanged": string;
+    "hunt:stateChanged": HuntState;
+    "hunt:areaSelected": string;
+    "combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };
+    "combat:ended": string;
+    "classCard:levelUp": string;
+    "inventory:changed": void;
+    "inventory:dropped": string[];
+    "slot:drop": { fromId: string; toId: string };
+    "slot:drag-start": { slotId: string };
+    "slot:click": string;
+    "player:equipmentChanged": InventoryItemSpec[];
+    "player:classCardsChanged": InventoryItemSpec[];
+    "player:statsChanged": PlayerCharacter;
+    "lifetimeStat:add": { stat: LifetimeStatType; amt: number };
+    "debug:killEnemy": void;
 }
 
 export type EventKey = keyof GameEvents;
@@ -42,34 +43,34 @@ export type EventKey = keyof GameEvents;
 type Listener<E extends EventKey> = (payload: GameEvents[E]) => void;
 
 export class EventBus {
-	private listeners = new Map<EventKey, Set<Listener<any>>>();
-	private lastValue = new Map<EventKey, unknown>();
+    private listeners = new Map<EventKey, Set<Listener<any>>>();
+    private lastValue = new Map<EventKey, unknown>();
 
-	public on<E extends EventKey>(event: E, fn: Listener<E>) {
-		if (this.lastValue.has(event)) {
-			fn(this.lastValue.get(event) as GameEvents[E]);
-		}
-		if (!this.listeners.has(event)) {
-			this.listeners.set(event, new Set());
-		}
-		this.listeners.get(event)!.add(fn as Listener<any>);
-		return () => this.off(event, fn); // Return an unsubscribe event
-	}
+    public on<E extends EventKey>(event: E, fn: Listener<E>) {
+        if (this.lastValue.has(event)) {
+            fn(this.lastValue.get(event) as GameEvents[E]);
+        }
+        if (!this.listeners.has(event)) {
+            this.listeners.set(event, new Set());
+        }
+        this.listeners.get(event)!.add(fn as Listener<any>);
+        return () => this.off(event, fn); // Return an unsubscribe event
+    }
 
-	public off<E extends EventKey>(event: E, fn: Listener<E>) {
-		this.listeners.get(event)?.delete(fn as Listener<any>);
-	}
+    public off<E extends EventKey>(event: E, fn: Listener<E>) {
+        this.listeners.get(event)?.delete(fn as Listener<any>);
+    }
 
-	emit<E extends EventKey>(event: E): void;
-	emit<E extends EventKey>(event: E, payload: GameEvents[E]): void;
+    emit<E extends EventKey>(event: E): void;
+    emit<E extends EventKey>(event: E, payload: GameEvents[E]): void;
 
-	public emit(event: EventKey, payload?: any): void {
-		const set = this.listeners.get(event);
-		if (!set) return;
-		set.forEach((fn) => {
-			(fn as any)(payload);
-		});
-	}
+    public emit(event: EventKey, payload?: any): void {
+        const set = this.listeners.get(event);
+        if (!set) return;
+        set.forEach((fn) => {
+            (fn as any)(payload);
+        });
+    }
 }
 
 export const bus: EventBus = new EventBus();

@@ -33,7 +33,7 @@
 	grid-template-areas:
 		"neck    head .    ."
 		"hands chest . weapon"
-		".    legs     .    ."
+		".    legs     . weapon2"
 		".    feet     .    .";
 	gap: 0.75rem;
 }
@@ -198,6 +198,12 @@
 }
 .slot--equipment[data-slot="weapon"].empty {
 	background-image: url("/images/equipment/equipment-bg-weapon.png");
+}
+.slot--equipment[data-slot="weapon2"] {
+	grid-area: weapon2;
+}
+.slot--equipment[data-slot="weapon2"].empty {
+	background-image: url("/images/equipment/equipment-bg-weapon2.png");
 }
 
 /* ─────────────────────────────────────────────── */
