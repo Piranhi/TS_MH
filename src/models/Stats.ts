@@ -56,14 +56,14 @@ export const defaultPlayerStats: PlayerStats = {
 	defence: new BigNumber(1),
 	speed: new BigNumber(1),
 	hp: new BigNumber(1000),
-	attackFlat: new BigNumber(1),
+	attackFlat: new BigNumber(0),
 	attackMulti: new BigNumber(1),
-	defenceFlat: new BigNumber(1),
+	defenceFlat: new BigNumber(0),
 	defenceMulti: new BigNumber(1),
 	critChance: new BigNumber(1),
 	critDamage: new BigNumber(1),
 	speedMulti: new BigNumber(1),
-	lifesteal: new BigNumber(1),
+	lifesteal: new BigNumber(0),
 	encounterChance: new BigNumber(1),
 };
 

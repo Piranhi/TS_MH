@@ -68,13 +68,13 @@ export class CharacterDisplay {
 		this.character = character;
 		this.attackBarMap.clear();
 		this.barsContainer.innerHTML = "";
-		const attacks = this.character.getAbilities();
-		attacks.forEach((attack) => {
+		const abilities = this.character.getActiveAbilities();
+		abilities.forEach((ability) => {
 			const bar = document.createElement("div");
-			this.attackBarMap.set(attack.id, bar);
+			this.attackBarMap.set(ability.id, bar);
 			bar.className = "attack-bar";
-			bar.style.setProperty("--cd", String(attack.currentCooldown / attack.maxCooldown));
-			bar.dataset.name = attack.name;
+			bar.style.setProperty("--cd", String(ability.currentCooldown / ability.maxCooldown));
+			bar.dataset.name = ability.name;
 
 			const fill = document.createElement("span");
 			fill.className = "attack-fill";
@@ -82,7 +82,7 @@ export class CharacterDisplay {
 
 			const label = document.createElement("small");
 			label.className = "attack-label";
-			label.textContent = attack.name;
+			label.textContent = ability.name;
 			bar.appendChild(label);
 
 			this.barsContainer.appendChild(bar);
@@ -95,16 +95,16 @@ export class CharacterDisplay {
 	render(): void {
 		if (!this.character) return;
 		const snapshot = this.character.snapshot();
-		const { name, hp, abilities: attacks } = snapshot;
+		const { name, hp, abilities } = snapshot;
 		this.nameEl.textContent = name;
 		this.atkEl.textContent = "⚔️ " + snapshot.attack.toString();
 		this.defEl.textContent = "🛡️ " + snapshot.defence.toString();
 		this.hpBar.style.setProperty("--hp", hp.percent);
 		this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
-		attacks.forEach((attack) => {
-			const bar = this.attackBarMap.get(attack.id);
+		abilities.forEach((ability) => {
+			const bar = this.attackBarMap.get(ability.id);
 			if (!bar) return;
-			const ratio = attack.currentCooldown / attack.maxCooldown;
+			const ratio = ability.currentCooldown / ability.maxCooldown;
 			bar.style.setProperty("--cd", ratio.toString());
 		});
 	}

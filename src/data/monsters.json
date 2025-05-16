@@ -4,20 +4,20 @@
 		"displayName": "Green Slime",
 		"rarity": "common",
 		"baseStats": { "hp": 4, "attack": 2, "defence": 0, "speed": 1 },
-		"attacks": ["basic_melee"]
+		"abilities": ["basic_melee"]
 	},
 	{
 		"id": "wolf_basic",
 		"displayName": "Forest Wolf",
 		"rarity": "common",
 		"baseStats": { "hp": 3, "attack": 3, "defence": 1, "speed": 2 },
-		"attacks": ["basic_melee"]
+		"abilities": ["basic_melee"]
 	},
 	{
 		"id": "large_rat",
 		"displayName": "Large Rat",
 		"rarity": "common",
 		"baseStats": { "hp": 5, "attack": 2, "defence": 1, "speed": 2 },
-		"attacks": ["basic_melee"]
+		"abilities": ["basic_melee"]
 	}
 ]

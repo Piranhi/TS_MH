@@ -11,12 +11,15 @@ interface PlayerCharacterSaveState {}
 export class PlayerCharacter extends BaseCharacter {
 	readonly statsEngine: StatsEngine;
 	private readonly RECOVERY_HEAL = 0.01;
+	private classCardAbilityIds: string[] = [];
 
 	constructor() {
 		const base: PlayerStats = defaultPlayerStats;
 		super("You", 1, base);
 		this.statsEngine = new StatsEngine(base);
-		this.abilities.push(Ability.create("basic_heal"));
+		this.defaultAbilityIds.push("basic_heal");
+
+		this.recalculateAbilities();
 
 		/* pre‑register empty layers */
 		this.statsEngine.setLayer("level", () => ({}));
@@ -30,6 +33,23 @@ export class PlayerCharacter extends BaseCharacter {
 
 	healInRecovery() {
 		this.hp.increase(this.maxHp.multiply(this.RECOVERY_HEAL)); // Always heal at least 1
+	}
+
+	public setClassCardAbilities(abilityIds: string[]) {
+		this.classCardAbilityIds = abilityIds;
+		this.recalculateAbilities();
+	}
+	/** Recalculate full ability set and update map */
+	private recalculateAbilities() {
+		// Merge all sources (dedupe with Set)
+		const mergedIds = Array.from(
+			new Set([
+				...(this.defaultAbilityIds ?? []),
+				...this.classCardAbilityIds,
+				// ...add more here if needed
+			])
+		);
+		this.updateAbilities(mergedIds);
 	}
 
 	get attack() {
@@ -51,15 +71,4 @@ export class PlayerCharacter extends BaseCharacter {
 	protected getAvatarUrl(): string {
 		return "/assets/avatars/player.png";
 	}
-
-	    override public getActiveAbilities(): Ability[] {
-        // 1. Default abilities from character spec
-        const defaultAbilityIds = this.defaultAbilities;
-        // 2. Abilities from equipped class cards
-        const classCardAbilityIds =  Pla this.equippedClassCards.flatMap((card) => card.spec.abilities ?? []);
-        // 3. Merge (and optionally dedupe)
-        const allAbilityIds = Array.from(new Set([...defaultAbilityIds, ...classCardAbilityIds]));
-        // 4. Convert to Ability objects (or IDs, as you need)
-        return allAbilityIds.map((id) => AbilityRegistry.create(id));
-    }
 }

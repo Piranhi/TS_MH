@@ -1,7 +1,7 @@
 import { Equipment } from "@/models/Equipment";
 import { ClassCard } from "@/features/classcards/ClassCard";
 import { TrainedStat } from "@/models/TrainedStat";
-import { BoundedNumber } from "@/models/value-objects/Bounded";
+import { BoundedBig, BoundedNumber } from "@/models/value-objects/Bounded";
 import { RegenPool } from "@/models/value-objects/RegenPool";
 import { BigNumber } from "@/models/utils/BigNumber";
 
@@ -21,8 +21,10 @@ export function reviveGame(_key: string, value: any): any {
 				return ClassCard.fromJSON(value);
 			case "TrainedStat":
 				return TrainedStat.fromJSON(value);
-			case "Bounded":
+			case "BoundedNumber":
 				return BoundedNumber.fromJSON(value);
+			case "BoundedBig":
+				return BoundedBig.fromJSON(value);
 			case "RegenPool":
 				return RegenPool.fromJSON(value);
 			case "BigNumber":

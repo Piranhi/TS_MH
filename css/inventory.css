@@ -32,8 +32,8 @@
 	grid-template-rows: 64px 64px 64px 64px;
 	grid-template-areas:
 		"neck    head .    ."
-		"hands chest . weapon"
-		".    legs     . weapon2"
+		"back chest finger1 weapon"
+		"hands    legs     finger2 weapon2"
 		".    feet     .    .";
 	gap: 0.75rem;
 }
@@ -172,11 +172,26 @@
 .slot--equipment[data-slot="neck"] {
 	grid-area: neck;
 }
+.slot--equipment[data-slot="neck"].empty {
+	background-image: url("/images/equipment/equipment-bg-neck.png");
+}
 .slot--equipment[data-slot="head"] {
 	grid-area: head;
 }
+.slot--equipment[data-slot="head"].empty {
+	background-image: url("/images/equipment/equipment-bg-head.png");
+}
+.slot--equipment[data-slot="back"] {
+	grid-area: back;
+}
+.slot--equipment[data-slot="back"].empty {
+	background-image: url("/images/equipment/equipment-bg-back.png");
+}
 .slot--equipment[data-slot="hands"] {
 	grid-area: hands;
+}
+.slot--equipment[data-slot="hands"].empty {
+	background-image: url("/images/equipment/equipment-bg-hands.png");
 }
 .slot--equipment[data-slot="chest"] {
 	grid-area: chest;
@@ -193,6 +208,9 @@
 .slot--equipment[data-slot="feet"] {
 	grid-area: feet;
 }
+.slot--equipment[data-slot="feet"].empty {
+	background-image: url("/images/equipment/equipment-bg-feet.png");
+}
 .slot--equipment[data-slot="weapon"] {
 	grid-area: weapon;
 }
@@ -204,6 +222,18 @@
 }
 .slot--equipment[data-slot="weapon2"].empty {
 	background-image: url("/images/equipment/equipment-bg-weapon2.png");
+}
+.slot--equipment[data-slot="finger1"] {
+	grid-area: finger1;
+}
+.slot--equipment[data-slot="finger1"].empty {
+	background-image: url("/images/equipment/equipment-bg-finger.png");
+}
+.slot--equipment[data-slot="finger2"] {
+	grid-area: finger2;
+}
+.slot--equipment[data-slot="finger2"].empty {
+	background-image: url("/images/equipment/equipment-bg-finger.png");
 }
 
 /* ─────────────────────────────────────────────── */

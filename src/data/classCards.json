@@ -2,21 +2,23 @@
 	{
 		"id": "warrior_card_01",
 		"name": "warrior",
-		"description": "Increases base attack by 2.",
+		"description": "Increases base attack by 2. Provides players with the Warrior Charge skill",
 		"statMod": { "attackFlat": 2 },
 		"baseGainRate": 1,
 		"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
 		"tags": ["t1"],
-		"category": "classCard"
+		"category": "classCard",
+		"abilities": ["warrior_chage"]
 	},
 	{
 		"id": "bulwark_card_01",
 		"name": "bulwark",
-		"description": "Increases base defence by 2.",
+		"description": "Increases base defence by 2. Provides players with the Bulwark Defend skill",
 		"statMod": { "defenceFlat": 2 },
 		"baseGainRate": 1,
 		"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
 		"tags": ["t1"],
-		"category": "classCard"
+		"category": "classCard",
+		"abilities": ["bulwark_defend"]
 	}
 ]

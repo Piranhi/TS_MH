@@ -18,7 +18,7 @@ export interface MonsterSpecRaw {
 	displayName: string;
 	rarity: MonsterRarity;
 	baseStats: CoreStatsNumbers;
-	attacks: string[];
+	abilities: string[];
 }
 
 export interface MonsterSpec {
@@ -26,7 +26,7 @@ export interface MonsterSpec {
 	displayName: string;
 	rarity: MonsterRarity;
 	baseStats: CoreStats; // all BigNumbers!
-	attacks: string[];
+	abilities: string[];
 }
 
 export class Monster extends SpecRegistryBase<MonsterSpec> {
@@ -55,6 +55,10 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 
 	get renownMulti(): number {
 		return renownMultipliers[this.rarity];
+	}
+
+	get abilities(): string[] {
+		return this.spec.abilities;
 	}
 
 	// Registry.

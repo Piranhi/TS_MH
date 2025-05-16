@@ -1,50 +1,62 @@
 [
-    {
-        "id": "basic_melee",
-        "displayName": "Slam",
-        "effects": [
-            {
-                "type": "damage",
-                "value": 3
-            }
-        ],
-        "cooldown": 5,
-        "priority": "Low"
-    },
-    {
-        "id": "basic_heal",
-        "displayName": "Heal",
-        "effects": [
-            {
-                "type": "heal",
-                "value": 2
-            }
-        ],
-        "cooldown": 10,
-        "priority": "Low"
-    },
-    {
-        "id": "root_snare",
-        "displayName": "Root Snare",
-        "effects": [
-            {
-                "type": "damage",
-                "value": 5
-            }
-        ],
-        "cooldown": 6,
-        "priority": "High"
-    },
-    {
-        "id": "warrior_chage",
-        "displayName": "Warrior Charge",
-        "effects": [
-            {
-                "type": "damage",
-                "value": 10
-            }
-        ],
-        "cooldown": 5,
-        "priority": "High"
-    }
+	{
+		"id": "basic_melee",
+		"displayName": "Slam",
+		"effects": [
+			{
+				"type": "damage",
+				"value": 1
+			}
+		],
+		"cooldown": 5,
+		"priority": "Low"
+	},
+	{
+		"id": "basic_heal",
+		"displayName": "Heal",
+		"effects": [
+			{
+				"type": "heal",
+				"value": 1
+			}
+		],
+		"cooldown": 10,
+		"priority": "Low"
+	},
+	{
+		"id": "root_snare",
+		"displayName": "Root Snare",
+		"effects": [
+			{
+				"type": "damage",
+				"value": 5
+			}
+		],
+		"cooldown": 6,
+		"priority": "High"
+	},
+	{
+		"id": "warrior_chage",
+		"displayName": "Warrior Charge",
+		"effects": [
+			{
+				"type": "damage",
+				"value": 2
+			}
+		],
+		"cooldown": 8,
+		"priority": "High"
+	},
+	{
+		"id": "bulward_defende",
+		"displayName": "Bulwark Defend",
+		"effects": [
+			{
+				"type": "damage",
+				"value": 2
+			}
+		],
+		"cooldown": 8,
+		"priority": "High"
+	}
 ]
