@@ -1,13 +1,14 @@
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./hunt.html?raw";
 import { bus } from "../../core/EventBus";
-import { HuntState } from "@/features/hunt/HuntManager";
+import { AreaStats, HuntState } from "@/features/hunt/HuntManager";
 import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { CharacterDisplay } from "../components/CharacterDisplay";
 import { addHTMLtoPage } from "../utils/ScreensUtils";
 import { Area } from "@/models/Area";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
+import { Player } from "@/models/player";
 
 export class HuntScreen extends BaseScreen {
     readonly screenName = "hunt";
@@ -18,6 +19,10 @@ export class HuntScreen extends BaseScreen {
     private playerCard!: CharacterDisplay;
     private enemyCard!: CharacterDisplay;
     private areaSelectEl!: HTMLSelectElement;
+    private statTotalKillsEl!: HTMLElement;
+    private statKillsThisRunEl!: HTMLElement;
+    private statBossUnlockedEl!: HTMLElement;
+    private fightBossBtn!: HTMLButtonElement;
 
     init() {
         addHTMLtoPage(Markup, this);
@@ -39,6 +44,11 @@ export class HuntScreen extends BaseScreen {
 
     private setupElements() {
         this.huntUpdateEl = document.getElementById("hunt-update-log") as HTMLElement;
+        this.statTotalKillsEl = document.getElementById("area-total-kills")!;
+        this.statKillsThisRunEl = document.getElementById("area-kills-this-run")!;
+        this.statBossUnlockedEl = document.getElementById("area-boss-unlocked")!;
+        this.fightBossBtn = document.getElementById("fight-boss-btn") as HTMLButtonElement;
+
         this.buildAreaSelect();
         // Setup Player Cards
         this.playerCard = new CharacterDisplay("active", true);
@@ -70,8 +80,17 @@ export class HuntScreen extends BaseScreen {
         });
     }
 
+    // Updated from Hunt Manager when area is selected/Stat updated
+    private updateAreaStats(stats: AreaStats) {
+        this.statKillsThisRunEl.textContent = stats.killsThisRun.toString();
+        this.statTotalKillsEl.textContent = stats.killsTotal.toString();
+        this.statBossUnlockedEl.textContent = stats.bossUnlockedThisRun ? "Yes" : "No";
+        this.fightBossBtn.disabled = !stats.bossUnlockedThisRun;
+    }
+
     private bindEvents() {
         bus.on("hunt:stateChanged", (state) => this.areaChanged(state));
+        bus.on("hunt:statsChanged", (stats) => this.updateAreaStats(stats));
         bus.on("Game:UITick", (dt) => this.handleTick(dt));
         bus.on("combat:started", (combat) => {
             this.initCharacters(combat.player, combat.enemy);

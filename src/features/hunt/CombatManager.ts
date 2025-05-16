@@ -39,6 +39,7 @@ export class CombatManager {
         this.playerWon = this.playerCharacter.isAlive();
         if (this.playerWon) {
             bus.emit("lifetimeStat:add", { stat: "monstersKilled", amt: 1 });
+            bus.emit("hunt:areaKill");
             this.rewardPlayer();
         }
         bus.emit("combat:ended", this.playerWon ? "Player Won" : "Player fled");

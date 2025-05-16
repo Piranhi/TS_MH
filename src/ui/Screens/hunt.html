@@ -38,17 +38,36 @@
     <img src="src\Assets\Images\header-hunt.png" alt="Settlement">
   </figure>
 
-  <h3>Select Area</h3>
-  <div class="glass area-select">
-    <label for="area-select" class="area-select__label"></label>
-    <select id="area-select" class="area-select__input">
-      <option value="" disabled selected>Select an area…</option>
-      <option value="forest_edge">Whispering Forest</option>
-      <option value="desert">Shifting Dunes</option>
-      <option value="mountain">Frostpeak Mountains</option>
-      <option value="swamp">Verdant Mire</option>
-    </select>
+<h3>Select Area</h3>
+<div class="glass area-select">
+  <label for="area-select" class="area-select__label"></label>
+  <select id="area-select" class="area-select__input">
+    <option value="" disabled selected>Select an area…</option>
+    <option value="forest_edge">Whispering Forest</option>
+    <!-- More options -->
+  </select>
+</div>
+<button id="fight-boss-btn" class="fight-boss-btn" disabled>Fight Boss</button>
+
+
+<!-- Area Stats Card -->
+<section class="glass area-stats" id="area-stats">
+  <h4 class="area-stats__title">Area Stats</h4>
+  <div class="area-stats__row">
+    <span class="area-stats__label">Total Kills</span>
+    <span class="area-stats__value" id="area-total-kills">0</span>
   </div>
+  <div class="area-stats__row">
+    <span class="area-stats__label">Kills This Run</span>
+    <span class="area-stats__value" id="area-kills-this-run">0</span>
+  </div>
+  <div class="area-stats__row">
+    <span class="area-stats__label">Boss Unlocked</span>
+    <span class="area-stats__value" id="area-boss-unlocked">No</span>
+  </div>
+  <!-- Add more rows as needed -->
+</section>
+
 
   <div class="char-holders">
   </div>

@@ -1,6 +1,6 @@
 import { BoundedNumber } from "../models/value-objects/Bounded";
 import { Player } from "../models/player";
-import { HuntState } from "../features/hunt/HuntManager";
+import { AreaStats, HuntState } from "../features/hunt/HuntManager";
 import { PlayerCharacter } from "../models/PlayerCharacter";
 import { EnemyCharacter } from "../models/EnemyCharacter";
 import { poolChangedPayload } from "../models/value-objects/RegenPool";
@@ -23,6 +23,9 @@ export interface GameEvents {
     "player:trainedStatChanged": string;
     "hunt:stateChanged": HuntState;
     "hunt:areaSelected": string;
+    "hunt:areaKill": void;
+    "hunt:bossKilled": void;
+    "hunt:statsChanged": AreaStats;
     "combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };
     "combat:ended": string;
     "classCard:levelUp": string;
