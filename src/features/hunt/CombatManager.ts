@@ -3,7 +3,6 @@ import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { bus } from "../../core/EventBus";
 import { Area } from "@/models/Area";
 import { Player } from "@/models/player";
-import { BigNumber } from "@/models/utils/BigNumber";
 
 export class CombatManager {
     public isFinished: boolean = false;
@@ -39,7 +38,7 @@ export class CombatManager {
         this.playerWon = this.playerCharacter.isAlive();
         if (this.playerWon) {
             bus.emit("lifetimeStat:add", { stat: "monstersKilled", amt: 1 });
-            bus.emit("hunt:areaKill");
+            bus.emit("hunt:areaKill", { enemyId: this.enemyCharacter.spec.id, areaId: this.area.id });
             this.rewardPlayer();
         }
         bus.emit("combat:ended", this.playerWon ? "Player Won" : "Player fled");

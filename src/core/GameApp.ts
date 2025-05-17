@@ -9,6 +9,7 @@ import { PlayerbarDisplay } from "../ui/components/PlayerBarDisplay";
 import { HuntManager } from "../features/hunt/HuntManager";
 import { screenFactories } from "./screenFactories";
 import { DebugMenu } from "@/ui/components/Debug-Menu";
+import { StatsManager } from "@/models/StatsManager";
 
 export class GameApp {
     /* ---------- readonly fields ---------- */
@@ -45,6 +46,7 @@ export class GameApp {
 
     /* ---------- private helpers ---------- */
     private async instantiateCore() {
+        const stats = StatsManager.instance;
         await Player.getInstance().init();
         this.huntManager = new HuntManager(Player.getInstance().getPlayerCharacter());
     }

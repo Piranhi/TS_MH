@@ -1,7 +1,7 @@
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./hunt.html?raw";
 import { bus } from "../../core/EventBus";
-import { AreaStats, HuntState } from "@/features/hunt/HuntManager";
+import { HuntState } from "@/features/hunt/HuntManager";
 import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { CharacterDisplay } from "../components/CharacterDisplay";
@@ -9,6 +9,7 @@ import { addHTMLtoPage } from "../utils/ScreensUtils";
 import { Area } from "@/models/Area";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { Player } from "@/models/player";
+import { AreaStats } from "@/shared/stats-types";
 
 export class HuntScreen extends BaseScreen {
     readonly screenName = "hunt";

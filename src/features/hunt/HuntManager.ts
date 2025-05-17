@@ -9,6 +9,8 @@ import { Area } from "@/models/Area";
 import { Saveable } from "@/shared/storage-types";
 import { saveManager } from "@/core/SaveManager";
 import { printLog } from "@/core/DebugManager";
+import { AreaStats, DEFAULT_AREA_STATS } from "@/shared/stats-types";
+import { StatsManager } from "@/models/StatsManager";
 
 export enum HuntState {
     Idle = "Idle",
@@ -21,28 +23,8 @@ interface HuntSaveState {
     huntState: HuntState;
     areaId: string;
     areaIndex: number;
-    areaStats: [string, AreaStats][];
 }
 
-export interface AreaStats {
-    killsTotal: number;
-    killsThisRun: number;
-    bossUnlockedEver: boolean;
-    bossUnlockedThisRun: boolean;
-    bossKilledThisRun: boolean;
-    bossKillsTotal: number;
-    bossKillsThisRun: number;
-}
-
-export const DEFAULT_AREA_STATS: AreaStats = {
-    killsTotal: 0,
-    killsThisRun: 0,
-    bossUnlockedEver: false,
-    bossUnlockedThisRun: false,
-    bossKilledThisRun: false,
-    bossKillsTotal: 0,
-    bossKillsThisRun: 0,
-};
 /**
  * Minimal interface every concrete state must implement.
  * `tick` is called every game‑loop iteration; `dt` is milliseconds elapsed since the previous call.
@@ -57,7 +39,7 @@ export class HuntManager implements Saveable {
     private state: HuntState = HuntState.Idle; // current enum value – useful for save files
     private handler: StateHandler;
     private area!: Area;
-    private areaStatsMap = new Map<string, AreaStats>();
+    //private areaStatsMap = new Map<string, AreaStats>();
 
     constructor(private readonly playerCharacter: PlayerCharacter) {
         this.handler = this.makeIdleState();
@@ -65,36 +47,14 @@ export class HuntManager implements Saveable {
         saveManager.register("huntManager", this);
         bus.on("Game:GameTick", (dt) => this.onTick(dt));
         bus.on("hunt:areaSelected", (areaId) => this.setArea(areaId));
-        bus.on("hunt:areaKill", () => {
-            if (!this.area) return;
-            const stats = this.areaStatsMap.get(this.area.id);
-            if (stats) {
-                stats.killsThisRun++;
-                stats.killsTotal++;
-                if (stats.killsThisRun >= 10) {
-                    stats.bossUnlockedThisRun = true;
-                    stats.bossUnlockedEver = false;
-                }
-                this.emitStatsChanged();
-            }
-        });
     }
 
     /** Change the hunting grounds without restarting the whole loop. */
     public setArea(areaId: string) {
         this.area = Area.create(areaId);
-        if (!this.areaStatsMap.has(areaId)) {
-            this.areaStatsMap.set(areaId, { ...DEFAULT_AREA_STATS });
-        }
-        this.emitStatsChanged();
+        //StatsManager.instance.getAreaStats(areaId);
         this.transition(HuntState.Search, this.makeSearchState());
         printLog("Setting new Area to: " + this.area.id, 3, "HuntManager.ts");
-    }
-
-    private emitStatsChanged() {
-        const areaStat = this.areaStatsMap.get(this.area.id);
-        if (!areaStat) return;
-        bus.emit("hunt:statsChanged", areaStat);
     }
 
     public onTick(dt: number) {
@@ -187,12 +147,10 @@ export class HuntManager implements Saveable {
             huntState: this.state,
             areaId: this.area ? this.area.id : "null",
             areaIndex: areaSelector.selectedIndex,
-            areaStats: Array.from(this.areaStatsMap.entries()),
         };
     }
 
     load(state: HuntSaveState): void {
-        this.areaStatsMap = new Map(state.areaStats);
         if (state.areaId !== "null") {
             // Only setup if player was in an area
             this.state = state?.huntState;

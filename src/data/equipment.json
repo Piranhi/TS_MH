@@ -1,42 +1,42 @@
 [
-	{
-		"id": "tier1_chest",
-		"category": "equipment",
-		"name": "Worn padded vest",
-		"description": "Todo",
-		"equipType": "chest",
-		"statMod": { "defenceFlat": 1 },
-		"iconUrl": "",
-		"tags": ["t1"]
-	},
-	{
-		"id": "tier1_head",
-		"category": "equipment",
-		"name": "Worn padded vest",
-		"description": "Todo",
-		"equipType": "head",
-		"statMod": { "defenceFlat": 1 },
-		"iconUrl": "",
-		"tags": ["t1"]
-	},
-	{
-		"id": "tier1_weapon",
-		"category": "equipment",
-		"name": "Cracked Sword",
-		"description": "Todo",
-		"equipType": "weapon",
-		"statMod": { "attackflat": 1 },
-		"iconUrl": "",
-		"tags": ["t1"]
-	},
-	{
-		"id": "tier1_legs",
-		"category": "equipment",
-		"name": "Ripped shorts",
-		"description": "Todo",
-		"equipType": "legs",
-		"statMod": { "defenceFlat": 1 },
-		"iconUrl": "",
-		"tags": ["t1"]
-	}
+    {
+        "id": "tier1_chest",
+        "category": "equipment",
+        "name": "Worn padded vest",
+        "description": "Todo",
+        "equipType": "chest",
+        "statMod": { "defenceFlat": 1 },
+        "iconUrl": "/images/equipment/equipment-t1-chest-wornpaddedchest.png",
+        "tags": ["t1"]
+    },
+    {
+        "id": "tier1_head",
+        "category": "equipment",
+        "name": "Worn padded vest",
+        "description": "Todo",
+        "equipType": "head",
+        "statMod": { "defenceFlat": 1 },
+        "iconUrl": "",
+        "tags": ["t1"]
+    },
+    {
+        "id": "tier1_weapon",
+        "category": "equipment",
+        "name": "Cracked Sword",
+        "description": "Todo",
+        "equipType": "weapon",
+        "statMod": { "attackflat": 1 },
+        "iconUrl": "/images/equipment/equipment-t1-sword-crackedsword.png",
+        "tags": ["t1"]
+    },
+    {
+        "id": "tier1_legs",
+        "category": "equipment",
+        "name": "Ripped shorts",
+        "description": "Todo",
+        "equipType": "legs",
+        "statMod": { "defenceFlat": 1 },
+        "iconUrl": "",
+        "tags": ["t1"]
+    }
 ]

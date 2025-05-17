@@ -1,12 +1,13 @@
 import { BoundedNumber } from "../models/value-objects/Bounded";
 import { Player } from "../models/player";
-import { AreaStats, HuntState } from "../features/hunt/HuntManager";
+import { HuntState } from "../features/hunt/HuntManager";
 import { PlayerCharacter } from "../models/PlayerCharacter";
 import { EnemyCharacter } from "../models/EnemyCharacter";
 import { poolChangedPayload } from "../models/value-objects/RegenPool";
-import { InventoryItem, InventoryItemSpec } from "../shared/types";
+import { InventoryItemSpec } from "../shared/types";
 import { LifetimeStatType } from "@/models/LifetimeStats";
 import { BigNumber } from "@/models/utils/BigNumber";
+import { AreaStats } from "@/shared/stats-types";
 
 export interface GameEvents {
     "Game:UITick": number;
@@ -23,8 +24,8 @@ export interface GameEvents {
     "player:trainedStatChanged": string;
     "hunt:stateChanged": HuntState;
     "hunt:areaSelected": string;
-    "hunt:areaKill": void;
-    "hunt:bossKilled": void;
+    "hunt:areaKill": { enemyId: string; areaId: string };
+    "hunt:bossKilled": string;
     "hunt:statsChanged": AreaStats;
     "combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };
     "combat:ended": string;
