@@ -1,44 +1,43 @@
-<!-- copy‑and‑paste ONLY the markup that lives inside #game-area -->
+<section class="game settlement-screen">
 
-<section class="game ">
+  <template id="building-card">
+    <div class="building-card">
+      <div class="building-icon library"></div>
+      <div class="building-title">Library</div>
+      <div class="building-level">Lv 2</div>
+      <button class="upgrade-btn">Upgrade</button>
+    </div>
+  </template>
+  <template id="building-card-locked">
+    <div class="building-card locked">
+      <div class="building-icon locked-icon"></div>
+      <div class="building-title">(locked)</div>
+    </div>
+  </template>
+
+  <template id="plot-card">
+    <div class="plot-card add-plot">
+      <div class="building-icon plus"></div>
+      <div class="building-title">+ Build Plot</div>
+      <button class="build-btn">Unlock</button>
+    </div>
+  </template>
+
+
   <header class="settlement-header">
     <div>
       <span class="settlement-title">Settlement:</span>
       <span class="settlement-name">Hunter’s Rest</span>
     </div>
   </header>
-  <div class="settlement-container">
 
+  <div class="settlement-container">
     <div class="settlement-main">
-      <main class="building-grid">
-        <div class="building-card">
-          <div class="building-icon library"></div>
-          <div class="building-title">Library</div>
-          <div class="building-level">Lv 2</div>
-          <button class="upgrade-btn">Upgrade</button>
-        </div>
-        <div class="building-card">
-          <div class="building-icon forge"></div>
-          <div class="building-title">Forge</div>
-          <div class="building-level">Lv 3</div>
-          <button class="upgrade-btn">Upgrade</button>
-        </div>
-        <div class="building-card add-plot">
-          <div class="building-icon plus"></div>
-          <div class="building-title">+ Build Plot</div>
-          <button class="build-btn">Ack Plot</button>
-        </div>
-        <div class="building-card locked">
-          <div class="building-icon locked-icon"></div>
-          <div class="building-title">(locked)</div>
-        </div>
-        <div class="building-card">
-          <div class="building-icon trophy"></div>
-          <div class="building-title">Trophy Room</div>
-          <div class="building-level">Lv 1</div>
-          <button class="upgrade-btn">Upgrade</button>
-        </div>
+      <main class="building-grid" id="settlement-building-grid">
+
       </main>
+
+
       <aside class="outposts-panel">
         <h2>Outposts</h2>
         <div class="outpost-row">

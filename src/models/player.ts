@@ -12,6 +12,7 @@ import { LifetimeStats } from "./LifetimeStats";
 import { BigNumber } from "./utils/BigNumber";
 import { printLog } from "@/core/DebugManager";
 import { TrainedStatManager } from "./TrainedStatManager";
+import { SettlementManager } from "@/features/settlement/SettlementManager";
 
 interface PlayerData {
 	level: number;
@@ -41,10 +42,10 @@ export class Player implements Saveable {
 
 	public character: PlayerCharacter;
 	public inventory: InventoryManager;
-	private cardManager: ClassCardManager;
-	private equipmentManager: EquipmentManager;
+	public cardManager: ClassCardManager;
+	public equipmentManager: EquipmentManager;
+	public settlementManager: SettlementManager;
 	public trainedStatManager: TrainedStatManager;
-	private lifetimeStats: LifetimeStats;
 
 	private constructor(data: PlayerData) {
 		this.level = data.level;
@@ -55,8 +56,9 @@ export class Player implements Saveable {
 		this.inventory = new InventoryManager();
 		this.cardManager = new ClassCardManager(this.inventory);
 		this.equipmentManager = new EquipmentManager(this.inventory);
+		this.settlementManager = new SettlementManager();
 		this.trainedStatManager = new TrainedStatManager(this);
-		this.lifetimeStats = new LifetimeStats();
+		//this.lifetimeStats = new LifetimeStats();
 
 		this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
 		this.inventory.addItemToInventory(ClassCard.create("bulwark_card_01"));

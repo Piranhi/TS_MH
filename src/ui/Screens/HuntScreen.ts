@@ -5,7 +5,6 @@ import { HuntState } from "@/features/hunt/HuntManager";
 import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { CharacterDisplay } from "../components/CharacterDisplay";
-import { addHTMLtoPage } from "../utils/ScreensUtils";
 import { Area } from "@/models/Area";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { AreaStats } from "@/shared/stats-types";
@@ -25,7 +24,7 @@ export class HuntScreen extends BaseScreen {
 	private fightBossBtn!: HTMLButtonElement;
 
 	init() {
-		addHTMLtoPage(Markup, this);
+		this.addMarkuptoPage(Markup);
 		this.setupElements();
 		this.bindEvents();
 	}

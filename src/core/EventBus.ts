@@ -38,13 +38,15 @@ export interface GameEvents {
 	"player:classCardsChanged": InventoryItemSpec[];
 	"player:statsChanged": PlayerCharacter;
 	//"lifetimeStat:add": { stat: LifetimeStatType; amt: number };
-	"debug:killEnemy": void;
+	"settlement:changed": void;
 	// ----------------- STATS -----------------
 	"stats:userStatsChanged": UserStats;
 	"stats:enemyStatsChanged": EnemyStats;
 	"stats:areaStatsChanged": AreaStats;
 	"stats:gameStatsChanged": GameStats;
 	"stats:prestigeStatsChanged": PrestigeStats;
+	//------------------ DEBUG ---------------------
+	"debug:killEnemy": void;
 }
 
 export type EventKey = keyof GameEvents;

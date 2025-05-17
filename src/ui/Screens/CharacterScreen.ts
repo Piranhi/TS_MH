@@ -1,5 +1,4 @@
 import { PlayerStatsDisplay } from "../components/PlayerStatsDisplay";
-import { addHTMLtoPage } from "../utils/ScreensUtils";
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./character.html?raw";
 
@@ -9,7 +8,7 @@ export class CharacterScreen extends BaseScreen {
 	private rootEl: HTMLElement;
 
 	init() {
-		addHTMLtoPage(Markup, this);
+		this.addMarkuptoPage(Markup);
 		this.rootEl = document.getElementById("character-container")!;
 		this.playerStatsDiplay = new PlayerStatsDisplay(document.getElementById("player-statlist")!);
 	}

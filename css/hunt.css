@@ -12,36 +12,81 @@
 	--bar-height-small: 0.75rem; /* reuse across the UI if you wish */
 }
 
-/* ---------- Component wrapper ---------- */
+/* — CORE SPLIT LAYOUT — */
+.hunt-screen {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	gap: 1.5rem;
+	min-width: 0;
+	min-height: 0;
+	padding: 12px;
+}
 
+.hunt-main {
+	flex: 6 1 0;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	min-height: 0;
+}
+
+.area-select {
+	flex: 3 1 0;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	min-height: 0;
+	padding: 12px;
+	background: #68838b57;
+}
+
+/* — LEFT COLUMN — */
 .char-holders {
-	display: flex; /* makes the children sit in a row       */
-	flex-wrap: wrap; /* lets them wrap *if* the screen is tiny */
-	gap: 1rem; /* maintains the nice 16 px gap           */
-
-	/* (stylistic rules you already had) */
-	padding: 1rem 1.25rem;
+	flex: 1 1 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	overflow-y: none;
+	padding: 1rem;
+	background: var(--glass-bg);
 	border: 1px solid var(--glass-border);
 	border-radius: 0.25rem;
 }
+
+.hunt-scroll {
+	flex: 1 1 0;
+	display: flex;
+	flex-direction: column-reverse;
+	overflow-y: auto;
+	margin-top: 1rem;
+	padding: 1rem;
+	background: var(--glass-bg);
+	border: 1px solid var(--glass-border);
+	border-radius: 0.25rem;
+	box-shadow: var(--glass-shadow);
+	font: 0.65rem/1 var(--font-sans);
+}
+
+/* subtle separator */
+.hunt-scroll li + li {
+	margin-top: 0.1rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.05);
+	padding-top: 0.4rem;
+}
+/* ---------- Component wrapper ---------- */
 
 .char-holder {
 	/* existing visual stuff… */
 	display: flex;
 	flex-direction: row;
-	align-items: flex-start;
 	gap: 1rem;
-	padding: 1rem 1.25rem;
+	padding: 1rem 1rem;
 	border-radius: 0.4rem;
 	background: var(--glass-bg);
 	border: 1px solid var(--glass-border);
 	box-shadow: var(--glass-shadow);
-
-	/* updated sizing + flex behaviour ↓↓↓ */
-	flex: 1 1 0; /* grow+shrink evenly, start from 0 px basis   */
-	max-width: none; /* wipe out the old 30 rem cap              */
-	min-width: 16rem; /* let the card shrink below its content    */
-	width: auto;
+	flex: 1 1 0;
 	visibility: visible;
 }
 
@@ -200,51 +245,24 @@
 	--bar-fill: #4ade80; /* mint green HP bar */
 }
 
+.area-select {
+	width: 40%;
+}
+
+/* — RIGHT COLUMN — */
 .area-select__input {
-	width: 30%;
-	padding: 0.6rem 0.9rem;
+	width: 100%;
+	margin: 0.5rem 0;
+	padding: 0.2rem;
 	font: inherit;
-	border-radius: var(--glass-radius);
-	color: var(--text-default);
-	border: 1px solid var(--glass-stroke);
-	background: var(--glass-fill);
-	-webkit-backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
-	backdrop-filter: blur(calc(var(--glass-blur) / 1.6));
-	appearance: none; /* hides native arrow in most browsers */
+	border-radius: 0.3rem;
+	border: 1px solid var(--glass-border);
+	background: var(--glass-bg);
 }
 .area-select__input:focus {
 	outline: none;
 	background: rgba(82, 74, 74, 0.849);
 	border-color: var(--accent); /* same blue you use elsewhere */
-}
-
-/*  Glassy scroll panel for hunt log  */
-.hunt-scroll {
-	/* reuse the existing glass variables */
-	position: relative;
-	width: 100%;
-	max-height: 200px;
-	padding: 1rem 1.5rem;
-	overflow-y: auto;
-	display: flex;
-	flex-direction: column-reverse;
-
-	background: var(--glass-fill);
-	border: 1px solid var(--glass-stroke);
-	border-radius: var(--glass-radius);
-	backdrop-filter: blur(var(--glass-blur));
-	-webkit-backdrop-filter: blur(var(--glass-blur));
-	box-shadow: 0 0 0 1px var(--glass-shadow-rim), 0 6px 18px var(--glass-shadow-drop);
-
-	font: 0.65rem/1 var(--font-sans);
-	color: var(--text-default);
-}
-
-/* subtle separator between lines */
-.hunt-scroll li + li {
-	margin-top: 0.4rem;
-	border-top: 1px solid rgba(255, 255, 255, 0.05);
-	padding-top: 0.4rem;
 }
 
 /* ▸ Custom scrollbar – WebKit / Blink */
@@ -270,17 +288,18 @@
 		scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 	}
 }
-
-
 .area-stats {
-	margin-top: 1.5rem;
-	padding: 1.5rem 1.75rem;
-	border-radius: 1.25rem;
-	background:#313131;
+	padding: 1rem;
+	background: var(--glass-bg);
 	border: 1px solid var(--glass-border);
+	border-radius: 0.5rem;
 	box-shadow: var(--glass-shadow);
-	max-width: 400px;
-	transition: background 0.25s, border-color 0.25s;
+}
+
+.area-stats__row {
+	display: flex;
+	justify-content: space-between;
+	margin: 0.4rem 0;
 }
 
 .area-stats__title {
@@ -289,16 +308,7 @@
 	margin-bottom: 1rem;
 	letter-spacing: 0.03em;
 	color: var(--text-default, #fff);
-	text-shadow: 0 2px 8px rgba(0,0,0,0.07);
-}
-
-.area-stats__row {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 0.25rem;
-	font-size: .65rem;
-	font-weight: 100;
+	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 
 .area-stats__label {
@@ -311,54 +321,52 @@
 	letter-spacing: 0.02em;
 }
 
-@media (max-width: 600px) {
-	.area-stats {
-		padding: 1rem;
-	}
-	.area-stats__row {
-		font-size: 0.97rem;
-	}
-}
-
-
 .fight-boss-btn {
-  display: inline-block;
-  min-width: 140px;
-  padding: 0.85rem 2.2rem;
-  font-size: 1.12rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  border: none;
-  border-radius: 1.5rem;
-  background: var(--glass-bg, rgba(255,255,255,0.15));
-  color: var(--text-default, #fff);
-  box-shadow: 0 4px 18px rgba(0,0,0,0.13);
-  backdrop-filter: blur(12px);
-  transition: 
-    background 0.22s,
-    color 0.16s,
-    box-shadow 0.16s,
-    filter 0.18s;
-  cursor: pointer;
-  margin-top: 1.5rem;
-  position: relative;
-  z-index: 1;
+	display: inline-block;
+	width: 220px;
+	height: 40px;
+	padding: 0.85rem 2.2rem;
+	font-size: 1.12rem;
+	font-weight: 600;
+	letter-spacing: 0.03em;
+	border: none;
+	border-radius: 1.5rem;
+	background: var(--glass-bg, rgba(255, 255, 255, 0.15));
+	color: var(--text-default, #fff);
+	box-shadow: 0 4px 18px rgba(0, 0, 0, 0.13);
+	backdrop-filter: blur(12px);
+	transition: background 0.22s, color 0.16s, box-shadow 0.16s, filter 0.18s;
+	cursor: pointer;
+	margin-top: 1.5rem;
+	z-index: 1;
 }
 
 .fight-boss-btn:not(:disabled):hover,
 .fight-boss-btn:not(:disabled):focus {
-  background: rgba(251, 191, 36, 0.22); /* warm gold accent on hover */
-  color: #fff;
-  box-shadow: 0 8px 28px rgba(251,191,36,0.10);
-  outline: none;
+	background: rgba(251, 191, 36, 0.22); /* warm gold accent on hover */
+	color: #fff;
+	box-shadow: 0 8px 28px rgba(251, 191, 36, 0.1);
+	outline: none;
 }
 
 .fight-boss-btn:disabled,
 .fight-boss-btn[aria-disabled="true"] {
-  background: rgba(220,220,220,0.12);
-  color: rgba(255,255,255,0.45);
-  filter: grayscale(0.24) blur(0.5px);
-  cursor: not-allowed;
-  box-shadow: none;
-  opacity: 0.7;
+	background: rgba(220, 220, 220, 0.12);
+	color: rgba(255, 255, 255, 0.45);
+	filter: grayscale(0.24) blur(0.5px);
+	cursor: not-allowed;
+	box-shadow: none;
+	opacity: 0.7;
+}
+
+/* — Responsive — */
+@media (max-width: 900px) {
+	.hunt-screen {
+		flex-direction: column;
+	}
+	.hunt-main,
+	.area-select {
+		flex: none;
+		width: 100%;
+	}
 }

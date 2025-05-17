@@ -1,6 +1,5 @@
 import { Player } from "@/models/player";
 import { BaseScreen } from "./BaseScreen";
-import { addHTMLtoPage } from "../utils/ScreensUtils";
 import Markup from "./inventory.html?raw";
 import { bus } from "@/core/EventBus";
 import { InventorySlot } from "../components/InventorySlot";
@@ -15,7 +14,7 @@ export class InventoryScreen extends BaseScreen {
 
 	init() {
 		this.element.textContent = "Inventory Screen";
-		addHTMLtoPage(Markup, this);
+		this.addMarkuptoPage(Markup);
 
 		this.rootEl = document.getElementById("inventory-section")!;
 		this.inventoryGridEl = this.rootEl.querySelector(".inventory-grid")!;

@@ -1,6 +1,7 @@
 import { printLog } from "@/core/DebugManager";
 import { Identifiable } from "@/models/SpecRegistryBase";
 import { StatsModifier, StatsModifierNumber } from "@/models/Stats";
+import { BigNumber } from "@/models/utils/BigNumber";
 
 export const AREATIER_MULTIPLIERS = [1, 1.2, 1.5, 2, 2.5, 3];
 export const ITEM_RARITIES = ["common", "uncommon", "rare", "epic", "legendary", "unique"] as const;
@@ -41,7 +42,18 @@ export const ItemCategoryDisplay: Record<ItemCategory, string> = {
 };
 export type EquipmentType = "head" | "back" | "chest" | "legs" | "feet" | "hands" | "finger1" | "finger2" | "neck" | "weapon" | "weapon2";
 export type ItemEquipStatus = "Equipped" | "Unequipped";
-
+export type BuildingType = "library" | "blacksmith" | "market";
+export interface BuildingSpec {
+	id: BuildingType;
+	displayName: string;
+	description: string;
+	icon: string;
+	baseCost: number;
+}
+export interface BuildingState {
+	level: number;
+	progress: BigNumber;
+}
 export interface InventoryItemSpec extends Identifiable {
 	id: string;
 	category: ItemCategory;

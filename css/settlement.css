@@ -47,7 +47,21 @@ body {
 	align-content: start;
 }
 .building-card {
-	background: rgba(81, 96, 97, 0.555);
+	background: rgba(73, 116, 98, 0.555);
+	backdrop-filter: blur(7px);
+	border-radius: 8px;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 18px 10px 14px 10px;
+	min-height: 148px;
+	position: relative;
+	color: #a7e3ff;
+}
+
+.plot-card {
+	background: rgba(112, 126, 128, 0.397);
 	backdrop-filter: blur(7px);
 	border-radius: 8px;
 	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
