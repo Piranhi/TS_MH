@@ -1,59 +1,33 @@
-/* -------------------------------------------------------------
-   0. TOKENS
-   -----------------------------------------------------------*/
 :root {
 	--font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
-
-	/* Background */
-
-	--bg-tint-1: #47565b;
-	--bg-tint-2: #22292b;
-
-	/* Text */
+	--bg-tint-1: #47565b2a;
+	--bg-tint-2: #22292b1c;
 	--text-strong: hsla(0, 0%, 100%, 0.92);
 	--text-default: hsla(0, 0%, 100%, 0.82);
 	--text-muted: hsla(0, 0%, 100%, 0.6);
-
-	/* Accent */
 	--accent: #4f8ef7;
 
-	/* Glass (taken straight from your snippet) */
+	/* Glass */
 	--glass-gap: 0.25rem;
 	--glass-radius: 0.3rem;
-	--glass-fill: rgba(41, 41, 41, 0.596);
+	--glass-fill: rgba(41, 41, 41, 0.404);
 	--glass-stroke: rgba(255, 255, 255, 0.12);
-	--glass-shadow-rim: rgba(255, 255, 255, 0.04);
 	--glass-shadow-drop: rgba(0, 0, 0, 0.45);
-	--glass-tint: hsla(200, 18%, 50%, 0.08);
+	--glass-tint: hsla(200, 18%, 50%, 0.048);
 
-	/* Layout */
 	--nav-height: 64px;
 
-	/* Progress bars – unchanged */
-	--mh-bar-height: 0.6rem;
-	--mh-bar-radius: 3px;
-	--mh-bar-transition: 260ms;
-	--mh-color-track: rgba(0, 0, 0, 0.5);
-	--mh-color-border: var(--glass-stroke);
-	--mh-color-health-start: #8d6060;
-	--mh-color-health-end: #608d83;
-	--mh-color-generic-start: #7a5171;
-	--mh-color-generic-end: #c77ac7;
-	--mh-color-mana-start: #6580ff;
-	--mh-color-mana-end: #9ba7ff;
-	--mh-color-resource-start: #6580ff;
-	--mh-color-resource-end: #9ba7ff;
-
-	--rarity-common: #aaaaaa;
-	--rarity-uncommon: #4a8057;
-	--rarity-rare: #2e9afe;
-	--rarity-epic: #c44bff;
-	--rarity-legendary: #f1c40f;
+	--sb-bg: #24262b;
+	--sb-btn: #2d3036;
+	--sb-btn-hover: #353941;
+	--sb-accent: #c995e7;
+	--sb-accent-sec: #73c3cc;
+	--sb-text: #d9dee8;
+	--sb-text-muted: #99a2b7;
+	--sb-badge-bg: #93b7d4b9;
 }
 
-/* -------------------------------------------------------------
-	 1. RESET & BASE
-	 -----------------------------------------------------------*/
+/* --- Reset --- */
 *,
 *::before,
 *::after {
@@ -61,38 +35,33 @@
 	padding: 0;
 	box-sizing: border-box;
 }
-
 html,
-body {
-	width: 100%;
-	height: 100%;
-	margin: 0;
-	padding: 0;
-}
+body,
 #app {
 	height: 100%;
-	display: block;
 	width: 100%;
 }
-
 body {
 	font-family: var(--font-sans);
 	background: radial-gradient(at 30% 30%, var(--bg-tint-1) 0%, var(--bg-tint-2) 100%);
 	color: var(--text-default);
+	min-height: 100vh;
+	position: relative;
 	line-height: 1.6;
 	-webkit-font-smoothing: antialiased;
 }
-
 body::before {
 	content: "";
 	position: fixed;
 	inset: 0;
-	background: url(noise.png);
-	mix-blend-mode: overlay;
-	opacity: 0.15;
-	pointer-events: none;
-}
 
+	z-index: -1;
+	opacity: 1;
+	pointer-events: none;
+	background: url("/public/images/backgrounds/background-main.png") center/cover no-repeat;
+
+	filter: blur(20px);
+}
 h1,
 h2,
 h3 {
@@ -101,32 +70,19 @@ h3 {
 	color: var(--text-strong);
 }
 
-.background {
-	position: fixed;
-	width: 100vw;
-	height: 100vh;
-	/* background: url('/src/Assets/Images/background-main.png') no-repeat center center; */
-	background-color: #474a4b;
-	background-size: cover;
-	z-index: -1;
-}
-
-/* -------------------------------------------------------------
-	 2. GLASS UTILITY
-	 -----------------------------------------------------------*/
+/* --- Glass utility --- */
 .glass {
 	position: relative;
 	margin: var(--glass-gap);
 	background: var(--glass-fill);
 	border-radius: var(--glass-radius);
+	box-shadow: var(--glass-shadow-drop);
 	overflow: hidden;
 }
-
 .glass--flush {
 	box-shadow: none;
 	width: 90%;
 }
-
 .glass::before {
 	content: "";
 	position: absolute;
@@ -134,18 +90,13 @@ h3 {
 	background: var(--glass-tint);
 	pointer-events: none;
 }
-
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
 	.glass {
 		background: rgba(20, 28, 32, 0.92);
-		backdrop-filter: none;
-		-webkit-backdrop-filter: none;
 	}
 }
 
-/* -------------------------------------------------------------
-	 3. HEADER (flush, keeps glass look but no margin)
-	 -----------------------------------------------------------*/
+/* --- Header --- */
 .header {
 	display: flex;
 	align-items: center;
@@ -153,15 +104,15 @@ h3 {
 	padding: 0 1.25rem;
 	height: var(--nav-height);
 	color: var(--text-strong);
+	background: #202020;
+	z-index: 10;
+	position: relative;
 }
-
-/* override the glass margin just for header */
 .header-left {
 	display: flex;
 	align-items: center;
 	gap: 1rem;
 }
-
 .hamburger {
 	width: 1.5rem;
 	height: 1rem;
@@ -172,26 +123,22 @@ h3 {
 	border: none;
 	cursor: pointer;
 }
-
 .hamburger span {
 	height: 2px;
 	background: var(--text-strong);
 	border-radius: 1px;
 }
-
 .logo {
 	font-size: 1.1rem;
 	font-weight: 500;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 }
-
 .header-right {
 	display: flex;
 	align-items: center;
 	gap: 1rem;
 }
-
 .header-right input[type="search"] {
 	padding: 0.45rem 0.9rem;
 	font-size: 0.9rem;
@@ -201,44 +148,35 @@ h3 {
 	background: #0000003d;
 	transition: border-color 0.2s;
 }
-
 .header-right input[type="search"]:focus {
 	outline: none;
 	border-color: var(--accent);
 }
-
 .header-right ul.player-stats {
-	/* lay out each <li> as its own column */
 	display: flex;
 	gap: 1rem;
 	list-style: none;
 	margin: 0;
 	padding: 0;
 }
-
 .header-right ul.player-stats li {
-	/* stack label, bar, value vertically, centered */
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	min-width: 80px; /* gives them some breathing room */
+	min-width: 80px;
 }
-
 .header-right ul.player-stats li .label {
 	font-size: 0.75rem;
 	color: var(--text-muted);
 }
-
 .header-right ul.player-stats li .mh-progress {
-	width: 100%; /* fill that 80px slot (or whatever you choose) */
-	margin: 0.25rem 0; /* tighten up the spacing */
+	width: 100%;
+	margin: 0.25rem 0;
 }
-
 .header-right ul.player-stats li .value {
 	font-weight: 500;
 	font-size: 0.9rem;
 }
-
 .header-right .avatar {
 	width: 2rem;
 	height: 2rem;
@@ -247,41 +185,126 @@ h3 {
 	border: 1px solid var(--glass-stroke);
 }
 
-/* -------------------------------------------------------------
-	 4. MAIN GRID
-	 -----------------------------------------------------------*/
-
+/* --- Main Layout --- */
 .main {
-	display: grid;
-	grid-template-areas: "menu game";
-	grid-template-columns: 200px 1fr;
-	height: 100%;
-	width: 100%;
-}
-
-.game-container {
-	grid-column: 2 / -1;
-	grid-area: game; /* occupy the 2nd column */
 	display: flex;
-	flex-direction: column;
+	height: calc(100vh - var(--nav-height));
+	min-height: 0;
 	width: 100%;
-	min-width: 0;
-	height: 100%;
 }
-
-/* gap handled via margin */
 .menu {
-	grid-area: menu;
+	display: flex;
+	flex-direction: column;
+	min-width: 220px;
+	height: 100%;
+}
+.menu-nav {
+	background: var(--sb-bg);
+	padding: 0.5rem 0.5rem;
+	min-width: 220px;
+	height: 100%;
+	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
 }
-
-.game {
-	flex: 1; /* fill all leftover space */
-	width: 100%; /* full width of its parent */
-	overflow-y: auto; /* scroll if content overflows */
-	min-width: 0;
+.menu-nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
 }
+.menu-nav li {
+	display: flex;
+	flex-direction: column;
+	margin: 0.25rem 0;
+	position: relative;
+}
+
+/* --- Sidebar Buttons --- */
+.menu-nav button {
+	all: unset;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	gap: 0.65rem;
+	width: 100%;
+	padding: 0.75rem 2rem 0.8rem 2.8rem;
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: var(--sb-text-muted);
+	background: none;
+	cursor: pointer;
+	text-align: left;
+	transition: background 0.18s, color 0.18s, box-shadow 0.12s;
+}
+.menu-nav button:active {
+	background: none;
+	box-shadow: none;
+	border-radius: 0;
+}
+
+/* --- Icon & Badge --- */
+.menu-nav .icon {
+	width: 18px;
+	text-align: center;
+	font-size: 1rem;
+	color: var(--sb-text);
+}
+.badge {
+	margin-left: auto;
+	padding: 2px 6px;
+	font-size: 0.75rem;
+	border-radius: 6px;
+	background: var(--sb-badge-bg);
+	color: #fff;
+}
+
+/* --- Accent Bar --- */
+.menu-nav li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 4px;
+	height: 100%;
+	border-radius: 4px;
+	background: linear-gradient(to bottom, var(--sb-accent), var(--sb-accent-sec));
+	opacity: 0;
+	transition: opacity 0.18s;
+}
+
+/* --- Hover/Active States --- */
+.menu-nav button:hover,
+.menu-nav li.active > button {
+	background: var(--sb-btn-hover);
+	color: var(--sb-text);
+	box-shadow: 0 2px 10px 0 #00000010;
+}
+.menu-nav li:hover::before,
+.menu-nav li.active::before {
+	opacity: 1;
+}
+
+/* Top-level vs sub-button tweaks */
+.nav-btn {
+	font-size: 1rem;
+}
+.nav-subbtn {
+	font-size: 0.82rem;
+	padding-left: 3.6rem;
+}
+
+/* Submenu indentation */
+.menu-nav ul.submenu-nav {
+	margin: 0.2rem 0 0 0;
+}
+
+/* Focus feedback */
+.menu-nav button:focus-visible {
+	outline: 2px dashed var(--sb-accent);
+	outline-offset: 3px;
+}
+
+/* ... SCREENS ... */
 
 .screen {
 	display: none;
@@ -296,117 +319,36 @@ h3 {
 	display: flex;
 }
 
-/* Wrapper that controls the visible height */
-.screen-banner {
-	justify-content: center;
-	display: flex;
-	width: 70%; /* span full card width            */
-	max-height: 180px; /* adjust this to taste            */
-	overflow: hidden; /* clip anything below max‑height  */
-	margin: 0; /* figures carry default margins   */
-	align-self: center;
-}
+/* --- PROGRESS BARS --- */
 
-/* Image behaviour */
-.screen-banner img {
-	width: 100%; /* always fill banner width        */
-	height: 100%; /* follow the wrapper’s height     */
-	object-fit: cover; /* preserve aspect ratio, crop     */
-	object-position: center; /* keep the focal point centred  */
-	display: block; /* removes the 4 px baseline gap   */
-}
-
-/* -------------------------------------------------------------
-	 5. SIDE MENU BUTTON RESET
-	 -----------------------------------------------------------*/
-.menu-nav {
-	padding: 0.1rem 0;
-}
-
-.menu-nav ul {
-	list-style: none;
-}
-
-.menu-nav li {
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-	padding: 0.55rem 1rem;
-	cursor: pointer;
-	color: var(--text-muted);
-	transition: background 0.25s, color 0.25s;
-	border-radius: 0.25rem;
-}
-
-.menu-nav li.active,
-.menu-nav li:hover {
-	color: var(--accent);
-	background: rgba(255, 255, 255, 0.05);
-}
-
-/* buttons inside list */
-.menu-nav button {
-	all: unset;
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-	width: 100%;
-	cursor: pointer;
-	color: inherit;
-}
-
-.menu-nav button:focus-visible {
-	outline: 2px dashed var(--accent);
-	outline-offset: 3px;
-}
-
-.menu-nav button:active {
-	transform: translateY(1px);
-}
-
-/* -------------------------------------------------------------
-	 6. PROGRESS BARS  – unchanged from v2
-	 -----------------------------------------------------------*/
-.mh-progress {
-	position: relative;
-	width: 100%;
-	height: var(--mh-bar-height);
-	background: var(--mh-color-track);
-	border: 1px solid var(--mh-color-border);
-
-	border-radius: var(--mh-bar-radius);
-}
-
-.mh-progress__fill {
-	position: absolute;
-	inset: 0 auto 0 0;
-	width: calc(var(--value, 0) * 1%);
-	border-radius: inherit;
-	background-image: linear-gradient(90deg, var(--mh-fill-start), var(--mh-fill-end));
-	transition: width var(--mh-bar-transition) ease-out;
-	will-change: width;
-}
-
-.mh-progress--health {
-	--mh-fill-start: var(--mh-color-health-start);
-	--mh-fill-end: var(--mh-color-health-end);
-}
-
-.mh-progress--generic {
-	--mh-fill-start: var(--mh-color-generic-start);
-	--mh-fill-end: var(--mh-color-generic-end);
-}
-
-.mh-progress--mana {
-	--mh-fill-start: var(--mh-color-mana-start);
-	--mh-fill-end: var(--mh-color-mana-end);
-}
-
-.mh-progress--resource {
-	--mh-fill-start: var(--mh-color-resource-start);
-	--mh-fill-end: var(--mh-color-resource-end);
-}
 #game-area,
 .game {
 	width: 100%;
+}
+
+.game-container,
+.game {
+	flex: 1 1 0;
+	min-height: 0;
+	padding: 5px;
+}
+.prestige-btn {
+	background: #4561a0;
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	font-size: 1rem;
+	font-weight: 600;
+	padding: 8px 18px;
+	margin-left: 0.7em;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+.prestige-btn:hover {
+	background: #395080;
+}
+.dot-sep {
+	color: #94a2be;
+	font-size: 1.1em;
+	margin: 0 0.2em;
 }

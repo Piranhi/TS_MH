@@ -1,0 +1,241 @@
+/* settlement.css */
+body {
+}
+
+.settlement-container {
+	margin: 22px auto;
+	padding: 12px;
+	border-radius: 6px;
+	background: rgba(23, 32, 41, 0.616);
+	box-shadow: 0 4px 32px rgba(0, 0, 0, 0.25);
+	backdrop-filter: blur(10px);
+	color: #e7eaf1;
+}
+
+.settlement-header {
+	margin: 12px auto;
+	padding: 6px;
+	border-radius: 4px;
+	background: rgba(76, 104, 131, 0.25);
+	border-color: #55e0bc;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+}
+.settlement-title {
+	font-weight: 600;
+	font-size: 1.15rem;
+	letter-spacing: 0.05em;
+}
+.settlement-name {
+	font-weight: 700;
+	font-size: 1.2rem;
+}
+
+.settlement-main {
+	display: flex;
+	gap: 28px;
+	margin-bottom: 24px;
+}
+
+.building-grid {
+	flex: 1;
+	display: grid;
+	grid-template-columns: repeat(3, 180px);
+	gap: 10px;
+	align-content: start;
+}
+.building-card {
+	background: rgba(81, 96, 97, 0.555);
+	backdrop-filter: blur(7px);
+	border-radius: 8px;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 18px 10px 14px 10px;
+	min-height: 148px;
+	position: relative;
+	color: #a7e3ff;
+}
+.building-card .building-title {
+	font-weight: 700;
+	font-size: 1.08rem;
+	margin: 10px 0 3px 0;
+}
+.building-card .building-level {
+	font-size: 0.95rem;
+	color: #657799;
+	margin-bottom: 6px;
+}
+.upgrade-btn,
+.build-btn {
+	margin-top: auto;
+	padding: 5px 18px;
+	background: #7f95aa;
+	border: none;
+	border-radius: 8px;
+	color: #c9dbff;
+	font-weight: 600;
+	cursor: pointer;
+	font-size: 0.95rem;
+	transition: background 0.18s;
+}
+.upgrade-btn:hover,
+.build-btn:hover {
+	background: #5d97e0;
+	color: #fff;
+}
+.add-plot .building-icon {
+	color: #7cae86;
+	font-size: 2.2em;
+	margin-bottom: 6px;
+}
+.locked {
+	opacity: 0.5;
+}
+.locked .building-icon {
+	color: #aaa;
+}
+.trophy .building-icon {
+	color: #bba456;
+}
+.library .building-icon:before {
+	content: "📖";
+	font-size: 2em;
+}
+.forge .building-icon:before {
+	content: "⚒️";
+	font-size: 2em;
+}
+.trophy .building-icon:before {
+	content: "🏆";
+	font-size: 2em;
+}
+.plus .building-icon:before {
+	content: "+";
+	font-size: 2.4em;
+}
+.locked-icon:before {
+	content: "🔒";
+	font-size: 2.1em;
+	color: #999;
+}
+
+.outposts-panel {
+	min-width: 220px;
+	background: rgba(255, 255, 255, 0.15);
+	border-radius: 15px;
+	backdrop-filter: blur(6px);
+	box-shadow: 0 1px 7px rgba(0, 0, 0, 0.1);
+	padding: 14px 14px 14px 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+.outposts-panel h2 {
+	margin: 0 0 8px 0;
+	font-size: 1.17rem;
+	color: #f6f9ff;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+}
+.outpost-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 6px 0;
+	font-size: 1rem;
+	border-bottom: 1px solid rgba(200, 220, 255, 0.09);
+}
+.outpost-row:last-child {
+	border-bottom: none;
+}
+.outpost-name {
+	min-width: 65px;
+	font-weight: 600;
+}
+.outpost-level {
+	min-width: 44px;
+	color: #5e8ebd;
+}
+.outpost-status {
+	min-width: 80px;
+}
+.outpost-status.skippable {
+	color: #5ff1ac;
+	font-weight: 600;
+}
+.outpost-status.active {
+	color: #b6d6ff;
+}
+.outpost-status.locked {
+	color: #bdbfc4;
+}
+.outpost-relics {
+	min-width: 56px;
+	font-size: 0.95em;
+}
+.relic {
+	margin-right: 4px;
+}
+.relic.leaf::before {
+	content: "🌿";
+}
+.relic.snow::before {
+	content: "❄️";
+}
+.relic.trophy::before {
+	content: "🏆";
+}
+
+.upgrade-outpost-btn {
+	margin: 14px auto 0 auto;
+	padding: 7px 15px;
+	background: #f7d76e;
+	color: #695c22;
+	font-weight: 700;
+	border: none;
+	border-radius: 8px;
+	font-size: 0.97rem;
+	cursor: pointer;
+	box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+	transition: background 0.15s;
+}
+.upgrade-outpost-btn:hover {
+	background: #c0ad55;
+	color: #fff;
+}
+
+.settlement-footer {
+	margin-top: 16px;
+	background: rgba(255, 255, 255, 0.13);
+	border-radius: 13px;
+	padding: 14px 18px 6px 18px;
+	backdrop-filter: blur(6px);
+	color: #dbf6ff;
+	font-size: 0.7rem;
+}
+.passive-bar {
+	width: 100%;
+	height: 6px;
+	background: rgba(100, 110, 150, 0.16);
+	border-radius: 5px;
+	margin-bottom: 7px;
+	overflow: hidden;
+}
+.passive-bar .progress {
+	width: 78%; /* Set this dynamically for real app */
+	height: 100%;
+	background: linear-gradient(90deg, #bfd8ff 30%, #68d6f1 100%);
+	border-radius: 4px;
+	transition: width 0.3s;
+}
+.footer-info {
+	display: flex;
+	gap: 1.6em;
+	color: #9debf9;
+	font-size: 0.74rem;
+	margin-top: 2px;
+}

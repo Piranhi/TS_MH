@@ -1,8 +1,18 @@
 import { printLog } from "@/core/DebugManager";
-import { AbilitySpec } from "@/models/Ability";
 import { Identifiable } from "@/models/SpecRegistryBase";
 import { StatsModifier, StatsModifierNumber } from "@/models/Stats";
 
+export const AREATIER_MULTIPLIERS = [1, 1.2, 1.5, 2, 2.5, 3];
+export const ITEM_RARITIES = ["common", "uncommon", "rare", "epic", "legendary", "unique"] as const;
+
+export const RARITY_MULTIPLIERS: Record<ItemRarity, number> = {
+	common: 1.0,
+	uncommon: 1.1,
+	rare: 1.25,
+	epic: 1.5,
+	legendary: 1.6,
+	unique: 2,
+};
 const rarityChances: [ItemRarity, number][] = [
 	["unique", 1],
 	["legendary", 50],
@@ -12,10 +22,17 @@ const rarityChances: [ItemRarity, number][] = [
 	["common", 10000],
 ];
 
-export type ScreenName = "settlement" | "character" | "hunt" | "inventory" | "research" | "train" | "blacksmith";
+export const RARITY_DISPLAY_NAMES: Record<ItemRarity, string> = {
+	common: "Common",
+	uncommon: "Uncommon",
+	rare: "Rare",
+	epic: "Epic",
+	legendary: "Legendary",
+	unique: "Unique",
+};
 
 // ITEMS
-export type ItemRarity = "common" | "uncommon" | "rare" | "epic" | "legendary" | "unique";
+export type ItemRarity = (typeof ITEM_RARITIES)[number];
 export type ItemCategory = "equipment" | "classCard" | "consumable";
 export const ItemCategoryDisplay: Record<ItemCategory, string> = {
 	equipment: "Equipment",
@@ -84,7 +101,7 @@ export function getItemCategoryLabel(category: ItemCategory): string {
 
 export function getItemRarity(): ItemRarity {
 	const chance = Math.random() * 10000;
-	printLog("Rarity Chance: " + chance, 3, "types.ts");
+	printLog("Creating Item - Rarity Chance: " + chance, 4, "types.ts");
 	for (const [rarity, max] of rarityChances) {
 		if (chance <= max) return rarity;
 	}

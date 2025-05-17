@@ -1,11 +1,9 @@
-import { ScreenName } from "../../shared/types";
 import { BaseScreen } from "./BaseScreen";
 
 export class BlacksmithScreen extends BaseScreen {
-    readonly screenName = 'blacksmith'
+	readonly screenName = "blacksmith";
 
-    init(){};
-    show(){};
-    hide(){};
-
+	init() {}
+	show() {}
+	hide() {}
 }

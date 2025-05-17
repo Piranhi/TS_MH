@@ -1,32 +1,77 @@
+<!-- copy‑and‑paste ONLY the markup that lives inside #game-area -->
 
-  <!-- copy‑and‑paste ONLY the markup that lives inside #game-area -->
+<section class="game ">
+  <header class="settlement-header">
+    <div>
+      <span class="settlement-title">Settlement:</span>
+      <span class="settlement-name">Hunter’s Rest</span>
+    </div>
+  </header>
+  <div class="settlement-container">
 
-  <section class="game ">
-    <figure class="screen-banner">
-        <img src="src\Assets\Images\header-base.png" alt="Settlement">
-      </figure>
-      <div class="game">
-        <h2 class="screen-title">Deep Forest Hunt</h2>
-        <!-- put whatever UI the hunt screen needs here -->
-        <button class="btn-primary">Begin Hunt</button>
-
-        <h2 class="screen-title">Deep Forest Hunt</h2>
-        <!-- put whatever UI the hunt screen needs here -->
-        <button class="btn-primary">Begin Hunt</button>
-
-
-        <h2 class="screen-title">Deep Forest Hunt</h2>
-        <!-- put whatever UI the hunt screen needs here -->
-        <button class="btn-primary">Begin Hunt</button>
-
-
-        <h2 class="screen-title">Deep Forest Hunt</h2>
-        <!-- put whatever UI the hunt screen needs here -->
-        <button class="btn-primary">Begin Hunt</button>
-
-        <h2 class="screen-title">Deep Forest Hunt</h2>
-        <!-- put whatever UI the hunt screen needs here -->
-        <button class="btn-primary">Begin Hunt</button>
+    <div class="settlement-main">
+      <main class="building-grid">
+        <div class="building-card">
+          <div class="building-icon library"></div>
+          <div class="building-title">Library</div>
+          <div class="building-level">Lv 2</div>
+          <button class="upgrade-btn">Upgrade</button>
+        </div>
+        <div class="building-card">
+          <div class="building-icon forge"></div>
+          <div class="building-title">Forge</div>
+          <div class="building-level">Lv 3</div>
+          <button class="upgrade-btn">Upgrade</button>
+        </div>
+        <div class="building-card add-plot">
+          <div class="building-icon plus"></div>
+          <div class="building-title">+ Build Plot</div>
+          <button class="build-btn">Ack Plot</button>
+        </div>
+        <div class="building-card locked">
+          <div class="building-icon locked-icon"></div>
+          <div class="building-title">(locked)</div>
+        </div>
+        <div class="building-card">
+          <div class="building-icon trophy"></div>
+          <div class="building-title">Trophy Room</div>
+          <div class="building-level">Lv 1</div>
+          <button class="upgrade-btn">Upgrade</button>
+        </div>
+      </main>
+      <aside class="outposts-panel">
+        <h2>Outposts</h2>
+        <div class="outpost-row">
+          <div class="outpost-name">Forest</div>
+          <div class="outpost-level">Lv 3</div>
+          <div class="outpost-status skippable">Skippable</div>
+          <div class="outpost-relics"><span class="relic leaf"></span>6/10</div>
+        </div>
+        <div class="outpost-row">
+          <div class="outpost-name">Tundra</div>
+          <div class="outpost-level">Lv 1</div>
+          <div class="outpost-status active">Active</div>
+          <div class="outpost-relics"><span class="relic snow"></span>2/8</div>
+        </div>
+        <div class="outpost-row">
+          <div class="outpost-name">Trophy</div>
+          <div class="outpost-level">Lv 0</div>
+          <div class="outpost-status locked">Locked</div>
+          <div class="outpost-relics"><span class="relic trophy"></span>0/6</div>
+        </div>
+        <button class="upgrade-outpost-btn">Upgrade Outpost</button>
+      </aside>
+    </div>
+    <footer class="settlement-footer">
+      <div class="passive-bar">
+        <div class="progress"></div>
       </div>
+      <div class="footer-info">
+        <span>Reward x1.8</span>
+        <span class="dot-sep">•</span>
+        <span>Peak in 3h</span>
+      </div>
+    </footer>
+  </div>
 
-  </section>
+</section>

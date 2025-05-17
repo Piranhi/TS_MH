@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="/css/hunt.css" />
   <link rel="stylesheet" href="/css/character.css" />
   <link rel="stylesheet" href="/css/inventory.css" />
+  <link rel="stylesheet" href="/css/settlement.css" />
 
 
 
@@ -25,36 +26,37 @@
 
   <div id="app">
     <!-- HEADER -->
+    <header class="header" id="header">
+      <div class="header-left">
+        <button class="hamburger">
+          <!-- simple hamburger icon -->
+          <span></span><span></span><span></span>
+        </button>
+        <h1 class="logo">MH</h1>
+      </div>
 
+      <div class="header-right">
+        <ul id="header-player-stats" class="player-stats">
+        </ul>
+        <span class="dot-sep">•</span>
+        <button class="prestige-btn" id="prestige-button"> Prestige</button>
+        <span class="dot-sep">•</span>
+        <input type="search" placeholder="Search…" />
+        <div class="avatar">
+          <img src="/src/Assets/Images/player-profile.png" alt="User avatar" />
+        </div>
+      </div>
+    </header>
     <!-- MAIN GRID -->
     <div class="main">
       <!-- SIDE MENU -->
-      <aside class="menu glass" id="menu">
+      <aside class="menu" id="menu">
         <nav class="menu-nav" id="sidebar"></nav>
-        <div class="menu-content">
-          <!-- injected by TS -->
-        </div>
       </aside>
 
       <!-- GAME AREA -->
       <div class="game-container">
-        <header class="header" id="header">
-          <div class="header-left">
-            <button class="hamburger">
-              <!-- simple hamburger icon -->
-              <span></span><span></span><span></span>
-            </button>
-            <h1 class="logo">MH</h1>
-          </div>
-          <div class="header-right">
-            <ul id="header-player-stats" class="player-stats">
-            </ul>
-            <input type="search" placeholder="Search…" />
-            <div class="avatar">
-              <img src="/src/Assets/Images/player-profile.png" alt="User avatar" />
-            </div>
-          </div>
-        </header>
+
 
         <section class="game" id="game-area">
         </section>
