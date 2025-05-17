@@ -3,7 +3,30 @@ import { Identifiable } from "@/models/SpecRegistryBase";
 import { StatsModifier, StatsModifierNumber } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
 
+// --------------------- SETTLEMENT + BUILDINGS ----------------------------
+export type BuildingType = "library" | "blacksmith" | "market";
+
+export interface BuildingSpec {
+	id: BuildingType;
+	displayName: string;
+	description: string;
+	icon: string;
+	baseCost: number;
+}
+export interface BuildingState {
+	level: number;
+	progress: BigNumber;
+}
+
+export interface BuildingSnapshot {
+	displayName: string;
+	level: number;
+	progress: BigNumber;
+}
+// ------------------- AREA + COMBAT ------------------------------
 export const AREATIER_MULTIPLIERS = [1, 1.2, 1.5, 2, 2.5, 3];
+
+// -------------------- ITEMS ------------------------------
 export const ITEM_RARITIES = ["common", "uncommon", "rare", "epic", "legendary", "unique"] as const;
 
 export const RARITY_MULTIPLIERS: Record<ItemRarity, number> = {
@@ -14,6 +37,7 @@ export const RARITY_MULTIPLIERS: Record<ItemRarity, number> = {
 	legendary: 1.6,
 	unique: 2,
 };
+
 const rarityChances: [ItemRarity, number][] = [
 	["unique", 1],
 	["legendary", 50],
@@ -42,18 +66,7 @@ export const ItemCategoryDisplay: Record<ItemCategory, string> = {
 };
 export type EquipmentType = "head" | "back" | "chest" | "legs" | "feet" | "hands" | "finger1" | "finger2" | "neck" | "weapon" | "weapon2";
 export type ItemEquipStatus = "Equipped" | "Unequipped";
-export type BuildingType = "library" | "blacksmith" | "market";
-export interface BuildingSpec {
-	id: BuildingType;
-	displayName: string;
-	description: string;
-	icon: string;
-	baseCost: number;
-}
-export interface BuildingState {
-	level: number;
-	progress: BigNumber;
-}
+
 export interface InventoryItemSpec extends Identifiable {
 	id: string;
 	category: ItemCategory;

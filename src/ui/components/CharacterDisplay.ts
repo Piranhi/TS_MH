@@ -95,6 +95,7 @@ export class CharacterDisplay {
 	render(): void {
 		if (!this.character) return;
 		const snapshot = this.character.snapshot();
+
 		const { name, hp, abilities } = snapshot;
 		this.nameEl.textContent = name;
 		this.atkEl.textContent = "⚔️ " + snapshot.attack.toString();

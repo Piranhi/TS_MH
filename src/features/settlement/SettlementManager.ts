@@ -1,26 +1,34 @@
 import { bus } from "@/core/EventBus";
+import { saveManager } from "@/core/SaveManager";
 import { Building } from "@/models/Building";
-import { BigNumber } from "@/models/utils/BigNumber";
+import { Saveable } from "@/shared/storage-types";
 import { BuildingType } from "@/shared/types";
 
-export class SettlementManager {
+interface SettlementSaveState {
+	freePlots: number;
+	buildings: [BuildingType, Building][];
+}
+
+export class SettlementManager implements Saveable {
 	private freePlots = 1;
 	private buildingsMap = new Map<BuildingType, Building>();
 
 	constructor() {
-		this.buildingsMap.set("library", { type: "library", level: 5, progress: new BigNumber(500) });
-		this.buildingsMap.set("blacksmith", { type: "blacksmith", level: 2, progress: new BigNumber(500) });
+		saveManager.register("Settlement", this);
+		this.buildingsMap.set("library", Building.create("library"));
+		this.buildingsMap.set("blacksmith", Building.create("blacksmith"));
+		this.emitChange();
 	}
 
 	getFreePlots(): number {
 		return this.freePlots;
 	}
 
-	geTotalPlots(): number {
+	getTotalPlots(): number {
 		return this.freePlots + this.buildingsMap.size;
 	}
 
-	hasFreePlotsTd(): boolean {
+	hasFreePlots(): boolean {
 		return this.freePlots > 0;
 	}
 
@@ -34,15 +42,15 @@ export class SettlementManager {
 
 	addPlot() {
 		this.freePlots++;
-		bus.emit("settlement:changed");
+		this.emitChange();
 	}
 
-	buildBuilding(id: string) {
+	buildBuilding(type: BuildingType) {
 		if (this.freePlots <= 0) return false;
-		const building = Building.create(id);
-		this.buildingsMap.set(building.id, building);
+		const building = Building.create(type.toString());
+		this.buildingsMap.set(type, building);
 		this.freePlots--;
-
+		this.emitChange();
 		bus.emit("settlement:changed");
 	}
 
@@ -50,6 +58,23 @@ export class SettlementManager {
 		const building = this.buildingsMap.get(type);
 		if (!building) return false;
 		building.upgradeBuilding();
+		this.emitChange();
+	}
+
+	emitChange() {
 		bus.emit("settlement:changed");
+	}
+
+	save(): SettlementSaveState {
+		return {
+			buildings: Array.from(this.buildingsMap),
+			freePlots: this.freePlots,
+		};
+	}
+
+	load(state: SettlementSaveState): void {
+		this.buildingsMap = new Map(state.buildings || []);
+		this.freePlots = state.freePlots;
+		this.emitChange();
 	}
 }

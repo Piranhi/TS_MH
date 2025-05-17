@@ -4,6 +4,7 @@ import rawMonsters from "@/data/monsters.json" assert { type: "json" };
 import rawAbilities from "@/data/abilities.json" assert { type: "json" };
 import rawClassCards from "@/data/classCards.json" assert { type: "json" };
 import rawEquipment from "@/data/equipment.json" assert { type: "json" };
+import rawBuilding from "@/data/buildings.json" assert { type: "json" };
 
 /* ---------- Bring in the class constructors -------------- */
 import { Area } from "@/models/Area";
@@ -15,7 +16,7 @@ import { ClassCardItemSpec, ClassCardItemSpecRaw, EquipmentItemSpec, EquipmentIt
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { toBigNumberModifier } from "@/shared/utils/stat-utils";
 import { toCoreStats } from "@/models/Stats";
-//import
+import { Building } from "@/models/Building";
 
 //const abilities = (rawAbilities as any[]).map((a) => new Ability(a.id, a.displayName, a.cooldown, a.effects));
 
@@ -39,6 +40,7 @@ export function initGameData() {
 			baseStats: toCoreStats(raw.baseStats),
 		}))
 	);
+	Building.registerSpecs(rawBuilding);
 	Equipment.registerSpecs(equipmentSpecs);
 	ClassCard.registerSpecs(classCardSpecs);
 	Area.registerSpecs(rawAreas);

@@ -8,6 +8,7 @@ import { CharacterDisplay } from "../components/CharacterDisplay";
 import { Area } from "@/models/Area";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { AreaStats } from "@/shared/stats-types";
+import { Player } from "@/models/player";
 
 export class HuntScreen extends BaseScreen {
 	readonly screenName = "hunt";
@@ -30,8 +31,7 @@ export class HuntScreen extends BaseScreen {
 	}
 
 	show() {
-		this.playerCard.render();
-		this.enemyCard.render();
+		
 	}
 
 	hide() {}
@@ -51,6 +51,7 @@ export class HuntScreen extends BaseScreen {
 		this.buildAreaSelect();
 		// Setup Player Cards
 		this.playerCard = new CharacterDisplay("active", true);
+		this.playerCard.setup(Player.getInstance().getPlayerCharacter());
 		this.enemyCard = new CharacterDisplay("inactive", false);
 	}
 

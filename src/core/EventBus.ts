@@ -11,9 +11,11 @@ import { AreaStats, EnemyStats, GameStats, PrestigeStats, UserStats } from "@/sh
 export interface GameEvents {
 	"Game:UITick": number;
 	"Game:GameTick": number;
+	"game:init": void;
+	"game:newGame:": void;
+	"game:ready": void;
 	"game:gameLoaded": void;
 	"game:gameSaved": void;
-	"game:newGameCalled": void;
 	"ui:screenChanged": string;
 	"renown:changed": BigNumber;
 	"renown:award": BigNumber;

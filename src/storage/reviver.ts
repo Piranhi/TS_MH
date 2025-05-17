@@ -4,6 +4,7 @@ import { TrainedStat } from "@/models/TrainedStat";
 import { BoundedBig, BoundedNumber } from "@/models/value-objects/Bounded";
 import { RegenPool } from "@/models/value-objects/RegenPool";
 import { BigNumber } from "@/models/utils/BigNumber";
+import { Building } from "@/models/Building";
 
 /* export function reviveGame(_key: string, value: any) {
 	if (value && value._type == "Equipment") return Equipment.fromJSON(value);
@@ -29,6 +30,8 @@ export function reviveGame(_key: string, value: any): any {
 				return RegenPool.fromJSON(value);
 			case "BigNumber":
 				return BigNumber.fromJSON(value);
+			case "Building":
+				return Building.fromJSON(value);
 
 			// …add cases for any other types…
 		}
