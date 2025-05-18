@@ -58,7 +58,6 @@ export class InventoryManager implements Saveable {
 				.map((_, i) => this.makeSlot("classCard", i)),
 		];
 		this.updateSlotMap();
-		saveManager.register("inventory", this);
 	}
 
 	//------------------------ FACTORIES ------------------------------

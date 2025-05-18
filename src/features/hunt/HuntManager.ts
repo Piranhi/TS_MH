@@ -2,27 +2,26 @@
 // The finite‑state controller that drives the core idle loop (Search → Combat → Recovery).
 // You will iterate on this; for now it is deliberately minimal but functional.
 import { bus } from "@/core/EventBus";
-import { PlayerCharacter } from "../../models//PlayerCharacter";
 import { CombatManager } from "./CombatManager";
 import { EnemyCharacter } from "../../models//EnemyCharacter";
 import { Area } from "@/models/Area";
 import { Saveable } from "@/shared/storage-types";
 import { saveManager } from "@/core/SaveManager";
 import { printLog } from "@/core/DebugManager";
-import { AreaStats, DEFAULT_AREA_STATS } from "@/shared/stats-types";
-import { StatsManager } from "@/models/StatsManager";
+import { Player } from "@/models/player";
 
 export enum HuntState {
-    Idle = "Idle",
-    Search = "Search",
-    Combat = "Combat",
-    Recovery = "Recovery",
+	Idle = "Idle",
+	Search = "Search",
+	Combat = "Combat",
+	Recovery = "Recovery",
+	Boss = "Boss",
 }
 
 interface HuntSaveState {
-    huntState: HuntState;
-    areaId: string;
-    areaIndex: number;
+	huntState: HuntState;
+	areaId: string;
+	areaIndex: number;
 }
 
 /**
@@ -30,154 +29,165 @@ interface HuntSaveState {
  * `tick` is called every game‑loop iteration; `dt` is milliseconds elapsed since the previous call.
  */
 interface StateHandler {
-    onEnter(): void;
-    onExit(): void;
-    onTick(dt: number): void;
+	onEnter(): void;
+	onExit(): void;
+	onTick(dt: number): void;
 }
 
 export class HuntManager implements Saveable {
-    private state: HuntState = HuntState.Idle; // current enum value – useful for save files
-    private handler: StateHandler;
-    private area!: Area;
-    //private areaStatsMap = new Map<string, AreaStats>();
+	private state: HuntState = HuntState.Idle; // current enum value – useful for save files
+	private handler: StateHandler;
+	private area!: Area;
+	//private areaStatsMap = new Map<string, AreaStats>();
 
-    constructor(private readonly playerCharacter: PlayerCharacter) {
-        this.handler = this.makeIdleState();
-        this.transition(HuntState.Idle, this.makeIdleState());
-        saveManager.register("huntManager", this);
-        bus.on("Game:GameTick", (dt) => this.onTick(dt));
-        bus.on("hunt:areaSelected", (areaId) => this.setArea(areaId));
-    }
+	constructor() {
+		this.handler = this.makeIdleState();
+		this.transition(HuntState.Idle, this.makeIdleState());
 
-    /** Change the hunting grounds without restarting the whole loop. */
-    public setArea(areaId: string) {
-        this.area = Area.create(areaId);
-        //StatsManager.instance.getAreaStats(areaId);
-        this.transition(HuntState.Search, this.makeSearchState());
-        printLog("Setting new Area to: " + this.area.id, 3, "HuntManager.ts");
-    }
+		bus.on("Game:GameTick", (dt) => this.onTick(dt));
+		bus.on("hunt:areaSelected", (areaId) => this.setArea(areaId));
+	}
 
-    public onTick(dt: number) {
-        this.handler.onTick(dt);
-    }
+	/** Change the hunting grounds without restarting the whole loop. */
+	public setArea(areaId: string) {
+		this.area = Area.create(areaId);
+		//StatsManager.instance.getAreaStats(areaId);
+		this.transition(HuntState.Search, this.makeSearchState());
+		printLog("Setting new Area to: " + this.area.id, 3, "HuntManager.ts");
+	}
 
-    // ────────────────────────────────────────────────────────────────────────────
-    //  STATE FACTORIES – each returns a fresh object that closes over any
-    //  state‑specific variables it needs (e.g., the current enemy instance).
-    // ────────────────────────────────────────────────────────────────────────────
+	public onTick(dt: number) {
+		this.handler.onTick(dt);
+	}
 
-    // IDLE STATE
-    private makeIdleState(): StateHandler {
-        return {
-            onEnter: () => {
-                bus.emit("hunt:stateChanged", HuntState.Idle);
-            },
-            onTick: (dt: number) => {},
-            onExit: () => {},
-        };
-    }
+	// ────────────────────────────────────────────────────────────────────────────
+	//  STATE FACTORIES – each returns a fresh object that closes over any
+	//  state‑specific variables it needs (e.g., the current enemy instance).
+	// ────────────────────────────────────────────────────────────────────────────
 
-    // SEARCH STATE
-    private makeSearchState(): StateHandler {
-        // Local closure variable keeps track of an accumulated timer so that we roll
-        // once per second independent of frame rate.
-        let elapsed = 0;
+	// IDLE STATE
+	private makeIdleState(): StateHandler {
+		return {
+			onEnter: () => {
+				bus.emit("hunt:stateChanged", HuntState.Idle);
+			},
+			onTick: (dt: number) => {},
+			onExit: () => {},
+		};
+	}
 
-        return {
-            onEnter: () => {},
-            onTick: (dt: number) => {
-                elapsed += dt;
-                if (elapsed >= 1) {
-                    elapsed -= 1;
-                    if (this.rollEncounter()) {
-                        // Create Enemy from monster picker
-                        const enemy = new EnemyCharacter(this.area.pickMonster());
-                        this.startCombat(enemy);
-                    }
-                }
-            },
-            onExit: () => {},
-        };
-    }
+	// SEARCH STATE
+	private makeSearchState(): StateHandler {
+		// Local closure variable keeps track of an accumulated timer so that we roll
+		// once per second independent of frame rate.
+		let elapsed = 0;
 
-    // COMBAT STATE
-    private makeCombatState(enemy: EnemyCharacter): StateHandler {
-        // fresh CombatManager per fight keeps combat math isolated and stateless
-        const combatManager = new CombatManager(this.playerCharacter, enemy, this.area);
+		return {
+			onEnter: () => {
+				elapsed = 0;
+			},
+			onTick: (dt: number) => {
+				elapsed += dt;
+				if (elapsed >= 1) {
+					elapsed -= 1;
+					if (this.rollEncounter()) {
+						// Create Enemy from monster picker
+						const enemy = new EnemyCharacter(this.area.pickMonster());
+						this.startCombat(enemy);
+					}
+				}
+			},
+			onExit: () => {},
+		};
+	}
 
-        return {
-            onEnter: () => {},
-            onTick: (dt: number) => {
-                combatManager.onTick(dt);
-                if (combatManager.isFinished) {
-                    // Combat finished - Either goto search again or recovery.
-                    // Increase stats here
-                    if (combatManager.playerWon) {
-                        this.transition(HuntState.Search, this.makeSearchState());
-                    } else {
-                        this.transition(HuntState.Recovery, this.makeRecoveryState());
-                    }
-                }
-            },
-            onExit: () => {
-                if (!combatManager.isFinished) {
-                    combatManager.endCombatEarly();
-                }
-            },
-        };
-    }
+	// COMBAT STATE
+	private makeCombatState(enemy: EnemyCharacter): StateHandler {
+		// fresh CombatManager per fight keeps combat math isolated and stateless
 
-    // RECOVERY STATE
-    private makeRecoveryState(): StateHandler {
-        return {
-            onEnter: () => {},
-            onTick: (dt: number) => {
-                this.playerCharacter.healInRecovery();
-                if (this.playerCharacter.isAtMaxHp()) {
-                    this.transition(HuntState.Search, this.makeSearchState());
-                }
-            },
-            onExit: () => {},
-        };
-    }
-    save(): HuntSaveState {
-        const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
+		let combatManager: CombatManager;
+		return {
+			onEnter: () => {
+				combatManager = new CombatManager(Player.getInstance().getPlayerCharacter(), enemy, this.area);
+			},
+			onTick: (dt: number) => {
+				combatManager.onTick(dt);
+				if (combatManager.isFinished) {
+					// Combat finished - Either goto search again or recovery.
+					// Increase stats here
+					if (combatManager.playerWon) {
+						this.transition(HuntState.Search, this.makeSearchState());
+					} else {
+						this.transition(HuntState.Recovery, this.makeRecoveryState());
+					}
+				}
+			},
+			onExit: () => {
+				if (!combatManager.isFinished) {
+					combatManager.endCombatEarly();
+				}
+			},
+		};
+	}
 
-        return {
-            huntState: this.state,
-            areaId: this.area ? this.area.id : "null",
-            areaIndex: areaSelector.selectedIndex,
-        };
-    }
+	// RECOVERY STATE
+	private makeRecoveryState(): StateHandler {
+		return {
+			onEnter: () => {},
+			onTick: (dt: number) => {
+				Player.getInstance().getPlayerCharacter().healInRecovery();
+				if (Player.getInstance().getPlayerCharacter().isAtMaxHp()) {
+					this.transition(HuntState.Search, this.makeSearchState());
+				}
+			},
+			onExit: () => {},
+		};
+	}
+	save(): HuntSaveState {
+		const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
 
-    load(state: HuntSaveState): void {
-        if (state.areaId !== "null") {
-            // Only setup if player was in an area
-            this.state = state?.huntState;
-            this.setArea(state?.areaId);
-            const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
-            areaSelector.selectedIndex = state?.areaIndex;
-        }
-    }
+		return {
+			huntState: this.state,
+			areaId: this.area ? this.area.id : "null",
+			areaIndex: areaSelector.selectedIndex,
+		};
+	}
 
-    // ────────────────────────────────────────────────────────────────────────────
-    //  Helpers
-    // ────────────────────────────────────────────────────────────────────────────
+	load(state: HuntSaveState): void {
+		if (state.areaId !== "null") {
+			// Only setup if player was in an area
+			this.state = state?.huntState;
+			this.setArea(state?.areaId);
+			const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
+			areaSelector.selectedIndex = state?.areaIndex;
+		}
+	}
 
-    private transition(newState: HuntState, newHandler: StateHandler) {
-        this.handler.onExit();
-        this.state = newState;
-        this.handler = newHandler;
-        this.handler.onEnter();
-        bus.emit("hunt:stateChanged", this.state);
-    }
+	// ────────────────────────────────────────────────────────────────────────────
+	//  Helpers
+	// ────────────────────────────────────────────────────────────────────────────
 
-    private startCombat(enemy: EnemyCharacter) {
-        this.transition(HuntState.Combat, this.makeCombatState(enemy));
-    }
+	private transition(newState: HuntState, newHandler: StateHandler) {
+		this.handler.onExit();
+		this.state = newState;
+		this.handler = newHandler;
+		this.handler.onEnter();
+		bus.emit("hunt:stateChanged", this.state);
+	}
 
-    private rollEncounter(): boolean {
-        const BASE_CHANCE = 0.5;
-        return Math.random() < BASE_CHANCE;
-    }
+	private startCombat(enemy: EnemyCharacter) {
+		this.transition(HuntState.Combat, this.makeCombatState(enemy));
+	}
+
+	private rollEncounter(): boolean {
+		const BASE_CHANCE = 0.5;
+		return Math.random() < BASE_CHANCE;
+	}
+
+	public fightBoss() {
+		if (this.state === HuntState.Boss) return;
+		printLog("Cannot start boss fight: already in combat.", 2, "HuntManager.ts");
+		const enemy = new EnemyCharacter(this.area.pickBoss());
+		this.transition(HuntState.Boss, this.makeCombatState(enemy));
+	}
 }

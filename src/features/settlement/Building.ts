@@ -1,7 +1,7 @@
 import { BuildingSnapshot, BuildingSpec, BuildingState } from "@/shared/types";
-import { SpecRegistryBase } from "./SpecRegistryBase";
-import { BigNumber } from "./utils/BigNumber";
 import { bus } from "@/core/EventBus";
+import { SpecRegistryBase } from "@/models/SpecRegistryBase";
+import { BigNumber } from "@/models/utils/BigNumber";
 
 export class Building extends SpecRegistryBase<BuildingSpec> {
 	private constructor(private readonly spec: BuildingSpec, private state: BuildingState) {

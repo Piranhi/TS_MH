@@ -4,7 +4,7 @@ import { TrainedStat } from "@/models/TrainedStat";
 import { BoundedBig, BoundedNumber } from "@/models/value-objects/Bounded";
 import { RegenPool } from "@/models/value-objects/RegenPool";
 import { BigNumber } from "@/models/utils/BigNumber";
-import { Building } from "@/models/Building";
+import { Building } from "@/features/settlement/Building";
 
 /* export function reviveGame(_key: string, value: any) {
 	if (value && value._type == "Equipment") return Equipment.fromJSON(value);

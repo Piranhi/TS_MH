@@ -1,6 +1,6 @@
 import { bus } from "@/core/EventBus";
-import { Building } from "@/models/Building";
 import { Tooltip } from "./Tooltip";
+import { Building } from "@/features/settlement/Building";
 
 export class BuildingDisplay {
 	private rootEl!: HTMLElement;

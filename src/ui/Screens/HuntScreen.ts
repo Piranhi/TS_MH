@@ -30,9 +30,7 @@ export class HuntScreen extends BaseScreen {
 		this.bindEvents();
 	}
 
-	show() {
-		
-	}
+	show() {}
 
 	hide() {}
 
@@ -47,6 +45,8 @@ export class HuntScreen extends BaseScreen {
 		this.statKillsThisRunEl = document.getElementById("area-kills-this-run")!;
 		this.statBossUnlockedEl = document.getElementById("area-boss-unlocked")!;
 		this.fightBossBtn = document.getElementById("fight-boss-btn") as HTMLButtonElement;
+		this.fightBossBtn.disabled = false;
+		this.fightBossBtn.addEventListener("click", (e) => this.fightBoss(e));
 
 		this.buildAreaSelect();
 		// Setup Player Cards
@@ -80,17 +80,22 @@ export class HuntScreen extends BaseScreen {
 		});
 	}
 
+	private fightBoss(e: Event) {
+		e.preventDefault();
+		Player.getInstance().huntManager.fightBoss();
+	}
+
 	// Updated from Hunt Manager when area is selected/Stat updated
 	private updateAreaStats(stats: AreaStats) {
 		this.statKillsThisRunEl.textContent = stats.killsThisRun.toString();
 		this.statTotalKillsEl.textContent = stats.killsTotal.toString();
 		this.statBossUnlockedEl.textContent = stats.bossUnlockedThisRun ? "Yes" : "No";
-		this.fightBossBtn.disabled = !stats.bossUnlockedThisRun;
+		//this.fightBossBtn.disabled = !stats.bossUnlockedThisRun;
 	}
 
 	private bindEvents() {
 		bus.on("hunt:stateChanged", (state) => this.areaChanged(state));
-		bus.on("hunt:statsChanged", (stats) => this.updateAreaStats(stats));
+		bus.on("stats:areaStatsChanged", (stats) => this.updateAreaStats(stats));
 		bus.on("Game:UITick", (dt) => this.handleTick(dt));
 		bus.on("combat:started", (combat) => {
 			this.initCharacters(combat.player, combat.enemy);

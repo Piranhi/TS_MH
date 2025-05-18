@@ -17,18 +17,20 @@ export class PlayerCharacter extends BaseCharacter {
 		const base: PlayerStats = defaultPlayerStats;
 		super("You", 1, base);
 		this.statsEngine = new StatsEngine(base);
-		this.defaultAbilityIds.push("basic_heal");
+		bus.on("game:gameReady", () => {
+			this.defaultAbilityIds.push("basic_heal");
 
-		this.recalculateAbilities();
+			this.recalculateAbilities();
 
-		/* pre‑register empty layers */
-		this.statsEngine.setLayer("level", () => ({}));
-		this.statsEngine.setLayer("trainedStats", () => ({}));
-		this.statsEngine.setLayer("equipment", () => ({}));
-		this.statsEngine.setLayer("classCard", () => ({}));
-		this.statsEngine.setLayer("buffs", () => ({}));
+			/* pre‑register empty layers */
+			this.statsEngine.setLayer("level", () => ({}));
+			this.statsEngine.setLayer("trainedStats", () => ({}));
+			this.statsEngine.setLayer("equipment", () => ({}));
+			this.statsEngine.setLayer("classCard", () => ({}));
+			this.statsEngine.setLayer("buffs", () => ({}));
 
-		bus.emit("player:statsChanged");
+			bus.emit("player:statsChanged");
+		});
 	}
 
 	healInRecovery() {

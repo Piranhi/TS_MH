@@ -10,6 +10,12 @@ import { HuntManager } from "../features/hunt/HuntManager";
 import { screenFactories } from "./screenFactories";
 import { DebugMenu } from "@/ui/components/Debug-Menu";
 import { StatsManager } from "@/models/StatsManager";
+import { bus } from "./EventBus";
+import { initGameData } from "./gameData";
+import { saveManager } from "./SaveManager";
+import { InventoryManager } from "@/features/inventory/InventoryManager";
+import { SettlementManager } from "@/features/settlement/SettlementManager";
+import { TrainedStatManager } from "@/models/TrainedStatManager";
 
 export class GameApp {
 	/* ---------- readonly fields ---------- */
@@ -25,6 +31,9 @@ export class GameApp {
 
 	/* ---------- game state ---------- */
 	private huntManager!: HuntManager;
+	private inventoryManager!: InventoryManager;
+	private settlementManager!: SettlementManager;
+	private trainedStatManager!: TrainedStatManager;
 
 	constructor(root: HTMLElement) {
 		this.root = root;
@@ -34,21 +43,58 @@ export class GameApp {
 	}
 
 	async init(home: ScreenName): Promise<void> {
+		// --- CORE: Construct all game systems (before player/game state loads)
+		// --- GAME DATA: Load game state (from save or new)
+		// --- UI: Setup components, screens, and hooks
+		// --- FINALIZE: Signal game ready, start engine/game loop
+		// CORE
+		this.registerCoreSystems();
 		await this.instantiateCore();
+		bus.emit("game:init");
+
+		// GAME LOADED/NEW GAME
+		if (!saveManager.loadAll()) {
+			// TODO - Try and save as much game data as possible.
+			saveManager.clearSaves();
+			bus.emit("game:newGame");
+		}
 		this.buildUI();
 		this.registerScreens();
 		this.mountScreens();
-
 		await this.screenManager.show(home);
+
+		// GAME READY
+		bus.emit("game:gameReady");
+
+		this.initUI();
 		engine.start();
 		this.buildDebugMenu();
 	}
 
+	private registerCoreSystems() {
+		// Register systems for save/load
+		this.inventoryManager = new InventoryManager();
+		this.settlementManager = new SettlementManager();
+		this.trainedStatManager = new TrainedStatManager();
+		this.huntManager = new HuntManager();
+		Player.initSingleton({
+			inventoryManager: this.inventoryManager,
+			settlementManager: this.settlementManager,
+			trainedStatsManager: this.trainedStatManager,
+			huntManager: this.huntManager,
+		});
+		saveManager.register("player", Player.getInstance());
+		saveManager.register("inventory", this.inventoryManager);
+		saveManager.register("trainedManager", this.trainedStatManager);
+		saveManager.register("settlement", this.settlementManager);
+		saveManager.register("huntManager", this.huntManager);
+		saveManager.register("statsManager", StatsManager.instance);
+	}
+
 	/* ---------- private helpers ---------- */
 	private async instantiateCore() {
-		const stats = StatsManager.instance;
-		await Player.getInstance().init();
-		this.huntManager = new HuntManager(Player.getInstance().getPlayerCharacter());
+		initGameData(); // Load Specs
+		//const stats = StatsManager.instance;
 	}
 
 	private buildUI() {
@@ -58,6 +104,10 @@ export class GameApp {
 		/* Each component gets its own build so they control their markup */
 		this.sidebar.build();
 		this.header.build();
+	}
+
+	private initUI() {
+		this.header.init();
 	}
 
 	private buildDebugMenu() {

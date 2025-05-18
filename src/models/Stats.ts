@@ -52,8 +52,8 @@ export interface TrainedStatData {
 }
 
 export const defaultPlayerStats: PlayerStats = {
-	attack: new BigNumber(1),
-	defence: new BigNumber(1),
+	attack: new BigNumber(10),
+	defence: new BigNumber(10),
 	speed: new BigNumber(1),
 	hp: new BigNumber(1000),
 	attackFlat: new BigNumber(0),

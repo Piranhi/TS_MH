@@ -2,7 +2,6 @@ import { Saveable } from "@/shared/storage-types";
 import { Player } from "./player";
 import { makeDefaultTrainedStats, StatsModifier } from "./Stats";
 import { TrainedStat } from "./TrainedStat";
-import { saveManager } from "@/core/SaveManager";
 import { mergeStatModifiers } from "@/shared/utils/stat-utils";
 import { bus } from "@/core/EventBus";
 
@@ -13,11 +12,10 @@ interface TrainedStatManagerSave {
 export class TrainedStatManager implements Saveable {
 	private trainedStats: Map<string, TrainedStat> = new Map();
 
-	constructor(private readonly player: Player) {
+	constructor() {
 		this.trainedStats = new Map(Object.entries(makeDefaultTrainedStats()));
-		saveManager.register("trainedManager", this);
+		bus.on("game:gameReady", () => this.recalculate());
 		bus.on("player:trainedStatChanged", () => this.recalculate());
-		this.recalculate();
 	}
 
 	public allocateTrainedStat(id: string, rawDelta: number): void {
@@ -30,13 +28,13 @@ export class TrainedStatManager implements Saveable {
 
 		if (delta > 0) {
 			// spending
-			if (!this.player.spendStamina(delta)) return;
+			if (!Player.getInstance().spendStamina(delta)) return;
 			stat.adjustAssignedPoints(delta);
 		} else {
 			// refunding
 			const pts = delta * -1;
 			if (stat.assignedPoints < pts) return; // can't refund more than there
-			if (!this.player.refundStamina(pts)) return; // should always succeed
+			if (!Player.getInstance().refundStamina(pts)) return; // should always succeed
 			stat.adjustAssignedPoints(delta);
 		}
 	}
@@ -44,7 +42,9 @@ export class TrainedStatManager implements Saveable {
 	private recalculate() {
 		this.clearBonuses();
 		const merged = [...this.trainedStats.values()].map((stat) => stat.getBonuses()).reduce(mergeStatModifiers, {} as StatsModifier);
-		this.player.getPlayerCharacter().statsEngine.setLayer("trainedStats", () => merged);
+		Player.getInstance()
+			.getPlayerCharacter()
+			.statsEngine.setLayer("trainedStats", () => merged);
 		console.log(merged);
 	}
 

@@ -1,18 +1,17 @@
 import { bus } from "@/core/EventBus";
-import { InventoryManager } from "../inventory/InventoryManager";
 import { ClassCard } from "./ClassCard";
 import { Player } from "@/models/player";
 import { StatsModifier } from "@/models/Stats";
 import { mergeStatModifiers } from "@/shared/utils/stat-utils";
 
 export class ClassCardManager {
-	constructor(private inv: InventoryManager) {
+	constructor() {
 		bus.on("player:classCardsChanged", () => this.recalculate());
 		bus.on("game:gameLoaded", () => this.recalculate());
 	}
 
 	private getEquippedCards(): ClassCard[] {
-		return this.inv.getEquippedCards();
+		return Player.getInstance().inventory.getEquippedCards();
 	}
 
 	private recalculate() {

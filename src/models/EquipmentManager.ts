@@ -2,17 +2,16 @@ import { bus } from "@/core/EventBus";
 import { Player } from "@/models/player";
 import { StatsModifier } from "@/models/Stats";
 import { Equipment } from "./Equipment";
-import { InventoryManager } from "@/features/inventory/InventoryManager";
 import { mergeStatModifiers } from "@/shared/utils/stat-utils";
 
 export class EquipmentManager {
-	constructor(private inv: InventoryManager) {
+	constructor() {
 		bus.on("player:equipmentChanged", () => this.recalculate());
 		bus.on("game:gameLoaded", () => this.recalculate());
 	}
 
 	private getEquippedEquipment(): Equipment[] {
-		return this.inv.getEquippedEquipment();
+		return Player.getInstance().inventory.getEquippedEquipment();
 	}
 
 	private recalculate() {

@@ -6,7 +6,7 @@ export class HeaderDisplay {
 		this.PlayerStatsEl = document.getElementById("header-player-stats")!;
 	}
 
-	public build() {
+	public init() {
 		const stamina = new StatDisplay(
 			"Stamina",
 			"player:stamina-changed",
@@ -27,4 +27,6 @@ export class HeaderDisplay {
 			valueEl.textContent = payload.toString();
 		}).init();
 	}
+
+	public build() {}
 }

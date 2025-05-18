@@ -16,7 +16,7 @@ import { ClassCardItemSpec, ClassCardItemSpecRaw, EquipmentItemSpec, EquipmentIt
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { toBigNumberModifier } from "@/shared/utils/stat-utils";
 import { toCoreStats } from "@/models/Stats";
-import { Building } from "@/models/Building";
+import { Building } from "@/features/settlement/Building";
 
 //const abilities = (rawAbilities as any[]).map((a) => new Ability(a.id, a.displayName, a.cooldown, a.effects));
 

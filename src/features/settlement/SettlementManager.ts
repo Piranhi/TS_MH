@@ -1,6 +1,5 @@
 import { bus } from "@/core/EventBus";
-import { saveManager } from "@/core/SaveManager";
-import { Building } from "@/models/Building";
+import { Building } from "./Building";
 import { Saveable } from "@/shared/storage-types";
 import { BuildingType } from "@/shared/types";
 
@@ -14,10 +13,11 @@ export class SettlementManager implements Saveable {
 	private buildingsMap = new Map<BuildingType, Building>();
 
 	constructor() {
-		saveManager.register("Settlement", this);
-		this.buildingsMap.set("library", Building.create("library"));
-		this.buildingsMap.set("blacksmith", Building.create("blacksmith"));
-		this.emitChange();
+		bus.on("game:gameReady", () => {
+			//this.buildingsMap.set("library", Building.create("library"));
+			//this.buildingsMap.set("blacksmith", Building.create("blacksmith"));
+			this.emitChange();
+		});
 	}
 
 	getFreePlots(): number {

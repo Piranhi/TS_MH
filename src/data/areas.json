@@ -10,6 +10,7 @@
 			{ "monsterId": "wolf_basic", "weight": 10, "drops": { "tags": ["t1"], "chance": 0.01 } },
 			{ "monsterId": "large_rat", "weight": 10, "drops": { "tags": ["t1"], "chance": 0.01 } }
 		],
+		"boss": { "monsterId": "treant", "weight": 1, "drops": { "tags": ["t1, boss"], "chance": 1 } },
 
 		"areaScaling": { "hp": 1.0, "attack": 1.0, "defence": 1.0, "speed": 1.0, "dropChance": 1.0, "renown": 1 }
 	},
@@ -24,6 +25,8 @@
 			{ "monsterId": "wolf_basic", "weight": 10, "drops": { "tags": ["t1"], "chance": 0.5 } },
 			{ "monsterId": "large_rat", "weight": 10, "drops": { "tags": ["t1"], "chance": 0.5 } }
 		],
+
+		"boss": { "monsterId": "treant", "weight": 1, "drops": { "tags": ["t1, boss"], "chance": 1 } },
 
 		"areaScaling": { "hp": 2.0, "attack": 2.0, "defence": 3.0, "speed": 1, "dropChance": 0.01, "renown": 2 }
 	}

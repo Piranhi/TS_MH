@@ -37,7 +37,7 @@ export class StatsManager implements Saveable {
 		this.prestigeStats = { ...DEFAULT_PRESTIGE_STATS };
 		this.gameStats = { ...DEFAULT_GAME_STATS };
 		this.setupListeners();
-		saveManager.register("StatsManager", this);
+
 	}
 
 	private setupListeners() {

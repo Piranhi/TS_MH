@@ -45,6 +45,7 @@ export abstract class BaseCharacter {
 
 		// HP STARTS FULL
 		this.hp = new BoundedBig(this.stats.hp, this.stats.hp);
+		bus.on("Game:GameTick", this.onTick);
 	}
 
 	/** Apply incoming damage after defence mitigation. */
@@ -105,18 +106,23 @@ export abstract class BaseCharacter {
 	public beginCombat(target: BaseCharacter) {
 		this.target = target;
 		this.inCombat = true;
-		bus.on("Game:GameTick", this.onTick);
+		console.log(this.name + " setting combat to true");
 		this.getActiveAbilities().forEach((a) => a.init()); // Init abilities
 	}
 
 	public endCombat() {
-		bus.off("Game:GameTick", this.onTick);
 		this.inCombat = false;
+		console.log(this.name + " setting combat to false");
 		this.target = undefined;
+	}
+
+	public destroy() {
+		bus.off("Game:GameTick", this.onTick);
 	}
 
 	public handleTick(dt: number): void {
 		if (!this.inCombat || !this.target) return;
+
 		this.getActiveAbilities().forEach((ability) => {
 			ability.reduceCooldown(dt); // TODO (multiply by speed)
 			if (ability.isReady()) ability.perform(this, this.target!);

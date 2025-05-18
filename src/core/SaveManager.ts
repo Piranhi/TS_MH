@@ -31,9 +31,9 @@ export class SaveManager {
 		return out;
 	}
 
-	loadAll(): void {
+	loadAll(): boolean {
 		const raw = localStorage.getItem(this.SAVE_KEY);
-		if (!raw || raw === "undefined") return;
+		if (!raw || raw === "undefined") return false;
 
 		let data: GameSave;
 		try {
@@ -43,15 +43,25 @@ export class SaveManager {
 			}
 		} catch (err) {
 			console.error("[SaveManager] could not parse save data:", err);
-			return;
+			return false;
 		}
 
 		for (const [key, sys] of this.registry) {
 			if (!(key in data)) continue;
-			sys.load(data[key]);
+			try {
+				sys.load(data[key]);
+			} catch (err) {
+				console.error("[SaveManager] could not parse save data:", err);
+				return false;
+			}
 		}
-
 		bus.emit("game:gameLoaded");
+		console.log("Game Loaded");
+		return true;
+	}
+
+	clearSaves(): void {
+		localStorage.removeItem(this.SAVE_KEY);
 	}
 
 	startNewGame(): void {

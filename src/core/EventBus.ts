@@ -12,8 +12,8 @@ export interface GameEvents {
 	"Game:UITick": number;
 	"Game:GameTick": number;
 	"game:init": void;
-	"game:newGame:": void;
-	"game:ready": void;
+	"game:newGame": void;
+	"game:gameReady": void;
 	"game:gameLoaded": void;
 	"game:gameSaved": void;
 	"ui:screenChanged": string;

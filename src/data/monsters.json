@@ -19,5 +19,12 @@
 		"rarity": "common",
 		"baseStats": { "hp": 5, "attack": 2, "defence": 1, "speed": 2 },
 		"abilities": ["basic_melee"]
+	},
+	{
+		"id": "treant",
+		"displayName": "Treant",
+		"rarity": "common",
+		"baseStats": { "hp": 10, "attack": 4, "defence": 5, "speed": 1 },
+		"abilities": ["basic_melee"]
 	}
 ]

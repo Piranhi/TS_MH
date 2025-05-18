@@ -7,20 +7,11 @@ import { ClassCard } from "../features/classcards/ClassCard";
 import { Equipment } from "./Equipment";
 import { Saveable } from "@/shared/storage-types";
 import { EquipmentManager } from "./EquipmentManager";
-import { saveManager } from "@/core/SaveManager";
-import { LifetimeStats } from "./LifetimeStats";
 import { BigNumber } from "./utils/BigNumber";
 import { printLog } from "@/core/DebugManager";
 import { TrainedStatManager } from "./TrainedStatManager";
 import { SettlementManager } from "@/features/settlement/SettlementManager";
-
-interface PlayerData {
-	level: number;
-	renown: BigNumber;
-	experience: number;
-	character: PlayerCharacter;
-	stamina: RegenPool;
-}
+import { HuntManager } from "@/features/hunt/HuntManager";
 
 interface PlayerSaveState {
 	level: number;
@@ -46,34 +37,45 @@ export class Player implements Saveable {
 	public equipmentManager: EquipmentManager;
 	public settlementManager: SettlementManager;
 	public trainedStatManager: TrainedStatManager;
+	public huntManager: HuntManager;
 
-	private constructor(data: PlayerData) {
-		this.level = data.level;
-		this.renown = data.renown;
-		this.experience = data.experience;
-		this.stamina = data.stamina;
+	private constructor(opts: {
+		inventoryManager: InventoryManager;
+		settlementManager: SettlementManager;
+		trainedStatsManager: TrainedStatManager;
+		huntManager: HuntManager;
+	}) {
+		(this.level = 1), (this.renown = new BigNumber(0)), (this.experience = 0);
+		this.stamina = new RegenPool(10, 1, false);
+		this.inventory = opts.inventoryManager;
+		this.settlementManager = opts.settlementManager;
+		this.trainedStatManager = opts.trainedStatsManager;
+		this.huntManager = opts.huntManager;
+		this.cardManager = new ClassCardManager();
+		this.equipmentManager = new EquipmentManager();
 		this.character = new PlayerCharacter();
-		this.inventory = new InventoryManager();
-		this.cardManager = new ClassCardManager(this.inventory);
-		this.equipmentManager = new EquipmentManager(this.inventory);
-		this.settlementManager = new SettlementManager();
-		this.trainedStatManager = new TrainedStatManager(this);
-		//this.lifetimeStats = new LifetimeStats();
 
-		this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
-		this.inventory.addItemToInventory(ClassCard.create("bulwark_card_01"));
-		this.inventory.addItemToInventory(Equipment.create("tier1_chest"));
+		bus.on("game:newGame", () => {
+			this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
+			this.inventory.addItemToInventory(ClassCard.create("bulwark_card_01"));
+			this.inventory.addItemToInventory(Equipment.create("tier1_chest"));
+		});
+		bus.on("game:gameReady", () => {
+			bus.on("Game:GameTick", (dt) => this.handleGameTick(dt));
+			bus.on("Game:UITick", (dt) => this.handleUITick(dt));
+			bus.on("renown:award", (amt) => this.adjustRenown(amt));
+			bus.emit("player:initialized", this);
+		});
 	}
 
-	public static createNew(): Player {
-		const defaults: PlayerData = {
-			level: 1,
-			renown: new BigNumber(0),
-			experience: 0,
-			character: new PlayerCharacter(),
-			stamina: new RegenPool(10, 1, false),
-		};
-		return new Player(defaults);
+	handleGameTick(dt: number): void {
+		this.increaseStamina(dt);
+	}
+
+	handleUITick(dt: number): void {}
+
+	public getPlayerCharacter(): PlayerCharacter {
+		return this.character;
 	}
 
 	public spendStamina(delta: number): boolean {
@@ -86,24 +88,6 @@ export class Player implements Saveable {
 		if (!this.stamina.refund(delta)) return false;
 		this.emitStamina();
 		return true;
-	}
-
-	async init(): Promise<void> {
-		bus.emit("player:initialized", this);
-		bus.on("Game:GameTick", (dt) => this.handleGameTick(dt));
-		bus.on("Game:UITick", (dt) => this.handleUITick(dt));
-		bus.on("renown:award", (amt) => this.adjustRenown(amt));
-		saveManager.register("Player", this);
-	}
-
-	handleGameTick(dt: number): void {
-		this.increaseStamina(dt);
-	}
-
-	handleUITick(dt: number): void {}
-
-	public getPlayerCharacter(): PlayerCharacter {
-		return this.character;
 	}
 
 	private emitStamina() {
@@ -131,9 +115,21 @@ export class Player implements Saveable {
 		bus.emit("renown:changed", this.renown);
 	}
 
+	public static initSingleton(opts: {
+		inventoryManager: InventoryManager;
+		settlementManager: SettlementManager;
+		trainedStatsManager: TrainedStatManager;
+		huntManager: HuntManager;
+	}): Player {
+		if (!Player._instance) {
+			Player._instance = new Player(opts);
+		}
+		return Player._instance;
+	}
+
 	public static getInstance(): Player {
 		if (!this._instance) {
-			this._instance = Player.createNew();
+			throw new Error("Player singleton not yet initialized!");
 		}
 		return this._instance;
 	}
@@ -149,8 +145,8 @@ export class Player implements Saveable {
 
 	load(state: PlayerSaveState): void {
 		this.level = state.level;
-		this.stamina = state.stamina;
-		this.renown = state.renown;
+		this.stamina = RegenPool.fromJSON(state.stamina);
+		this.renown = BigNumber.fromJSON(state.renown);
 		this.experience = state.experience;
 		this.emitStamina();
 		bus.emit("renown:changed", this.renown);

@@ -36,6 +36,9 @@ export class CharacterDisplay {
 				case HuntState.Idle:
 					this.setHolderStatus(isPlayer ? "active" : "inactive");
 					break;
+				case HuntState.Boss:
+					this.setHolderStatus(isPlayer ? "active" : "active");
+					break;
 			}
 		});
 	}
