@@ -7,7 +7,7 @@ import { EnemyCharacter } from "../../models//EnemyCharacter";
 import { Area } from "@/models/Area";
 import { Saveable } from "@/shared/storage-types";
 import { saveManager } from "@/core/SaveManager";
-import { printLog } from "@/core/DebugManager";
+import { debugManager, printLog } from "@/core/DebugManager";
 import { Player } from "@/models/player";
 
 export enum HuntState {
@@ -38,7 +38,7 @@ export class HuntManager implements Saveable {
 	private state: HuntState = HuntState.Idle; // current enum value – useful for save files
 	private handler: StateHandler;
 	private area!: Area;
-	//private areaStatsMap = new Map<string, AreaStats>();
+	private areaIndex: number = 0;
 
 	constructor() {
 		this.handler = this.makeIdleState();
@@ -46,6 +46,10 @@ export class HuntManager implements Saveable {
 
 		bus.on("Game:GameTick", (dt) => this.onTick(dt));
 		bus.on("hunt:areaSelected", (areaId) => this.setArea(areaId));
+		bus.on("game:gameReady", () => {
+			const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
+			areaSelector.selectedIndex = this.areaIndex;
+		});
 	}
 
 	/** Change the hunting grounds without restarting the whole loop. */
@@ -81,6 +85,7 @@ export class HuntManager implements Saveable {
 		// Local closure variable keeps track of an accumulated timer so that we roll
 		// once per second independent of frame rate.
 		let elapsed = 0;
+		const rollTime = debugManager.debugActive ? 0.1 : 1;
 
 		return {
 			onEnter: () => {
@@ -88,7 +93,7 @@ export class HuntManager implements Saveable {
 			},
 			onTick: (dt: number) => {
 				elapsed += dt;
-				if (elapsed >= 1) {
+				if (elapsed >= rollTime) {
 					elapsed -= 1;
 					if (this.rollEncounter()) {
 						// Create Enemy from monster picker
@@ -116,6 +121,9 @@ export class HuntManager implements Saveable {
 					// Combat finished - Either goto search again or recovery.
 					// Increase stats here
 					if (combatManager.playerWon) {
+						if (this.state === HuntState.Boss) {
+							bus.emit("hunt:bossKill", { areaId: this.area.id });
+						}
 						this.transition(HuntState.Search, this.makeSearchState());
 					} else {
 						this.transition(HuntState.Recovery, this.makeRecoveryState());
@@ -158,8 +166,7 @@ export class HuntManager implements Saveable {
 			// Only setup if player was in an area
 			this.state = state?.huntState;
 			this.setArea(state?.areaId);
-			const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
-			areaSelector.selectedIndex = state?.areaIndex;
+			this.areaIndex = state?.areaIndex;
 		}
 	}
 
@@ -180,7 +187,7 @@ export class HuntManager implements Saveable {
 	}
 
 	private rollEncounter(): boolean {
-		const BASE_CHANCE = 0.5;
+		const BASE_CHANCE = debugManager.debugActive ? 1 : 0.5;
 		return Math.random() < BASE_CHANCE;
 	}
 

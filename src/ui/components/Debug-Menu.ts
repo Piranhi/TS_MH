@@ -1,6 +1,5 @@
 import { bus } from "@/core/EventBus";
 import { saveManager } from "@/core/SaveManager";
-import { HuntManager } from "@/features/hunt/HuntManager";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { Player } from "@/models/player";
 import { BigNumber } from "@/models/utils/BigNumber";
@@ -27,7 +26,6 @@ export class DebugMenu {
 			console.log(specs);
 			const spec = specs[Math.floor(Math.random() * specs.length)];
 			Player.getInstance().inventory.addLootById(spec.id, 1);
-			
 		});
 		//  Player.getInstance().inventory.addItemToInventory);
 		//this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));

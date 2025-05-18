@@ -37,7 +37,6 @@ export class StatsManager implements Saveable {
 		this.prestigeStats = { ...DEFAULT_PRESTIGE_STATS };
 		this.gameStats = { ...DEFAULT_GAME_STATS };
 		this.setupListeners();
-
 	}
 
 	private setupListeners() {
@@ -47,6 +46,8 @@ export class StatsManager implements Saveable {
 		bus.on("player:level-up", () => {
 			this.playerLevelup();
 		});
+		bus.on("hunt:bossKill", ({ areaId }) => this.bossKill(areaId));
+		bus.on("hunt:areaSelected", (areaId) => this.setAreaStats(areaId, this.getAreaStats(areaId)));
 	}
 
 	// ------------------ SETTERS -----------------------
@@ -120,6 +121,14 @@ export class StatsManager implements Saveable {
 			areaStats.bossUnlockedThisRun = true;
 			areaStats.bossUnlockedEver = true;
 		}
+		this.setAreaStats(areaId, areaStats);
+	}
+
+	private bossKill(areaId: string) {
+		const areaStats = this.getAreaStats(areaId);
+		if (!areaStats) return;
+		areaStats.bossKilledThisRun = true;
+		areaStats.bossKillsTotal++;
 		this.setAreaStats(areaId, areaStats);
 	}
 

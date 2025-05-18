@@ -23,6 +23,8 @@ export class HuntScreen extends BaseScreen {
 	private statKillsThisRunEl!: HTMLElement;
 	private statBossUnlockedEl!: HTMLElement;
 	private fightBossBtn!: HTMLButtonElement;
+	private bossKilledThisRunEl!: HTMLElement;
+	private bossKillsEl!: HTMLElement;
 
 	init() {
 		this.addMarkuptoPage(Markup);
@@ -41,11 +43,15 @@ export class HuntScreen extends BaseScreen {
 
 	private setupElements() {
 		this.huntUpdateEl = document.getElementById("hunt-update-log") as HTMLElement;
+
+		// AREA STATS
 		this.statTotalKillsEl = document.getElementById("area-total-kills")!;
 		this.statKillsThisRunEl = document.getElementById("area-kills-this-run")!;
 		this.statBossUnlockedEl = document.getElementById("area-boss-unlocked")!;
+		this.bossKilledThisRunEl = document.getElementById("area-boss-killed")!;
+		this.bossKillsEl = document.getElementById("area-boss-kills")!;
 		this.fightBossBtn = document.getElementById("fight-boss-btn") as HTMLButtonElement;
-		this.fightBossBtn.disabled = false;
+		this.fightBossBtn.disabled = true;
 		this.fightBossBtn.addEventListener("click", (e) => this.fightBoss(e));
 
 		this.buildAreaSelect();
@@ -90,7 +96,9 @@ export class HuntScreen extends BaseScreen {
 		this.statKillsThisRunEl.textContent = stats.killsThisRun.toString();
 		this.statTotalKillsEl.textContent = stats.killsTotal.toString();
 		this.statBossUnlockedEl.textContent = stats.bossUnlockedThisRun ? "Yes" : "No";
-		//this.fightBossBtn.disabled = !stats.bossUnlockedThisRun;
+		this.bossKilledThisRunEl.textContent = stats.bossKilledThisRun ? "Yes" : "No";
+		this.bossKillsEl.textContent = stats.bossKillsTotal.toString();
+		this.fightBossBtn.disabled = !stats.bossUnlockedThisRun && !stats.bossKilledThisRun;
 	}
 
 	private bindEvents() {

@@ -24,7 +24,6 @@ export class ClassCardManager {
 
 		const pc = Player.getInstance().getPlayerCharacter();
 		pc.setClassCardAbilities(abilities);
-		console.log(abilities); // Add merged ability specs
 		pc.statsEngine.setLayer("classCards", () => merged); // Update Stats Enging with new stats from cards
 	}
 

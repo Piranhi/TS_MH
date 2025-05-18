@@ -1,6 +1,8 @@
-const PRINT_VERBOSITY = 3;
+const PRINT_VERBOSITY = 2;
 
-export class DebugManager {}
+export class DebugManager {
+	public readonly debugActive: boolean = true;
+}
 
 export function printLog(msg: string, verbosity: number, sender?: string) {
 	if (verbosity <= PRINT_VERBOSITY) {

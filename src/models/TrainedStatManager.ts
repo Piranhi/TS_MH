@@ -45,7 +45,6 @@ export class TrainedStatManager implements Saveable {
 		Player.getInstance()
 			.getPlayerCharacter()
 			.statsEngine.setLayer("trainedStats", () => merged);
-		console.log(merged);
 	}
 
 	clearBonuses() {}

@@ -1,4 +1,4 @@
-import { printLog } from "@/core/DebugManager";
+import { debugManager, printLog } from "@/core/DebugManager";
 import { Ability, AbilityPriority } from "./Ability";
 import { BoundedBig, BoundedNumber } from "./value-objects/Bounded";
 import { bus } from "@/core/EventBus";
@@ -106,13 +106,11 @@ export abstract class BaseCharacter {
 	public beginCombat(target: BaseCharacter) {
 		this.target = target;
 		this.inCombat = true;
-		console.log(this.name + " setting combat to true");
 		this.getActiveAbilities().forEach((a) => a.init()); // Init abilities
 	}
 
 	public endCombat() {
 		this.inCombat = false;
-		console.log(this.name + " setting combat to false");
 		this.target = undefined;
 	}
 
@@ -124,7 +122,7 @@ export abstract class BaseCharacter {
 		if (!this.inCombat || !this.target) return;
 
 		this.getActiveAbilities().forEach((ability) => {
-			ability.reduceCooldown(dt); // TODO (multiply by speed)
+			ability.reduceCooldown(debugManager.debugActive ? 0.5 : dt); // TODO (multiply by speed)
 			if (ability.isReady()) ability.perform(this, this.target!);
 		});
 	}

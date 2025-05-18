@@ -14,7 +14,6 @@ export interface AreaStats {
 	bossUnlockedThisRun: boolean;
 	bossKilledThisRun: boolean;
 	bossKillsTotal: number;
-	bossKillsThisRun: number;
 }
 
 export interface EnemyStats {
@@ -61,5 +60,4 @@ export const DEFAULT_AREA_STATS: AreaStats = {
 	bossUnlockedThisRun: false,
 	bossKilledThisRun: false,
 	bossKillsTotal: 0,
-	bossKillsThisRun: 0,
 };

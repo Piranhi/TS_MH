@@ -29,6 +29,7 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 	}
 
 	pickMonster(): Monster {
+		// Pick monster from spawns in spec
 		const spawns = this.spec.spawns;
 		const total = spawns.reduce((s, { weight }) => s + weight, 0);
 		let roll = Math.random() * total;

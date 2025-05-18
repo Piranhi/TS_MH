@@ -16,6 +16,8 @@ export interface GameEvents {
 	"game:gameReady": void;
 	"game:gameLoaded": void;
 	"game:gameSaved": void;
+	"game:prestige": void;
+
 	"ui:screenChanged": string;
 	"renown:changed": BigNumber;
 	"renown:award": BigNumber;
@@ -27,7 +29,7 @@ export interface GameEvents {
 	"hunt:stateChanged": HuntState;
 	"hunt:areaSelected": string;
 	"hunt:areaKill": { enemyId: string; areaId: string };
-	"hunt:bossKilled": string;
+	"hunt:bossKill": { areaId: string };
 	"combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };
 	"combat:ended": string;
 	"classCard:levelUp": string;

@@ -61,7 +61,7 @@ export class SaveManager {
 	}
 
 	clearSaves(): void {
-		localStorage.removeItem(this.SAVE_KEY);
+		//localStorage.removeItem(this.SAVE_KEY);
 	}
 
 	startNewGame(): void {
