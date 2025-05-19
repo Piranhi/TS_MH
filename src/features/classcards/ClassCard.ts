@@ -1,9 +1,11 @@
 import { bus } from "@/core/EventBus";
+import { Equipment } from "@/models/Equipment";
 import { SpecRegistryBase } from "@/models/SpecRegistryBase";
 import { StatsModifier } from "@/models/Stats";
-import { ClassCardItemSpec, getItemRarity, InventoryItem, InventoryItemState } from "@/shared/types";
+import { ClassCardItemSpec, InventoryItemState } from "@/shared/types";
+import { InventoryRegistry } from "../inventory/InventoryRegistry";
 
-export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements ClassCardItemSpec, InventoryItem {
+export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements ClassCardItemSpec {
 	readonly category = "classCard";
 
 	private constructor(private readonly spec: ClassCardItemSpec, private state: InventoryItemState) {
@@ -22,19 +24,19 @@ export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements Cl
 
 	public gainExp(monsterExp: number = 1) {
 		const gain = this.spec.baseGainRate * monsterExp;
-		this.state.progress += gain;
-		if (this.state.progress >= this.nextThreshold()) {
+		this.state.progress! += gain;
+		if (this.state.progress! >= this.nextThreshold()) {
 			this.levelUp();
 		}
 	}
 
 	private nextThreshold() {
-		return this.state.level * 100;
+		return this.state.level! * 100;
 	}
 
 	private levelUp() {
-		this.state.progress -= this.nextThreshold();
-		this.state.level++;
+		this.state.progress! -= this.nextThreshold();
+		this.state.level!++;
 		bus.emit("classCard:levelUp", this.spec.id);
 	}
 
@@ -91,17 +93,10 @@ export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements Cl
 	}
 
 	public static override specById = new Map<string, ClassCardItemSpec>();
-	static create(id: string): ClassCard {
-		const spec = this.specById.get(id);
-		if (!spec) throw new Error(`Unknown card "${id}"`);
 
-		const defaultState: InventoryItemState = {
-			specId: spec.id,
-			status: "Unequipped",
-			level: 1,
-			progress: 0,
-			rarity: getItemRarity(),
-		};
-		return new ClassCard(spec, defaultState);
+	static createFromState(state: InventoryItemState): ClassCard {
+		const spec = this.specById.get(state.specId);
+		if (!spec) throw new Error(`Unknown card "${state.specId}"`);
+		return new ClassCard(spec, state);
 	}
 }

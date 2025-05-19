@@ -38,7 +38,7 @@ export class InventoryScreen extends BaseScreen {
 		this.equipmentGridEl.innerHTML = "";
 
 		inventory.forEach((slot) => {
-			const slotComp = new InventorySlot(slot.id, slot.type, slot.item);
+			const slotComp = new InventorySlot(slot.id, slot.type, slot.itemState);
 			switch (slot.type) {
 				case "classCard":
 					slotComp.attachTo(this.classCardGridEl);

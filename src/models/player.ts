@@ -12,12 +12,14 @@ import { printLog } from "@/core/DebugManager";
 import { TrainedStatManager } from "./TrainedStatManager";
 import { SettlementManager } from "@/features/settlement/SettlementManager";
 import { HuntManager } from "@/features/hunt/HuntManager";
+import { StatsModifier } from "./Stats";
 
 interface PlayerSaveState {
 	level: number;
 	renown: BigNumber;
 	stamina: RegenPool;
 	experience: number;
+	heirBonuses: StatsModifier[];
 }
 
 export class Player implements Saveable {
@@ -30,6 +32,7 @@ export class Player implements Saveable {
 	private stamina: RegenPool;
 	private staminaMultiplier: number = 1;
 	private renownMultiplier: number = 1;
+	private heirBonuses: StatsModifier[] = [];
 
 	// Destroyable
 	public character: PlayerCharacter | null = null;
@@ -59,9 +62,9 @@ export class Player implements Saveable {
 		this.character.init();
 
 		bus.on("game:newGame", () => {
-			this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
-			this.inventory.addItemToInventory(ClassCard.create("bulwark_card_01"));
-			this.inventory.addItemToInventory(Equipment.create("tier1_chest"));
+			this.inventory.addLootById("warrior_card_01"); //ClassCard.createRaw("warrior_card_01", 1));
+			this.inventory.addLootById("bulwark_card_01");
+			this.inventory.addLootById("tier1_chest");
 		});
 		bus.on("game:gameReady", () => {
 			bus.on("Game:GameTick", (dt) => this.handleGameTick(dt));
@@ -175,6 +178,7 @@ export class Player implements Saveable {
 			renown: this.renown,
 			stamina: this.stamina,
 			experience: this.experience,
+			heirBonuses: this.heirBonuses,
 		};
 	}
 
@@ -183,6 +187,7 @@ export class Player implements Saveable {
 		this.stamina = RegenPool.fromJSON(state.stamina);
 		this.renown = BigNumber.fromJSON(state.renown);
 		this.experience = state.experience;
+		this.heirBonuses = state.heirBonuses;
 		this.emitStamina();
 		bus.emit("renown:changed", this.renown);
 	}

@@ -108,17 +108,21 @@ export interface LootSource {
 // Instance data
 export interface InventoryItemState {
 	specId: string;
-	status: ItemEquipStatus;
-	level: number;
-	progress: number;
-	rarity: ItemRarity;
+	quantity: number;
+	// Only for equippables
+	status?: ItemEquipStatus;
+	level?: number;
+	progress?: number;
+	rarity?: ItemRarity;
 }
 
 // Just
-export interface InventoryItem extends InventoryItemSpec {
+/* export interface InventoryItem {
+	// extends InventoryItemSpec {
+	id: string;
 	quantity: number;
 	rarity?: ItemRarity;
-}
+} */
 
 export function getItemCategoryLabel(category: ItemCategory): string {
 	return ItemCategoryDisplay[category];

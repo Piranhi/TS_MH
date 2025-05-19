@@ -1,17 +1,23 @@
 import { Tooltip } from "./Tooltip";
 import { bus } from "@/core/EventBus";
-import { getItemCategoryLabel, InventoryItem } from "@/shared/types";
+import { getItemCategoryLabel, InventoryItemSpec, InventoryItemState } from "@/shared/types";
 import { SlotType } from "@/features/inventory/InventoryManager";
 import { prettify } from "@/shared/utils/stringUtils";
 import { UIBase } from "./UIBase";
+import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 
 /** Pure UI component – no game logic */
 export class InventorySlot extends UIBase {
-	constructor(private readonly slotId: string, private readonly slotType: SlotType, private item: InventoryItem | null) {
+	private spec: InventoryItemSpec | null = null;
+	constructor(private readonly slotId: string, private readonly slotType: SlotType, private itemState: InventoryItemState | null) {
 		super();
 		this.element = document.createElement("div");
 		this.element.dataset.slotId = slotId;
 		this.element.className = `slot slot--${slotType}`;
+		if (itemState) {
+			this.spec = InventoryRegistry.getItemById(itemState!.specId);
+		}
+
 		this.render();
 		this.bindEvents();
 		this.setupDnD();
@@ -24,14 +30,14 @@ export class InventorySlot extends UIBase {
 	}
 
 	private handleMouseEnter() {
-		if (!this.item) return;
+		if (!this.itemState || !this.spec) return;
 		Tooltip.instance.show(this.element, {
-			icon: this.item.iconUrl,
-			name: prettify(this.item.name),
-			rarity: prettify(this.item.rarity!),
-			type: getItemCategoryLabel(this.item.category),
-			description: this.item.description,
-			tintColour: this.item.rarity,
+			icon: this.spec.iconUrl,
+			name: prettify(this.spec.name),
+			rarity: prettify(this.itemState.rarity!),
+			type: getItemCategoryLabel(this.spec.category),
+			description: this.spec.description,
+			tintColour: this.itemState.rarity,
 		});
 	}
 
@@ -42,8 +48,8 @@ export class InventorySlot extends UIBase {
 		bus.emit("slot:click", this.slotId);
 	}
 
-	update(item: InventoryItem | null) {
-		this.item = item;
+	update(itemState: InventoryItemState | null) {
+		this.itemState = itemState;
 		this.render();
 	}
 
@@ -53,15 +59,15 @@ export class InventorySlot extends UIBase {
 
 	/* ─── rendering & hover ──────────────────────────────── */
 	private render() {
-		this.element.classList.toggle("filled", !!this.item);
-		this.element.classList.toggle("empty", !this.item);
-		this.element.innerHTML = this.item
-			? `<div class="item-icon"><img src="${this.item.iconUrl}"></div>
-			   <div class="item-count">${this.item.quantity}</div>`
+		this.element.classList.toggle("filled", !!this.itemState);
+		this.element.classList.toggle("empty", !this.itemState);
+		this.element.innerHTML = this.itemState
+			? `<div class="item-icon"><img src="${this.spec ? this.spec.iconUrl : ""}"></div>
+			   <div class="item-count">${this.itemState.quantity}</div>`
 			: "";
 
-		if (this.item) {
-			this.element.classList.add(`rarity-${this.item.rarity}`);
+		if (this.itemState) {
+			this.element.classList.add(`rarity-${this.itemState.rarity}`);
 		}
 	}
 

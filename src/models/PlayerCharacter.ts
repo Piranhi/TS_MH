@@ -3,10 +3,7 @@ import { defaultPlayerStats, PlayerStats } from "./Stats";
 import { StatsEngine } from "@/core/StatsEngine";
 import { calcPlayerDamage, calcPlayerDefence } from "./DamageCalculator";
 import { bus } from "@/core/EventBus";
-import { Ability } from "./Ability";
 import { BigNumber } from "./utils/BigNumber";
-
-interface PlayerCharacterSaveState {}
 
 export class PlayerCharacter extends BaseCharacter {
 	readonly statsEngine: StatsEngine;

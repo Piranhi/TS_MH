@@ -24,6 +24,27 @@
 
 <body>
 
+  <div id="prestige-modal" class="modal-overlay hidden">
+    <div class="modal-panel">
+      <h2>Prestige Complete!</h2>
+      <p class="modal-desc">
+        You have reached a new milestone in your journey. Here’s what you gained this run:
+      </p>
+      <ul class="reward-list">
+        <li><span class="reward-label">Meta-Resource:</span> <span class="reward-value">+120 Monster Essences</span>
+        </li>
+        <li><span class="reward-label">Next Generation Bonus:</span> <span class="reward-value">Heir gains <b>+5%
+              Attack</b></span></li>
+        <li><span class="reward-label">Settlement Upgrade:</span> <span class="reward-value">Unlocked <b>Blacksmith
+              Level 2</b></span></li>
+        <!-- Add more rewards/events here dynamically -->
+      </ul>
+      <div class="modal-footer">
+        <button id="prestige-ok-btn" class="btn-glass">OK</button>
+      </div>
+    </div>
+  </div>
+
   <div id="app">
     <!-- HEADER -->
     <header class="header" id="header">

@@ -1,11 +1,10 @@
 import { bus } from "@/core/EventBus";
-import { isClassCardItem, isEquipmentItem } from "@/shared/type-guards";
-import type { EquipmentType, InventoryItemSpec, ItemCategory, EquipmentItemSpec, InventoryItem } from "@/shared/types";
+import { isClassCardItemSpec, isEquipmentItemSpec } from "@/shared/type-guards";
+import type { EquipmentType, InventoryItemState, ItemCategory } from "@/shared/types";
 import { ClassCard } from "../classcards/ClassCard";
 import { InventoryRegistry } from "./InventoryRegistry";
 import { Equipment } from "@/models/Equipment";
 import { Saveable } from "@/shared/storage-types";
-import { saveManager } from "@/core/SaveManager";
 import { printLog } from "@/core/DebugManager";
 export type SlotType = "inventory" | "equipment" | "classCard";
 
@@ -15,7 +14,7 @@ interface Slot {
 	/** For equipment: "head"|"chest"|"legs" etc.; for cards: 0,1,2…; unused for inventory */
 	key?: string | number;
 	accepts: ItemCategory[];
-	item: InventoryItem | null;
+	itemState: InventoryItemState | null;
 }
 
 export interface InventorySaveState {
@@ -67,7 +66,7 @@ export class InventoryManager implements Saveable {
 			type,
 			key,
 			accepts: this.ACCEPT_MAP[type],
-			item: null,
+			itemState: null,
 		};
 	}
 
@@ -93,15 +92,17 @@ export class InventoryManager implements Saveable {
 		// Get Items, check if Valid
 		const from = this.getSlot(fromId);
 		const to = this.getSlot(toId);
-		if (!from?.item || !to) return false;
-		if (!to.accepts.includes(from.item.category)) return false;
+		if (!from?.itemState || !to) return false;
+		const spec = InventoryRegistry.getItemById(from.itemState.specId);
+		if (!to.accepts.includes(spec.category)) return false;
+
 		// If Equipment Slot - Check EquipType
 		if (to.type === "equipment") {
-			if (!isEquipmentItem(from.item)) return false;
-			if (from.item.equipType !== to.key) return false;
+			if (!isEquipmentItemSpec(spec)) return false;
+			if (spec.equipType !== to.key) return false;
 		}
 		// Swap
-		[from.item, to.item] = [to.item, from.item];
+		[from.itemState, to.itemState] = [to.itemState, from.itemState];
 		this.emitChange();
 
 		// Emit smaller bus changes.
@@ -125,26 +126,26 @@ export class InventoryManager implements Saveable {
 	}
 
 	public addLootById(itemId: string, qty = 1): boolean {
-		const item = InventoryRegistry.createItem(itemId, qty);
-		printLog(`${qty} item [${item.id}] added to inventory`, 3, "InventoryManager.ts");
-		return this.addItemToInventory(item);
+		const state = InventoryRegistry.createItemState(itemId, qty);
+		printLog(`${qty} item [${state.specId}] added to inventory`, 3, "InventoryManager.ts");
+		return this.addItemToInventory(state);
 	}
 
-	public addItemToInventory(item: InventoryItem): boolean {
-		const slot = this.slots.find((s) => s.type === "inventory" && s.item === null);
+	public addItemToInventory(itemState: InventoryItemState): boolean {
+		const slot = this.slots.find((s) => s.type === "inventory" && s.itemState === null);
 		if (!slot) return false; // Inventory is full
 
-		slot.item = item;
+		slot.itemState = itemState;
 		this.emitChange();
 		return true;
 	}
 
-	public removeItemFromInventory(item: InventoryItem): boolean {
-		const slot = this.slots.find((s) => s.item === item);
+	public removeItemFromInventory(itemState: InventoryItemState): boolean {
+		const slot = this.slots.find((s) => s.itemState === itemState);
 		if (!slot) {
 			return false; //Item not found
 		}
-		slot.item = null;
+		slot.itemState = null;
 		this.emitChange();
 		return true;
 	}
@@ -156,21 +157,25 @@ export class InventoryManager implements Saveable {
 	//------------------------ EQUIPMENT ------------------------------
 
 	public getEquippedEquipment(): Equipment[] {
-		return this.slots
-			.filter(
-				(slot): slot is Slot & { item: Equipment } =>
-					slot.type === "equipment" && slot.item !== null && isEquipmentItem(slot.item)
-			)
-			.map((slot) => slot.item);
+		return (
+			this.slots
+				// 1) Pick only the equipment‐slots that actually have something in them
+				.filter((slot) => slot.type === "equipment" && slot.itemState !== null)
+				// 2) For each one, grab its saved state, look up the latest spec, and construct an Equipment
+				.map((slot) => {
+					const state = slot.itemState!; // { id, quantity, rarity }
+					return Equipment.createFromState(state);
+				})
+		);
 	}
 
 	public getEquippedCards(): ClassCard[] {
 		return this.slots
-			.filter(
-				(slot): slot is Slot & { item: ClassCard } =>
-					slot.type === "classCard" && slot.item !== null && isClassCardItem(slot.item)
-			)
-			.map((slot) => slot.item);
+			.filter((slot) => slot.type === "classCard" && slot.itemState !== null)
+			.map((slot) => {
+				const state = slot.itemState!;
+				return ClassCard.createFromState(state);
+			});
 	}
 
 	private emitChange() {
