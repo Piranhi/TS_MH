@@ -1,8 +1,8 @@
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./train.html?raw";
-import { bus } from "@/core/EventBus";
 import { Player } from "@/models/player";
 import { TrainedStatDisplay } from "../components/TrainedStatDisplay";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export class TrainScreen extends BaseScreen {
 	readonly screenName = "train";
@@ -12,18 +12,22 @@ export class TrainScreen extends BaseScreen {
 	init() {
 		this.rootEl = this.addMarkuptoPage(Markup);
 		this.trainingListEl = document.getElementById("trained-stats-list") as HTMLElement;
-		bus.on("Game:UITick", (dt) => this.handleTick(dt));
-		bus.on("game:gameLoaded", () => this.addStatElements());
+		this.bindEvents();
 		this.addStatElements();
 	}
 
-	handleTick(dt: number) {}
 	show() {}
 	hide() {}
+	bindEvents() {
+		bindEvent(this.eventBindings, "Game:UITick", (dt) => this.handleTick(dt));
+		bindEvent(this.eventBindings, "game:gameReady", () => this.addStatElements()); // USED TO BE GAME LOADED
+	}
+
+	handleTick(dt: number) {}
 
 	addStatElements() {
 		this.trainingListEl.innerHTML = "";
-		Player.getInstance().trainedStatManager.stats.forEach((stat) => {
+		Player.getInstance().trainedStatManager?.stats.forEach((stat) => {
 			const statHolder = new TrainedStatDisplay(this.rootEl, this.trainingListEl, stat);
 			statHolder.init();
 		});

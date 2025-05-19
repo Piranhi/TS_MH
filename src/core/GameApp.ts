@@ -48,8 +48,8 @@ export class GameApp {
 		// --- UI: Setup components, screens, and hooks
 		// --- FINALIZE: Signal game ready, start engine/game loop
 		// CORE
-		this.registerCoreSystems();
 		await this.instantiateCore();
+		this.registerCoreSystems();
 		bus.emit("game:init");
 
 		// GAME LOADED/NEW GAME
@@ -69,6 +69,8 @@ export class GameApp {
 		this.initUI();
 		engine.start();
 		this.buildDebugMenu();
+		bus.on("game:prestigePrep", () => this.handlePrestigePrep());
+		bus.on("game:prestige", () => this.handlePrestige());
 	}
 
 	private registerCoreSystems() {
@@ -91,10 +93,28 @@ export class GameApp {
 		saveManager.register("statsManager", StatsManager.instance);
 	}
 
+	private handlePrestigePrep() {
+		console.log("handling prestige");
+		saveManager.saveAll();
+		Player.getInstance().destroy();
+		this.screenManager.destroyAll();
+		this.gameScreens.clear();
+		this.trainedStatManager = new TrainedStatManager();
+		this.huntManager = new HuntManager();
+		saveManager.updateRegister("huntManager", this.huntManager);
+		saveManager.updateRegister("trainedManager", this.trainedStatManager);
+		Player.getInstance().prestigeReset({ huntManager: this.huntManager, trainedStatsManager: this.trainedStatManager });
+	}
+
+	private handlePrestige() {
+		this.registerScreens();
+		this.mountScreens();
+		this.screenManager.show("settlement");
+	}
+
 	/* ---------- private helpers ---------- */
 	private async instantiateCore() {
 		initGameData(); // Load Specs
-		//const stats = StatsManager.instance;
 	}
 
 	private buildUI() {

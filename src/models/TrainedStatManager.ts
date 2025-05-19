@@ -3,19 +3,21 @@ import { Player } from "./player";
 import { makeDefaultTrainedStats, StatsModifier } from "./Stats";
 import { TrainedStat } from "./TrainedStat";
 import { mergeStatModifiers } from "@/shared/utils/stat-utils";
-import { bus } from "@/core/EventBus";
+import { Destroyable } from "./Destroyable";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 interface TrainedStatManagerSave {
 	trainedStats: [string, TrainedStat][];
 }
 
-export class TrainedStatManager implements Saveable {
+export class TrainedStatManager extends Destroyable implements Saveable {
 	private trainedStats: Map<string, TrainedStat> = new Map();
 
 	constructor() {
+		super();
 		this.trainedStats = new Map(Object.entries(makeDefaultTrainedStats()));
-		bus.on("game:gameReady", () => this.recalculate());
-		bus.on("player:trainedStatChanged", () => this.recalculate());
+		bindEvent(this.eventBindings, "game:gameReady", () => this.recalculate());
+		bindEvent(this.eventBindings, "player:trainedStatChanged", () => this.recalculate());
 	}
 
 	public allocateTrainedStat(id: string, rawDelta: number): void {

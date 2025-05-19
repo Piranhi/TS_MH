@@ -19,7 +19,7 @@ export class DebugMenu {
 		this.addButton("Load", () => saveManager.loadAll());
 		this.addButton("New Game", () => saveManager.startNewGame());
 		this.addButton("Add Renown", () => bus.emit("renown:award", new BigNumber(100000)));
-		this.addButton("Kill Player", () => Player.getInstance().character.takeDamage(new BigNumber(1000000)));
+		this.addButton("Kill Player", () => Player.getInstance().character?.takeDamage(new BigNumber(1000000)));
 		this.addButton("Kill Enemy", () => bus.emit("debug:killEnemy"));
 		this.addButton("Test Loot", () => {
 			const specs = InventoryRegistry.getSpecsByTags(["t1"]);

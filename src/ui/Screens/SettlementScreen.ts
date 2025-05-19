@@ -2,8 +2,8 @@ import { Player } from "@/models/player";
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./settlement.html?raw";
 import { SettlementManager } from "@/features/settlement/SettlementManager";
-import { bus } from "@/core/EventBus";
 import { BuildingDisplay } from "../components/BuildingDisplay";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export class SettlementScreen extends BaseScreen {
 	readonly screenName = "settlement";
@@ -29,8 +29,7 @@ export class SettlementScreen extends BaseScreen {
 		this.settlementPassiveProgressEl = this.rootEl.querySelector(".progress") as HTMLElement;
 
 		this.buildGrid();
-		bus.on("settlement:changed", () => this.buildGrid());
-		bus.on("Game:UITick", (delta) => this.handleTick(delta));
+		this.bindEvents();
 	}
 
 	private buildGrid() {
@@ -49,6 +48,10 @@ export class SettlementScreen extends BaseScreen {
 
 	show() {}
 	hide() {}
+	bindEvents() {
+		bindEvent(this.eventBindings, "settlement:changed", () => this.buildGrid());
+		bindEvent(this.eventBindings, "Game:UITick", (delta) => this.handleTick(delta));
+	}
 
 	private handleTick(delta: number) {
 		const snapshot = Player.getInstance().settlementManager.rewardSnapshot();

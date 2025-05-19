@@ -1,11 +1,11 @@
-import { bus } from "@/core/EventBus";
 import { HuntState } from "@/features/hunt/HuntManager";
 import { BaseCharacter } from "@/models/BaseCharacter";
+import { UIBase } from "./UIBase";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export type HolderStatus = "inactive" | "active";
 
-export class CharacterDisplay {
-	private root!: HTMLElement;
+export class CharacterDisplay extends UIBase {
 	private nameEl!: HTMLElement;
 	private atkEl!: HTMLElement;
 	private defEl!: HTMLElement;
@@ -19,28 +19,45 @@ export class CharacterDisplay {
 	private attackBarMap = new Map<string, HTMLElement>();
 
 	constructor(private holderStatus: HolderStatus, private isPlayer: boolean) {
+		super();
 		this.createDisplay();
 		this.setHolderStatus(holderStatus);
-		//bus.on("player:statsChanged", )
-		bus.on("hunt:stateChanged", (state) => {
-			switch (state) {
-				case HuntState.Recovery:
-					this.setHolderStatus(isPlayer ? "inactive" : "inactive");
-					break;
-				case HuntState.Search:
-					this.setHolderStatus(isPlayer ? "active" : "inactive");
-					break;
-				case HuntState.Combat:
-					this.setHolderStatus(isPlayer ? "active" : "active");
-					break;
-				case HuntState.Idle:
-					this.setHolderStatus(isPlayer ? "active" : "inactive");
-					break;
-				case HuntState.Boss:
-					this.setHolderStatus(isPlayer ? "active" : "active");
-					break;
-			}
-		});
+		this.bindEvents();
+	}
+
+	private bindEvents() {
+		bindEvent(this.eventBindings, "hunt:stateChanged", (state) => this.huntStateChanged(state));
+	}
+
+	private huntStateChanged(state: HuntState) {
+		switch (state) {
+			case HuntState.Recovery:
+				this.setHolderStatus(this.isPlayer ? "inactive" : "inactive");
+				break;
+			case HuntState.Search:
+				this.setHolderStatus(this.isPlayer ? "active" : "inactive");
+				break;
+			case HuntState.Combat:
+				this.setHolderStatus(this.isPlayer ? "active" : "active");
+				break;
+			case HuntState.Idle:
+				this.setHolderStatus(this.isPlayer ? "active" : "inactive");
+				break;
+			case HuntState.Boss:
+				this.setHolderStatus(this.isPlayer ? "active" : "active");
+				break;
+		}
+	}
+
+	public destroy() {
+		// Remove DOM node
+		if (this.element && this.element.parentNode) {
+			this.element.parentNode.removeChild(this.element);
+		}
+
+		// Clear maps/references
+		this.attackBarMap.clear();
+		this.character = undefined!;
 	}
 
 	private createDisplay() {
@@ -49,22 +66,22 @@ export class CharacterDisplay {
 		const tmpl = document.getElementById("character-display") as HTMLTemplateElement;
 		if (!tmpl) throw new Error("Template #character-display not found");
 		const frag = tmpl.content.cloneNode(true) as DocumentFragment;
-		this.root = frag.querySelector<HTMLElement>(".char-holder")!;
-		if (!this.root) throw new Error(".char-holder not found in template");
+		this.element = frag.querySelector<HTMLElement>(".char-holder")!;
+		if (!this.element) throw new Error(".char-holder not found in template");
 
 		// CACHE ELEMENTS
-		this.nameEl = this.root.querySelector(".char-name")!;
-		this.statsContainerEl = this.root.querySelector(".char-stats")!;
-		this.atkEl = this.root.querySelector(".stat--attack")!;
-		this.defEl = this.root.querySelector(".stat--defence")!;
-		this.hpBar = this.root.querySelector(".health-bar")!;
-		this.speedBar = this.root.querySelector(".speed-bar")!;
-		this.hpLabel = this.root.querySelector(".hp-label")!;
-		this.avatarImg = this.root.querySelector(".char-img")!;
-		this.root.classList.add(this.isPlayer ? "player" : "enemy");
-		this.barsContainer = this.root.querySelector(".attack-bars")!;
+		this.nameEl = this.$(".char-name");
+		this.statsContainerEl = this.$(".char-stats");
+		this.atkEl = this.$(".stat--attack");
+		this.defEl = this.$(".stat--defence");
+		this.hpBar = this.$(".health-bar");
+		this.speedBar = this.$(".speed-bar");
+		this.hpLabel = this.$(".hp-label");
+		this.avatarImg = this.$(".char-img") as HTMLImageElement;
+		this.element.classList.add(this.isPlayer ? "player" : "enemy");
+		this.barsContainer = this.$(".attack-bars");
 
-		container.appendChild(this.root);
+		this.attachTo(container);
 	}
 
 	setup(character: BaseCharacter) {
@@ -115,9 +132,9 @@ export class CharacterDisplay {
 
 	private setHolderStatus(newStatus: HolderStatus) {
 		if (newStatus === "active") {
-			this.root.classList.remove("inactive");
+			this.element.classList.remove("inactive");
 		} else {
-			this.root.classList.add("inactive");
+			this.element.classList.add("inactive");
 		}
 	}
 }

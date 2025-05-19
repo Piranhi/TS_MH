@@ -1,11 +1,14 @@
 import { bus } from "@/core/EventBus";
 import { prettify } from "../../shared/utils/stringUtils";
 import { ScreenName, screenNav, ScreenNav } from "@/shared/ui-types";
+import { UIBase } from "./UIBase";
 
-export class SidebarDisplay {
+export class SidebarDisplay extends UIBase {
 	private sidebarMap = new Map<ScreenName, HTMLLIElement>();
 	private navContainer = document.getElementById("sidebar")!;
-	constructor(private onSelect: (name: ScreenName) => void) {}
+	constructor(private onSelect: (name: ScreenName) => void) {
+		super();
+	}
 
 	public build() {
 		this.navContainer.innerHTML = "";

@@ -30,8 +30,8 @@ export class SettlementManager implements Saveable {
 		// When the game is ready, setup everything
 		bus.on("game:gameReady", () => {
 			// Uncomment if/when you use these:
-			// this.buildingsMap.set("library", Building.create("library"));
-			// this.buildingsMap.set("blacksmith", Building.create("blacksmith"));
+			this.buildingsMap.set("library", Building.create("library"));
+			this.buildingsMap.set("blacksmith", Building.create("blacksmith"));
 
 			// Setup variables for the first reward cycle:
 			this.passiveProgressStart = Date.now();

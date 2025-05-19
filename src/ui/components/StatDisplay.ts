@@ -1,4 +1,5 @@
 import { bus, EventKey, GameEvents } from "@/core/EventBus";
+import { UIBase } from "./UIBase";
 
 type Elements = {
 	labelEl: HTMLElement;
@@ -7,14 +8,16 @@ type Elements = {
 	fillEl?: HTMLElement;
 };
 
-export class StatDisplay<K extends EventKey> {
+export class StatDisplay<K extends EventKey> extends UIBase {
 	constructor(
 		private label: string,
 		private eventKey: K,
 		private container: HTMLElement,
 		private templateId: string,
 		private renderer: (payload: GameEvents[K], els: Elements) => void
-	) {}
+	) {
+		super();
+	}
 
 	public init() {
 		// Clone the correct template
@@ -52,5 +55,9 @@ export class StatDisplay<K extends EventKey> {
 		bus.on<K>(this.eventKey, (payload) => {
 			this.renderer(payload, els);
 		});
+	}
+
+	destroy() {
+		
 	}
 }

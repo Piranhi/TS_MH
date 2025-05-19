@@ -1,9 +1,18 @@
+import { PrestigeManager } from "@/models/PrestigeManager";
 import { StatDisplay } from "./StatDisplay";
+import { UIBase } from "./UIBase";
+import { bindEvent } from "@/shared/utils/busUtils";
 
-export class HeaderDisplay {
+export class HeaderDisplay extends UIBase {
 	private PlayerStatsEl: HTMLElement;
-	constructor(private container: HTMLElement) {
-		this.PlayerStatsEl = document.getElementById("header-player-stats")!;
+	private prestigeButton!: HTMLButtonElement;
+	constructor(container: HTMLElement) {
+		super();
+		this.element = container;
+		this.PlayerStatsEl = this.byId("header-player-stats"); // document.getElementById("header-player-stats")!;
+		this.prestigeButton = this.byId("prestige-button") as HTMLButtonElement;
+		bindEvent(this.eventBindings, "game:prestige", () => this.handlePrestige());
+		this.prestigeButton.addEventListener("click", () => new PrestigeManager().prestige());
 	}
 
 	public init() {
@@ -29,4 +38,6 @@ export class HeaderDisplay {
 	}
 
 	public build() {}
+
+	private handlePrestige() {}
 }

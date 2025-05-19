@@ -48,6 +48,7 @@ export class StatsManager implements Saveable {
 		});
 		bus.on("hunt:bossKill", ({ areaId }) => this.bossKill(areaId));
 		bus.on("hunt:areaSelected", (areaId) => this.setAreaStats(areaId, this.getAreaStats(areaId)));
+		bus.on("game:prestigeInit", () => this.prestigeInit());
 	}
 
 	// ------------------ SETTERS -----------------------
@@ -111,6 +112,16 @@ export class StatsManager implements Saveable {
 	}
 
 	// --------------- STAT MODIFICATION METHODS -----------------------
+
+	private prestigeInit() {
+		for (const [areaId, stats] of this.areaStats) {
+			// Do something with areaId and stats
+			stats.bossKilledThisRun = false;
+			stats.bossUnlockedThisRun = false;
+			stats.killsThisRun = 0;
+			this.setAreaStats(areaId, stats);
+		}
+	}
 
 	private areaKill(enemyId: string, areaId: string) {
 		const areaStats = this.getAreaStats(areaId);

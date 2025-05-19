@@ -3,33 +3,33 @@ import { BaseScreen } from "./BaseScreen";
 import Markup from "./inventory.html?raw";
 import { bus } from "@/core/EventBus";
 import { InventorySlot } from "../components/InventorySlot";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export class InventoryScreen extends BaseScreen {
 	readonly screenName = "inventory";
-	private rootEl!: HTMLElement;
 	private inventoryGridEl!: HTMLElement;
 	private classCardGridEl!: HTMLElement;
 	private equipmentGridEl!: HTMLElement;
 	private player: Player = Player.getInstance();
 
 	init() {
-		this.element.textContent = "Inventory Screen";
 		this.addMarkuptoPage(Markup);
-
-		this.rootEl = document.getElementById("inventory-section")!;
-		this.inventoryGridEl = this.rootEl.querySelector(".inventory-grid")!;
-		this.classCardGridEl = this.rootEl.querySelector(".classcards-grid")!;
-		this.equipmentGridEl = this.rootEl.querySelector(".equipment-grid")!;
+		this.inventoryGridEl = this.$(".inventory-grid");
+		this.classCardGridEl = this.$(".classcards-grid");
+		this.equipmentGridEl = this.$(".equipment-grid");
+		this.bindEvents();
 		this.renderInventory();
-
-		bus.on("slot:drop", ({ fromId, toId }) => {
-			const changed = this.player.inventory.moveItem(fromId, toId);
-			if (changed) bus.emit("inventory:changed");
-		});
-		bus.on("inventory:changed", () => this.renderInventory());
 	}
 	show() {}
 	hide() {}
+
+	private bindEvents() {
+		bindEvent(this.eventBindings, "slot:drop", ({ fromId, toId }) => {
+			const changed = this.player.inventory.moveItem(fromId, toId);
+			if (changed) bus.emit("inventory:changed");
+		});
+		bindEvent(this.eventBindings, "inventory:changed", () => this.renderInventory());
+	}
 
 	private renderInventory() {
 		const inventory = this.player.inventory.getSlots();
@@ -41,14 +41,14 @@ export class InventoryScreen extends BaseScreen {
 			const slotComp = new InventorySlot(slot.id, slot.type, slot.item);
 			switch (slot.type) {
 				case "classCard":
-					this.classCardGridEl.appendChild(slotComp.el);
+					slotComp.attachTo(this.classCardGridEl);
 					break;
 				case "equipment":
-					slotComp.el.dataset.slot = String(slot.key);
-					this.equipmentGridEl.appendChild(slotComp.el);
+					slotComp.setSlotKey(String(slot.key));
+					slotComp.attachTo(this.equipmentGridEl);
 					break;
 				case "inventory":
-					this.inventoryGridEl.appendChild(slotComp.el);
+					slotComp.attachTo(this.inventoryGridEl);
 					break;
 			}
 		});

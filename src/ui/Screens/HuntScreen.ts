@@ -9,6 +9,7 @@ import { Area } from "@/models/Area";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { AreaStats } from "@/shared/stats-types";
 import { Player } from "@/models/player";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export class HuntScreen extends BaseScreen {
 	readonly screenName = "hunt";
@@ -26,6 +27,10 @@ export class HuntScreen extends BaseScreen {
 	private bossKilledThisRunEl!: HTMLElement;
 	private bossKillsEl!: HTMLElement;
 
+	constructor() {
+		super();
+	}
+
 	init() {
 		this.addMarkuptoPage(Markup);
 		this.setupElements();
@@ -41,21 +46,42 @@ export class HuntScreen extends BaseScreen {
 		this.enemyCard.render();
 	}
 
+	private bindEvents() {
+		bindEvent(this.eventBindings, "hunt:stateChanged", (state) => this.areaChanged(state));
+		bindEvent(this.eventBindings, "stats:areaStatsChanged", (stats) => this.updateAreaStats(stats));
+		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
+		bindEvent(this.eventBindings, "combat:started", (combat) => {
+			this.initCharacters(combat.player, combat.enemy);
+			this.updateOutput(`You are in combat with <span class="rarity-${combat.enemy.spec.rarity}"> ${combat.enemy.name}</span>`);
+		});
+		bindEvent(this.eventBindings, "combat:ended", (result) => {
+			this.updateOutput(result);
+		});
+		bindEvent(this.eventBindings, "inventory:dropped", (drops) => {
+			const names = drops.map((drop) => InventoryRegistry.getItemById(drop).name).join(", ");
+			this.updateOutput(`Dropped: ${names}`);
+		});
+	}
 	private setupElements() {
 		this.huntUpdateEl = document.getElementById("hunt-update-log") as HTMLElement;
 
 		// AREA STATS
-		this.statTotalKillsEl = document.getElementById("area-total-kills")!;
-		this.statKillsThisRunEl = document.getElementById("area-kills-this-run")!;
-		this.statBossUnlockedEl = document.getElementById("area-boss-unlocked")!;
-		this.bossKilledThisRunEl = document.getElementById("area-boss-killed")!;
-		this.bossKillsEl = document.getElementById("area-boss-kills")!;
-		this.fightBossBtn = document.getElementById("fight-boss-btn") as HTMLButtonElement;
+		this.statTotalKillsEl = this.byId("area-total-kills");
+		this.statKillsThisRunEl = this.byId("area-kills-this-run");
+		this.statBossUnlockedEl = this.byId("area-boss-unlocked");
+		this.bossKilledThisRunEl = this.byId("area-boss-killed");
+		this.bossKillsEl = this.byId("area-boss-kills");
+		this.fightBossBtn = this.byId("fight-boss-btn") as HTMLButtonElement;
 		this.fightBossBtn.disabled = true;
 		this.fightBossBtn.addEventListener("click", (e) => this.fightBoss(e));
 
 		this.buildAreaSelect();
 		// Setup Player Cards
+		if (this.playerCard) {
+			this.playerCard.destroy();
+		}
+		if (this.enemyCard) this.enemyCard.destroy();
+
 		this.playerCard = new CharacterDisplay("active", true);
 		this.playerCard.setup(Player.getInstance().getPlayerCharacter());
 		this.enemyCard = new CharacterDisplay("inactive", false);
@@ -63,7 +89,7 @@ export class HuntScreen extends BaseScreen {
 
 	private buildAreaSelect() {
 		// Setup Area select based on all Areas from JSON
-		this.areaSelectEl = document.getElementById("area-select") as HTMLSelectElement;
+		this.areaSelectEl = this.byId("area-select") as HTMLSelectElement;
 		this.areaSelectEl.innerHTML = "";
 
 		const defaultArea = document.createElement("option");
@@ -99,23 +125,6 @@ export class HuntScreen extends BaseScreen {
 		this.bossKilledThisRunEl.textContent = stats.bossKilledThisRun ? "Yes" : "No";
 		this.bossKillsEl.textContent = stats.bossKillsTotal.toString();
 		this.fightBossBtn.disabled = !stats.bossUnlockedThisRun && !stats.bossKilledThisRun;
-	}
-
-	private bindEvents() {
-		bus.on("hunt:stateChanged", (state) => this.areaChanged(state));
-		bus.on("stats:areaStatsChanged", (stats) => this.updateAreaStats(stats));
-		bus.on("Game:UITick", (dt) => this.handleTick(dt));
-		bus.on("combat:started", (combat) => {
-			this.initCharacters(combat.player, combat.enemy);
-			this.updateOutput(`You are in combat with <span class="rarity-${combat.enemy.spec.rarity}"> ${combat.enemy.name}</span>`);
-		});
-		bus.on("combat:ended", (result) => {
-			this.updateOutput(result);
-		});
-		bus.on("inventory:dropped", (drops) => {
-			const names = drops.map((drop) => InventoryRegistry.getItemById(drop).name).join(", ");
-			this.updateOutput(`Dropped: ${names}`);
-		});
 	}
 
 	private initCharacters(player: PlayerCharacter, enemy: EnemyCharacter) {

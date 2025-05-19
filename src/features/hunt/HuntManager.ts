@@ -6,9 +6,10 @@ import { CombatManager } from "./CombatManager";
 import { EnemyCharacter } from "../../models//EnemyCharacter";
 import { Area } from "@/models/Area";
 import { Saveable } from "@/shared/storage-types";
-import { saveManager } from "@/core/SaveManager";
 import { debugManager, printLog } from "@/core/DebugManager";
 import { Player } from "@/models/player";
+import { Destroyable } from "@/models/Destroyable";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export enum HuntState {
 	Idle = "Idle",
@@ -34,22 +35,29 @@ interface StateHandler {
 	onTick(dt: number): void;
 }
 
-export class HuntManager implements Saveable {
+export class HuntManager extends Destroyable implements Saveable {
 	private state: HuntState = HuntState.Idle; // current enum value – useful for save files
 	private handler: StateHandler;
 	private area!: Area;
 	private areaIndex: number = 0;
 
 	constructor() {
+		super();
 		this.handler = this.makeIdleState();
 		this.transition(HuntState.Idle, this.makeIdleState());
 
-		bus.on("Game:GameTick", (dt) => this.onTick(dt));
-		bus.on("hunt:areaSelected", (areaId) => this.setArea(areaId));
-		bus.on("game:gameReady", () => {
-			const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
-			areaSelector.selectedIndex = this.areaIndex;
-		});
+		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.onTick(dt));
+		bindEvent(this.eventBindings, "hunt:areaSelected", (areaId) => this.setArea(areaId));
+		bindEvent(this.eventBindings, "game:gameReady", () => this.gameReady());
+		bindEvent(this.eventBindings, "game:prestigePrep", () => this.prestigePrep);
+	}
+
+	private gameReady() {
+		const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
+		areaSelector.selectedIndex = this.areaIndex;
+	}
+	private prestigePrep() {
+		//this.clearArea();
 	}
 
 	/** Change the hunting grounds without restarting the whole loop. */
@@ -59,6 +67,8 @@ export class HuntManager implements Saveable {
 		this.transition(HuntState.Search, this.makeSearchState());
 		printLog("Setting new Area to: " + this.area.id, 3, "HuntManager.ts");
 	}
+
+	public clearArea() {}
 
 	public onTick(dt: number) {
 		this.handler.onTick(dt);

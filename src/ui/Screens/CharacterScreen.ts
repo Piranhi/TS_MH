@@ -4,14 +4,15 @@ import Markup from "./character.html?raw";
 
 export class CharacterScreen extends BaseScreen {
 	readonly screenName = "character";
-	private playerStatsDiplay: PlayerStatsDisplay;
-	private rootEl: HTMLElement;
+	private playerStatsDiplay!: PlayerStatsDisplay;
 
 	init() {
 		this.addMarkuptoPage(Markup);
-		this.rootEl = document.getElementById("character-container")!;
+		this.element = document.getElementById("character-container")!;
 		this.playerStatsDiplay = new PlayerStatsDisplay(document.getElementById("player-statlist")!);
+		this.bindEvents();
 	}
 	show() {}
 	hide() {}
+	bindEvents() {}
 }

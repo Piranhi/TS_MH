@@ -19,6 +19,10 @@ export class SaveManager {
 		this.registry.set(key, system);
 	}
 
+	updateRegister(key: string, system: Saveable): void {
+		this.registry.set(key, system);
+	}
+
 	saveAll(): GameSave {
 		const out: GameSave = { _version: 1, _timestamp: Date.now() };
 		for (const [key, system] of this.registry) {

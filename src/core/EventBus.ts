@@ -16,6 +16,7 @@ export interface GameEvents {
 	"game:gameReady": void;
 	"game:gameLoaded": void;
 	"game:gameSaved": void;
+	"game:prestigePrep": void;
 	"game:prestige": void;
 
 	"ui:screenChanged": string;

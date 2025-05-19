@@ -4,6 +4,8 @@ import { BoundedBig, BoundedNumber } from "./value-objects/Bounded";
 import { bus } from "@/core/EventBus";
 import type { CoreStats } from "@/models/Stats";
 import { BigNumber } from "./utils/BigNumber";
+import { Destroyable } from "./Destroyable";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export interface CharacterSnapsnot {
 	name: string;
@@ -16,7 +18,7 @@ export interface CharacterSnapsnot {
 	rarity?: string;
 }
 
-export abstract class BaseCharacter {
+export abstract class BaseCharacter extends Destroyable {
 	/* ──────────────────────── constants ──────────────────────── */
 
 	/* ────────────────── public readonly fields ───────────────── */
@@ -33,10 +35,10 @@ export abstract class BaseCharacter {
 
 	/* ───────────────────── private fields ────────────────────── */
 	private inCombat = false;
-	private readonly onTick = (dt: number) => this.handleTick(dt);
 
 	/* ────────────────────── constructor ──────────────────────── */
 	constructor(name: string, level: number, stats: CoreStats, defaultAbilities: string[] = []) {
+		super();
 		this.name = name;
 		this.level = level;
 		this.stats = stats;
@@ -45,7 +47,7 @@ export abstract class BaseCharacter {
 
 		// HP STARTS FULL
 		this.hp = new BoundedBig(this.stats.hp, this.stats.hp);
-		bus.on("Game:GameTick", this.onTick);
+		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
 	}
 
 	/** Apply incoming damage after defence mitigation. */
@@ -112,10 +114,6 @@ export abstract class BaseCharacter {
 	public endCombat() {
 		this.inCombat = false;
 		this.target = undefined;
-	}
-
-	public destroy() {
-		bus.off("Game:GameTick", this.onTick);
 	}
 
 	public handleTick(dt: number): void {

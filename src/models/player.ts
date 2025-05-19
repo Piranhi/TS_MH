@@ -24,20 +24,22 @@ export class Player implements Saveable {
 	private static _instance: Player | null = null;
 
 	private readonly name = "Player";
-	private level: number;
+	private level: number = 1;
 	private renown: BigNumber;
 	private experience: number = 0;
 	private stamina: RegenPool;
 	private staminaMultiplier: number = 1;
 	private renownMultiplier: number = 1;
 
-	public character: PlayerCharacter;
+	// Destroyable
+	public character: PlayerCharacter | null = null;
+	public trainedStatManager: TrainedStatManager | null = null;
+	public huntManager: HuntManager | null = null;
+	// Persistent
 	public inventory: InventoryManager;
 	public cardManager: ClassCardManager;
 	public equipmentManager: EquipmentManager;
 	public settlementManager: SettlementManager;
-	public trainedStatManager: TrainedStatManager;
-	public huntManager: HuntManager;
 
 	private constructor(opts: {
 		inventoryManager: InventoryManager;
@@ -45,7 +47,7 @@ export class Player implements Saveable {
 		trainedStatsManager: TrainedStatManager;
 		huntManager: HuntManager;
 	}) {
-		(this.level = 1), (this.renown = new BigNumber(0)), (this.experience = 0);
+		(this.renown = new BigNumber(0)), (this.experience = 0);
 		this.stamina = new RegenPool(10, 1, false);
 		this.inventory = opts.inventoryManager;
 		this.settlementManager = opts.settlementManager;
@@ -54,6 +56,7 @@ export class Player implements Saveable {
 		this.cardManager = new ClassCardManager();
 		this.equipmentManager = new EquipmentManager();
 		this.character = new PlayerCharacter();
+		this.character.init();
 
 		bus.on("game:newGame", () => {
 			this.inventory.addItemToInventory(ClassCard.create("warrior_card_01"));
@@ -74,7 +77,33 @@ export class Player implements Saveable {
 
 	handleUITick(dt: number): void {}
 
+	destroy() {
+		// Destroyable Classes
+		this.huntManager!.destroy();
+		this.trainedStatManager!.destroy();
+		this.character!.destroy();
+		this.stamina.destroy();
+
+		this.huntManager = null;
+		this.trainedStatManager = null;
+		this.character = null;
+
+		//Stats
+		this.stamina.destroy();
+	}
+
+	// Import new data from GameApp
+	prestigeReset(opts: { trainedStatsManager: TrainedStatManager; huntManager: HuntManager }) {
+		this.huntManager = opts.huntManager;
+		this.trainedStatManager = opts.trainedStatsManager;
+		this.character = new PlayerCharacter();
+		this.emitStamina();
+		this.character.init();
+		this.setRenown(new BigNumber(0));
+	}
+
 	public getPlayerCharacter(): PlayerCharacter {
+		if (!this.character) throw new Error("PlayerCharacter not initialized!");
 		return this.character;
 	}
 
@@ -107,6 +136,12 @@ export class Player implements Saveable {
 	public levelUp(): void {
 		this.level += 1;
 		bus.emit("player:level-up", this.level);
+	}
+
+	public setRenown(value: BigNumber): void {
+		this.renown = value;
+		printLog("Renown set to:" + value.toString(), 3, "player.ts");
+		bus.emit("renown:changed", this.renown);
 	}
 
 	public adjustRenown(delta: BigNumber | number): void {

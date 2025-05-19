@@ -64,6 +64,11 @@ export class RegenPool {
 		return true;
 	}
 
+	public destroy() {
+		this._allocated = 0;
+		this._current = 0;
+	}
+
 	/** Regenerate over a frame (dt in **seconds**, may be fractional) */
 	regen(dt: number): void {
 		if (dt <= 0) return;

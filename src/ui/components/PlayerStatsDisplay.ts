@@ -2,8 +2,9 @@ import { bus } from "@/core/EventBus";
 import { Player } from "@/models/player";
 import { PlayerStats } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
+import { UIBase } from "./UIBase";
 
-export class PlayerStatsDisplay {
+export class PlayerStatsDisplay extends UIBase {
 	private coreKeys: (keyof PlayerStats)[] = ["attack", "defence", "speed", "hp"];
 	private extraKeys: (keyof PlayerStats)[] = ["attackFlat", "defenceFlat", "critChance", "critDamage", "lifesteal"];
 
@@ -13,7 +14,9 @@ export class PlayerStatsDisplay {
 	};
 
 	constructor(private container: HTMLElement) {
+		super();
 		this.render();
+
 		bus.on("player:statsChanged", () => this.render());
 	}
 
