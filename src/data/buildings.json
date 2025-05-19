@@ -1,23 +1,30 @@
 [
-	{
-		"id": "blacksmith",
-		"displayName": "Blacksmith",
-		"description": "Blacksmith todo",
-		"icon": "",
-		"baseCost": 100
-	},
-	{
-		"id": "market",
-		"displayName": "Market",
-		"description": "Market todo",
-		"icon": "",
-		"baseCost": 200
-	},
-	{
-		"id": "library",
-		"displayName": "Library",
-		"description": "Library todo",
-		"icon": "",
-		"baseCost": 200
-	}
+    {
+        "id": "guildhall",
+        "displayName": "Guild Hall",
+        "description": "guildhall todo",
+        "icon": "",
+        "baseCost": 10
+    },
+    {
+        "id": "blacksmith",
+        "displayName": "Blacksmith",
+        "description": "Blacksmith todo",
+        "icon": "",
+        "baseCost": 100
+    },
+    {
+        "id": "market",
+        "displayName": "Market",
+        "description": "Market todo",
+        "icon": "",
+        "baseCost": 200
+    },
+    {
+        "id": "library",
+        "displayName": "Library",
+        "description": "Library todo",
+        "icon": "",
+        "baseCost": 200
+    }
 ]
