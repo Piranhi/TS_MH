@@ -28,7 +28,8 @@ export class StatDisplay<K extends EventKey> extends UIBase {
 		// Grab the bits relevant to our needs
 		const labelEl = root.querySelector(".label");
 		const valueEl = root.querySelector(".value");
-		const barEl = root.querySelector(".mh-progress");
+		const barHolderEl = root.querySelector(".progress-holder");
+		//const barEl = root.querySelector(".mh-progress");
 		const fillEl = root.querySelector(".mh-progress__fill");
 
 		if (!labelEl || !valueEl) {
@@ -39,7 +40,7 @@ export class StatDisplay<K extends EventKey> extends UIBase {
 		const els: Elements = {
 			labelEl: labelEl as HTMLElement,
 			valueEl: valueEl as HTMLElement,
-			barEl: barEl as HTMLElement | undefined,
+			//barEl: barEl as HTMLElement | undefined,
 			fillEl: fillEl as HTMLElement | undefined,
 		};
 
@@ -57,7 +58,5 @@ export class StatDisplay<K extends EventKey> extends UIBase {
 		});
 	}
 
-	destroy() {
-		
-	}
+	destroy() {}
 }

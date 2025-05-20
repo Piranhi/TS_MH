@@ -1,197 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width,initial-scale=1.0"
-        />
-        <title>Monster Hunter</title>
 
-        <!-- Inter font, weights 400–700 -->
-        <link
-            rel="preconnect"
-            href="https://fonts.googleapis.com"
-        />
-        <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossorigin
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-            rel="stylesheet"
-        />
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Monster Hunter</title>
 
-        <link
-            rel="stylesheet"
-            href="/css/style.css"
-        />
-        <link
-            rel="stylesheet"
-            href="/css/train.css"
-        />
-        <link
-            rel="stylesheet"
-            href="/css/hunt.css"
-        />
-        <link
-            rel="stylesheet"
-            href="/css/character.css"
-        />
-        <link
-            rel="stylesheet"
-            href="/css/inventory.css"
-        />
-        <link
-            rel="stylesheet"
-            href="/css/settlement.css"
-        />
-        <link
-            rel="stylesheet"
-            href="/css/UIComponents.css"
-        />
-    </head>
+    <!-- Inter font, weights 400–700 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-    <body>
-        <div
-            id="prestige-modal"
-            class="modal-overlay hidden"
-        >
-            <div class="modal-panel">
-                <h2>Prestige Complete!</h2>
-                <p class="modal-desc">You have reached a new milestone in your journey. Here’s what you gained this run:</p>
-                <ul class="reward-list">
-                    <li><span class="reward-label">Meta-Resource:</span> <span class="reward-value">+120 Monster Essences</span></li>
-                    <li>
-                        <span class="reward-label">Next Generation Bonus:</span> <span class="reward-value">Heir gains <b>+5% Attack</b></span>
-                    </li>
-                    <li>
-                        <span class="reward-label">Settlement Upgrade:</span> <span class="reward-value">Unlocked <b>Blacksmith Level 2</b></span>
-                    </li>
-                    <!-- Add more rewards/events here dynamically -->
-                </ul>
-                <div class="modal-footer">
-                    <button
-                        id="prestige-ok-btn"
-                        class="btn-glass"
-                    >
-                        OK
-                    </button>
-                </div>
-            </div>
-        </div>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/train.css" />
+    <link rel="stylesheet" href="/css/hunt.css" />
+    <link rel="stylesheet" href="/css/character.css" />
+    <link rel="stylesheet" href="/css/inventory.css" />
+    <link rel="stylesheet" href="/css/settlement.css" />
+    <link rel="stylesheet" href="/css/UIComponents.css" />
+</head>
 
-        <div
-            class="generic-modal-overlay"
-            id="genericModal"
-        >
-            <div class="generic-modal">
-                <h2>Select a Building</h2>
-                <div
-                    class="generic-modal-list"
-                    id="genericModalList"
-                ></div>
-                <button
-                    id="genericModalButton"
-                    disabled
-                >
-                    Build
+<body>
+    <div id="prestige-modal" class="modal-overlay hidden">
+        <div class="modal-panel">
+            <h2>Prestige Complete!</h2>
+            <p class="modal-desc">You have reached a new milestone in your journey. Here’s what you gained this run:</p>
+            <ul class="reward-list">
+                <li><span class="reward-label">Meta-Resource:</span> <span class="reward-value">+120 Monster
+                        Essences</span></li>
+                <li>
+                    <span class="reward-label">Next Generation Bonus:</span> <span class="reward-value">Heir gains
+                        <b>+5% Attack</b></span>
+                </li>
+                <li>
+                    <span class="reward-label">Settlement Upgrade:</span> <span class="reward-value">Unlocked
+                        <b>Blacksmith Level 2</b></span>
+                </li>
+                <!-- Add more rewards/events here dynamically -->
+            </ul>
+            <div class="modal-footer">
+                <button id="prestige-ok-btn" class="btn-glass">
+                    OK
                 </button>
             </div>
         </div>
-        ;
+    </div>
 
-        <div id="app">
-            <!-- HEADER -->
-            <header
-                class="header"
-                id="header"
-            >
-                <div class="header-left">
-                    <button
-                        type="button"
-                        class="hamburger"
-                    >
-                        <!-- simple hamburger icon -->
-                        <span></span><span></span><span></span>
-                    </button>
-                    <h1 class="logo">MH</h1>
-                </div>
+    <div class="generic-modal-overlay" id="genericModal">
+        <div class="generic-modal">
+            <h2>Select a Building</h2>
+            <div class="generic-modal-list" id="genericModalList"></div>
+            <button id="genericModalButton" disabled>
+                Build
+            </button>
+        </div>
+    </div>
 
-                <div class="header-right">
-                    <ul
-                        id="header-player-stats"
-                        class="player-stats"
-                    ></ul>
-                    <span class="dot-sep">•</span>
-                    <button
-                        class="prestige-btn"
-                        id="prestige-button"
-                    >
-                        Prestige
-                    </button>
-                    <span class="dot-sep">•</span>
-                    <span>Lvl 1</span>
-                    <input
-                        type="search"
-                        placeholder="Search…"
-                    />
-                    <div class="avatar">
-                        <img
-                            src="/src/Assets/Images/player-profile.png"
-                            alt="User avatar"
-                        />
-                    </div>
-                </div>
-            </header>
-            <!-- MAIN GRID -->
-            <div class="main">
-                <!-- SIDE MENU -->
-                <aside
-                    class="menu"
-                    id="menu"
-                >
-                    <nav
-                        class="menu-nav"
-                        id="sidebar"
-                    ></nav>
-                </aside>
 
-                <!-- GAME AREA -->
-                <div class="game-container">
-                    <section
-                        class="game"
-                        id="game-area"
-                    ></section>
+    <div id="app">
+        <!-- HEADER -->
+        <header class="header" id="header">
+            <div class="header-left">
+                <button type="button" class="hamburger">
+                    <!-- simple hamburger icon -->
+                    <span></span><span></span><span></span>
+                </button>
+                <h1 class="logo">MH</h1>
+            </div>
+
+            <div class="header-right">
+                <ul id="header-player-stats" class="player-stats">
+                    <li id="stamina-item">
+                        <span class="label">Stamina</span>
+                        <span class="value">11/20</span>
+                    </li>
+                    <li>
+                        <span class="label">Renown</span>
+                        <span class="value">11/1000</span>
+                    </li>
+                </ul>
+                <span class="dot-sep">•</span>
+                <button class="prestige-btn" id="prestige-button">
+                    Prestige
+                </button>
+                <span class="dot-sep">•</span>
+                <span>Lvl 1</span>
+                <input type="search" placeholder="Search…" />
+                <div class="avatar">
+                    <img src="/src/Assets/Images/player-profile.png" alt="User avatar" />
                 </div>
             </div>
-            <div id="debug-menu">Hello!</div>
+        </header>
+        <!-- MAIN GRID -->
+        <div class="main">
+            <!-- SIDE MENU -->
+            <aside class="menu" id="menu">
+                <nav class="menu-nav" id="sidebar"></nav>
+            </aside>
+
+            <!-- GAME AREA -->
+            <div class="game-container">
+                <section class="game" id="game-area"></section>
+            </div>
         </div>
+        <div id="debug-menu">Hello!</div>
+    </div>
 
-        <template id="stat-bar-template">
-            <li>
-                <span class="label"></span>
-                <div
-                    class="mh-progress"
-                    role="progressbar"
-                >
-                    <span class="mh-progress__fill"></span>
-                </div>
-                <span class="value"></span>
-            </li>
-        </template>
+    <template id="stat-bar-template">
+        <li>
+            <span class="label"></span>
+            <div class="progress-holder"></div>
 
-        <template id="stat-num-template">
-            <li>
-                <span class="label">Level</span>
-                <span class="value">1</span>
-            </li>
-        </template>
+            <span class="value"></span>
+        </li>
+    </template>
 
-        <script
-            type="module"
-            src="/src/main.ts"
-        ></script>
-    </body>
+    <template id="stat-num-template">
+        <li>
+            <span class="label">Level</span>
+            <span class="value">1</span>
+        </li>
+    </template>
+
+    <template id="progress-bar-template">
+        <div class="mh-progress" role="progressbar">
+            <span class="mh-progress__fill"></span>
+        </div>
+    </template>
+
+    <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>

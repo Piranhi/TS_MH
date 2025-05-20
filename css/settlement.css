@@ -1,5 +1,3 @@
-
-
 .settlement-container {
 	margin: 22px auto;
 	padding: 12px;
@@ -57,6 +55,13 @@
 	position: relative;
 	color: #a7e3ff;
 }
+.building-contents {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	position: relative;
+}
 
 .plot-card {
 	background: rgba(112, 126, 128, 0.397);
@@ -76,11 +81,35 @@
 	font-size: 1.08rem;
 	margin: 10px 0 3px 0;
 }
+
+.building-card .building-info {
+	font-weight: 300;
+	font-size: 0.7rem;
+	margin: 10px 0 3px 0;
+	color: #a7e3ff;
+}
+
 .building-card .building-level {
 	font-size: 0.95rem;
 	color: #657799;
 	margin-bottom: 6px;
 }
+.spend-points-btn {
+	display: flex;
+	margin-top: auto;
+	align-self: self-end;
+	margin: 8px;
+	padding: 4px 8px;
+	background: #487a5b;
+	border: none;
+	border-radius: 8px;
+	color: #dbe7ff;
+	font-weight: 600;
+	cursor: pointer;
+	font-size: 0.95rem;
+	transition: background 0.18s;
+}
+
 .upgrade-btn,
 .build-btn {
 	margin-top: auto;
@@ -251,5 +280,3 @@
 	font-size: 0.74rem;
 	margin-top: 2px;
 }
-
-

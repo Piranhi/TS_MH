@@ -4,8 +4,9 @@ import { Saveable } from "@/shared/storage-types";
 import { BuildingType, BuildingUnlockStatus, STARTING_BUILDING_UNLOCKS } from "@/shared/types";
 
 interface SettlementSaveState {
-	freePlots: number;
 	buildings: [BuildingType, Building][];
+	buildPoints: number;
+	passive: { rewardCurr: number; progressStart: number; nextUnlock: number; max: number };
 }
 
 interface SettlementRewardSnapshot {
@@ -19,30 +20,33 @@ export class SettlementManager implements Saveable {
 	private freePlots = 1;
 	private buildingsMap = new Map<BuildingType, Building>();
 
-	private readonly TIME_BETWEEN_REWARDS: number = 20000; // 8640000 for 10 in a day
-	private passiveReward: number = 1;
+	private readonly TIME_BETWEEN_REWARDS: number = 4000; // 8640000 for 10 in a day
+	private readonly BASE_BUILD_POINTS_PER_PRESTIGE: number = 100;
+
+	private passiveRewardCurr: number = 0;
+	private passiveRewardMax: number = 1;
 	private passiveProgress: number = Date.now();
 	private passiveProgressStart: number = Date.now();
 	private passiveNextUnlock = this.passiveProgressStart + this.TIME_BETWEEN_REWARDS;
 
-	private maxPassiveReward: number = 2;
+	private settlementBuildPoints: number = 0;
 
 	constructor() {
-		this.Init();
-		this.changeBuildingStatus("guildHall", "unlocked");
 		// When the game is ready, setup everything
 		bus.on("game:gameReady", () => {
 			// Setup variables for the first reward cycle:
+			this.Init();
+			this.changeBuildingStatus("guild_hall", "construction");
 			this.passiveProgressStart = Date.now();
 			this.passiveNextUnlock = this.passiveProgressStart + this.TIME_BETWEEN_REWARDS;
 
 			bus.on("Game:GameTick", (delta) => {
 				// Only process rewards if we haven't hit max
-				if (this.passiveReward < this.maxPassiveReward && Date.now() >= this.passiveNextUnlock) {
+				if (this.passiveRewardCurr < this.passiveRewardMax && Date.now() >= this.passiveNextUnlock) {
 					this.increasePassiveReward();
 
 					// If we can still earn more, start the next timer
-					if (this.passiveReward < this.maxPassiveReward) {
+					if (this.passiveRewardCurr < this.passiveRewardMax) {
 						this.passiveProgressStart = Date.now();
 						this.passiveNextUnlock = this.passiveProgressStart + this.TIME_BETWEEN_REWARDS;
 					}
@@ -53,9 +57,7 @@ export class SettlementManager implements Saveable {
 		});
 		// On prestige, reset progress for a new run
 		bus.on("game:prestige", () => {
-			this.passiveReward = 1;
-			this.passiveProgressStart = Date.now();
-			this.passiveNextUnlock = this.passiveProgressStart + this.TIME_BETWEEN_REWARDS;
+			this.resetPassiveReward();
 		});
 	}
 
@@ -73,17 +75,24 @@ export class SettlementManager implements Saveable {
 		}
 	}
 
+	spendUnlockPoints(type: BuildingType, amt: number) {
+		const building = this.buildingsMap.get(type);
+		if (!building) return;
+		building.spendPoints(10);
+		bus.emit("settlement:changed");
+	}
+
 	increasePassiveReward() {
-		this.passiveReward = Math.min(this.passiveReward + 0.1, 2);
-		const rounded = Math.round(this.passiveReward * 10) / 10;
-		this.passiveReward = rounded;
+		this.passiveRewardCurr = Math.min(this.passiveRewardCurr + 0.1, this.passiveRewardMax);
+		const rounded = Math.round(this.passiveRewardCurr * 10) / 10;
+		this.passiveRewardCurr = rounded;
 		this.passiveProgress = Date.now();
 		this.passiveProgressStart = Date.now();
 		this.passiveNextUnlock = this.passiveProgressStart + this.TIME_BETWEEN_REWARDS;
 	}
 
 	resetPassiveReward() {
-		this.passiveReward = 1;
+		this.passiveRewardCurr = 0;
 		this.passiveProgress = Date.now();
 		this.passiveProgressStart = Date.now();
 		this.passiveNextUnlock = this.passiveProgressStart + this.TIME_BETWEEN_REWARDS;
@@ -91,6 +100,36 @@ export class SettlementManager implements Saveable {
 
 	getFreePlots(): number {
 		return this.freePlots;
+	}
+
+	get passiveCurrent(): number {
+		return this.passiveRewardCurr;
+	}
+
+	get passiveMax(): number {
+		return this.passiveRewardMax;
+	}
+
+	get totalBuildPoints(): number {
+		return this.settlementBuildPoints;
+	}
+
+	getBuildPointsFromPrestige(): number {
+		return Math.floor((this.passiveCurrent / this.passiveMax) * this.BASE_BUILD_POINTS_PER_PRESTIGE);
+	}
+
+	modifyBuildPoints(amt: number): boolean {
+		if (this.settlementBuildPoints + amt < 0) return false;
+		this.settlementBuildPoints += amt;
+
+		bus.emit("settlement:buildPointsChanged", this.settlementBuildPoints);
+		return true;
+	}
+
+	setBuildPoints(amt: number) {
+		// Used on load
+		this.settlementBuildPoints = amt;
+		bus.emit("settlement:buildPointsChanged", this.settlementBuildPoints);
 	}
 
 	getTotalPlots(): number {
@@ -111,10 +150,10 @@ export class SettlementManager implements Saveable {
 
 	rewardSnapshot(): SettlementRewardSnapshot {
 		return {
-			reward: this.passiveReward,
+			reward: this.passiveRewardCurr,
 			progressStart: this.passiveProgressStart,
 			nextUnlock: this.passiveNextUnlock,
-			max: this.maxPassiveReward,
+			max: this.passiveRewardMax,
 		};
 	}
 
@@ -132,8 +171,13 @@ export class SettlementManager implements Saveable {
 
 	changeBuildingStatus(type: BuildingType, newStatus: BuildingUnlockStatus) {
 		const building = this.buildingsMap.get(type);
-		if (!building) return;
+		console.log(building);
+		if (!building) {
+			console.warn(`Building ${type} not found when trying to set building status`);
+			return;
+		}
 		building.buildingStatus = newStatus;
+		console.log(building.buildingStatus);
 		this.buildingsMap.set(type, building);
 		bus.emit("settlement:changed");
 	}
@@ -152,13 +196,24 @@ export class SettlementManager implements Saveable {
 	save(): SettlementSaveState {
 		return {
 			buildings: Array.from(this.buildingsMap),
-			freePlots: this.freePlots,
+			buildPoints: this.settlementBuildPoints,
+			passive: {
+				rewardCurr: this.passiveRewardCurr,
+				progressStart: this.passiveProgressStart,
+				nextUnlock: this.passiveNextUnlock,
+				max: this.passiveRewardMax,
+			},
 		};
 	}
 
 	load(state: SettlementSaveState): void {
 		this.buildingsMap = new Map(state.buildings || []);
-		this.freePlots = state.freePlots;
+		this.settlementBuildPoints = state.buildPoints;
+
+		this.passiveRewardCurr = state.passive.rewardCurr;
+		this.passiveProgressStart = Date.now();
+		this.passiveNextUnlock = state.passive.nextUnlock;
+		this.passiveRewardMax = state.passive.max;
 		this.emitChange();
 	}
 }

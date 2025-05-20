@@ -6,7 +6,7 @@ import { BigNumber } from "@/models/utils/BigNumber";
 // --------------------- SETTLEMENT + BUILDINGS ----------------------------
 export const STARTING_BUILDING_UNLOCKS = ["guildHall"];
 
-export type BuildingType = "guildHall" | "mine" | "library" | "blacksmith" | "market";
+export type BuildingType = "guild_hall" | "mine" | "library" | "blacksmith" | "market";
 export type BuildingUnlockStatus = "unlocked" | "construction" | "hidden";
 
 export interface BuildingSpec {
@@ -19,6 +19,7 @@ export interface BuildingSpec {
 
 export interface BuildingState {
 	unlockStatus: BuildingUnlockStatus;
+	unlockPointsSpent: number;
 	level: number;
 	progress: BigNumber;
 }

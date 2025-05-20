@@ -177,10 +177,7 @@ h3 {
 	font-size: 0.75rem;
 	color: var(--text-muted);
 }
-.header-right ul.player-stats li .mh-progress {
-	width: 100%;
-	margin: 0.25rem 0;
-}
+
 .header-right ul.player-stats li .value {
 	font-weight: 500;
 	font-size: 0.9rem;

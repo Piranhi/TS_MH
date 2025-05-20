@@ -16,7 +16,7 @@ export class DebugMenu {
 
 	addOptions() {
 		this.addButton("Save", () => saveManager.saveAll());
-		this.addButton("Load", () => saveManager.loadAll());
+		this.addButton("Load", () => window.location.reload()); //saveManager.loadAll());
 		this.addButton("New Game", () => saveManager.startNewGame());
 		this.addButton("Add Renown", () => bus.emit("renown:award", new BigNumber(100000)));
 		this.addButton("Kill Player", () => Player.getInstance().character?.takeDamage(new BigNumber(1000000)));

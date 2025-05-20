@@ -1,72 +1,99 @@
 .generic-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(40, 40, 60, 0.35);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 20;
+	position: fixed;
+	inset: 0;
+	background: rgba(40, 40, 60, 0.35);
+	display: none;
+	justify-content: center;
+	align-items: center;
+	z-index: 20;
 }
 
 .generic-modal {
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(24px);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-  padding: 2rem;
-  min-width: 340px;
-  max-width: 90vw;
-  color: #202045;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+	background: rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(24px);
+	border-radius: 24px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+	padding: 2rem;
+	min-width: 340px;
+	max-width: 90vw;
+	color: #202045;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
 }
 
 .generic-modal-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-height: 300px;
-  overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	max-height: 300px;
+	overflow-y: auto;
 }
 
 .generic-modal-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  background: rgba(255,255,255,0.20);
-  border-radius: 12px;
-  padding: 1rem;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: border 0.15s;
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 12px;
+	padding: 1rem;
+	cursor: pointer;
+	border: 2px solid transparent;
+	transition: border 0.15s;
 }
 .generic-modal-option.selected {
-  border: 2px solid #5794f7;
-  background: rgba(87, 148, 247, 0.08);
+	border: 2px solid #5794f7;
+	background: rgba(87, 148, 247, 0.08);
 }
 .generic-modal-option img {
-  width: 48px; height: 48px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+	width: 48px;
+	height: 48px;
+	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
-
 
 button#genericModalButton {
-  padding: 0.75rem 2rem;
-  background: #5794f7;
-  border: none;
-  border-radius: 12px;
-  color: #fff;
-  font-weight: 600;
-  font-size: 1rem;
-  letter-spacing: 0.02em;
-  box-shadow: 0 2px 8px rgba(87,148,247,0.12);
-  cursor: pointer;
-  opacity: 0.9;
-  transition: background 0.15s;
+	padding: 0.75rem 2rem;
+	background: #5794f7;
+	border: none;
+	border-radius: 12px;
+	color: #fff;
+	font-weight: 600;
+	font-size: 1rem;
+	letter-spacing: 0.02em;
+	box-shadow: 0 2px 8px rgba(87, 148, 247, 0.12);
+	cursor: pointer;
+	opacity: 0.9;
+	transition: background 0.15s;
 }
 button#genericModalButton:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+/* container */
+.mh-progress {
+	width: 100%;
+	height: 0.25rem; /* give it a visible height */
+	background-color: rgba(255, 255, 255, 0.1);
+	border-radius: 5px;
+	margin: 2px;
+	overflow: hidden;
+	position: relative;
+}
+
+/* the moving “fill” */
+.mh-progress__fill {
+	display: block;
+	width: 0;
+	height: 100%;
+	width: calc(var(--value, 0) * 1%); /* uses the --value CSS var you set in JS */
+	background-color: #43a047; /* or use a CSS custom‐prop for theming */
+	transition: width 0.3s ease;
+	border-radius: 4px;
+}
+
+/* optional: modifier for your generic style */
+.mh-progress__fill.mh-progress--generic {
+	background: linear-gradient(90deg, #bfd8ff 30%, #68d6f1 100%);
 }

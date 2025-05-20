@@ -1,4 +1,5 @@
 import { bus } from "@/core/EventBus";
+import { Player } from "./player";
 
 export class PrestigeManager {
 	private onCloseClick: ((e: Event) => void) | null = null;
@@ -11,7 +12,7 @@ export class PrestigeManager {
 	}
 	prestige() {
 		if (this.checkCanPrestige()) {
-			//const
+			this.handlePrestigeRewards();
 			bus.emit("game:prestigePrep");
 			bus.emit("game:prestige");
 			this.showPrestigeModal(["test", "test2"]);
@@ -20,6 +21,13 @@ export class PrestigeManager {
 
 	checkCanPrestige(): boolean {
 		return true;
+	}
+
+	private handlePrestigeRewards() {
+		const player = Player.getInstance();
+
+		const settlementBuildPoints = player.settlementManager.getBuildPointsFromPrestige();
+		player.settlementManager.modifyBuildPoints(settlementBuildPoints);
 	}
 
 	showPrestigeModal(rewards: string[]) {

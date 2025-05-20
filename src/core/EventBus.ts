@@ -27,6 +27,9 @@ export interface GameEvents {
 	"player:level-up": number;
 	"player:stamina-changed": poolChangedPayload;
 	"player:trainedStatChanged": string;
+	"player:equipmentChanged": InventoryItemSpec[];
+	"player:classCardsChanged": InventoryItemSpec[];
+	"player:statsChanged": PlayerCharacter;
 	"hunt:stateChanged": HuntState;
 	"hunt:areaSelected": string;
 	"hunt:areaKill": { enemyId: string; areaId: string };
@@ -39,11 +42,9 @@ export interface GameEvents {
 	"slot:drop": { fromId: string; toId: string };
 	"slot:drag-start": { slotId: string };
 	"slot:click": string;
-	"player:equipmentChanged": InventoryItemSpec[];
-	"player:classCardsChanged": InventoryItemSpec[];
-	"player:statsChanged": PlayerCharacter;
-	//"lifetimeStat:add": { stat: LifetimeStatType; amt: number };
+
 	"settlement:changed": void;
+	"settlement:buildPointsChanged": number;
 	// ----------------- STATS -----------------
 	"stats:userStatsChanged": UserStats;
 	"stats:enemyStatsChanged": EnemyStats;
