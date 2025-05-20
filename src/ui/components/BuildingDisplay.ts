@@ -1,6 +1,7 @@
 import { Tooltip } from "./Tooltip";
 import { Building } from "@/features/settlement/Building";
 import { UIBase } from "./UIBase";
+import { BuildingGridItem } from "../Screens/SettlementScreen";
 
 export class BuildingDisplay extends UIBase {
 	private onUpgradeClick: ((e: Event) => void) | null = null;
@@ -25,34 +26,34 @@ export class BuildingDisplay extends UIBase {
 
 		this.attachTo(this.BuildingGridEl);
 
-		this.bindDomEvent("mouseenter", (e) => this.handleMouseEnter());
-		this.bindDomEvent("mouseleave", (e) => this.handleMouseLeave());
-		this.bindDomEvent("click", (e) => this.handleClick());
-	}
+        this.bindDomEvent("mouseenter", (e) => this.handleMouseEnter());
+        this.bindDomEvent("mouseleave", (e) => this.handleMouseLeave());
+        this.bindDomEvent("click", (e) => this.handleClick());
+    }
 
-	private handleMouseEnter() {
-		if (!this.building) return;
-		Tooltip.instance.show(this.element, {
-			icon: this.building.iconUrl,
-			name: this.building.displayName,
-			type: "Building",
-			description: this.building.description,
-		});
-	}
-	private handleMouseLeave() {
-		Tooltip.instance.hide();
-	}
+    private handleMouseEnter() {
+        if (!this.building) return;
+        Tooltip.instance.show(this.element, {
+            icon: this.building.iconUrl,
+            name: this.building.displayName,
+            type: "Building",
+            description: this.building.description,
+        });
+    }
+    private handleMouseLeave() {
+        Tooltip.instance.hide();
+    }
 
-	destroy() {
-		super.destroy();
-		if (this.onUpgradeClick) {
-			this.upgradeBtn?.removeEventListener("click", this.onUpgradeClick);
-			this.onUpgradeClick = null;
-		}
-	}
+    destroy() {
+        super.destroy();
+        if (this.onUpgradeClick) {
+            this.upgradeBtn?.removeEventListener("click", this.onUpgradeClick);
+            this.onUpgradeClick = null;
+        }
+    }
 
-	private handleClick() {}
-	private addBuilding() {}
+    private handleClick() {}
+    private addBuilding() {}
 
-	private onHover() {}
+    private onHover() {}
 }
