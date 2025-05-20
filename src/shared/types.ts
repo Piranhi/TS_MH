@@ -19,16 +19,19 @@ export interface BuildingSpec {
 
 export interface BuildingState {
 	unlockStatus: BuildingUnlockStatus;
-	unlockPointsSpent: number;
+	pointsAllocated: number;
+	nextUnlock: number;
 	level: number;
-	progress: BigNumber;
 }
 
 export interface BuildingSnapshot {
 	displayName: string;
 	level: number;
-	progress: BigNumber;
+	pointsAllocated: number;
+	nextUnlock: number;
 }
+
+export type constructionResourceType = "stone" | "metal";
 // ------------------- AREA + COMBAT ------------------------------
 export const AREATIER_MULTIPLIERS = [1, 1.2, 1.5, 2, 2.5, 3];
 

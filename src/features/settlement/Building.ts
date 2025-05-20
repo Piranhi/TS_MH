@@ -2,6 +2,7 @@ import { BuildingSnapshot, BuildingSpec, BuildingState, BuildingUnlockStatus } f
 import { bus } from "@/core/EventBus";
 import { SpecRegistryBase } from "@/models/SpecRegistryBase";
 import { BigNumber } from "@/models/utils/BigNumber";
+import { BUILDING_LEVELLING_MULTIPLIER } from "@/shared/levelling-types";
 
 export class Building extends SpecRegistryBase<BuildingSpec> {
 	private constructor(private readonly spec: BuildingSpec, private state: BuildingState) {
@@ -13,18 +14,22 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 
 	public upgradeBuilding() {
 		this.state.level++;
+		if (this.state.unlockStatus === "construction") this.state.unlockStatus = "unlocked";
 		bus.emit("settlement:changed");
 	}
 
 	public spendPoints(amt: number) {
-		this.state.unlockPointsSpent += amt;
-		if (this.state.unlockPointsSpent === this.spec.baseCost) {
-			this.state.unlockStatus = "unlocked";
+		this.state.pointsAllocated += amt;
+		// loop in case there's enough for multiple levels
+		while (this.state.pointsAllocated >= this.state.nextUnlock) {
+			this.state.pointsAllocated -= this.state.nextUnlock;
+			this.upgradeBuilding();
+			this.state.nextUnlock = Math.floor(this.spec.baseCost * BUILDING_LEVELLING_MULTIPLIER ** this.level); // TODO - Check this is the best way compared to just multiplying based on the last unlock. This method provides balancing in future updates, but harder to work with.
 		}
 	}
 
 	public getUnlockCostData() {
-		return { cost: this.spec.baseCost, spent: this.state.unlockPointsSpent };
+		return { cost: this.spec.baseCost, spent: this.state.pointsAllocated };
 	}
 
 	get id() {
@@ -39,8 +44,8 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 		return this.state.level;
 	}
 
-	get progress() {
-		return this.state.progress;
+	get allocated() {
+		return this.state.pointsAllocated;
 	}
 
 	get iconUrl() {
@@ -63,7 +68,8 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 		return {
 			displayName: this.spec.displayName,
 			level: this.state.level,
-			progress: this.state.progress,
+			pointsAllocated: this.state.pointsAllocated,
+			nextUnlock: this.state.nextUnlock,
 		};
 	}
 
@@ -89,9 +95,9 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 
 		const defaultState: BuildingState = {
 			unlockStatus: "hidden",
-			unlockPointsSpent: 0,
-			level: 2,
-			progress: new BigNumber(0),
+			pointsAllocated: 0,
+			level: 0,
+			nextUnlock: spec.baseCost,
 		};
 		return new Building(spec, defaultState);
 	}

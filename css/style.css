@@ -1,5 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
+
 :root {
 	--font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+
+	/* 	--font-sans: "Manrope", "Helvetica Neue", Arial, sans-serif;
+ */
 	--bg-tint-1: #47565b2a;
 	--bg-tint-2: #22292b1c;
 	--text-strong: hsla(0, 0%, 100%, 0.92);

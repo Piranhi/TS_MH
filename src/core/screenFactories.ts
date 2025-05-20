@@ -11,6 +11,8 @@ import { ScreenName } from "@/shared/ui-types";
 import { OutpostsScreen } from "@/ui/Screens/OutpostsScreen";
 import { LibraryScreen } from "@/ui/Screens/LibraryScreen";
 import { MarketScreen } from "@/ui/Screens/MarketScreen";
+import { MineScreen } from "@/ui/Screens/MineScreen";
+import { GuildHallScreen } from "@/ui/Screens/GuildHallScreen";
 
 // Screen Factory
 export const screenFactories: Record<ScreenName, () => GameScreen> = {
@@ -24,4 +26,6 @@ export const screenFactories: Record<ScreenName, () => GameScreen> = {
 	character: () => new CharacterScreen(),
 	inventory: () => new InventoryScreen(),
 	research: () => new ResearchScreen(),
+	mine: () => new MineScreen(),
+	guildHall: () => new GuildHallScreen(),
 };

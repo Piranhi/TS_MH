@@ -56,24 +56,25 @@ export class SettlementScreen extends BaseScreen {
 	}
 
 	private handleTick(delta: number) {
-		const snapshot = Player.getInstance().settlementManager.rewardSnapshot();
-		this.settlementRewardInfo.textContent = "x " + (snapshot.reward + 1);
-		if (snapshot.reward === snapshot.max) {
-			this.settlementTimeInfo.textContent = "Max Passive Rewards";
-		} else {
-			const timeDiff = snapshot.nextUnlock - Date.now(); // snapshot.progressStart;
-			this.settlementTimeInfo.textContent = `Next passive reward in: ${this.formatTime(timeDiff)}`;
-		}
-		const now = Date.now();
-		const total = snapshot.nextUnlock - snapshot.progressStart;
-		const elapsed = now - snapshot.progressStart;
+		const snapshot = Player.getInstance().settlementManager.getPassiveSnapshot();
 
-		let percent = 0;
-		if (total > 0) {
-			percent = Math.max(0, Math.min(1, elapsed / total));
+		this.settlementRewardInfo.textContent = `${snapshot.earnedPoints} build points on Prestige - x ${(1 + snapshot.reward).toFixed(
+			1
+		)} construction bonus`;
+
+		if (snapshot.reward >= snapshot.max) {
+			// at cap: show a “max” message and fill the bar completely
+			this.settlementTimeInfo.textContent = "Max Passive Rewards";
+			this.settlementPassiveProgressEl.style.width = "100%";
+		} else {
+			// otherwise, we still have progress toward the next chunk
+			// snapshot.timeToNext is already “ms remaining”
+			this.settlementTimeInfo.textContent = `Next passive reward in: ${this.formatTime(snapshot.timeToNext)}`;
+
+			// snapshot.progress is a 0→1 fraction toward the next reward
+			const percent = Math.min(Math.max(snapshot.progress, 0), 1);
+			this.settlementPassiveProgressEl.style.width = `${Math.round(percent * 100)}%`;
 		}
-		//console.log(percent);
-		this.settlementPassiveProgressEl.style.width = `${Math.round(percent * 100)}%`;
 	}
 
 	private pointsChanged(amt: number) {

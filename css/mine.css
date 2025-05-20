@@ -1,0 +1,172 @@
+/* Mine Page — glassmorphism module */
+.mine-page {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+	padding: 1.5rem;
+	width: 100%;
+	margin: 0 auto;
+}
+.mine-section-header {
+	font-size: 1.5rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	margin-bottom: 0.5rem;
+	color: var(--primary-text, #fff);
+	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.mine-resource-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	background: rgba(255, 255, 255, 0.06);
+	border-radius: 22px;
+	padding: 1rem 1.5rem;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+	backdrop-filter: blur(12px);
+}
+.mine-resource-row {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	padding: 0.8rem 0.5rem;
+	border-radius: 14px;
+	background: rgba(255, 255, 255, 0.07);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+	transition: background 0.12s;
+}
+.mine-resource-icon {
+	width: 40px;
+	height: 40px;
+	background: rgba(255, 255, 255, 0.22);
+	border-radius: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.8rem;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+	flex-shrink: 0;
+}
+.mine-resource-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0.18rem;
+}
+.mine-resource-title {
+	font-size: 1.07rem;
+	font-weight: 500;
+	color: var(--primary-text, #fff);
+}
+.mine-resource-progress {
+	margin-top: 0.3rem;
+	width: 100%;
+	/* ProgressBar class will inject here */
+}
+.mine-resource-timer {
+	font-size: 0.94rem;
+	color: var(--secondary-text, #bfd9ff);
+	margin-top: 2px;
+}
+.mine-resource-collect-btn {
+	margin-left: 1rem;
+	min-width: 110px;
+}
+
+/* Upgrades grid */
+.mine-upgrades-section {
+	margin-top: 2.2rem;
+	padding: 1.25rem 1rem 0.7rem 1rem;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 22px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.14);
+	backdrop-filter: blur(10px);
+}
+.mine-upgrades-header {
+	font-size: 1.35rem;
+	font-weight: 600;
+	margin-bottom: 1.2rem;
+	color: var(--primary-text, #fff);
+}
+.mine-upgrades-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 1.2rem;
+	width: 100%;
+}
+.mine-upgrade-card {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	background: rgba(255, 255, 255, 0.14);
+	border-radius: 16px;
+	padding: 1.1rem 1rem 1rem 1rem;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+	min-height: 110px;
+	max-width: 400px;
+	position: relative;
+	transition: box-shadow 0.13s;
+}
+
+.mine-upgrade-image {
+	width: 56px;
+	height: 56px;
+	border-radius: 9px;
+	object-fit: contain;
+	margin-right: 1.1rem;
+	background: rgba(0, 0, 0, 0.07);
+	box-shadow: 0 2px 7px rgba(0, 0, 0, 0.11);
+	flex-shrink: 0;
+}
+
+.mine-upgrade-details {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+}
+
+.mine-upgrade-title {
+	font-size: .925rem;
+	font-weight: 500;
+	margin-bottom: 0.18rem;
+	color: var(--primary-text, #fff);
+}
+
+.mine-upgrade-desc {
+	font-size: 0.75rem;
+	color: var(--secondary-text, #c4e1f7);
+	margin-bottom: 0.7rem;
+	margin-top: 0;
+}
+
+.mine-upgrade-footer {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: auto;
+}
+.mine-upgrade-cost {
+	font-size: .8rem;
+	font-weight: 500;
+	color: var(--primary, #79d891);
+}
+.mine-upgrade-unlock-btn {
+	margin-left: 1.1rem;
+	min-width: 90px;
+}
+@media (max-width: 600px) {
+	.mine-page {
+		padding: 0.5rem;
+	}
+	.mine-upgrades-section {
+		padding: 0.5rem 0.3rem 0.2rem 0.3rem;
+	}
+	.mine-resource-list {
+		padding: 0.5rem;
+	}
+	.mine-upgrades-header {
+		font-size: 1.08rem;
+	}
+}

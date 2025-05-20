@@ -1,0 +1,45 @@
+<div class="mine-page">
+    <div class="mine-section-header">Mine Resources</div>
+    <div class="mine-resource-list" id="mineResourceList">
+        <!-- Example resource row -->
+        <div class="mine-resource-row">
+            <div class="mine-resource-icon">⛏️</div>
+            <div class="mine-resource-info">
+                <span class="mine-resource-title">Iron Ore</span>
+                <div class="mine-resource-progress" id="progress-iron"></div>
+                <span class="mine-resource-timer">Ready in 2m 14s</span>
+            </div>
+            <button class="ui-button mine-resource-collect-btn" data-resource="iron">Collect</button>
+        </div>
+        <!-- Repeat rows dynamically for each resource -->
+    </div>
+    <div class="mine-upgrades-section">
+        <div class="mine-upgrades-header">Mine Upgrades</div>
+        <div class="mine-upgrades-grid" id="mineUpgradesGrid">
+            <!-- Example upgrade card -->
+            <div class="mine-upgrade-card">
+                <img class="mine-upgrade-image" src="path/to/drill.png" alt="Drill Upgrade">
+                <div class="mine-upgrade-details">
+                    <span class="mine-upgrade-title">Precision Drill</span>
+                    <span class="mine-upgrade-desc">Increases mining speed by 15%.</span>
+                    <div class="mine-upgrade-footer">
+                        <span class="mine-upgrade-cost">1,200 Gold</span>
+                        <button class="ui-button mine-upgrade-unlock-btn" data-upgrade="drill">Unlock</button>
+                    </div>
+                </div>
+            </div>
+            <div class="mine-upgrade-card">
+                <img class="mine-upgrade-image" src="path/to/drill.png" alt="Drill Upgrade">
+                <div class="mine-upgrade-details">
+                    <span class="mine-upgrade-title">Precision Drill</span>
+                    <span class="mine-upgrade-desc">Increases mining speed by 15%.</span>
+                    <div class="mine-upgrade-footer">
+                        <span class="mine-upgrade-cost">1,200 Gold</span>
+                        <button class="ui-button mine-upgrade-unlock-btn" data-upgrade="drill">Unlock</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Repeat upgrade cards dynamically -->
+        </div>
+    </div>
+</div>

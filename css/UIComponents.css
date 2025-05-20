@@ -97,3 +97,29 @@ button#genericModalButton:disabled {
 .mh-progress__fill.mh-progress--generic {
 	background: linear-gradient(90deg, #bfd8ff 30%, #68d6f1 100%);
 }
+
+/* Core button style—use your theme tokens as needed */
+.ui-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.6rem 1.2rem;
+	font-size: 1rem;
+	font-weight: 500;
+	background: var(--btn-bg, rgba(255, 255, 255, 0.15));
+	color: var(--btn-text, #fff);
+	border: none;
+	border-radius: 8px;
+	backdrop-filter: blur(6px);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+	cursor: pointer;
+	transition: background 0.15s, transform 0.1s;
+}
+
+.ui-button:hover {
+	background: var(--btn-bg-hover, rgba(255, 255, 255, 0.24));
+}
+
+.ui-button:active {
+	transform: scale(0.98);
+}
