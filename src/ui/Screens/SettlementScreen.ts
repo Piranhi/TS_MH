@@ -40,10 +40,6 @@ export class SettlementScreen extends BaseScreen {
 			const display = new BuildingDisplay(this.BuildingGridEl, this.buildingTemplate, building);
 			this.buildingDisplays.push(display);
 		}
-		for (let i = 0; i < this.settlement.getFreePlots(); i++) {
-			const display = new BuildingDisplay(this.BuildingGridEl, this.plotTemplate);
-			this.buildingDisplays.push(display);
-		}
 	}
 
 	show() {}

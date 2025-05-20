@@ -6,28 +6,23 @@ export class BuildingDisplay extends UIBase {
 	private onUpgradeClick: ((e: Event) => void) | null = null;
 	private upgradeBtn: HTMLButtonElement | null = null;
 	//private rootEl!: HTMLElement;
-	constructor(private BuildingGridEl: HTMLElement, private template: HTMLTemplateElement, private building?: Building) {
+	constructor(private BuildingGridEl: HTMLElement, private template: HTMLTemplateElement, private building: Building) {
 		super();
-		if (building) {
-			const frag = this.template.content.cloneNode(true) as DocumentFragment;
-			const root = frag.firstElementChild as HTMLElement;
-			if (!root) return;
-			const title = root.querySelector(".building-title") as HTMLElement;
-			title.textContent = building.displayName;
-			const level = root.querySelector(".building-level") as HTMLElement;
-			level.textContent = building.level.toString();
-			this.upgradeBtn = root.querySelector(".upgrade-btn") as HTMLButtonElement;
-			this.onUpgradeClick = (e) => building.upgradeBuilding();
-			this.upgradeBtn?.addEventListener("click", this.onUpgradeClick);
-			this.element = root;
 
-			root.classList.add("building-card-built");
-		} else {
-			const frag = this.template.content.cloneNode(true) as DocumentFragment;
-			const root = frag.firstElementChild as HTMLElement;
-			if (!root) return;
-			this.element = root;
-		}
+		const frag = this.template.content.cloneNode(true) as DocumentFragment;
+		const root = frag.firstElementChild as HTMLElement;
+		if (!root) return;
+		const title = root.querySelector(".building-title") as HTMLElement;
+		title.textContent = building.displayName;
+		const level = root.querySelector(".building-level") as HTMLElement;
+		level.textContent = building.level.toString();
+		this.upgradeBtn = root.querySelector(".upgrade-btn") as HTMLButtonElement;
+		this.onUpgradeClick = (e) => building.upgradeBuilding();
+		this.upgradeBtn?.addEventListener("click", this.onUpgradeClick);
+		this.element = root;
+
+		root.classList.add("building-card-built");
+
 		this.attachTo(this.BuildingGridEl);
 
 		this.bindDomEvent("mouseenter", (e) => this.handleMouseEnter());

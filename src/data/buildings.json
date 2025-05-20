@@ -1,5 +1,19 @@
 [
 	{
+		"id": "guildhall",
+		"displayName": "Guild Hall",
+		"description": "Blacksmith todo",
+		"icon": "",
+		"baseCost": 100
+	},
+	{
+		"id": "mine",
+		"displayName": "Mine",
+		"description": "Blacksmith todo",
+		"icon": "",
+		"baseCost": 100
+	},
+	{
 		"id": "blacksmith",
 		"displayName": "Blacksmith",
 		"description": "Blacksmith todo",

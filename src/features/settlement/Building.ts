@@ -1,4 +1,4 @@
-import { BuildingSnapshot, BuildingSpec, BuildingState } from "@/shared/types";
+import { BuildingSnapshot, BuildingSpec, BuildingState, BuildingUnlockStatus } from "@/shared/types";
 import { bus } from "@/core/EventBus";
 import { SpecRegistryBase } from "@/models/SpecRegistryBase";
 import { BigNumber } from "@/models/utils/BigNumber";
@@ -40,6 +40,10 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 		return this.spec.description;
 	}
 
+	set buildingStatus(newStatus: BuildingUnlockStatus) {
+		this.state.unlockStatus = newStatus;
+	}
+
 	get snapshot(): BuildingSnapshot {
 		return {
 			displayName: this.spec.displayName,
@@ -68,6 +72,7 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 		if (!spec) throw new Error(`Unknown building "${id}"`);
 
 		const defaultState: BuildingState = {
+			unlockStatus: "hidden",
 			level: 2,
 			progress: new BigNumber(0),
 		};

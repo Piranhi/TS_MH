@@ -1,7 +1,7 @@
 import { bus } from "@/core/EventBus";
 import { Building } from "./Building";
 import { Saveable } from "@/shared/storage-types";
-import { BuildingType } from "@/shared/types";
+import { BuildingType, BuildingUnlockStatus, STARTING_BUILDING_UNLOCKS } from "@/shared/types";
 
 interface SettlementSaveState {
 	freePlots: number;
@@ -18,6 +18,7 @@ interface SettlementRewardSnapshot {
 export class SettlementManager implements Saveable {
 	private freePlots = 1;
 	private buildingsMap = new Map<BuildingType, Building>();
+
 	private readonly TIME_BETWEEN_REWARDS: number = 20000; // 8640000 for 10 in a day
 	private passiveReward: number = 1;
 	private passiveProgress: number = Date.now();
@@ -27,12 +28,10 @@ export class SettlementManager implements Saveable {
 	private maxPassiveReward: number = 2;
 
 	constructor() {
+		this.Init();
+		this.changeBuildingStatus("guildHall", "unlocked");
 		// When the game is ready, setup everything
 		bus.on("game:gameReady", () => {
-			// Uncomment if/when you use these:
-			this.buildingsMap.set("library", Building.create("library"));
-			this.buildingsMap.set("blacksmith", Building.create("blacksmith"));
-
 			// Setup variables for the first reward cycle:
 			this.passiveProgressStart = Date.now();
 			this.passiveNextUnlock = this.passiveProgressStart + this.TIME_BETWEEN_REWARDS;
@@ -49,6 +48,7 @@ export class SettlementManager implements Saveable {
 					}
 				}
 			});
+			bus.on("game:gameLoaded", () => this.Init());
 			this.emitChange();
 		});
 		// On prestige, reset progress for a new run
@@ -57,6 +57,20 @@ export class SettlementManager implements Saveable {
 			this.passiveProgressStart = Date.now();
 			this.passiveNextUnlock = this.passiveProgressStart + this.TIME_BETWEEN_REWARDS;
 		});
+	}
+
+	private Init() {
+		this.seedMissingBuildings();
+	}
+	// Fill in missing specs if we add more in future
+	seedMissingBuildings(): void {
+		const specs = Building.getAllSpecs();
+		for (const spec of specs) {
+			const key = spec.id as BuildingType;
+			if (!this.buildingsMap.has(key)) {
+				this.buildingsMap.set(key, Building.create(spec.id));
+			}
+		}
 	}
 
 	increasePassiveReward() {
@@ -110,11 +124,17 @@ export class SettlementManager implements Saveable {
 	}
 
 	buildBuilding(type: BuildingType) {
-		if (this.freePlots <= 0) return false;
 		const building = Building.create(type.toString());
 		this.buildingsMap.set(type, building);
-		this.freePlots--;
 		this.emitChange();
+		bus.emit("settlement:changed");
+	}
+
+	changeBuildingStatus(type: BuildingType, newStatus: BuildingUnlockStatus) {
+		const building = this.buildingsMap.get(type);
+		if (!building) return;
+		building.buildingStatus = newStatus;
+		this.buildingsMap.set(type, building);
 		bus.emit("settlement:changed");
 	}
 

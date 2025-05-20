@@ -4,7 +4,10 @@ import { StatsModifier, StatsModifierNumber } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
 
 // --------------------- SETTLEMENT + BUILDINGS ----------------------------
-export type BuildingType = "library" | "blacksmith" | "market";
+export const STARTING_BUILDING_UNLOCKS = ["guildHall"];
+
+export type BuildingType = "guildHall" | "mine" | "library" | "blacksmith" | "market";
+export type BuildingUnlockStatus = "unlocked" | "construction" | "hidden";
 
 export interface BuildingSpec {
 	id: BuildingType;
@@ -13,7 +16,9 @@ export interface BuildingSpec {
 	icon: string;
 	baseCost: number;
 }
+
 export interface BuildingState {
+	unlockStatus: BuildingUnlockStatus;
 	level: number;
 	progress: BigNumber;
 }
