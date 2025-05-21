@@ -1,6 +1,6 @@
 import { printLog } from "@/core/DebugManager";
-import { bus, GameEvents } from "@/core/EventBus";
-import { MilestoneEventPayload, MilestoneTag } from "@/shared/Milestones";
+import { bus } from "@/core/EventBus";
+import { MilestoneEventPayload, MilestoneTag, ProgressionEvent } from "@/shared/Milestones";
 import { Saveable } from "@/shared/storage-types";
 import { ProgressionTrigger } from "@/shared/types";
 
@@ -10,32 +10,33 @@ interface MilestoneSaveState {
 
 export class MilestoneManager implements Saveable {
 	private static _instance: MilestoneManager;
-	private static triggerMap = new Map<keyof GameEvents, Map<string, MilestoneTag[]>>();
+	private static triggerMap = new Map<string, MilestoneTag[]>();
 	private readonly milestones = new Set<MilestoneTag>();
 
 	constructor(initial?: MilestoneTag[]) {
 		initial?.forEach((tag) => this.milestones.add(tag));
+		this.bindEvents();
 	}
 
 	// Register JSON Specs
 	public static registerSpecs(triggers: ProgressionTrigger[]) {
-		this.triggerMap = triggers.reduce((map, t: ProgressionTrigger) => {
-			if (!map.has(t.event)) map.set(t.event, new Map());
-			map.get(t.event)!.set(t.id, t.unlocks);
-			return map;
-		}, new Map<keyof GameEvents, Map<string, MilestoneTag[]>>());
+		triggers.forEach(({ event, id, unlocks }) => {
+			this.triggerMap.set(`${event}|${id}`, unlocks);
+		});
+	}
 
-		// subscribe
-		for (const [event, idMap] of this.triggerMap) {
-			bus.on(
-				event as any,
-				((entityId: string, meta?: any) => {
-					const unlocks = idMap.get(entityId);
-					if (!unlocks) return;
-					unlocks.forEach((tag) => MilestoneManager.instance.add(tag, { entityId, ...meta }));
-				}) as any
-			);
-		}
+	private bindEvents() {
+		bus.on("hunt:areaKill", ({ enemyId, areaId }) => {
+			this.process("monster-killed", enemyId);
+		});
+	}
+
+	/** central unlock logic */
+	process(event: ProgressionEvent, entityId: string, meta?: any) {
+		const key = `${event}|${entityId}`;
+		const unlocks = MilestoneManager.triggerMap.get(key);
+		if (!unlocks) return;
+		unlocks.forEach((tag) => this.add(tag, { entityId, ...meta }));
 	}
 
 	/** True if the player already earned the milestone */
@@ -86,5 +87,6 @@ export class MilestoneManager implements Saveable {
 	load(state: MilestoneSaveState): void {
 		this.milestones.clear();
 		state.tags.forEach((tag) => this.milestones.add(tag));
+		console.table(state.tags);
 	}
 }

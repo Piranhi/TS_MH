@@ -3,6 +3,7 @@ import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { bus } from "../../core/EventBus";
 import { Area } from "@/models/Area";
 import { Player } from "@/models/player";
+import { MilestoneManager } from "@/models/MilestoneManager";
 
 export class CombatManager {
 	public isFinished: boolean = false;

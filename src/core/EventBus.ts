@@ -56,8 +56,8 @@ export interface GameEvents {
 	//------------------ DEBUG ---------------------
 	"debug:killEnemy": void;
 	// ------------------ MILESTONES ------------------------
-	"monster-killed": [entityId: string, meta?: any];
-	"building-built": [entityId: string, meta?: any];
+	/* 	"monster-killed": [entityId: string, meta?: any];
+	"building-built": [entityId: string, meta?: any]; */
 }
 
 export type EventKey = keyof GameEvents;
