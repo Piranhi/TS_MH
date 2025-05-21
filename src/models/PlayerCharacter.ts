@@ -67,7 +67,7 @@ export class PlayerCharacter extends BaseCharacter {
 		return this.statsEngine.get("speed");
 	}
 
-	protected getAvatarUrl(): string {
-		return "/assets/avatars/player.png";
+	override getAvatarUrl(): string {
+		return "/images/player/player-avatar-01.png";
 	}
 }

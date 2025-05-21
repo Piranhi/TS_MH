@@ -4,27 +4,31 @@
 		"displayName": "Green Slime",
 		"rarity": "common",
 		"baseStats": { "hp": 4, "attack": 2, "defence": 0, "speed": 1 },
-		"abilities": ["basic_melee"]
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-slime-basic.png"
 	},
 	{
 		"id": "wolf_basic",
 		"displayName": "Forest Wolf",
 		"rarity": "common",
 		"baseStats": { "hp": 3, "attack": 3, "defence": 1, "speed": 2 },
-		"abilities": ["basic_melee"]
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-wolf-basic.png"
 	},
 	{
 		"id": "large_rat",
 		"displayName": "Large Rat",
 		"rarity": "common",
 		"baseStats": { "hp": 5, "attack": 2, "defence": 1, "speed": 2 },
-		"abilities": ["basic_melee"]
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-large-rat.png"
 	},
 	{
 		"id": "treant",
 		"displayName": "Treant",
 		"rarity": "common",
 		"baseStats": { "hp": 10, "attack": 4, "defence": 5, "speed": 1 },
-		"abilities": ["basic_melee"]
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-treant-basic.png"
 	}
 ]

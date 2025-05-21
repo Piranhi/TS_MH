@@ -1,7 +1,6 @@
 import { printLog } from "@/core/DebugManager";
 import { SpecRegistryBase } from "./SpecRegistryBase";
 import { AreaScaling, CoreStats, CoreStatsNumbers, scaleEnemyStatsByArea } from "./Stats";
-import { BigNumber } from "./utils/BigNumber";
 
 export type MonsterRarity = "common" | "uncommon" | "rare" | "terrifying" | "nightmare";
 
@@ -19,6 +18,7 @@ export interface MonsterSpecRaw {
 	rarity: MonsterRarity;
 	baseStats: CoreStatsNumbers;
 	abilities: string[];
+	imgUrl: string;
 }
 
 export interface MonsterSpec {
@@ -27,6 +27,7 @@ export interface MonsterSpec {
 	rarity: MonsterRarity;
 	baseStats: CoreStats; // all BigNumbers!
 	abilities: string[];
+	imgUrl: string;
 }
 
 export class Monster extends SpecRegistryBase<MonsterSpec> {
@@ -60,6 +61,12 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 	get abilities(): string[] {
 		return this.spec.abilities;
 	}
+
+	get imgUrl(): string {
+		return this.spec.imgUrl;
+	}
+
+
 
 	// Registry.
 	public static override specById = new Map<string, MonsterSpec>();

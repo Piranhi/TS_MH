@@ -86,9 +86,12 @@ export class CharacterDisplay extends UIBase {
 
 	setup(character: BaseCharacter) {
 		this.character = character;
+		const snapshot = this.character.snapshot();
+		const { abilities } = snapshot;
+
 		this.attackBarMap.clear();
 		this.barsContainer.innerHTML = "";
-		const abilities = this.character.getActiveAbilities();
+		//const abilities = this.character.getActiveAbilities();
 		abilities.forEach((ability) => {
 			const bar = document.createElement("div");
 			this.attackBarMap.set(ability.id, bar);
@@ -104,9 +107,9 @@ export class CharacterDisplay extends UIBase {
 			label.className = "attack-label";
 			label.textContent = ability.name;
 			bar.appendChild(label);
-
 			this.barsContainer.appendChild(bar);
 		});
+
 		this.render();
 	}
 
@@ -116,7 +119,7 @@ export class CharacterDisplay extends UIBase {
 		if (!this.character) return;
 		const snapshot = this.character.snapshot();
 
-		const { name, hp, abilities } = snapshot;
+		const { name, hp, abilities, imgUrl } = snapshot;
 		this.nameEl.textContent = name;
 		this.atkEl.textContent = "⚔️ " + snapshot.attack.toString();
 		this.defEl.textContent = "🛡️ " + snapshot.defence.toString();
@@ -128,6 +131,7 @@ export class CharacterDisplay extends UIBase {
 			const ratio = ability.currentCooldown / ability.maxCooldown;
 			bar.style.setProperty("--cd", ratio.toString());
 		});
+		this.avatarImg.src = imgUrl;
 	}
 
 	private setHolderStatus(newStatus: HolderStatus) {

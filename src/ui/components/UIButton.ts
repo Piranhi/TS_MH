@@ -1,5 +1,6 @@
 // UIButton.ts
-import { UIBase } from "@/ui/UIBase";
+
+import { UIBase } from "./UIBase";
 
 export interface UIButtonOptions {
 	/** Text to display inside the button */
@@ -33,7 +34,7 @@ export class UIButton extends UIBase {
 
 		// 3️⃣ Wire up click via UIBase helper (auto-deregisters on destroy)
 		if (options.onClick) {
-			this.registerListener(this.el, "click", options.onClick);
+			this.bindDomEvent(this.el, "click", options.onClick as EventListener);
 		}
 	}
 

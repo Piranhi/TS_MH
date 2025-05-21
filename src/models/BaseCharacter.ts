@@ -13,7 +13,7 @@ export interface CharacterSnapsnot {
 	hp: { current: string; max: string; percent: string };
 	attack: string;
 	defence: string;
-	avatarUrl: string;
+	imgUrl: string;
 	abilities: Ability[];
 	rarity?: string;
 }
@@ -143,6 +143,10 @@ export abstract class BaseCharacter extends Destroyable {
 		}
 	}
 
+	protected getAvatarUrl(): string {
+		return "";
+	}
+
 	// HELPER CLASSES
 	snapshot(): CharacterSnapsnot {
 		return {
@@ -152,7 +156,7 @@ export abstract class BaseCharacter extends Destroyable {
 			attack: this.attack.toString(),
 			defence: this.defence.toString(),
 			abilities: this.getActiveAbilities(),
-			avatarUrl: "Todo",
+			imgUrl: this.getAvatarUrl(),
 			rarity: "Todo",
 		};
 	}

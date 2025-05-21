@@ -31,7 +31,11 @@ export interface BuildingSnapshot {
 	nextUnlock: number;
 }
 
-export type constructionResourceType = "stone" | "metal";
+// List as a readonly tuple
+export const CONSTRUCTION_RESOURCE_TYPES = ["stone", "metal"] as const;
+// Derive the union type automatically
+export type ConstructionResourceType = (typeof CONSTRUCTION_RESOURCE_TYPES)[number];
+
 // ------------------- AREA + COMBAT ------------------------------
 export const AREATIER_MULTIPLIERS = [1, 1.2, 1.5, 2, 2.5, 3];
 

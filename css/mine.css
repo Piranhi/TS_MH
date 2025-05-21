@@ -61,6 +61,7 @@
 .mine-resource-progress {
 	margin-top: 0.3rem;
 	width: 100%;
+
 	/* ProgressBar class will inject here */
 }
 .mine-resource-timer {
@@ -127,7 +128,7 @@
 }
 
 .mine-upgrade-title {
-	font-size: .925rem;
+	font-size: 0.925rem;
 	font-weight: 500;
 	margin-bottom: 0.18rem;
 	color: var(--primary-text, #fff);
@@ -148,7 +149,7 @@
 	margin-top: auto;
 }
 .mine-upgrade-cost {
-	font-size: .8rem;
+	font-size: 0.8rem;
 	font-weight: 500;
 	color: var(--primary, #79d891);
 }

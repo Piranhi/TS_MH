@@ -18,4 +18,8 @@ export class EnemyCharacter extends BaseCharacter {
 		this.updateAbilities(defaultAbilities);
 		this.spec = spec;
 	}
+
+	override getAvatarUrl(): string {
+		return this.spec.imgUrl;
+	}
 }

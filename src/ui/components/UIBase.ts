@@ -1,10 +1,12 @@
 import { GameEvents } from "@/core/EventBus";
 import { unbindAll, bindEvent } from "@/shared/utils/busUtils";
 
+type DomBinding = [HTMLElement, string, EventListenerOrEventListenerObject];
+
 export class UIBase {
 	public element!: HTMLElement;
 	protected eventBindings: [keyof GameEvents, Function][] = [];
-	protected domEventBindings: [string, EventListenerOrEventListenerObject][] = [];
+	protected domEventBindings: DomBinding[] = [];
 
 	protected destroyed = false;
 
@@ -23,16 +25,37 @@ export class UIBase {
 		this.destroyed = true;
 		unbindAll(this.eventBindings);
 		// Remove all DOM bindings
-		for (const [type, handler] of this.domEventBindings) {
-			this.element.removeEventListener(type, handler);
+		for (const [el, type, handler] of this.domEventBindings) {
+			el.removeEventListener(type, handler);
 		}
 		this.domEventBindings = [];
 		this.detach();
 	}
 
-	protected bindDomEvent(type: string, handler: EventListener) {
-		this.element.addEventListener(type, handler);
-		this.domEventBindings.push([type, handler]);
+	// Bind Dom elements to events (click, etc)
+	protected bindDomEvent(
+		elementOrType: HTMLElement | string,
+		typeOrHandler: string | EventListenerOrEventListenerObject,
+		maybeHandler?: EventListenerOrEventListenerObject
+	) {
+		let el: HTMLElement;
+		let type: string;
+		let handler: EventListenerOrEventListenerObject;
+
+		if (typeof elementOrType === "string") {
+			// two-arg form: (type, handler)
+			el = this.element;
+			type = elementOrType;
+			handler = typeOrHandler as EventListenerOrEventListenerObject;
+		} else {
+			// three-arg form: (el, type, handler)
+			el = elementOrType;
+			type = typeOrHandler as string;
+			handler = maybeHandler!;
+		}
+
+		el.addEventListener(type, handler);
+		this.domEventBindings.push([el, type, handler]);
 	}
 
 	attachTo(parent: HTMLElement) {

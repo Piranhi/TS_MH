@@ -96,10 +96,10 @@
 
 /* ---------- Enemy image ---------- */
 .char-img {
-	width: 5rem;
-	height: 5rem;
+	width: 10rem;
+	height: 10rem;
 	object-fit: cover;
-	border-radius: 0.75rem;
+	border-radius: 0.45rem;
 	flex-shrink: 0;
 	border: 1px solid var(--glass-border);
 }
