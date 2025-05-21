@@ -16,6 +16,7 @@ import { saveManager } from "./SaveManager";
 import { InventoryManager } from "@/features/inventory/InventoryManager";
 import { SettlementManager } from "@/features/settlement/SettlementManager";
 import { TrainedStatManager } from "@/models/TrainedStatManager";
+import { MilestoneManager } from "@/models/MilestoneManager";
 
 export class GameApp {
 	/* ---------- readonly fields ---------- */
@@ -85,11 +86,13 @@ export class GameApp {
 			trainedStatsManager: this.trainedStatManager,
 			huntManager: this.huntManager,
 		});
+
 		saveManager.register("player", Player.getInstance());
 		saveManager.register("inventory", this.inventoryManager);
 		saveManager.register("trainedManager", this.trainedStatManager);
 		saveManager.register("settlement", this.settlementManager);
 		saveManager.register("huntManager", this.huntManager);
+		saveManager.register("milestonesManager", MilestoneManager.instance);
 		saveManager.register("statsManager", StatsManager.instance);
 	}
 

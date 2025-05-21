@@ -2,31 +2,45 @@ import { HuntState } from "@/features/hunt/HuntManager";
 import { BaseCharacter } from "@/models/BaseCharacter";
 import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
+import { Player } from "@/models/player";
 
 export type HolderStatus = "inactive" | "active";
 
 export class CharacterDisplay extends UIBase {
 	private nameEl!: HTMLElement;
-	private atkEl!: HTMLElement;
-	private defEl!: HTMLElement;
+	//private atkEl!: HTMLElement;
+	//private defEl!: HTMLElement;
 	private statsContainerEl!: HTMLElement;
 	private hpBar!: HTMLElement;
-	private speedBar!: HTMLElement;
 	private hpLabel!: HTMLElement;
 	private avatarImg!: HTMLImageElement;
 	private character!: BaseCharacter;
-	private barsContainer!: HTMLElement;
-	private attackBarMap = new Map<string, HTMLElement>();
+	private abilitiesListEl!: HTMLUListElement;
+	private abilitiesListMap = new Map<string, HTMLLIElement>();
 
-	constructor(private holderStatus: HolderStatus, private isPlayer: boolean) {
+	constructor(private isPlayer: boolean, private readonly charCard: HTMLElement) {
 		super();
+
+		this.element = charCard;
 		this.createDisplay();
-		this.setHolderStatus(holderStatus);
+		if (isPlayer) this.setCharacter(Player.getInstance().getPlayerCharacter());
+
+		//this.setHolderStatus(holderStatus);
 		this.bindEvents();
 	}
 
+	public setCharacter(char: BaseCharacter) {
+		this.character = char;
+		this.setup();
+	}
+
 	private bindEvents() {
+		bindEvent(this.eventBindings, "Game:UITick", (dt) => this.handleTick(dt));
 		bindEvent(this.eventBindings, "hunt:stateChanged", (state) => this.huntStateChanged(state));
+	}
+
+	private handleTick(dt: number) {
+		this.render();
 	}
 
 	private huntStateChanged(state: HuntState) {
@@ -49,71 +63,59 @@ export class CharacterDisplay extends UIBase {
 		}
 	}
 
-	public destroy() {
-		// Remove DOM node
-		if (this.element && this.element.parentNode) {
-			this.element.parentNode.removeChild(this.element);
-		}
-
-		// Clear maps/references
-		this.attackBarMap.clear();
-		this.character = undefined!;
-	}
-
 	private createDisplay() {
-		const container = document.querySelector<HTMLElement>(".char-holders")!;
-		// IMPORT TEMPLATE
-		const tmpl = document.getElementById("character-display") as HTMLTemplateElement;
-		if (!tmpl) throw new Error("Template #character-display not found");
-		const frag = tmpl.content.cloneNode(true) as DocumentFragment;
-		this.element = frag.querySelector<HTMLElement>(".char-holder")!;
-		if (!this.element) throw new Error(".char-holder not found in template");
-
 		// CACHE ELEMENTS
-		this.nameEl = this.$(".char-name");
-		this.statsContainerEl = this.$(".char-stats");
-		this.atkEl = this.$(".stat--attack");
-		this.defEl = this.$(".stat--defence");
+		this.nameEl = this.$(".char-card__name");
+		this.statsContainerEl = this.$(".stat-grid");
+		//this.atkEl = this.$(".stat--attack");
+		//this.defEl = this.$(".stat--defence");
 		this.hpBar = this.$(".health-bar");
-		this.speedBar = this.$(".speed-bar");
 		this.hpLabel = this.$(".hp-label");
-		this.avatarImg = this.$(".char-img") as HTMLImageElement;
+		this.avatarImg = this.$(".char-card__portrait") as HTMLImageElement;
 		this.element.classList.add(this.isPlayer ? "player" : "enemy");
-		this.barsContainer = this.$(".attack-bars");
-
-		this.attachTo(container);
+		this.abilitiesListEl = this.$(".ability-list") as HTMLUListElement;
 	}
 
-	setup(character: BaseCharacter) {
-		this.character = character;
+	setup() {
 		const snapshot = this.character.snapshot();
-		const { abilities } = snapshot;
+		const { abilities, imgUrl } = snapshot;
 
-		this.attackBarMap.clear();
-		this.barsContainer.innerHTML = "";
+		this.avatarImg.src = imgUrl;
+		this.abilitiesListMap.clear();
+		this.abilitiesListEl.innerHTML = "";
 		//const abilities = this.character.getActiveAbilities();
 		abilities.forEach((ability) => {
-			const bar = document.createElement("div");
-			this.attackBarMap.set(ability.id, bar);
-			bar.className = "attack-bar";
-			bar.style.setProperty("--cd", String(ability.currentCooldown / ability.maxCooldown));
-			bar.dataset.name = ability.name;
-
+			const li = document.createElement("li");
+			li.className = "ability";
+			li.style = "--hunt-cd:0.35";
 			const fill = document.createElement("span");
-			fill.className = "attack-fill";
-			bar.appendChild(fill);
+			fill.className = "ability-fill";
+			const icon = document.createElement("span");
+			icon.className = "ability-icon";
+			icon.textContent = "🔥";
+			const name = document.createElement("span");
+			name.className = "ability-name";
+			name.textContent = ability.name;
+			const dmg = document.createElement("span");
+			dmg.className = "ability-dmg";
+			dmg.textContent = "21";
 
-			const label = document.createElement("small");
-			label.className = "attack-label";
-			label.textContent = ability.name;
-			bar.appendChild(label);
-			this.barsContainer.appendChild(bar);
+			li.appendChild(fill);
+			li.appendChild(icon);
+			li.appendChild(name);
+			li.appendChild(dmg);
+			this.abilitiesListEl.appendChild(li);
+			//li.dataset.name = ability.name;
+			this.abilitiesListMap.set(ability.id, li);
 		});
 
 		this.render();
 	}
 
-	clearCharacter(): void {}
+	async clearCharacter(): Promise<void> {
+		this.character = null!;
+		this.abilitiesListMap.clear();
+	}
 
 	render(): void {
 		if (!this.character) return;
@@ -121,17 +123,16 @@ export class CharacterDisplay extends UIBase {
 
 		const { name, hp, abilities, imgUrl } = snapshot;
 		this.nameEl.textContent = name;
-		this.atkEl.textContent = "⚔️ " + snapshot.attack.toString();
-		this.defEl.textContent = "🛡️ " + snapshot.defence.toString();
-		this.hpBar.style.setProperty("--hp", hp.percent);
+		//this.atkEl.textContent = "⚔️ " + snapshot.attack.toString();
+		//this.defEl.textContent = "🛡️ " + snapshot.defence.toString();
+		this.hpBar.style.setProperty("--hunt-hp", hp.percent);
 		this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
 		abilities.forEach((ability) => {
-			const bar = this.attackBarMap.get(ability.id);
+			const bar = this.abilitiesListMap.get(ability.id);
 			if (!bar) return;
 			const ratio = ability.currentCooldown / ability.maxCooldown;
-			bar.style.setProperty("--cd", ratio.toString());
+			bar.style.setProperty("--hunt-cd", ratio.toString());
 		});
-		this.avatarImg.src = imgUrl;
 	}
 
 	private setHolderStatus(newStatus: HolderStatus) {
@@ -140,5 +141,20 @@ export class CharacterDisplay extends UIBase {
 		} else {
 			this.element.classList.add("inactive");
 		}
+	}
+
+	public destroy() {
+		super.destroy();
+		// Clear maps/references
+		this.character = undefined!;
+		this.character = undefined!;
+		this.nameEl = undefined!;
+		this.statsContainerEl = undefined!;
+		this.hpBar = undefined!;
+		this.hpLabel = undefined!;
+		this.avatarImg = undefined!;
+		this.abilitiesListEl = undefined!;
+		this.element = undefined!;
+		this.abilitiesListMap.clear();
 	}
 }

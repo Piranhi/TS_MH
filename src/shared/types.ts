@@ -2,12 +2,20 @@ import { printLog } from "@/core/DebugManager";
 import { Identifiable } from "@/models/SpecRegistryBase";
 import { StatsModifier, StatsModifierNumber } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
+import { MilestoneTag } from "./Milestones";
+import { GameEvents } from "@/core/EventBus";
 
 // --------------------- SETTLEMENT + BUILDINGS ----------------------------
 export const STARTING_BUILDING_UNLOCKS = ["guildHall"];
 
 export type BuildingType = "guild_hall" | "mine" | "library" | "blacksmith" | "market";
 export type BuildingUnlockStatus = "unlocked" | "construction" | "hidden";
+
+export type ProgressionTrigger = {
+	event: keyof GameEvents;
+	id: string;
+	unlocks: MilestoneTag[];
+};
 
 export interface BuildingSpec {
 	id: BuildingType;

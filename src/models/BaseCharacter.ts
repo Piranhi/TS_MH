@@ -120,7 +120,7 @@ export abstract class BaseCharacter extends Destroyable {
 		if (!this.inCombat || !this.target) return;
 
 		this.getActiveAbilities().forEach((ability) => {
-			ability.reduceCooldown(debugManager.debugActive ? 0.5 : dt); // TODO (multiply by speed)
+			ability.reduceCooldown(debugManager.debugActive ? debugManager.DEBUG_CHARACTER_ABILITY_CD : dt); // TODO (multiply by speed)
 			if (ability.isReady()) ability.perform(this, this.target!);
 		});
 	}

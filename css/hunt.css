@@ -1,6 +1,6 @@
 /* ---------- Design tokens (easy theme tweaks) ---------- */
 :root {
-	--glass-bg: rgba(255, 255, 255, 0.15);
+	--glass-bg: rgba(122, 122, 122, 0.11);
 	--glass-bg-speed: rgba(255, 255, 255, 0.288);
 	--glass-border: rgba(255, 255, 255, 0.35);
 	--glass-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
@@ -10,6 +10,19 @@
 	--bar-fill-speed: #64a5b9;
 	--bar-height: 0.75rem;
 	--bar-height-small: 0.75rem; /* reuse across the UI if you wish */
+	--hunt-card-bg: rgba(255, 255, 255, 0.15);
+	--hunt-card-border: rgba(255, 255, 255, 0.35);
+	/* tints for player vs enemy */
+	.char-card.enemy {
+		--hunt-card-bg: rgba(77, 67, 67, 0.733);
+		--hunt-card-border: rgba(148, 122, 122, 0.61);
+		--hunt-bar-fill: rgba(235, 118, 118, 0.747);
+	}
+	.char-card.player {
+		--hunt-card-bg: rgba(57, 65, 60, 0.801);
+		--hunt-card-border: rgba(134, 160, 143, 0.616);
+		--hunt-bar-fill: rgba(143, 192, 143, 0.747);
+	}
 }
 
 /* — CORE SPLIT LAYOUT — */
@@ -31,27 +44,24 @@
 	min-height: 0;
 }
 
-.area-select {
-	flex: 3 1 0;
-	display: flex;
-	flex-direction: column;
-	min-width: 0;
-	min-height: 0;
-	padding: 12px;
-	background: #68838b57;
-}
-
 /* — LEFT COLUMN — */
 .char-holders {
-	flex: 1 1 0;
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.5rem;
-	overflow-y: none;
+	flex: 1 1 0; /* This flex property is still good for the overall flex container if char-holders is inside a flex parent */
+	display: grid;
+	/* flex-wrap: wrap; Removed, as grid handles wrapping naturally */
+	gap: 1.25rem;
+	overflow-y: none; /* Consider 'auto' or 'scroll' if content might overflow */
 	padding: 1rem;
 	background: var(--glass-bg);
 	border: 1px solid var(--glass-border);
-	border-radius: 0.25rem;
+	border-radius: 0.8rem;
+	min-height: 400px;
+	min-width: 800px;
+	/* Modified line below */
+	grid-template-columns: repeat(auto-fill, minmax(calc(50% - 0.625rem), 1fr)); /* 50% width with gap consideration */
+	/* Or, if you always want exactly two columns: */
+	/* grid-template-columns: 1fr 1fr; */
+	backdrop-filter: blur(20px);
 }
 
 .hunt-scroll {
@@ -59,13 +69,13 @@
 	display: flex;
 	flex-direction: column-reverse;
 	overflow-y: auto;
-	margin-top: 1rem;
-	padding: 1rem;
 	background: var(--glass-bg);
 	border: 1px solid var(--glass-border);
 	border-radius: 0.25rem;
 	box-shadow: var(--glass-shadow);
-	font: 0.65rem/1 var(--font-sans);
+	font-size: 0.8rem;
+	line-height: 1.35;
+	padding: 1.25rem;
 }
 
 /* subtle separator */
@@ -73,180 +83,6 @@
 	margin-top: 0.1rem;
 	border-top: 1px solid rgba(255, 255, 255, 0.05);
 	padding-top: 0.4rem;
-}
-/* ---------- Component wrapper ---------- */
-
-.char-holder {
-	/* existing visual stuff… */
-	display: flex;
-	flex-direction: row;
-	gap: 1rem;
-	padding: 1rem 1rem;
-	border-radius: 0.4rem;
-	background: var(--glass-bg);
-	border: 1px solid var(--glass-border);
-	box-shadow: var(--glass-shadow);
-	flex: 1 1 0;
-	visibility: visible;
-}
-
-.inactive {
-	opacity: 25%;
-}
-
-/* ---------- Enemy image ---------- */
-.char-img {
-	width: 10rem;
-	height: 10rem;
-	object-fit: cover;
-	border-radius: 0.45rem;
-	flex-shrink: 0;
-	border: 1px solid var(--glass-border);
-}
-
-/* ---------- Text / stats container ---------- */
-.char-details {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-}
-
-/* Name */
-.char-name {
-	font-size: 1.125rem;
-	font-weight: 600;
-	margin: 0 0 0.25rem;
-	letter-spacing: 0.02em;
-}
-
-/* Stats row */
-.char-stats {
-	display: flex;
-	gap: 0.75rem;
-	font-weight: 500;
-	font-size: 0.95rem;
-	margin-bottom: 0.35rem;
-}
-
-.stat {
-	display: flex;
-	align-items: center;
-	gap: 0.25rem;
-}
-
-/* ---------- Health bar ---------- */
-/* Key idea: fill span is absolutely positioned; width = --hp custom‑prop */
-.health-bar {
-	position: relative;
-	height: var(--bar-height);
-	background: var(--bar-bg);
-	border-radius: var(--bar-height);
-	overflow: hidden;
-}
-
-.hp-fill {
-	position: absolute;
-	inset: 0;
-	width: calc(var(--hp) * 100%);
-	background: var(--bar-fill);
-	transition: width 0.25s ease; /* smooth when JS updates --hp */
-}
-
-.hp-label {
-	align-self: flex-end;
-	font-size: 0.75rem;
-	margin-top: 0.25rem;
-	opacity: 0.8;
-}
-
-/* ---------- Health bar ---------- */
-/* Key idea: fill span is absolutely positioned; width = --hp custom‑prop */
-.speed-bar {
-	position: relative;
-	height: var(--bar-height-small);
-	background: var(--bar-bg-speed);
-	border-radius: var(--bar-height-small);
-	margin: 2px;
-	overflow: hidden;
-	visibility: collapse;
-}
-
-.speed-fill {
-	position: absolute;
-	inset: 0;
-	width: calc(var(--speed) * 100%);
-	background: var(--bar-fill-speed);
-	transition: width 0.25s ease; /* smooth when JS updates --hp */
-}
-
-.speed-label {
-	align-self: flex-end;
-	font-size: 0.75rem;
-	margin-top: 0.25rem;
-	opacity: 0.8;
-}
-
-/* ─── Attack‐cooldown bars container ─── */
-.attack-bars {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-	margin-left: auto; /* push to the right edge */
-	align-self: stretch; /* match card height */
-	padding-left: 1rem; /* breathing room */
-	height: 20px;
-	width: 200px;
-}
-
-/* ─── Individual attack bar ─── */
-.attack-bar {
-	position: relative;
-	flex: 1; /* let it grow if you want taller bars */
-	min-height: var(--bar-height-small);
-	background: var(--bar-bg-speed);
-	border-radius: var(--bar-height-small);
-	overflow: hidden;
-}
-
-/* fill per‐attack cooldown */
-.attack-fill {
-	position: absolute;
-	inset: 0;
-	width: calc(var(--cd) * 100%);
-	background: var(--bar-fill-speed);
-	transition: width 0.2s ease;
-}
-
-/* label overlaid on the bar */
-.attack-label {
-	position: absolute;
-	top: 50%;
-	left: 0.5rem;
-	transform: translateY(-50%);
-	font-size: 0.65rem;
-	font-weight: 500;
-	color: rgb(255, 255, 255);
-	text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
-	pointer-events: none;
-}
-
-/* ─── variant: enemy ─── */
-.enemy {
-	--glass-bg: rgba(248, 113, 113, 0.18); /* warm red tint */
-	--glass-border: rgba(248, 113, 113, 0.4);
-	--bar-fill: #f43f5e; /* matches the tint */
-}
-
-/* optional: give the player a calm colour */
-.player {
-	--glass-bg: rgba(74, 222, 128, 0.18); /* light green tint */
-	--glass-border: rgba(74, 222, 128, 0.4);
-	--bar-fill: #4ade80; /* mint green HP bar */
-}
-
-.area-select {
-	width: 40%;
 }
 
 /* — RIGHT COLUMN — */
@@ -368,5 +204,212 @@
 	.area-select {
 		flex: none;
 		width: 100%;
+	}
+}
+
+/* ────────────────────────────────────────────────
+   WIDE LAYOUT  (≥ 1100 px) – two-column grid
+   ────────────────────────────────────────────────*/
+@media (min-width: 1100px) {
+	/* whole screen becomes a 2-col grid: 2fr 1fr */
+	.hunt-screen {
+		display: grid;
+		grid-template-columns: 2fr 1fr; /*  ~66 % | 33 %  */
+		grid-template-rows: 1fr; /* fills height */
+		gap: 1.75rem;
+		padding: 1.75rem;
+	}
+
+	/* left column splits vertically: cards on top, log below */
+	.hunt-main {
+		display: grid;
+		grid-template-rows: auto 1fr; /* cards shrink, log grows */
+		gap: 1.25rem;
+	}
+
+	/* keep the area panel sticky so stats stay visible */
+	.area-select {
+		position: sticky;
+		top: 1.75rem;
+		align-self: start; /* prevent stretching */
+		max-height: calc(100vh - 3.5rem);
+		overflow-y: auto;
+		padding: 1.5rem;
+		border-radius: 0.75rem;
+		backdrop-filter: blur(14px);
+	}
+}
+
+/* ────────────────────────────────────────────────
+   Small tweaks that improve the wider feel
+   ────────────────────────────────────────────────*/
+
+/* Optional: prettier scrollbar in wide mode */
+@media (min-width: 1100px) {
+	.hunt-scroll::-webkit-scrollbar {
+		width: 10px;
+	}
+}
+
+/* ───────────────────────────────────────────────
+   H U N T   C H A R – C A R D
+   ───────────────────────────────────────────────*/
+.char-card {
+	/* These two only affect the card’s own bg & border */
+	display: flex;
+	flex-direction: column;
+	gap: 1.1rem;
+	padding: 1.5rem;
+	border-radius: 0.85rem;
+	background: var(--hunt-card-bg);
+	border: 1px solid var(--hunt-card-border);
+	box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+	backdrop-filter: blur(14px);
+	/* No width/size changes needed here for 50% width within the grid cell */
+}
+.char-card.inactive {
+	opacity: 50%;
+}
+
+/* 1. Name */
+.char-card__name {
+	font-size: 1.15rem;
+	font-weight: 600;
+	margin: 0;
+	letter-spacing: 0.03em;
+}
+
+/* 2. Health + Portrait Row */
+.char-card__row {
+	display: flex;
+	gap: 1rem;
+	align-items: flex-start;
+}
+
+.char-card__portrait {
+	width: 100px;
+	height: 100px;
+	object-fit: cover;
+	border-radius: 0.6rem;
+	border: 1px solid var(--hunt-card-border);
+}
+
+/* health stack */
+.health-stack {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.health-bar {
+	position: relative;
+	height: 0.9rem;
+	border-radius: 0.9rem;
+	background: rgba(66, 64, 64, 0.877);
+	overflow: hidden;
+}
+
+.hp-fill {
+	position: absolute;
+	inset: 0;
+	background: var(--hunt-bar-fill, #54836d);
+	width: calc(var(--hunt-hp) * 100%);
+	/* transition: width 0.25s ease; */
+}
+
+.hp-label {
+	align-self: flex-end;
+	font-size: 0.68rem;
+	opacity: 0.85;
+}
+
+/* 3. Ability List */
+.ability-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.ability {
+	position: relative;
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.3rem 0.6rem;
+	border-radius: 0.3rem;
+	background: rgba(34, 33, 33, 0.568);
+	font-size: 0.9rem;
+	overflow: hidden;
+}
+
+.ability-fill {
+	position: absolute;
+	inset: 0;
+	background: #3f6368;
+	width: calc(var(--hunt-cd) * 100%);
+	z-index: 0;
+}
+
+.ability-icon,
+.ability-name,
+.ability-dmg {
+	position: relative;
+	z-index: 1;
+}
+
+.ability-icon {
+	width: 1.2rem;
+	text-align: center;
+}
+
+.ability-name {
+	font-weight: 500;
+}
+
+.ability-dmg {
+	font-weight: 600;
+	margin-left: 0.5rem;
+}
+
+/* 4. Stats Grid */
+.stat-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+	gap: 0.4rem 1.2rem;
+	margin: 0;
+	padding: 0.3rem 0.6rem;
+	border-radius: 0.3rem;
+	background: rgba(34, 33, 33, 0.363);
+}
+
+.stat-grid div {
+	display: flex;
+	justify-content: space-between;
+}
+
+.stat-grid dt {
+	font-weight: 500;
+	opacity: 0.9;
+}
+
+.stat-grid dd {
+	margin: 0;
+	font-weight: 600;
+}
+
+/* ── Responsive Tweaks ── */
+@media (max-width: 600px) {
+	.char-card__row {
+		flex-direction: column;
+		align-items: stretch;
+	}
+	.char-card__portrait {
+		width: 100%;
+		height: 160px;
 	}
 }

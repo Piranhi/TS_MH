@@ -29,6 +29,22 @@ export class UIBase {
 			el.removeEventListener(type, handler);
 		}
 		this.domEventBindings = [];
+		const els = new Set<HTMLElement>([this.element!]);
+		this.element!.querySelectorAll<HTMLElement>(`*`).forEach((e) => els.add(e));
+		// Cancel anything whose target is in our set
+		document.getAnimations().forEach((anim) => {
+			const target = anim.effect && (anim.effect as any).target;
+			if (target instanceof Node && els.has(target as HTMLElement)) {
+				anim.cancel();
+			}
+		});
+
+		// 2) Strip out any lingering CSS transitions/animations so UA can GC
+		els.forEach((el) => {
+			el.style.animation = "none";
+			el.style.transition = "none";
+		});
+
 		this.detach();
 	}
 

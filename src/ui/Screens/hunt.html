@@ -1,55 +1,183 @@
-<!-- copy‑and‑paste ONLY the markup that lives inside #game-area -->
-
+<!-- ------------- #game-area ------------- -->
 <section class="game hunt-screen">
+
   <template id="character-display">
-    <div class="char-holder">
-      <img class="char-img" src="src/Assets/Images/enemy-example.png" alt="Goblin">
+    <article class="char-card"> <!-- add .enemy for foes -->
+      <!-- 1. Name -->
+      <h2 class="char-card__name">Player</h2>
 
-      <div class="char-details">
-        <h2 class="char-name">Player</h2>
+      <!-- 2. HP + Portrait -->
+      <div class="char-card__row">
+        <div class="health-stack">
+          <small class="hp-label">132 / 200 HP</small>
+          <div class="health-bar" style="--hunt-hp:0.66">
+            <span class="hp-fill"></span>
+          </div>
 
-        <div class="char-stats">
-          <span class="stat stat--attack">⚔️ 0</span>
-          <span class="stat stat--defence">🛡️ 0</span>
         </div>
 
-        <!-- Speed bar -->
-        <div class="speed-bar" style="--speed: 0.50">
-          <span class="speed-fill"></span>
-        </div>
-        <!-- Health bar -->
-        <div class="health-bar" style="--hp: 0.66">
-          <span class="hp-fill"></span>
-        </div>
-        <small class="hp-label">132 / 200 HP</small>
+        <img class="char-card__portrait" src="src/Assets/Images/enemy-example.png" alt="Goblin">
       </div>
 
-      <!-- Attack Bars -->
-      <div class="attack-bars">
-        <div class="attack-bar" style="--cd:0.25" data-name="Fireball">
-          <span class="attack-fill"></span>
-          <small class="attack-label"></small>
+      <dl class="stat-grid">
+        <div>
+          <dt>💪 Str</dt>
+          <dd>10</dd>
         </div>
-      </div>
-    </div>
+        <div>
+          <dt>⚡ Agi</dt>
+          <dd>11</dd>
+        </div>
+        <div>
+          <dt>🛡️ Arm</dt>
+          <dd>7</dd>
+        </div>
+        <div>
+          <dt>🎯 Eva</dt>
+          <dd>3</dd>
+        </div>
+        <!-- add/remove entries as needed -->
+      </dl>
+
+      <!-- 3. Abilities -->
+      <ul class="ability-list">
+        <li class="ability" style="--hunt-cd:0.35">
+          <span class="ability-fill"></span>
+          <span class="ability-icon">🔥</span>
+          <span class="ability-name">Fireball</span>
+          <span class="ability-dmg">21</span>
+        </li>
+        <!-- clone & update these via JS -->
+      </ul>
+      <!-- 4. Stats -->
+
+    </article>
   </template>
 
-  <!-- LEFT COLUMN – cards + log -->
-  <div class="hunt-main">
-    <div class="char-holders"></div>
 
+  <!-- ╭─────────────────────────────╮
+       │  W I D E   D E S K T O P   │
+       ╰─────────────────────────────╯ -->
+
+  <!-- LEFT ⅔ – combat + log -->
+  <main class="hunt-main">
+    <!-- row 1: player + enemy cards (auto-filled by JS) -->
+    <div class="char-holders">
+      <div class="char-card player" id="char-card-player"> <!-- add .enemy for foes -->
+        <!-- 1. Name -->
+        <h2 class="char-card__name">Player</h2>
+
+        <!-- 2. HP + Portrait -->
+        <div class="char-card__row">
+          <div class="health-stack">
+            <small class="hp-label">132 / 200 HP</small>
+            <div class="health-bar" style="--hunt-hp:0.66">
+              <span class="hp-fill"></span>
+            </div>
+
+          </div>
+
+          <img class="char-card__portrait" src="src/Assets/Images/enemy-example.png" alt="Goblin">
+        </div>
+
+        <dl class="stat-grid">
+          <div>
+            <dt>💪 Str</dt>
+            <dd>10</dd>
+          </div>
+          <div>
+            <dt>⚡ Agi</dt>
+            <dd>11</dd>
+          </div>
+          <div>
+            <dt>🛡️ Arm</dt>
+            <dd>7</dd>
+          </div>
+          <div>
+            <dt>🎯 Eva</dt>
+            <dd>3</dd>
+          </div>
+          <!-- add/remove entries as needed -->
+        </dl>
+
+        <!-- 3. Abilities -->
+        <ul class="ability-list">
+          <li class="ability" style="--hunt-cd:0.35">
+            <span class="ability-fill"></span>
+            <span class="ability-icon">🔥</span>
+            <span class="ability-name">Fireball</span>
+            <span class="ability-dmg">21</span>
+          </li>
+          <!-- clone & update these via JS -->
+        </ul>
+        <!-- 4. Stats -->
+
+      </div>
+      <div class="char-card enemy" id="char-card-enemy"> <!-- add .enemy for foes -->
+        <!-- 1. Name -->
+        <h2 class="char-card__name">Player</h2>
+
+        <!-- 2. HP + Portrait -->
+        <div class="char-card__row">
+          <div class="health-stack">
+            <small class="hp-label">132 / 200 HP</small>
+            <div class="health-bar" style="--hunt-hp:0.66">
+              <span class="hp-fill"></span>
+            </div>
+
+          </div>
+
+          <img class="char-card__portrait" src="src/Assets/Images/enemy-example.png" alt="Goblin">
+        </div>
+
+        <dl class="stat-grid">
+          <div>
+            <dt>💪 Str</dt>
+            <dd>10</dd>
+          </div>
+          <div>
+            <dt>⚡ Agi</dt>
+            <dd>11</dd>
+          </div>
+          <div>
+            <dt>🛡️ Arm</dt>
+            <dd>7</dd>
+          </div>
+          <div>
+            <dt>🎯 Eva</dt>
+            <dd>3</dd>
+          </div>
+          <!-- add/remove entries as needed -->
+        </dl>
+
+        <!-- 3. Abilities -->
+        <ul class="ability-list">
+          <li class="ability" style="--hunt-cd:0.35">
+            <span class="ability-fill"></span>
+            <span class="ability-icon">🔥</span>
+            <span class="ability-name">Fireball</span>
+            <span class="ability-dmg">21</span>
+          </li>
+          <!-- clone & update these via JS -->
+        </ul>
+        <!-- 4. Stats -->
+
+      </div>
+    </div>
+
+    <!-- row 2: scrolling combat log -->
     <div class="hunt-scroll">
       <ul id="hunt-update-log"></ul>
     </div>
-  </div>
+  </main>
 
-  <!-- RIGHT COLUMN – area UI -->
+  <!-- RIGHT ⅓ – area selection & stats -->
   <aside class="area-select glass">
     <label for="area-select" class="sr-only">Area</label>
     <select id="area-select" class="area-select__input">
       <option value="" disabled selected>Select an area…</option>
       <option value="forest_edge">Whispering Forest</option>
-      <!-- …other options -->
+      <!-- … -->
     </select>
 
     <button id="fight-boss-btn" class="fight-boss-btn" disabled>Fight Boss</button>
@@ -61,7 +189,6 @@
       <div class="area-stats__row"><span>Boss Kills</span><span id="area-boss-kills">0</span></div>
       <div class="area-stats__row"><span>Total Kills</span><span id="area-total-kills">0</span></div>
       <div class="area-stats__row"><span>Kills This Run</span><span id="area-kills-this-run">0</span></div>
-
     </section>
   </aside>
 </section>

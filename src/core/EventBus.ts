@@ -7,6 +7,7 @@ import { poolChangedPayload } from "../models/value-objects/RegenPool";
 import { InventoryItemSpec } from "../shared/types";
 import { BigNumber } from "@/models/utils/BigNumber";
 import { AreaStats, EnemyStats, GameStats, PrestigeStats, UserStats } from "@/shared/stats-types";
+import { MilestoneEventPayload } from "@/shared/Milestones";
 
 export interface GameEvents {
 	"Game:UITick": number;
@@ -51,8 +52,12 @@ export interface GameEvents {
 	"stats:areaStatsChanged": AreaStats;
 	"stats:gameStatsChanged": GameStats;
 	"stats:prestigeStatsChanged": PrestigeStats;
+	"milestone:achieved": MilestoneEventPayload;
 	//------------------ DEBUG ---------------------
 	"debug:killEnemy": void;
+	// ------------------ MILESTONES ------------------------
+	"monster-killed": [entityId: string, meta?: any];
+	"building-built": [entityId: string, meta?: any];
 }
 
 export type EventKey = keyof GameEvents;

@@ -95,7 +95,7 @@ export class HuntManager extends Destroyable implements Saveable {
 		// Local closure variable keeps track of an accumulated timer so that we roll
 		// once per second independent of frame rate.
 		let elapsed = 0;
-		const rollTime = debugManager.debugActive ? 0.1 : 1;
+		const rollTime = debugManager.debugActive ? debugManager.DEBUG_HUNT_SEARCHSPEED : 1;
 
 		return {
 			onEnter: () => {
