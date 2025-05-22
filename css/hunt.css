@@ -76,6 +76,7 @@
 	font-size: 0.8rem;
 	line-height: 1.35;
 	padding: 1.25rem;
+	max-height: 150px;
 }
 
 /* subtle separator */

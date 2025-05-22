@@ -9,7 +9,7 @@ export interface AreaSpec {
 	id: string;
 	displayName: string;
 	tier: number;
-	levelRange: { min: number; max: number };
+	requires: string[];
 	spawns: Array<{ monsterId: string; weight: number; drops: { tags: string[]; chance: number } }>;
 	boss: { monsterId: string; weight: number; drops: { tags: string[]; chance: number } };
 	areaScaling: AreaScaling;

@@ -19,10 +19,14 @@ import { toBigNumberModifier } from "@/shared/utils/stat-utils";
 import { toCoreStats } from "@/models/Stats";
 import { Building } from "@/features/settlement/Building";
 import { MilestoneManager } from "@/models/MilestoneManager";
+import { AreaManager } from "@/features/hunt/AreaManager";
 
 //const abilities = (rawAbilities as any[]).map((a) => new Ability(a.id, a.displayName, a.cooldown, a.effects));
 
 /* ---------- Register Data ---------------------------- */
+
+//export let areaManager: AreaManager;
+export const milestoneManager = MilestoneManager.instance;
 export function initGameData() {
 	console.log("📦 Registering game data…");
 
@@ -47,8 +51,8 @@ export function initGameData() {
 	ClassCard.registerSpecs(classCardSpecs);
 	Area.registerSpecs(rawAreas);
 	Ability.registerSpecs(rawAbilities);
-	const triggers = rawTriggers as ProgressionTrigger[];
-	MilestoneManager.registerSpecs(triggers);
-
 	InventoryRegistry.init();
+
+	milestoneManager.registerSpecs(rawTriggers as ProgressionTrigger[]);
+	//areaManager = new AreaManager();
 }

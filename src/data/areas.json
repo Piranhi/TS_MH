@@ -2,8 +2,8 @@
 	{
 		"id": "forest_easy",
 		"displayName": "Easy Forest",
+		"requires": [],
 		"tier": 1,
-		"levelRange": { "min": 1, "max": 5 },
 
 		"spawns": [
 			{ "monsterId": "slime_basic", "weight": 10, "drops": { "tags": ["t1"], "chance": 0.01 } },
@@ -17,8 +17,8 @@
 	{
 		"id": "forest_hard",
 		"displayName": "Hard Forest",
+		"requires": ["hunt.boss.tier1"],
 		"tier": 2,
-		"levelRange": { "min": 1, "max": 5 },
 
 		"spawns": [
 			{ "monsterId": "slime_basic", "weight": 10, "drops": { "tags": ["t1"], "chance": 0.5 } },

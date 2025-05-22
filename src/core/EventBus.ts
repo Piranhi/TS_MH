@@ -35,6 +35,7 @@ export interface GameEvents {
 	"hunt:areaSelected": string;
 	"hunt:areaKill": { enemyId: string; areaId: string };
 	"hunt:bossKill": { areaId: string };
+	"hunt:areaUnlocked": string;
 	"combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };
 	"combat:ended": string;
 	"classCard:levelUp": string;

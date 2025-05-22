@@ -157,13 +157,11 @@ export class SettlementManager implements Saveable {
 
 	changeBuildingStatus(type: BuildingType, newStatus: BuildingUnlockStatus) {
 		const building = this.buildingsMap.get(type);
-		console.log(building);
 		if (!building) {
 			console.warn(`Building ${type} not found when trying to set building status`);
 			return;
 		}
 		building.buildingStatus = newStatus;
-		console.log(building.buildingStatus);
 		this.buildingsMap.set(type, building);
 		bus.emit("settlement:changed");
 	}

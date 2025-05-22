@@ -5,7 +5,6 @@ import { HuntState } from "@/features/hunt/HuntManager";
 import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { CharacterDisplay } from "../components/CharacterDisplay";
-import { Area } from "@/models/Area";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { AreaStats } from "@/shared/stats-types";
 import { Player } from "@/models/player";
@@ -39,7 +38,10 @@ export class HuntScreen extends BaseScreen {
 		this.bindEvents();
 	}
 
-	show() {}
+	show() {
+		Player.getInstance().huntManager!.areaManager.refresh();
+		this.buildAreaSelect();
+	}
 
 	hide() {}
 
@@ -47,6 +49,7 @@ export class HuntScreen extends BaseScreen {
 
 	private setupElements() {
 		this.huntUpdateEl = document.getElementById("hunt-update-log") as HTMLElement;
+		this.areaSelectEl = this.byId("area-select") as HTMLSelectElement;
 
 		// AREA STATS
 		this.statTotalKillsEl = this.byId("area-total-kills");
@@ -56,8 +59,6 @@ export class HuntScreen extends BaseScreen {
 		this.bossKillsEl = this.byId("area-boss-kills");
 		this.fightBossBtn = this.byId("fight-boss-btn") as HTMLButtonElement;
 		this.fightBossBtn.disabled = true;
-
-		this.buildAreaSelect();
 	}
 
 	private bindEvents() {
@@ -66,6 +67,7 @@ export class HuntScreen extends BaseScreen {
 		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
 		bindEvent(this.eventBindings, "combat:started", (combat) => this.combatStarted(combat));
 		bindEvent(this.eventBindings, "combat:ended", (result) => this.combatEnded(result));
+		bindEvent(this.eventBindings, "hunt:areaUnlocked", () => this.buildAreaSelect());
 		bindEvent(this.eventBindings, "inventory:dropped", (drops) => {
 			const names = drops.map((drop) => InventoryRegistry.getItemById(drop).name).join(", ");
 			this.updateOutput(`Dropped: ${names}`);
@@ -86,22 +88,26 @@ export class HuntScreen extends BaseScreen {
 
 	private buildAreaSelect() {
 		// Setup Area select based on all Areas from JSON
-		this.areaSelectEl = this.byId("area-select") as HTMLSelectElement;
+		const activeArea = Player.getInstance().huntManager!.getActiveAreaID();
+
 		this.areaSelectEl.innerHTML = "";
 
 		const defaultArea = document.createElement("option");
+
+		// Add default Area
 		defaultArea.textContent = "Select an area…";
 		defaultArea.value = "";
 		defaultArea.disabled = true;
 		this.areaSelectEl.options.add(defaultArea);
 		this.areaSelectEl.selectedIndex = 0;
 
-		const Areas = Area.getAllSpecs();
-		Areas.forEach((area) => {
+		const Areas = Player.getInstance().huntManager!.areaManager.getUnlockedAreas();
+		Areas.forEach((area, index) => {
 			const areaSelect = document.createElement("option");
 			areaSelect.value = area.id;
 			areaSelect.textContent = `[T${area.tier}] - ${area.displayName}`;
 			this.areaSelectEl.options.add(areaSelect);
+			if (area.id === activeArea) this.areaSelectEl.selectedIndex = index + 1; // Set to +1 because we add the default area at the start
 		});
 	}
 
@@ -112,7 +118,7 @@ export class HuntScreen extends BaseScreen {
 
 	private combatEnded(result: string) {
 		this.clearEnemy();
-		this.updateOutput(result);
+		//this.updateOutput(result);
 	}
 
 	private fightBoss(e: Event) {

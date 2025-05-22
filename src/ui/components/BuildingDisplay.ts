@@ -35,7 +35,6 @@ export class BuildingDisplay extends UIBase {
 		title.textContent = "Construction Progress";
 		this.buildingContentsEl.appendChild(title);
 		const unlockCostData = this.building.getUnlockCostData();
-		console.log(unlockCostData);
 		const constructionProgress = new ProgressBar({
 			container: this.buildingContentsEl,
 			templateId: undefined,

@@ -11,3 +11,5 @@ export interface MilestoneEventPayload {
 	timestamp: number; // when it happened (ms since epoch)
 	[key: string]: any; // allow any extra fields
 }
+
+export type MilestoneMeta = Omit<Partial<MilestoneEventPayload>, "tag" | "timestamp">;

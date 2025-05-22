@@ -10,6 +10,7 @@ import { debugManager, printLog } from "@/core/DebugManager";
 import { Player } from "@/models/player";
 import { Destroyable } from "@/models/Destroyable";
 import { bindEvent } from "@/shared/utils/busUtils";
+import { AreaManager } from "./AreaManager";
 
 export enum HuntState {
 	Idle = "Idle",
@@ -40,25 +41,45 @@ export class HuntManager extends Destroyable implements Saveable {
 	private handler: StateHandler;
 	private area!: Area;
 	private areaIndex: number = 0;
+	public readonly areaManager: AreaManager;
 
 	constructor() {
 		super();
 		this.handler = this.makeIdleState();
 		this.transition(HuntState.Idle, this.makeIdleState());
+		this.areaManager = new AreaManager();
 
 		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.onTick(dt));
 		bindEvent(this.eventBindings, "hunt:areaSelected", (areaId) => this.setArea(areaId));
 		bindEvent(this.eventBindings, "game:gameReady", () => this.gameReady());
 		bindEvent(this.eventBindings, "game:prestigePrep", () => this.prestigePrep);
+		bindEvent(this.eventBindings, "milestone:achieved", () => this.prestigePrep);
 	}
 
 	private gameReady() {
 		const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
 		areaSelector.selectedIndex = this.areaIndex;
 	}
+
+	destroy(): void {
+		super.destroy();
+		this.areaManager.destroy();
+	}
+
+	public getActiveArea(): Area | null {
+		return this.area;
+	}
+
+	public getActiveAreaID(): string {
+		if (this.area) return this.area.id;
+		return "";
+	}
+
 	private prestigePrep() {
 		//this.clearArea();
 	}
+
+	private handleMilestones() {}
 
 	/** Change the hunting grounds without restarting the whole loop. */
 	public setArea(areaId: string) {

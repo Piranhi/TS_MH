@@ -1,92 +1,76 @@
 import { printLog } from "@/core/DebugManager";
-import { bus } from "@/core/EventBus";
-import { MilestoneEventPayload, MilestoneTag, ProgressionEvent } from "@/shared/Milestones";
+import { bus, GameEvents } from "@/core/EventBus";
+import { MilestoneEventPayload, MilestoneMeta, MilestoneTag, ProgressionEvent } from "@/shared/Milestones";
 import { Saveable } from "@/shared/storage-types";
 import { ProgressionTrigger } from "@/shared/types";
 
 interface MilestoneSaveState {
-	tags: MilestoneTag[];
+	persistentTags: MilestoneTag[];
+	runTags: MilestoneTag[];
 }
 
 export class MilestoneManager implements Saveable {
-	private static _instance: MilestoneManager;
-	private static triggerMap = new Map<string, MilestoneTag[]>();
-	private readonly milestones = new Set<MilestoneTag>();
+	private triggerMap = new Map<string, MilestoneTag[]>();
+	private runMilestones = new Set<MilestoneTag>();
+	private persistentMilestones = new Set<MilestoneTag>();
 
-	constructor(initial?: MilestoneTag[]) {
-		initial?.forEach((tag) => this.milestones.add(tag));
-		this.bindEvents();
+	/** singleton */
+	static instance = new MilestoneManager();
+
+	private constructor() {
+		bus.on("game:prestigePrep", () => this.runMilestones.clear());
+		bus.on("hunt:areaKill", ({ enemyId }) => this.processRun("monster-killed", enemyId));
+		//bus.on("building-built", (entityId: string, meta?: any) => this.processRun("building-built", entityId, meta));
+		//bus.on("hunt:bossKill", (entityId: string, meta?: any) => this.processRun("boss-defeated", entityId));
 	}
 
-	// Register JSON Specs
-	public static registerSpecs(triggers: ProgressionTrigger[]) {
-		triggers.forEach(({ event, id, unlocks }) => {
-			this.triggerMap.set(`${event}|${id}`, unlocks);
-		});
+	registerSpecs(triggers: ProgressionTrigger[]) {
+		triggers.forEach(({ event, id, unlocks }) => this.triggerMap.set(`${event}|${id}`, unlocks));
 	}
 
-	private bindEvents() {
-		bus.on("hunt:areaKill", ({ enemyId, areaId }) => {
-			this.process("monster-killed", enemyId);
-		});
+	processRun(event: ProgressionEvent, entityId: string, meta?: MilestoneMeta) {
+		this.process(this.runMilestones, event, entityId, meta);
+	}
+	processPersistent(event: ProgressionEvent, entityId: string, meta?: MilestoneMeta) {
+		this.process(this.persistentMilestones, event, entityId, meta);
 	}
 
-	/** central unlock logic */
-	process(event: ProgressionEvent, entityId: string, meta?: any) {
-		const key = `${event}|${entityId}`;
-		const unlocks = MilestoneManager.triggerMap.get(key);
+	private process(bucket: Set<MilestoneTag>, event: ProgressionEvent, entityId: string, meta?: MilestoneMeta) {
+		const unlocks = this.triggerMap.get(`${event}|${entityId}`);
 		if (!unlocks) return;
-		unlocks.forEach((tag) => this.add(tag, { entityId, ...meta }));
+		for (const tag of unlocks) this.addToBucket(bucket, tag, meta);
 	}
 
-	/** True if the player already earned the milestone */
-	has(tag: MilestoneTag): boolean {
-		return this.milestones.has(tag);
-	}
+	private addToBucket(bucket: Set<MilestoneTag>, tag: MilestoneTag, meta?: MilestoneMeta) {
+		if (bucket.has(tag)) return;
+		bucket.add(tag);
 
-	/** Add a new milestone and broadcast, merging in any extra data */
-	add(tag: MilestoneTag, meta: Omit<Partial<MilestoneEventPayload>, "tag" | "timestamp"> = {}): void {
-		if (this.milestones.has(tag)) return;
-
-		this.milestones.add(tag);
-
-		// build the full payload
 		const payload: MilestoneEventPayload = {
 			tag,
 			timestamp: Date.now(),
-			...meta, // anything extra the caller provided
+			...meta,
 		};
-
 		printLog(`Milestone added: ${tag}`, 2, "MilestoneManager.ts");
 		bus.emit("milestone:achieved", payload);
 	}
 
-	/** Convenience: check a whole list */
+	has(tag: MilestoneTag): boolean {
+		return this.runMilestones.has(tag) || this.persistentMilestones.has(tag);
+	}
 	hasAll(tags: MilestoneTag[]): boolean {
-		return tags.every((t) => this.milestones.has(t));
-	}
-
-	static get instance(): MilestoneManager {
-		if (!MilestoneManager._instance) {
-			MilestoneManager._instance = new MilestoneManager();
-		}
-		return MilestoneManager._instance;
-	}
-
-	/** Persist / revive ------------------------------------------------------ */
-	toJSON(): MilestoneTag[] {
-		return [...this.milestones];
+		return tags.every((t) => this.has(t));
 	}
 
 	save(): MilestoneSaveState {
 		return {
-			tags: Array.from(this.milestones),
+			runTags: [...this.runMilestones],
+			persistentTags: [...this.persistentMilestones],
 		};
 	}
-
-	load(state: MilestoneSaveState): void {
-		this.milestones.clear();
-		state.tags.forEach((tag) => this.milestones.add(tag));
-		console.table(state.tags);
+	load(state: MilestoneSaveState) {
+		this.runMilestones.clear();
+		state.runTags.forEach((t) => this.runMilestones.add(t));
+		this.persistentMilestones.clear();
+		state.persistentTags.forEach((t) => this.persistentMilestones.add(t));
 	}
 }
