@@ -24,10 +24,19 @@ export class CombatManager extends Destroyable {
 		if (this.combatEndOverride) return;
 		this.elapsed += dt;
 		// Tick players whilst combat is active
+		// Player effects first
 		const playerEffects = this.playerCharacter.getReadyEffects(dt);
+		for (const effect of playerEffects) this.effectProcessor.apply(effect, this.enemyCharacter);
+		if (this.playerCharacter.isAlive() === false || this.enemyCharacter.isAlive() === false) {
+			this.endCombat();
+		}
 		const enemyEffects = this.enemyCharacter.getReadyEffects(dt);
-		const allEffects = [...playerEffects, ...enemyEffects];
-		for (const effect of allEffects) {
+		for (const effect of playerEffects) this.effectProcessor.apply(effect, this.playerCharacter);
+		if (this.playerCharacter.isAlive() === false || this.enemyCharacter.isAlive() === false) {
+			this.endCombat();
+		}
+		//const allEffects = [...playerEffects, ...enemyEffects];
+		/* 		for (const effect of allEffects) {
 			const target = effect.source === this.playerCharacter ? this.enemyCharacter : this.playerCharacter;
 
 			const result = this.effectProcessor.apply(effect, target);
@@ -39,7 +48,7 @@ export class CombatManager extends Destroyable {
 				this.endCombat();
 				break;
 			}
-		}
+		} */
 	}
 
 	public endCombatEarly() {

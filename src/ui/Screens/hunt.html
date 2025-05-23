@@ -1,58 +1,8 @@
 <!-- ------------- #game-area ------------- -->
 <section class="game hunt-screen">
 
-  <template id="character-display">
-    <article class="char-card"> <!-- add .enemy for foes -->
-      <!-- 1. Name -->
-      <h2 class="char-card__name">Player</h2>
 
-      <!-- 2. HP + Portrait -->
-      <div class="char-card__row">
-        <div class="health-stack">
-          <small class="hp-label">132 / 200 HP</small>
-          <div class="health-bar" style="--hunt-hp:0.66">
-            <span class="hp-fill"></span>
-          </div>
 
-        </div>
-
-        <img class="char-card__portrait" src="src/Assets/Images/enemy-example.png" alt="Goblin">
-      </div>
-
-      <dl class="stat-grid">
-        <div>
-          <dt>💪 Str</dt>
-          <dd>10</dd>
-        </div>
-        <div>
-          <dt>⚡ Agi</dt>
-          <dd>11</dd>
-        </div>
-        <div>
-          <dt>🛡️ Arm</dt>
-          <dd>7</dd>
-        </div>
-        <div>
-          <dt>🎯 Eva</dt>
-          <dd>3</dd>
-        </div>
-        <!-- add/remove entries as needed -->
-      </dl>
-
-      <!-- 3. Abilities -->
-      <ul class="ability-list">
-        <li class="ability" style="--hunt-cd:0.35">
-          <span class="ability-fill"></span>
-          <span class="ability-icon">🔥</span>
-          <span class="ability-name">Fireball</span>
-          <span class="ability-dmg">21</span>
-        </li>
-        <!-- clone & update these via JS -->
-      </ul>
-      <!-- 4. Stats -->
-
-    </article>
-  </template>
 
 
   <!-- ╭─────────────────────────────╮
@@ -90,7 +40,7 @@
             <dd>11</dd>
           </div>
           <div>
-            <dt>🛡️ Arm</dt>
+            <dt>🛡️ Def</dt>
             <dd>7</dd>
           </div>
           <div>

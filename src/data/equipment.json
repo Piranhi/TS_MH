@@ -5,7 +5,7 @@
 		"name": "Worn padded vest3",
 		"description": "Todo",
 		"equipType": "chest",
-		"statMod": { "defenceFlat": 1 },
+		"statMod": { "defence": 1 },
 		"iconUrl": "/images/equipment/equipment-t1-chest-wornpaddedchest.png",
 		"tags": ["t1"]
 	},
@@ -15,7 +15,7 @@
 		"name": "Leather Cap",
 		"description": "Todo",
 		"equipType": "head",
-		"statMod": { "defenceFlat": 1 },
+		"statMod": { "defence": 1 },
 		"iconUrl": "",
 		"tags": ["t1"]
 	},
@@ -23,20 +23,20 @@
 		"id": "tier1_weapon",
 		"category": "equipment",
 		"name": "Cracked Sword",
-		"description": "Todo",
+		"description": "A crappy tier 1 sword",
 		"equipType": "weapon",
-		"statMod": { "attackflat": 1 },
-		"iconUrl": "/images/equipment/equipment-t1-sword-crackedsword.png",
+		"statMod": { "attack": 10 },
+		"iconUrl": "/images/equipment/equipment-t1-weapon-crackedsword.png",
 		"tags": ["t1"]
 	},
 	{
 		"id": "tier1_legs",
 		"category": "equipment",
-		"name": "Ripped shorts",
+		"name": "Ripped Trousers",
 		"description": "Todo",
 		"equipType": "legs",
-		"statMod": { "defenceFlat": 1 },
-		"iconUrl": "",
+		"statMod": { "defence": 1 },
+		"iconUrl": "/images/equipment/equipment-t1-legs-rippedtrousers.png",
 		"tags": ["t1"]
 	}
 ]

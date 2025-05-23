@@ -1,5 +1,19 @@
 import { TrainedStat } from "./TrainedStat";
 
+export const STAT_KEYS: (keyof Stats)[] = [
+	"attack",
+	"defence",
+	"speed",
+	"hp",
+	"power",
+	"guard",
+	"critChance",
+	"critDamage",
+	"evasion",
+	"lifesteal",
+	"encounterChance",
+];
+
 export interface CoreStats {
 	attack: number;
 	defence: number;
@@ -18,16 +32,20 @@ export interface BuildStats {
 	encounterChance: number;
 }
 
-export interface TrainedStatData {
+export interface TrainedStatState {
 	id: TrainedStatType;
-	name: string;
 	level: number;
 	progress: number;
 	nextThreshold: number;
 	assignedPoints: number;
-	baseGainRate: number;
 	status: TrainedStatStatus;
-	statMod: Partial<StatsModifier>;
+}
+
+export interface TrainedStatSpec {
+	id: TrainedStatType;
+	name: string;
+	baseGainRate: number;
+	statMod: StatsModifier;
 }
 
 export interface StatsProvider {
@@ -60,7 +78,7 @@ export interface AreaScaling {
 export type Stats = CoreStats & BuildStats;
 export type StatKey = keyof Stats;
 export type StatsModifier = Partial<Stats>;
-export type TrainedStatType = "attack" | "agility" | "crit";
+export type TrainedStatType = "power" | "guard" | "crit";
 export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden";
 
 export function scaleEnemyStatsByArea(base: CoreStats, scale: AreaScaling): CoreStats {
@@ -72,40 +90,53 @@ export function scaleEnemyStatsByArea(base: CoreStats, scale: AreaScaling): Core
 	};
 }
 
-export function makeDefaultTrainedStats(): Record<TrainedStatType, TrainedStat> {
+// Specs are loaded from config/data, not created at runtime
+export const TrainedStatSpecs: Record<TrainedStatType, TrainedStatSpec> = {
+	power: {
+		id: "power",
+		name: "Power",
+		baseGainRate: 0.1,
+		statMod: { power: 1 },
+	},
+	guard: {
+		id: "guard",
+		name: "Guard",
+		baseGainRate: 0.01,
+		statMod: { guard: 1 },
+	},
+	crit: {
+		id: "crit",
+		name: "Crit",
+		baseGainRate: 0.001,
+		statMod: { critDamage: 1 },
+	},
+};
+
+export function makeDefaultTrainedStatStates(): Record<TrainedStatType, TrainedStatState> {
 	return {
-		attack: new TrainedStat({
-			id: "attack",
-			name: "Attack",
+		power: {
+			id: "power",
 			level: 1,
 			progress: 0,
 			nextThreshold: 50,
 			assignedPoints: 0,
-			baseGainRate: 1,
 			status: "Unlocked",
-			statMod: { power: 1 },
-		}),
-		agility: new TrainedStat({
-			id: "agility",
-			name: "Agility",
+		},
+		guard: {
+			id: "guard",
 			level: 1,
 			progress: 0,
 			nextThreshold: 100,
 			assignedPoints: 0,
-			baseGainRate: 0.5,
 			status: "Unlocked",
-			statMod: { evasion: 1 },
-		}),
-		crit: new TrainedStat({
+		},
+		crit: {
 			id: "crit",
-			name: "Crit",
 			level: 1,
 			progress: 0,
 			nextThreshold: 100,
 			assignedPoints: 0,
-			baseGainRate: 0.5,
 			status: "Hidden",
-			statMod: { critChance: 1 },
-		}),
+		},
 	};
 }

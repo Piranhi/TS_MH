@@ -50,7 +50,8 @@ export class EffectProcessor {
 				mitigationFactor - 1
 			}  - [NET]${finalDamage.toString()}`,
 			3,
-			"BaseCharacter.ts"
+			"EffectProcessor.ts",
+			"combat"
 		);
 		// Debug invincible
 		if (!target.canDie) {
@@ -64,7 +65,12 @@ export class EffectProcessor {
 		const healAmount = target.maxHp.multiply(rawHealPercent.div(100));
 		if (healAmount.lte(new BigNumber(0))) return new BigNumber(0);
 		target.hp.increase(healAmount);
-		printLog(`${target.name} healing. Inc: [RAW]${rawHealPercent.toString()}- [NET]${healAmount.toString()}}`, 3, "BaseCharacter.ts");
+		printLog(
+			`${target.name} healing. Inc: [RAW]${rawHealPercent.toString()}- [NET]${healAmount.toString()}}`,
+			3,
+			"EffectProcessor.ts",
+			"combat"
+		);
 		return healAmount;
 	}
 

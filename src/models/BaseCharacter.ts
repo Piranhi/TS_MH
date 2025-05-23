@@ -135,6 +135,7 @@ export abstract class BaseCharacter extends Destroyable {
 					});
 				}
 				ability.resetCooldown();
+				printLog(`${this.name} using ability ${ability.id}`, 3, "BaseCharacter.ts", "combat");
 			}
 		});
 		return readyEffects;

@@ -1,32 +1,44 @@
 import { bus } from "@/core/EventBus";
-import { Stats, StatsModifier, TrainedStatData, TrainedStatStatus, TrainedStatType } from "./Stats";
-import { Player } from "./player";
-import { BigNumber } from "./utils/BigNumber";
+import { StatsModifier, TrainedStatSpec, TrainedStatSpecs, TrainedStatState } from "./Stats";
 
 const GROWTH_VALUE = 1.35;
 export class TrainedStat {
-	id: TrainedStatType;
-	name: string;
-	level: number;
-	progress: number;
-	nextThreshold: number;
-	private _assignedPoints: number;
-	baseGainRate: number;
-	status: TrainedStatStatus;
-	statMod: Partial<StatsModifier>;
+	private state: TrainedStatState;
+	private readonly spec: TrainedStatSpec;
 
-	constructor(data: TrainedStatData) {
-		this.id = data.id;
-		this.name = data.name;
-		this.level = data.level;
-		this.progress = data.progress;
-		this.nextThreshold = data.nextThreshold;
-		this._assignedPoints = 0;
-		this.baseGainRate = data.baseGainRate;
-		this.status = data.status;
-		this.statMod = data.statMod;
+	constructor(state: TrainedStatState) {
+		this.state = { ...state }; // Copy to avoid mutation
 
-		bus.on("Game:GameTick", (dt) => this.update(dt));
+		this.spec = TrainedStatSpecs[state.id];
+		if (!this.spec) {
+			throw new Error(`No spec found for trained stat: ${state.id}`);
+		}
+	}
+
+	// Getters for accessing state
+	get id() {
+		return this.state.id;
+	}
+	get name() {
+		return this.spec.name;
+	}
+	get level() {
+		return this.state.level;
+	}
+	get progress() {
+		return this.state.progress;
+	}
+	get nextThreshold() {
+		return this.state.nextThreshold;
+	}
+	get assignedPoints() {
+		return this.state.assignedPoints;
+	}
+	get status() {
+		return this.state.status;
+	}
+	get baseGainRate() {
+		return this.spec.baseGainRate;
 	}
 
 	/**
@@ -34,79 +46,46 @@ export class TrainedStat {
 	 * Increases progress = assignedPoints * baseGainRate * deltaTime
 	 * and handles leveling up.
 	 */
-	public update(deltaTime: number) {
-		if (this._assignedPoints === 0) return;
+	public handleTick(deltaTime: number) {
+		if (this.state.assignedPoints === 0) return;
 
-		this.progress += this._assignedPoints * this.baseGainRate * deltaTime;
+		this.state.progress += this.state.assignedPoints * this.spec.baseGainRate * deltaTime;
 
-		while (this.progress >= this.nextThreshold) {
-			this.progress -= this.nextThreshold;
+		while (this.state.progress >= this.state.nextThreshold) {
+			this.state.progress -= this.state.nextThreshold;
 			this.levelUp();
 
 			// e.g. exponential growth: increase threshold by 15% each level
-			this.nextThreshold = Math.floor(this.nextThreshold * GROWTH_VALUE);
+			this.state.nextThreshold = Math.floor(this.state.nextThreshold * GROWTH_VALUE);
 		}
 	}
 
 	public adjustAssignedPoints(delta: number) {
-		this._assignedPoints += delta;
+		this.state.assignedPoints += delta;
 	}
 
 	private levelUp() {
-		this.level += 1;
-		bus.emit("player:trainedStatChanged", this.id);
+		this.state.level += 1;
+		bus.emit("player:trainedStatChanged", this.state.id);
 	}
 
-	get assignedPoints() {
-		return this._assignedPoints;
-	}
-
-	public getBonuses() {
+	public getBonuses(): Partial<StatsModifier> {
 		return Object.fromEntries(
-			Object.entries(this.statMod).map(([k, v]) => {
-				if (typeof v === "number") {
-					return [k, v * this.level];
-				} else if (v instanceof BigNumber) {
-					// Multiply by number or another BigNumber as appropriate
-					return [k, v.multiply(this.level)];
-				}
-				return [k, v];
+			Object.entries(this.spec.statMod).map(([k, v]) => {
+				return [k, v * this.level];
 			})
 		) as Partial<StatsModifier>;
 	}
 
-	toJSON() {
-		return {
-			__type: "TrainedStat", // for your reviver
-			id: this.id,
-			name: this.name,
-			level: this.level,
-			progress: this.progress,
-			nextThreshold: this.nextThreshold,
-			assignedPoints: this._assignedPoints,
-			baseGainRate: this.baseGainRate,
-			status: this.status,
-			statMod: this.statMod,
-		};
+	getState(): TrainedStatState {
+		return { ...this.state };
 	}
 
-	static fromJSON(raw: any): TrainedStat {
-		// Create with the minimal shape (you might have a dedicated
-		// constructor or helper that takes the full state)
-		const dummy: TrainedStatData = {
-			id: raw.id,
-			name: raw.name,
-			level: raw.level,
-			progress: raw.progress,
-			nextThreshold: raw.nextThreshold,
-			assignedPoints: raw.assignedPoints,
-			baseGainRate: raw.baseGainRate,
-			status: raw.status,
-			statMod: raw.statMod,
-		};
-		const stat = new TrainedStat(dummy);
-		// overwrite anything the constructor didn’t set
-		stat._assignedPoints = raw.assignedPoints;
-		return stat;
+	toJSON() {
+		return this.getState();
+	}
+
+	static fromJSON(state: TrainedStatState): TrainedStat {
+		return new TrainedStat(state);
 	}
 }

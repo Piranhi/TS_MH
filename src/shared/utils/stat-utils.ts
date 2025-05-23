@@ -1,5 +1,6 @@
-import { CoreStats, CoreStatsNumbers, Stats, StatsModifier } from "@/models/Stats";
+import { Stats, StatsModifier } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
+import { ItemRarity, RARITY_MULTIPLIERS } from "../types";
 
 // Convert any object of numbers to BigNumbers
 export function toBigNumberStats<T extends Record<string, number>>(raw: T): { [K in keyof T]: BigNumber } {
@@ -26,16 +27,6 @@ export function toBigNumberModifier<T extends Record<string, number | BigNumber 
 	return out;
 }
 
-// Helper:
-function toCoreStats(stats: CoreStatsNumbers): CoreStats {
-	return {
-		attack: new BigNumber(stats.attack),
-		defence: new BigNumber(stats.defence),
-		speed: new BigNumber(stats.speed),
-		hp: new BigNumber(stats.hp),
-	};
-}
-
 // Assumes every field in a and b is a BigNumber or undefined
 export function mergeStatModifiers(a: StatsModifier, b: StatsModifier): StatsModifier {
 	const out: StatsModifier = { ...a };
@@ -47,11 +38,40 @@ export function mergeStatModifiers(a: StatsModifier, b: StatsModifier): StatsMod
 		// Defensive: if either is missing, treat as zero
 		if (aVal === undefined && bVal === undefined) continue;
 
-		const left = aVal ?? new BigNumber(0);
-		const right = bVal ?? new BigNumber(0);
+		const left = aVal ?? 0;
+		const right = bVal ?? 0;
 
-		// All stats are BigNumber now, so just add
-		out[key] = left.add(right);
+		// All stats are numbers now, so just add
+		out[key] = left + right;
 	}
 	return out;
+}
+
+/*Merge player stats*/
+export function mergeStats(a: Stats, b: Partial<Stats>): Stats {
+	const out = { ...a } as Stats;
+	for (const k in b) {
+		const key = k as keyof Stats;
+		const aVal = out[key];
+		const bVal = b[key];
+
+		out[key] = (aVal ?? 0) + (bVal ?? 0);
+	}
+	return out;
+}
+
+export function rarityAffect(rarity: ItemRarity, stat: number): number {
+	const multi = RARITY_MULTIPLIERS[rarity];
+	return stat * multi;
+}
+
+export function scaleStatsModifier(mod: StatsModifier, rarity: ItemRarity): StatsModifier {
+	const scaled: StatsModifier = {};
+	for (const key in mod) {
+		// `key` is one of the Stats keys (like "strength", "dexterity", etc.)
+		const statKey = key as keyof StatsModifier;
+		const baseValue = mod[statKey] ?? 0;
+		scaled[statKey] = rarityAffect(rarity, baseValue);
+	}
+	return scaled;
 }

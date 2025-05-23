@@ -87,8 +87,8 @@ export const RARITY_MULTIPLIERS: Record<ItemRarity, number> = {
 	uncommon: 1.1,
 	rare: 1.25,
 	epic: 1.5,
-	legendary: 1.6,
-	unique: 2,
+	legendary: 2,
+	unique: 3,
 };
 
 const rarityChances: [ItemRarity, number][] = [

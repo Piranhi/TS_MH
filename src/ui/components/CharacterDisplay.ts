@@ -3,6 +3,7 @@ import { BaseCharacter } from "@/models/BaseCharacter";
 import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { Player } from "@/models/player";
+import { STAT_KEYS, StatKey } from "@/models/Stats";
 
 export type HolderStatus = "inactive" | "active";
 
@@ -10,7 +11,7 @@ export class CharacterDisplay extends UIBase {
 	private nameEl!: HTMLElement;
 	//private atkEl!: HTMLElement;
 	//private defEl!: HTMLElement;
-	private statsContainerEl!: HTMLElement;
+	private statGridEl!: HTMLElement;
 	private hpBar!: HTMLElement;
 	private hpLabel!: HTMLElement;
 	private avatarImg!: HTMLImageElement;
@@ -66,11 +67,12 @@ export class CharacterDisplay extends UIBase {
 	private createDisplay() {
 		// CACHE ELEMENTS
 		this.nameEl = this.$(".char-card__name");
-		this.statsContainerEl = this.$(".stat-grid");
+		this.statGridEl = this.$(".stat-grid");
 		//this.atkEl = this.$(".stat--attack");
 		//this.defEl = this.$(".stat--defence");
 		this.hpBar = this.$(".health-bar");
 		this.hpLabel = this.$(".hp-label");
+
 		this.avatarImg = this.$(".char-card__portrait") as HTMLImageElement;
 		this.element.classList.add(this.isPlayer ? "player" : "enemy");
 		this.abilitiesListEl = this.$(".ability-list") as HTMLUListElement;
@@ -133,6 +135,22 @@ export class CharacterDisplay extends UIBase {
 			const ratio = ability.currentCooldown / ability.maxCooldown;
 			bar.style.setProperty("--hunt-cd", ratio.toString());
 		});
+		this.createStatsGrid();
+	}
+
+	private createStatsGrid() {
+		this.statGridEl.innerHTML = "";
+		for (const key of STAT_KEYS) {
+			const value = this.character.stats.get(key);
+			const wrapper = document.createElement("div");
+			const dt = document.createElement("dt");
+			dt.textContent = key;
+			const dd = document.createElement("dd");
+			dd.textContent = value.toString();
+			wrapper.appendChild(dt);
+			wrapper.appendChild(dd);
+			this.statGridEl.appendChild(wrapper);
+		}
 	}
 
 	private setHolderStatus(newStatus: HolderStatus) {
@@ -149,7 +167,7 @@ export class CharacterDisplay extends UIBase {
 		this.character = undefined!;
 		this.character = undefined!;
 		this.nameEl = undefined!;
-		this.statsContainerEl = undefined!;
+		this.statGridEl = undefined!;
 		this.hpBar = undefined!;
 		this.hpLabel = undefined!;
 		this.avatarImg = undefined!;

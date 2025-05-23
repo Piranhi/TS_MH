@@ -1,11 +1,13 @@
-import { bus } from "@/core/EventBus";
 import { TrainedStatStatus } from "@/models/Stats";
 import { TrainedStat } from "@/models/TrainedStat";
 import { TrainedStatManager } from "@/models/TrainedStatManager";
 import { Player } from "@/models/player";
+import { UIBase } from "./UIBase";
+import { bindEvent } from "@/shared/utils/busUtils";
+import { ProgressBar } from "./ProgressBar";
 
 interface UnlockedEls {
-	prog: HTMLDivElement;
+	progressBar: ProgressBar;
 	progressText: HTMLElement;
 	assigned: HTMLElement;
 	level: HTMLElement;
@@ -13,39 +15,35 @@ interface UnlockedEls {
 	image: HTMLImageElement;
 }
 
-export class TrainedStatDisplay {
-	private rootEl!: HTMLElement;
-	private offTick!: () => void;
+export class TrainedStatDisplay extends UIBase {
+	//private rootEl!: HTMLElement;
 	private els?: UnlockedEls;
 	private manager!: TrainedStatManager;
 
-	constructor(private root: HTMLElement, private trainingListEl: HTMLElement, private trainedStat: TrainedStat) {}
+	constructor(private root: HTMLElement, private trainingListEl: HTMLElement, private trainedStat: TrainedStat) {
+		super();
+	}
 
 	public init() {
 		this.createAndBuild();
-		this.offTick = bus.on("Game:GameTick", () => this.updateElement());
-		this.manager = Player.getInstance().trainedStatManager;
-	}
-
-	public destroy() {
-		this.offTick();
-		this.root.remove();
+		bindEvent(this.eventBindings, "Game:GameTick", () => this.updateElement());
+		this.manager = Player.getInstance().trainedStatManager!;
 	}
 
 	private createAndBuild() {
 		const templates: Record<TrainedStatStatus, HTMLTemplateElement | null> = {
-			Unlocked: this.root.querySelector("#training-item-unlocked") as any,
-			Locked: this.root.querySelector("#training-item-locked") as any,
+			Unlocked: this.root.querySelector("#training-item-unlocked") as HTMLTemplateElement,
+			Locked: this.root.querySelector("#training-item-locked") as HTMLTemplateElement,
 			Hidden: null,
 		};
 		const tmpl = templates[this.trainedStat.status];
 		if (!tmpl) return;
 
 		const frag = tmpl.content.cloneNode(true) as DocumentFragment;
-		this.rootEl = frag.firstElementChild as HTMLElement;
-		this.rootEl.dataset.key = this.trainedStat.id;
+		this.element = frag.firstElementChild as HTMLElement;
+		this.element.dataset.key = this.trainedStat.id;
 
-		this.trainingListEl.appendChild(this.rootEl);
+		this.attachTo(this.trainingListEl);
 		if (this.trainedStat.status === "Unlocked") {
 			this.setupUnlocked();
 		} else {
@@ -53,26 +51,22 @@ export class TrainedStatDisplay {
 		}
 	}
 
-	// Helper to select elements
-	private $<T extends Element = Element>(sel: string): T {
-		const el = this.rootEl.querySelector(sel);
-		if (!el) {
-			throw new Error(`No element matches selector "${sel}"`);
-		}
-		return el as T;
-	}
-
 	private setupUnlocked() {
+		const progressText = document.createElement("div");
+		progressText.className = "progress-text";
+		this.$(".training-bar").appendChild(progressText);
+		const progressBar = new ProgressBar({ container: this.$(".training-bar"), initialValue: 0, maxValue: 100 });
+
 		this.els = {
-			prog: this.$<HTMLDivElement>(".progress"),
-			progressText: this.$<HTMLElement>(".progress-text"),
-			assigned: this.$<HTMLElement>(".training-assigned"),
-			level: this.$<HTMLElement>(".training-level"),
-			name: this.$<HTMLElement>(".training-name"),
-			image: this.$<HTMLImageElement>(".training-icon img"),
+			progressBar: progressBar,
+			progressText: progressText,
+			assigned: this.$(".training-assigned"),
+			level: this.$(".training-level"),
+			name: this.$(".training-name"),
+			image: this.$(".training-icon img") as HTMLImageElement,
 		};
-		this.$<HTMLButtonElement>(".control-button.minus").addEventListener("click", () => this.adjustAmount(-1));
-		this.$<HTMLButtonElement>(".control-button.plus").addEventListener("click", () => this.adjustAmount(1));
+		this.bindDomEvent(this.$(".control-button.plus"), "click", () => this.adjustAmount(1));
+		this.bindDomEvent(this.$(".control-button.minus"), "click", () => this.adjustAmount(-1));
 
 		this.els.image.alt = this.trainedStat.name;
 
@@ -84,12 +78,13 @@ export class TrainedStatDisplay {
 	private updateElement() {
 		if (this.trainedStat.status !== "Unlocked") return;
 
-		const { prog, progressText, assigned, level, name } = this.els!;
+		const { progressBar, progressText, assigned, level, name } = this.els!;
 		const pct = (this.trainedStat.progress / this.trainedStat.nextThreshold) * 100;
 		name.textContent = this.trainedStat.name;
 		level.textContent = `Lvl ${this.trainedStat.level}`;
 		assigned.textContent = String(this.trainedStat.assignedPoints);
-		prog.style.width = `${pct}%`;
+		progressBar.setValue(pct);
+
 		progressText.textContent = `${Math.floor(this.trainedStat.progress)} / ${this.trainedStat.nextThreshold}`;
 	}
 

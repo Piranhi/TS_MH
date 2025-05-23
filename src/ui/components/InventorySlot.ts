@@ -33,7 +33,7 @@ export class InventorySlot extends UIBase {
 		if (!this.itemState || !this.spec) return;
 		Tooltip.instance.show(this.element, {
 			icon: this.spec.iconUrl,
-			name: prettify(this.spec.name),
+			name: `Lvl:${this.itemState.level} - ${prettify(this.spec.name)}`,
 			rarity: prettify(this.itemState.rarity!),
 			type: getItemCategoryLabel(this.spec.category),
 			description: this.spec.description,

@@ -1,6 +1,7 @@
 import { StatsModifier, CoreStats, Stats, defaultPlayerStats } from "@/models/Stats";
 import { bus } from "./EventBus";
 import { BigNumber } from "@/models/utils/BigNumber";
+import { mergeStats } from "@/shared/utils/stat-utils";
 
 export type LayerFn = () => StatsModifier;
 
@@ -48,15 +49,4 @@ export class StatsEngine {
 	public printStats(): void {
 		console.table(this.getAll());
 	}
-}
-
-function mergeStats(a: Stats, b: Partial<Stats>): Stats {
-	const out = { ...a } as Stats;
-	for (const k in b) {
-		const key = k as keyof Stats;
-		const aVal = out[key];
-		const bVal = b[key];
-		out[key] = (aVal ?? 0) + (bVal ?? 0);
-	}
-	return out;
 }

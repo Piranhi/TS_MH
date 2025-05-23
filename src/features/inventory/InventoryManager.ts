@@ -72,6 +72,18 @@ export class InventoryManager implements Saveable {
 
 	//------------------------ INVENTORY ------------------------------
 
+	private fillWithEmptySlots() {
+		this.slots = [
+			...Array(this.maxInventorySlots)
+				.fill(0)
+				.map((_, i) => this.makeSlot("inventory", i)),
+			...this.unlockedEquipmentSlots.map((name) => this.makeSlot("equipment", name)),
+			...Array(this.maxCardSlots)
+				.fill(0)
+				.map((_, i) => this.makeSlot("classCard", i)),
+		];
+	}
+
 	private updateSlotMap() {
 		this.slotMap.clear();
 		this.slots.forEach((s) => this.slotMap.set(s.id, s));
@@ -152,6 +164,12 @@ export class InventoryManager implements Saveable {
 
 	public getInventoryBySlotType(slotType: SlotType) {
 		return this.slots.filter((slot) => slot !== null && slot.type === slotType);
+	}
+
+	public clearSlots() {
+		this.fillWithEmptySlots();
+		this.updateSlotMap();
+		this.emitChange();
 	}
 
 	//------------------------ EQUIPMENT ------------------------------

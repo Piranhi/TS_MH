@@ -11,7 +11,7 @@ export class TrainScreen extends BaseScreen {
 
 	init() {
 		this.rootEl = this.addMarkuptoPage(Markup);
-		this.trainingListEl = document.getElementById("trained-stats-list") as HTMLElement;
+		this.trainingListEl = this.byId("trained-stats-list");
 		this.bindEvents();
 		this.addStatElements();
 	}
