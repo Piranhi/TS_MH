@@ -1,7 +1,9 @@
+import { printLog } from "@/core/DebugManager";
 import { bus } from "@/core/EventBus";
 import { saveManager } from "@/core/SaveManager";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { Player } from "@/models/player";
+import { PlayerCharacter } from "@/models/PlayerCharacter";
 import { BigNumber } from "@/models/utils/BigNumber";
 
 export class DebugMenu {
@@ -28,10 +30,39 @@ export class DebugMenu {
 			Player.getInstance().inventory.addLootById(spec.id, 1);
 		});
 		this.addButton("Clear Loot", () => Player.getInstance().inventory.clearSlots());
-		this.addButton("Print Stats", () => Player.getInstance().getPlayerCharacter().statsEngine.printStats());
+		this.addButton("Print Stats", () => {
+			const pc = Player.getInstance().getPlayerCharacter();
+			pc.statsEngine.printStats();
+		});
+
+		this.addButton("Test Attack", () => {
+			const pc = Player.getInstance().getPlayerCharacter();
+			const array: string[] = [];
+			for (let i = 0; i < 50; i++) {
+				array.push(this.debugAttack(pc).toString());
+			}
+			console.log(array);
+		});
 
 		//  Player.getInstance().inventory.addItemToInventory);
 		//this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));
+	}
+
+	private debugAttack(pc: PlayerCharacter) {
+		//const attack = new BigNumber(pc.stats.get("attack"));
+		const attack = new BigNumber(1000);
+		const powerMultiplier = 1 + pc.stats.get("power") / 10;
+		const critChance = pc.stats.get("critChance") / 100;
+		const critDamage = pc.stats.get("critDamage") / 100;
+		const rolledCrit = Math.random() < critChance;
+		const critMultiplier = rolledCrit ? 1 + critDamage : 1;
+		const variance = 0.9 + Math.random() * 0.2;
+
+		// for a damage effect: attack × power × crit × variance × effect.scale
+		const totalMultiplier = powerMultiplier * critMultiplier * variance;
+		const final = attack.multiply(totalMultiplier);
+		return final;
+		printLog(`Attack ${rolledCrit ? "[CRIT]" : ""} : ${final} `, 1, "Debug-Menu.ts");
 	}
 
 	private addButton(name: string, onClick: () => void) {

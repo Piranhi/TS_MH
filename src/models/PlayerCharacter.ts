@@ -1,30 +1,33 @@
 import { BaseCharacter } from "./BaseCharacter";
 import { StatsEngine } from "@/core/StatsEngine";
 import { bus } from "@/core/EventBus";
-import { BigNumber } from "./utils/BigNumber";
+import { PrestigeState } from "@/shared/stats-types";
 
 export class PlayerCharacter extends BaseCharacter {
 	readonly statsEngine: StatsEngine;
 	private readonly RECOVERY_HEAL = 0.01;
 	private classCardAbilityIds: string[] = [];
 
-	constructor() {
+	constructor(prestigeStats: PrestigeState) {
 		const engine = new StatsEngine();
 		super("You", { get: (k) => engine.get(k) });
 		this.statsEngine = engine;
-	}
-
-	public init() {
 		/* pre‑register empty layers */
 		this.statsEngine.setLayer("level", () => ({}));
+		this.statsEngine.setLayer("prestige", () => ({
+			attack: prestigeStats.permanentAttack,
+			defence: prestigeStats.permanentDefence,
+			hp: prestigeStats.permanentHP,
+		}));
 		this.statsEngine.setLayer("equipment", () => ({}));
 		this.statsEngine.setLayer("trainedStats", () => ({}));
 		this.statsEngine.setLayer("classCard", () => ({}));
 		this.statsEngine.setLayer("buffs", () => ({}));
+	}
 
+	public init() {
 		this.defaultAbilityIds.push("basic_heal");
 		this.recalculateAbilities();
-
 		bus.emit("player:statsChanged");
 	}
 

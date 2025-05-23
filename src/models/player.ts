@@ -3,8 +3,6 @@ import { RegenPool } from "./value-objects/RegenPool";
 import { bus } from "../core/EventBus";
 import { InventoryManager } from "../features/inventory/InventoryManager";
 import { ClassCardManager } from "../features/classcards/ClassCardManager";
-import { ClassCard } from "../features/classcards/ClassCard";
-import { Equipment } from "./Equipment";
 import { Saveable } from "@/shared/storage-types";
 import { EquipmentManager } from "./EquipmentManager";
 import { BigNumber } from "./utils/BigNumber";
@@ -13,6 +11,9 @@ import { TrainedStatManager } from "./TrainedStatManager";
 import { SettlementManager } from "@/features/settlement/SettlementManager";
 import { HuntManager } from "@/features/hunt/HuntManager";
 import { StatsModifier } from "./Stats";
+import { Destroyable } from "./Destroyable";
+import { bindEvent } from "@/shared/utils/busUtils";
+import { PrestigeState } from "@/shared/stats-types";
 
 interface PlayerSaveState {
 	level: number;
@@ -20,9 +21,12 @@ interface PlayerSaveState {
 	stamina: RegenPool;
 	experience: number;
 	heirBonuses: StatsModifier[];
+	prestigeState: PrestigeState;
 }
 
-export class Player implements Saveable {
+const defaultPrestigeState: PrestigeState = { runsCompleted: 0, totalMetaPoints: 0, permanentAttack: 0, permanentDefence: 0, permanentHP: 0 };
+
+export class Player extends Destroyable implements Saveable {
 	private static _instance: Player | null = null;
 
 	private readonly name = "Player";
@@ -33,6 +37,7 @@ export class Player implements Saveable {
 	private staminaMultiplier: number = 1;
 	private renownMultiplier: number = 1;
 	private heirBonuses: StatsModifier[] = [];
+	private prestigeState: PrestigeState;
 
 	// Destroyable
 	public character: PlayerCharacter | null = null;
@@ -50,6 +55,7 @@ export class Player implements Saveable {
 		trainedStatsManager: TrainedStatManager;
 		huntManager: HuntManager;
 	}) {
+		super();
 		(this.renown = new BigNumber(0)), (this.experience = 0);
 		this.stamina = new RegenPool(10, 1, false);
 		this.inventory = opts.inventoryManager;
@@ -58,29 +64,40 @@ export class Player implements Saveable {
 		this.huntManager = opts.huntManager;
 		this.cardManager = new ClassCardManager();
 		this.equipmentManager = new EquipmentManager();
-		this.character = new PlayerCharacter();
+		this.prestigeState = defaultPrestigeState;
+		this.character = new PlayerCharacter(this.prestigeState);
+
 		this.character.init();
 
-		bus.on("game:newGame", () => {
-			this.inventory.addLootById("warrior_card_01"); //ClassCard.createRaw("warrior_card_01", 1));
-			this.inventory.addLootById("bulwark_card_01");
-			this.inventory.addLootById("tier1_chest");
-		});
-		bus.on("game:gameReady", () => {
-			bus.on("Game:GameTick", (dt) => this.handleGameTick(dt));
-			bus.on("Game:UITick", (dt) => this.handleUITick(dt));
-			bus.on("renown:award", (amt) => this.adjustRenown(amt));
-			bus.emit("player:initialized", this);
-		});
+		bindEvent(this.eventBindings, "game:newGame", () => this.handleNewGame());
+		bindEvent(this.eventBindings, "game:gameReady", () => this.handleGameReady());
+		bindEvent(this.eventBindings, "game:prestigePrep", () => this.handlePrestige());
+	}
+
+	private handleNewGame() {
+		this.inventory.addLootById("warrior_card_01"); //ClassCard.createRaw("warrior_card_01", 1));
+		this.inventory.addLootById("bulwark_card_01");
+		this.inventory.addLootById("tier1_chest");
+	}
+
+	private handleGameReady() {
+		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleGameTick(dt));
+		bindEvent(this.eventBindings, "renown:award", (amt) => this.adjustRenown(amt));
+		bus.emit("player:initialized", this);
+	}
+
+	private handlePrestige() {
+		this.prestigeState.permanentAttack += 0.02 * this.getPlayerCharacter().stats.get("attack");
+		this.prestigeState.permanentDefence += 0.02 * this.getPlayerCharacter().stats.get("defence");
+		this.prestigeState.permanentHP += 0.02 * this.getPlayerCharacter().maxHp.toNumber();
 	}
 
 	handleGameTick(dt: number): void {
 		this.increaseStamina(dt);
 	}
 
-	handleUITick(dt: number): void {}
-
 	destroy() {
+		super.destroy();
 		// Destroyable Classes
 		this.huntManager!.destroy();
 		this.trainedStatManager!.destroy();
@@ -99,7 +116,7 @@ export class Player implements Saveable {
 	prestigeReset(opts: { trainedStatsManager: TrainedStatManager; huntManager: HuntManager }) {
 		this.huntManager = opts.huntManager;
 		this.trainedStatManager = opts.trainedStatsManager;
-		this.character = new PlayerCharacter();
+		this.character = new PlayerCharacter(this.prestigeState);
 		this.emitStamina();
 		this.character.init();
 		this.setRenown(new BigNumber(0));
@@ -172,6 +189,13 @@ export class Player implements Saveable {
 		return this._instance;
 	}
 
+	public static resetSingleton(): void {
+		if (Player._instance) {
+			Player._instance.destroy();
+			Player._instance = null;
+		}
+	}
+
 	save(): PlayerSaveState {
 		return {
 			level: this.level,
@@ -179,6 +203,7 @@ export class Player implements Saveable {
 			stamina: this.stamina,
 			experience: this.experience,
 			heirBonuses: this.heirBonuses,
+			prestigeState: this.prestigeState,
 		};
 	}
 
@@ -188,6 +213,7 @@ export class Player implements Saveable {
 		this.renown = BigNumber.fromJSON(state.renown);
 		this.experience = state.experience;
 		this.heirBonuses = state.heirBonuses;
+		this.prestigeState = state.prestigeState;
 		this.emitStamina();
 		bus.emit("renown:changed", this.renown);
 	}

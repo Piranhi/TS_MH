@@ -99,7 +99,7 @@ export class GameApp {
 	private handlePrestigePrep() {
 		console.log("handling prestige");
 		saveManager.saveAll();
-		Player.getInstance().destroy();
+		Player.resetSingleton();
 		this.screenManager.destroyAll();
 		this.gameScreens.clear();
 		this.trainedStatManager = new TrainedStatManager();

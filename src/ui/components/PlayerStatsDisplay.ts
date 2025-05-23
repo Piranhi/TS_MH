@@ -3,6 +3,7 @@ import { Player } from "@/models/player";
 import { Stats } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
 import { UIBase } from "./UIBase";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export class PlayerStatsDisplay extends UIBase {
 	private coreKeys: (keyof Stats)[] = ["attack", "defence", "speed", "hp"];
@@ -17,7 +18,7 @@ export class PlayerStatsDisplay extends UIBase {
 		super();
 		this.render();
 
-		bus.on("player:statsChanged", () => this.render());
+		//bindEvent(this.eventBindings, "player:statsChanged", () => this.render());
 	}
 
 	private render(): void {

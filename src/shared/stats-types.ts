@@ -25,6 +25,14 @@ export interface OutpostStats {}
 
 export interface PrestigeStats {}
 
+export interface PrestigeState {
+	runsCompleted: number;
+	totalMetaPoints: number;
+	permanentAttack: number;
+	permanentDefence: number;
+	permanentHP: number;
+}
+
 export interface GameStats {
 	playTimeTotal: number;
 	playTimeRun: number;

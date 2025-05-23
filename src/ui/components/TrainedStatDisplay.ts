@@ -16,7 +16,6 @@ interface UnlockedEls {
 }
 
 export class TrainedStatDisplay extends UIBase {
-	//private rootEl!: HTMLElement;
 	private els?: UnlockedEls;
 	private manager!: TrainedStatManager;
 
@@ -55,7 +54,11 @@ export class TrainedStatDisplay extends UIBase {
 		const progressText = document.createElement("div");
 		progressText.className = "progress-text";
 		this.$(".training-bar").appendChild(progressText);
-		const progressBar = new ProgressBar({ container: this.$(".training-bar"), initialValue: 0, maxValue: 100 });
+		const progressBar = new ProgressBar({
+			container: this.$(".training-bar"),
+			initialValue: this.trainedStat.progress,
+			maxValue: this.trainedStat.nextThreshold,
+		});
 
 		this.els = {
 			progressBar: progressBar,
@@ -79,11 +82,11 @@ export class TrainedStatDisplay extends UIBase {
 		if (this.trainedStat.status !== "Unlocked") return;
 
 		const { progressBar, progressText, assigned, level, name } = this.els!;
-		const pct = (this.trainedStat.progress / this.trainedStat.nextThreshold) * 100;
 		name.textContent = this.trainedStat.name;
 		level.textContent = `Lvl ${this.trainedStat.level}`;
 		assigned.textContent = String(this.trainedStat.assignedPoints);
-		progressBar.setValue(pct);
+		progressBar.setValue(this.trainedStat.progress);
+		progressBar.setMax(this.trainedStat.nextThreshold);
 
 		progressText.textContent = `${Math.floor(this.trainedStat.progress)} / ${this.trainedStat.nextThreshold}`;
 	}
