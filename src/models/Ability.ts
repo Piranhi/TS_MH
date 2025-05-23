@@ -1,38 +1,23 @@
-import { BaseCharacter } from "./BaseCharacter";
 import { SpecRegistryBase } from "./SpecRegistryBase";
-import { Effect, effectFactories, EffectSpec } from "./Effects";
+import { EffectSpec } from "@/shared/types";
 
 export interface AbilitySpec {
 	id: string;
 	displayName: string;
-	effects: EffectSpec[];
 	cooldown: number;
-	priority: AbilityPriority;
+	effects: EffectSpec[];
 }
 
 export interface AttackState {}
-export type AbilityPriority = "Immediate" | "High" | "Low";
 
 export class Ability extends SpecRegistryBase<AbilitySpec> {
 	public currentCooldown: number = 0;
 	public maxCooldown: number = 0;
-	public effects: Effect[];
-	private constructor(private readonly spec: AbilitySpec) {
+	private constructor(public readonly spec: AbilitySpec) {
 		super();
 		this.currentCooldown = spec.cooldown;
 		this.maxCooldown = spec.cooldown;
-		this.effects = spec.effects.map((spec: EffectSpec) => {
-			const factory = effectFactories[spec.type];
-			if (!factory) {
-				throw new Error(`Unknown effect type ${spec.type}`);
-			}
-			return factory(spec);
-		});
-	}
-
-	perform(self: BaseCharacter, target: BaseCharacter) {
-		this.effects.forEach((e) => e.apply(self, target));
-		this.currentCooldown = this.maxCooldown;
+		console.log(JSON.stringify(this.spec));
 	}
 
 	get id() {
@@ -42,12 +27,12 @@ export class Ability extends SpecRegistryBase<AbilitySpec> {
 		return this.spec.displayName;
 	}
 
-	get priority() {
-		return this.spec.priority;
-	}
-
 	init() {
 		this.currentCooldown = this.spec.cooldown;
+	}
+
+	resetCooldown() {
+		this.currentCooldown = this.maxCooldown;
 	}
 
 	reduceCooldown(dt: number) {

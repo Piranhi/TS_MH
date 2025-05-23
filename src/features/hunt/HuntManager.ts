@@ -3,7 +3,7 @@
 // You will iterate on this; for now it is deliberately minimal but functional.
 import { bus } from "@/core/EventBus";
 import { CombatManager } from "./CombatManager";
-import { EnemyCharacter } from "../../models//EnemyCharacter";
+import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { Area } from "@/models/Area";
 import { Saveable } from "@/shared/storage-types";
 import { debugManager, printLog } from "@/core/DebugManager";
@@ -83,10 +83,13 @@ export class HuntManager extends Destroyable implements Saveable {
 
 	/** Change the hunting grounds without restarting the whole loop. */
 	public setArea(areaId: string) {
-		this.area = Area.create(areaId);
-		//StatsManager.instance.getAreaStats(areaId);
+		const foundArea = Area.create(areaId);
+		if (!foundArea) {
+			return Error("Area not found when setting area");
+		}
+		this.area = foundArea;
 		this.transition(HuntState.Search, this.makeSearchState());
-		printLog("Setting new Area to: " + this.area.id, 3, "HuntManager.ts");
+		printLog("Setting new Area to: " + this.area.id, 3, "HuntManager.ts", "combat");
 	}
 
 	public clearArea() {}
@@ -125,7 +128,7 @@ export class HuntManager extends Destroyable implements Saveable {
 			onTick: (dt: number) => {
 				elapsed += dt;
 				if (elapsed >= rollTime) {
-					elapsed -= 1;
+					elapsed -= rollTime;
 					if (this.rollEncounter()) {
 						// Create Enemy from monster picker
 						const enemy = new EnemyCharacter(this.area.pickMonster());
@@ -165,6 +168,7 @@ export class HuntManager extends Destroyable implements Saveable {
 				if (!combatManager.isFinished) {
 					combatManager.endCombatEarly();
 				}
+				combatManager.destroy();
 			},
 		};
 	}
@@ -223,8 +227,10 @@ export class HuntManager extends Destroyable implements Saveable {
 	}
 
 	public fightBoss() {
-		if (this.state === HuntState.Boss) return;
-		printLog("Cannot start boss fight: already in combat.", 2, "HuntManager.ts");
+		if (this.state === HuntState.Boss) {
+			printLog("Cannot start boss fight: already in combat.", 2, "HuntManager.ts");
+			return;
+		}
 		const enemy = new EnemyCharacter(this.area.pickBoss());
 		this.transition(HuntState.Boss, this.makeCombatState(enemy));
 	}

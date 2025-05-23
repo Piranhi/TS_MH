@@ -1,16 +1,15 @@
 import { debugManager, printLog } from "@/core/DebugManager";
-import { Ability, AbilityPriority } from "./Ability";
-import { BoundedBig, BoundedNumber } from "./value-objects/Bounded";
-import { bus } from "@/core/EventBus";
-import type { CoreStats } from "@/models/Stats";
+import { Ability } from "./Ability";
+import { BoundedBig } from "./value-objects/Bounded";
+import type { Stats, StatsProvider } from "@/models/Stats";
 import { BigNumber } from "./utils/BigNumber";
 import { Destroyable } from "./Destroyable";
-import { bindEvent } from "@/shared/utils/busUtils";
+import { CombatManager } from "@/features/hunt/CombatManager";
+import { EffectInstance, EffectSpec } from "@/shared/types";
 
 export interface CharacterSnapsnot {
 	name: string;
-	level: number;
-	hp: { current: string; max: string; percent: string };
+	realHP: { current: string; max: string; percent: string };
 	attack: string;
 	defence: string;
 	imgUrl: string;
@@ -22,64 +21,29 @@ export abstract class BaseCharacter extends Destroyable {
 	/* ──────────────────────── constants ──────────────────────── */
 
 	/* ────────────────── public readonly fields ───────────────── */
-	public readonly name: string;
-	public readonly level: number;
-
+	public readonly hp: BoundedBig;
 	/* ───────────────────── protected fields ──────────────────── */
-	protected readonly stats: CoreStats; // FINAL BIGNUMBER STATS
-	protected readonly hp: BoundedBig;
-	protected defaultAbilityIds: string[] = [];
-	protected abilityMap: Map<string, Ability> = new Map();
 
+	protected abilityMap: Map<string, Ability> = new Map();
 	protected target?: BaseCharacter;
+	protected combatManager!: CombatManager;
 
 	/* ───────────────────── private fields ────────────────────── */
 	private inCombat = false;
+	/* ───────────────────── debug fields ────────────────────── */
+	public canAttack = true;
+	public canTakeDamage = true;
+	public canDie = true;
 
 	/* ────────────────────── constructor ──────────────────────── */
-	constructor(name: string, level: number, stats: CoreStats, defaultAbilities: string[] = []) {
+	constructor(public readonly name: string, public readonly stats: StatsProvider, protected readonly defaultAbilityIds: string[] = []) {
 		super();
-		this.name = name;
-		this.level = level;
-		this.stats = stats;
-		this.defaultAbilityIds = defaultAbilities;
 		this.defaultAbilityIds.push("basic_melee");
-
-		// HP STARTS FULL
-		this.hp = new BoundedBig(this.stats.hp, this.stats.hp);
-		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
+		this.hp = new BoundedBig(this.calcRealHp(this.stats.get("hp")), this.calcRealHp(this.stats.get("hp"))); // TODO - ADD CALCULATIONS TO GET 'REAL' HP FROM MULTIPLIERS
 	}
 
-	/** Apply incoming damage after defence mitigation. */
-	takeDamage(raw: BigNumber): void {
-		const net = raw.subtractNonNegative(this.defence);
-		if (net.lte(new BigNumber(0))) return; // blocked
-		this.hp.decrease(net);
-		printLog(
-			`${this.name} taking damage. Inc: [RAW]${raw.toString()} - [DEF]${this.defence.toString()} - [NET]${net.toString()}}`,
-			3,
-			"BaseCharacter.ts"
-		);
-	}
-
-	/** Heal by a positive amount (clamped in BoundedBig). */
-	heal(amount: BigNumber): void {
-		if (amount.lte(new BigNumber(0))) return;
-		this.hp.increase(amount);
-		printLog(`${this.name} healing. Inc: ${amount}`, 3, "BaseCharacter.ts");
-	}
-
-	isAlive(): boolean {
-		return !this.hp.isEmpty();
-	}
-
-	isAtMaxHp(): boolean {
-		return this.hp.isFull();
-	}
-
-	/** Final damage dealt for an ability: base.attack × ability scalar (or + etc.). */
-	public calculateAbilityDamage(abilityDamage: number): BigNumber {
-		return this.stats.attack.add(abilityDamage);
+	private calcRealHp(base: number): BigNumber {
+		return new BigNumber(base);
 	}
 
 	/* ───────────────────── getters (read-only) ───────────────── */
@@ -91,22 +55,36 @@ export abstract class BaseCharacter extends Destroyable {
 		return this.hp.max;
 	}
 	get attack() {
-		return this.stats.attack;
+		return this.stats.get("attack");
 	}
 	get defence() {
-		return this.stats.defence;
+		return this.stats.get("defence");
 	}
 	get speed() {
-		return this.stats.speed;
+		return this.stats.get("speed");
 	}
-	/*    public getAbilities() {
-        return this.abilities;
-    } */
+
+	isAlive(): boolean {
+		return !this.hp.isEmpty();
+	}
+
+	isAtMaxHp(): boolean {
+		return this.hp.isFull();
+	}
+
+	setToMaxHP() {
+		this.hp.setToMax();
+	}
+
+	protected getAvatarUrl(): string {
+		return "";
+	}
 
 	/* ───────────────────── combat lifecycle ──────────────────── */
 
-	public beginCombat(target: BaseCharacter) {
-		this.target = target;
+	public beginCombat(combatManager: CombatManager) {
+		this.setToMaxHP();
+		this.combatManager = combatManager;
 		this.inCombat = true;
 		this.getActiveAbilities().forEach((a) => a.init()); // Init abilities
 	}
@@ -114,15 +92,6 @@ export abstract class BaseCharacter extends Destroyable {
 	public endCombat() {
 		this.inCombat = false;
 		this.target = undefined;
-	}
-
-	public handleTick(dt: number): void {
-		if (!this.inCombat || !this.target) return;
-
-		this.getActiveAbilities().forEach((ability) => {
-			ability.reduceCooldown(debugManager.debugActive ? debugManager.DEBUG_CHARACTER_ABILITY_CD : dt); // TODO (multiply by speed)
-			if (ability.isReady()) ability.perform(this, this.target!);
-		});
 	}
 
 	public getActiveAbilities(): Ability[] {
@@ -143,16 +112,54 @@ export abstract class BaseCharacter extends Destroyable {
 		}
 	}
 
-	protected getAvatarUrl(): string {
-		return "";
+	// Each tick
+	// Loop through abilities, tick time down.
+	// If ready, create instance from Spec and submit it back to Combat Manager for Effect Processing.
+	public getReadyEffects(dt: number): EffectInstance[] {
+		const readyEffects: EffectInstance[] = [];
+
+		if (!this.inCombat || !this.canAttack) return readyEffects;
+
+		this.getActiveAbilities().forEach((ability) => {
+			ability.reduceCooldown(debugManager.debugActive ? debugManager.DEBUG_CHARACTER_ABILITY_CD : dt); // TODO (multiply by speed)
+			if (ability.isReady()) {
+				for (const effectSpec of ability.spec.effects) {
+					const raw: BigNumber = this.calculateRawValue(effectSpec);
+					readyEffects.push({
+						source: this,
+						target: effectSpec.target,
+						type: effectSpec.type,
+						rawValue: raw,
+						durationSeconds: effectSpec.durationSeconds,
+						statKey: effectSpec.statKey,
+					});
+				}
+				ability.resetCooldown();
+			}
+		});
+		return readyEffects;
+	}
+
+	/** Helper: roll crit/variance, apply power multipliers, etc. */
+	private calculateRawValue(effectDef: EffectSpec): BigNumber {
+		const attack = new BigNumber(this.stats.get("attack"));
+		const powerMultiplier = 1 + this.stats.get("power") / 100;
+		const critChance = this.stats.get("critChance") / 100;
+		const critDamage = this.stats.get("critDamage") / 100;
+		const rolledCrit = Math.random() < critChance;
+		const critMultiplier = rolledCrit ? 1 + critDamage : 1;
+		const variance = 0.9 + Math.random() * 0.2;
+
+		// for a damage effect: attack × power × crit × variance × effect.scale
+		const totalMultiplier = powerMultiplier * critMultiplier * variance * (effectDef.scale ?? 1);
+		return attack.multiply(totalMultiplier);
 	}
 
 	// HELPER CLASSES
 	snapshot(): CharacterSnapsnot {
 		return {
 			name: this.name,
-			level: this.level,
-			hp: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },
+			realHP: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },
 			attack: this.attack.toString(),
 			defence: this.defence.toString(),
 			abilities: this.getActiveAbilities(),

@@ -1,12 +1,12 @@
 import { bus } from "@/core/EventBus";
 import { Player } from "@/models/player";
-import { PlayerStats } from "@/models/Stats";
+import { Stats } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
 import { UIBase } from "./UIBase";
 
 export class PlayerStatsDisplay extends UIBase {
-	private coreKeys: (keyof PlayerStats)[] = ["attack", "defence", "speed", "hp"];
-	private extraKeys: (keyof PlayerStats)[] = ["attackFlat", "defenceFlat", "critChance", "critDamage", "lifesteal"];
+	private coreKeys: (keyof Stats)[] = ["attack", "defence", "speed", "hp"];
+	private extraKeys: (keyof Stats)[] = ["attackFlat", "defenceFlat", "critChance", "critDamage", "lifesteal"];
 
 	private sectionOpen: Record<string, boolean> = {
 		"Core Stats": true, // default open
@@ -27,7 +27,7 @@ export class PlayerStatsDisplay extends UIBase {
 		this.container.appendChild(this.createSection("Extra Stats", this.extraKeys, stats));
 	}
 
-	private createSection(title: string, keys: (keyof PlayerStats)[], stats: PlayerStats): HTMLElement {
+	private createSection(title: string, keys: (keyof Stats)[], stats: Stats): HTMLElement {
 		const details = document.createElement("details");
 		details.classList.add("stat-section");
 

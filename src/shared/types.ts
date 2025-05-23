@@ -1,9 +1,10 @@
 import { printLog } from "@/core/DebugManager";
 import { Identifiable } from "@/models/SpecRegistryBase";
-import { StatsModifier, StatsModifierNumber } from "@/models/Stats";
-import { BigNumber } from "@/models/utils/BigNumber";
+import { Stats, StatsModifier } from "@/models/Stats";
 import { MilestoneTag } from "./Milestones";
 import { GameEvents } from "@/core/EventBus";
+import { BaseCharacter } from "@/models/BaseCharacter";
+import { BigNumber } from "@/models/utils/BigNumber";
 
 // --------------------- SETTLEMENT + BUILDINGS ----------------------------
 export const STARTING_BUILDING_UNLOCKS = ["guildHall"];
@@ -46,6 +47,37 @@ export type ConstructionResourceType = (typeof CONSTRUCTION_RESOURCE_TYPES)[numb
 
 // ------------------- AREA + COMBAT ------------------------------
 export const AREATIER_MULTIPLIERS = [1, 1.2, 1.5, 2, 2.5, 3];
+
+export type EffectType = "physical" | "magical" | "heal" | "buff" | "debuff";
+
+export interface EffectSpec {
+	type: EffectType;
+	target: "self" | "enemy";
+	value: number;
+	scale?: number;
+	durationSeconds?: number;
+	statKey?: keyof Stats;
+}
+
+// A “packet” describing exactly what one ability use will do
+export interface EffectInstance {
+	source: BaseCharacter;
+	target: "self" | "enemy";
+	type: EffectType;
+	/** raw amount (damage before mitigation, heal % of maxHp, buff %, etc.) */
+	rawValue: BigNumber;
+	durationSeconds?: number;
+	statKey?: keyof Stats;
+}
+
+// A small struct for result data (optional)
+export interface EffectResult {
+	source: BaseCharacter;
+	target: BaseCharacter;
+	effect: EffectInstance;
+	/** e.g. finalDamage after mitigation, or actualHealAmount */
+	outcomeValue: BigNumber;
+}
 
 // -------------------- ITEMS ------------------------------
 export const ITEM_RARITIES = ["common", "uncommon", "rare", "epic", "legendary", "unique"] as const;
@@ -98,26 +130,26 @@ export interface InventoryItemSpec extends Identifiable {
 	tags?: string[];
 }
 
-export interface EquipmentItemSpecRaw extends InventoryItemSpec {
+/* export interface EquipmentItemSpecRaw extends InventoryItemSpec {
 	category: "equipment";
 	equipType: EquipmentType;
 	statMod: StatsModifierNumber;
-}
+} */
 export interface EquipmentItemSpec extends InventoryItemSpec {
 	category: "equipment";
 	equipType: EquipmentType;
 	statMod: StatsModifier;
 }
 
-export interface ClassCardItemSpecRaw extends InventoryItemSpec {
+/* export interface ClassCardItemSpecRaw extends InventoryItemSpec {
 	category: "classCard";
 	statMod: StatsModifierNumber; // All numbers
 	baseGainRate: number;
 	abilities?: string[];
-}
+} */
 export interface ClassCardItemSpec extends InventoryItemSpec {
 	category: "classCard";
-	statMod: StatsModifier; // All BigNumbers
+	statMod: StatsModifier;
 	baseGainRate: number;
 	abilities?: string[];
 }

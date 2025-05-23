@@ -1,4 +1,4 @@
-import { CoreStats, CoreStatsNumbers, PlayerStats, StatsModifier } from "@/models/Stats";
+import { CoreStats, CoreStatsNumbers, Stats, StatsModifier } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
 
 // Convert any object of numbers to BigNumbers
@@ -40,7 +40,7 @@ function toCoreStats(stats: CoreStatsNumbers): CoreStats {
 export function mergeStatModifiers(a: StatsModifier, b: StatsModifier): StatsModifier {
 	const out: StatsModifier = { ...a };
 	for (const k in b) {
-		const key = k as keyof PlayerStats;
+		const key = k as keyof Stats;
 		const aVal = out[key];
 		const bVal = b[key];
 

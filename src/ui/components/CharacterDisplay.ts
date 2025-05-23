@@ -121,7 +121,7 @@ export class CharacterDisplay extends UIBase {
 		if (!this.character) return;
 		const snapshot = this.character.snapshot();
 
-		const { name, hp, abilities, imgUrl } = snapshot;
+		const { name, realHP: hp, abilities, imgUrl } = snapshot;
 		this.nameEl.textContent = name;
 		//this.atkEl.textContent = "⚔️ " + snapshot.attack.toString();
 		//this.defEl.textContent = "🛡️ " + snapshot.defence.toString();

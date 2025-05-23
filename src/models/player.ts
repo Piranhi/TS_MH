@@ -143,7 +143,7 @@ export class Player implements Saveable {
 
 	public setRenown(value: BigNumber): void {
 		this.renown = value;
-		printLog("Renown set to:" + value.toString(), 3, "player.ts");
+		printLog("Renown set to:" + value.toString(), 3, "player.ts", "player");
 		bus.emit("renown:changed", this.renown);
 	}
 

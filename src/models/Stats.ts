@@ -1,40 +1,19 @@
 import { TrainedStat } from "./TrainedStat";
-import { BigNumber } from "./utils/BigNumber";
 
 export interface CoreStats {
-	attack: BigNumber;
-	defence: BigNumber;
-	speed: BigNumber;
-	hp: BigNumber;
-}
-
-export interface CoreStatsNumbers {
 	attack: number;
 	defence: number;
 	speed: number;
 	hp: number;
 }
 
-/** Extra stats that only the player uses */
-export interface PlayerExtras {
-	attackFlat: BigNumber;
-	attackMulti: BigNumber;
-	defenceFlat: BigNumber;
-	defenceMulti: BigNumber;
-	critChance: BigNumber;
-	critDamage: BigNumber;
-	speedMulti: BigNumber;
-	lifesteal: BigNumber;
-	encounterChance: BigNumber;
-}
-export interface PlayerExtraNumbers {
-	attackFlat: number;
-	attackMulti: number;
-	defenceFlat: number;
-	defenceMulti: number;
+/** Build Stats */
+export interface BuildStats {
+	power: number;
+	guard: number;
 	critChance: number;
 	critDamage: number;
-	speedMulti: number;
+	evasion: number;
 	lifesteal: number;
 	encounterChance: number;
 }
@@ -51,20 +30,22 @@ export interface TrainedStatData {
 	statMod: Partial<StatsModifier>;
 }
 
-export const defaultPlayerStats: PlayerStats = {
-	attack: new BigNumber(10),
-	defence: new BigNumber(10),
-	speed: new BigNumber(1),
-	hp: new BigNumber(1000),
-	attackFlat: new BigNumber(0),
-	attackMulti: new BigNumber(1),
-	defenceFlat: new BigNumber(0),
-	defenceMulti: new BigNumber(1),
-	critChance: new BigNumber(1),
-	critDamage: new BigNumber(1),
-	speedMulti: new BigNumber(1),
-	lifesteal: new BigNumber(0),
-	encounterChance: new BigNumber(1),
+export interface StatsProvider {
+	get(stat: StatKey): number;
+}
+
+export const defaultPlayerStats: Stats = {
+	attack: 1,
+	defence: 10,
+	speed: 1,
+	hp: 1000,
+	power: 0,
+	guard: 0,
+	critChance: 0,
+	critDamage: 0,
+	evasion: 0,
+	lifesteal: 0,
+	encounterChance: 1,
 };
 
 export interface AreaScaling {
@@ -76,28 +57,18 @@ export interface AreaScaling {
 	renown: number;
 }
 
-export type PlayerStats = CoreStats & PlayerExtras;
-export type PlayerStatsNumber = CoreStatsNumbers & PlayerExtraNumbers;
-export type StatsModifier = Partial<PlayerStats>;
-export type StatsModifierNumber = Partial<PlayerStatsNumber>;
+export type Stats = CoreStats & BuildStats;
+export type StatKey = keyof Stats;
+export type StatsModifier = Partial<Stats>;
 export type TrainedStatType = "attack" | "agility" | "crit";
 export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden";
 
-export function toCoreStats(numbers: CoreStatsNumbers): CoreStats {
-	return {
-		hp: new BigNumber(numbers.hp),
-		attack: new BigNumber(numbers.attack),
-		defence: new BigNumber(numbers.defence),
-		speed: new BigNumber(numbers.speed),
-	};
-}
-
 export function scaleEnemyStatsByArea(base: CoreStats, scale: AreaScaling): CoreStats {
 	return {
-		hp: base.hp.multiply(scale.hp),
-		attack: base.attack.multiply(scale.attack),
-		defence: base.defence.multiply(scale.defence),
-		speed: base.speed.multiply(scale.speed),
+		hp: base.hp * scale.hp,
+		attack: base.attack * scale.attack,
+		defence: base.defence * scale.defence,
+		speed: base.speed * scale.speed,
 	};
 }
 
@@ -112,7 +83,7 @@ export function makeDefaultTrainedStats(): Record<TrainedStatType, TrainedStat> 
 			assignedPoints: 0,
 			baseGainRate: 1,
 			status: "Unlocked",
-			statMod: { attackFlat: new BigNumber(1) },
+			statMod: { power: 1 },
 		}),
 		agility: new TrainedStat({
 			id: "agility",
@@ -123,7 +94,7 @@ export function makeDefaultTrainedStats(): Record<TrainedStatType, TrainedStat> 
 			assignedPoints: 0,
 			baseGainRate: 0.5,
 			status: "Unlocked",
-			statMod: { attackMulti: new BigNumber(1) },
+			statMod: { evasion: 1 },
 		}),
 		crit: new TrainedStat({
 			id: "crit",
@@ -134,7 +105,7 @@ export function makeDefaultTrainedStats(): Record<TrainedStatType, TrainedStat> 
 			assignedPoints: 0,
 			baseGainRate: 0.5,
 			status: "Hidden",
-			statMod: { critChance: new BigNumber(1) },
+			statMod: { critChance: 1 },
 		}),
 	};
 }

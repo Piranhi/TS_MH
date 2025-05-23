@@ -3,24 +3,42 @@ import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { bus } from "../../core/EventBus";
 import { Area } from "@/models/Area";
 import { Player } from "@/models/player";
-import { MilestoneManager } from "@/models/MilestoneManager";
+import { EffectProcessor } from "./EffectProcessor";
+import { Destroyable } from "@/models/Destroyable";
 
-export class CombatManager {
+export class CombatManager extends Destroyable {
+	private effectProcessor: EffectProcessor;
 	public isFinished: boolean = false;
 	public playerWon: boolean = false;
 	private elapsed: number = 0;
 	private combatEndOverride = false;
 	constructor(private readonly playerCharacter: PlayerCharacter, private readonly enemyCharacter: EnemyCharacter, private readonly area: Area) {
+		super();
+		this.effectProcessor = new EffectProcessor();
+		playerCharacter.beginCombat(this);
+		enemyCharacter.beginCombat(this);
 		bus.emit("combat:started", { player: this.playerCharacter, enemy: this.enemyCharacter });
-		playerCharacter.beginCombat(enemyCharacter);
-		enemyCharacter.beginCombat(playerCharacter);
 	}
 
 	public onTick(dt: number) {
 		if (this.combatEndOverride) return;
 		this.elapsed += dt;
-		if (this.playerCharacter.isAlive() === false || this.enemyCharacter.isAlive() === false) {
-			this.endCombat();
+		// Tick players whilst combat is active
+		const playerEffects = this.playerCharacter.getReadyEffects(dt);
+		const enemyEffects = this.enemyCharacter.getReadyEffects(dt);
+		const allEffects = [...playerEffects, ...enemyEffects];
+		for (const effect of allEffects) {
+			const target = effect.source === this.playerCharacter ? this.enemyCharacter : this.playerCharacter;
+
+			const result = this.effectProcessor.apply(effect, target);
+
+			// (optional) hook for UI: show floating text, play SFX, etc.
+			// this.handleResult(result);
+
+			if (this.playerCharacter.isAlive() === false || this.enemyCharacter.isAlive() === false) {
+				this.endCombat();
+				break;
+			}
 		}
 	}
 

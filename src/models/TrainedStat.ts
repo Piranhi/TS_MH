@@ -1,5 +1,5 @@
 import { bus } from "@/core/EventBus";
-import { PlayerStats, StatsModifier, TrainedStatData, TrainedStatStatus, TrainedStatType } from "./Stats";
+import { Stats, StatsModifier, TrainedStatData, TrainedStatStatus, TrainedStatType } from "./Stats";
 import { Player } from "./player";
 import { BigNumber } from "./utils/BigNumber";
 

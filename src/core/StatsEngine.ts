@@ -1,4 +1,4 @@
-import { StatsModifier, CoreStats, PlayerStats } from "@/models/Stats";
+import { StatsModifier, CoreStats, Stats, defaultPlayerStats } from "@/models/Stats";
 import { bus } from "./EventBus";
 import { BigNumber } from "@/models/utils/BigNumber";
 
@@ -10,12 +10,12 @@ export type LayerFn = () => StatsModifier;
  */
 export class StatsEngine {
 	private layers: Record<string, LayerFn> = {};
-	private readonly base: PlayerStats;
-	private current: PlayerStats;
+	private readonly base: Stats;
+	private current: Stats;
 
-	constructor(base: PlayerStats) {
-		this.base = { ...base };
-		this.current = { ...base };
+	constructor() {
+		this.base = { ...defaultPlayerStats };
+		this.current = { ...defaultPlayerStats };
 	}
 
 	setLayer(name: string, fn: LayerFn): void {
@@ -28,18 +28,18 @@ export class StatsEngine {
 		this.recalculate();
 	}
 
-	get<K extends keyof PlayerStats>(key: K): PlayerStats[K] {
+	get<K extends keyof Stats>(key: K): Stats[K] {
 		return this.current[key] ?? new BigNumber(0);
 	}
 
-	getAll(): PlayerStats {
+	getAll(): Stats {
 		return { ...this.current };
 	}
 
 	private recalculate(): void {
-		let agg: PlayerStats = { ...this.base };
+		let agg: Stats = { ...this.base };
 		for (const fn of Object.values(this.layers)) {
-			agg = mergeStats(agg, fn()) as PlayerStats;
+			agg = mergeStats(agg, fn()) as Stats;
 		}
 		this.current = agg;
 		bus.emit("player:statsChanged");
@@ -50,13 +50,13 @@ export class StatsEngine {
 	}
 }
 
-function mergeStats(a: PlayerStats, b: Partial<PlayerStats>): PlayerStats {
-	const out = { ...a } as PlayerStats;
+function mergeStats(a: Stats, b: Partial<Stats>): Stats {
+	const out = { ...a } as Stats;
 	for (const k in b) {
-		const key = k as keyof PlayerStats;
+		const key = k as keyof Stats;
 		const aVal = out[key];
 		const bVal = b[key];
-		out[key] = (aVal ?? new BigNumber(0)).add(bVal ?? new BigNumber(0));
+		out[key] = (aVal ?? 0) + (bVal ?? 0);
 	}
 	return out;
 }

@@ -1,4 +1,4 @@
-import { EquipmentItemSpec, getItemRarity, InventoryItemState } from "@/shared/types";
+import { EquipmentItemSpec, InventoryItemState } from "@/shared/types";
 import { SpecRegistryBase } from "./SpecRegistryBase";
 
 export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements EquipmentItemSpec {

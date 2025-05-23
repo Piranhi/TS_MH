@@ -2,61 +2,72 @@
 	{
 		"id": "basic_melee",
 		"displayName": "Slam",
+		"cooldown": 5,
 		"effects": [
 			{
-				"type": "damage",
-				"value": 1
+				"type": "physical",
+				"scale": 1.0,
+				"target": "enemy"
 			}
-		],
-		"cooldown": 5,
-		"priority": "Low"
+		]
 	},
 	{
 		"id": "basic_heal",
 		"displayName": "Heal",
+		"cooldown": 10,
 		"effects": [
 			{
 				"type": "heal",
-				"value": 1
+				"scale": 0.1,
+				"target": "self"
 			}
-		],
-		"cooldown": 10,
-		"priority": "Low"
+		]
 	},
 	{
 		"id": "root_snare",
 		"displayName": "Root Snare",
+		"cooldown": 6,
 		"effects": [
 			{
-				"type": "damage",
-				"value": 5
+				"type": "debuff",
+				"scale": 1.25,
+				"durationSeconds": 3,
+				"statKey": "speed",
+				"target": "enemy"
 			}
-		],
-		"cooldown": 6,
-		"priority": "High"
+		]
 	},
 	{
 		"id": "warrior_chage",
 		"displayName": "Warrior Charge",
+		"cooldown": 8,
 		"effects": [
 			{
-				"type": "damage",
-				"value": 2
+				"type": "physical",
+				"scale": 0.8,
+				"target": "enemy"
+			},
+			{
+				"type": "debuff",
+				"scale": 30,
+				"durationSeconds": 5,
+				"statKey": "power",
+				"target": "enemy"
 			}
-		],
-		"cooldown": 8,
-		"priority": "High"
+		]
 	},
 	{
 		"id": "bulward_defende",
 		"displayName": "Bulwark Defend",
+		"cooldown": 8,
 		"effects": [
 			{
-				"type": "damage",
-				"value": 2
+				"type": "buff",
+				"scale": 20,
+				"durationSeconds": 5,
+				"statKey": "guard",
+				"target": "enemy"
 			}
-		],
-		"cooldown": 8,
-		"priority": "High"
+		]
 	}
 ]

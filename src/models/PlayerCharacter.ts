@@ -1,7 +1,5 @@
 import { BaseCharacter } from "./BaseCharacter";
-import { defaultPlayerStats, PlayerStats } from "./Stats";
 import { StatsEngine } from "@/core/StatsEngine";
-import { calcPlayerDamage, calcPlayerDefence } from "./DamageCalculator";
 import { bus } from "@/core/EventBus";
 import { BigNumber } from "./utils/BigNumber";
 
@@ -11,9 +9,9 @@ export class PlayerCharacter extends BaseCharacter {
 	private classCardAbilityIds: string[] = [];
 
 	constructor() {
-		const base: PlayerStats = defaultPlayerStats;
-		super("You", 1, base);
-		this.statsEngine = new StatsEngine(base);
+		const engine = new StatsEngine();
+		super("You", { get: (k) => engine.get(k) });
+		this.statsEngine = engine;
 	}
 
 	public init() {
@@ -53,16 +51,8 @@ export class PlayerCharacter extends BaseCharacter {
 
 	get attack() {
 		return this.statsEngine.get("attack");
-		return calcPlayerDamage(this);
 	}
 
-	override calculateAbilityDamage(abilityDamage: number): BigNumber {
-		return calcPlayerDamage(this, abilityDamage);
-	}
-
-	get defence() {
-		return calcPlayerDefence(this);
-	}
 	get speed() {
 		return this.statsEngine.get("speed");
 	}
