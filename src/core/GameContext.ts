@@ -11,6 +11,7 @@ import { SettlementManager } from "@/features/settlement/SettlementManager";
 import { bus } from "./EventBus";
 import { SaveManager } from "./SaveManager";
 import { ScreenManager } from "./ScreenManager";
+import { PrestigeState } from "@/shared/stats-types";
 
 export class GameContext {
 	private static _instance: GameContext | null = null;
@@ -18,6 +19,10 @@ export class GameContext {
 	public readonly player: Player;
 	public readonly services: GameServices;
 	public currentRun: GameRun | null = null;
+
+	public flags = {
+		isNewRun: true, // Used to prevent loading of old data when prestiging
+	};
 
 	private constructor(player: Player, services: GameServices) {
 		this.player = player;
@@ -39,7 +44,8 @@ export class GameContext {
 		return GameContext._instance;
 	}
 
-	public startNewRun(prestigeState: PrestigeState): void {
+	public startNewRun(prestigeState: PrestigeState, newRun: boolean): void {
+		this.flags.isNewRun = newRun;
 		if (this.currentRun) {
 			this.currentRun.destroy();
 		}

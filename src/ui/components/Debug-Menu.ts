@@ -1,10 +1,10 @@
 import { printLog } from "@/core/DebugManager";
 import { bus } from "@/core/EventBus";
-import { saveManager } from "@/core/SaveManager";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { Player } from "@/core/Player";
 import { PlayerCharacter } from "@/models/PlayerCharacter";
 import { BigNumber } from "@/models/utils/BigNumber";
+import { GameContext } from "@/core/GameContext";
 
 export class DebugMenu {
 	private rootEl!: HTMLElement;
@@ -17,9 +17,10 @@ export class DebugMenu {
 	}
 
 	addOptions() {
-		this.addButton("Save", () => saveManager.saveAll());
+		const context = GameContext.getInstance();
+		this.addButton("Save", () => context.saves.saveAll());
 		this.addButton("Load", () => window.location.reload()); //saveManager.loadAll());
-		this.addButton("New Game", () => saveManager.startNewGame());
+		this.addButton("New Game", () => context.saves.startNewGame());
 		this.addButton("Add Renown", () => bus.emit("renown:award", new BigNumber(100000)));
 		//this.addButton("Kill Player", () => Player.getInstance().character?.takeDamage(new BigNumber(1000000)));
 		this.addButton("Kill Enemy", () => bus.emit("debug:killEnemy"));
@@ -27,19 +28,17 @@ export class DebugMenu {
 			const specs = InventoryRegistry.getSpecsByTags(["t1"]);
 			console.log(specs);
 			const spec = specs[Math.floor(Math.random() * specs.length)];
-			Player.getInstance().inventory.addLootById(spec.id, 1);
+			context.inventory.addLootById(spec.id, 1);
 		});
-		this.addButton("Clear Loot", () => Player.getInstance().inventory.clearSlots());
+		this.addButton("Clear Loot", () => context.inventory.clearSlots());
 		this.addButton("Print Stats", () => {
-			const pc = Player.getInstance().getPlayerCharacter();
-			pc.statsEngine.printStats();
+			context.character.statsEngine.printStats();
 		});
 
 		this.addButton("Test Attack", () => {
-			const pc = Player.getInstance().getPlayerCharacter();
 			const array: string[] = [];
 			for (let i = 0; i < 50; i++) {
-				array.push(this.debugAttack(pc).toString());
+				array.push(this.debugAttack(context.character).toString());
 			}
 			console.log(array);
 		});

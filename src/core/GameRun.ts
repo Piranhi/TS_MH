@@ -10,6 +10,7 @@ import { bus } from "./EventBus";
 import { GameContext } from "./GameContext";
 import { ClassCardManager } from "@/features/classcards/ClassCardManager";
 import { EquipmentManager } from "@/models/EquipmentManager";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export interface RunStats {
 	runId: string;
@@ -50,11 +51,9 @@ export class GameRun extends Destroyable {
 	}
 
 	private setupEventBindings() {
-		this.eventBindings.push(
-			bus.on("player:level-up", this.handleLevelUp.bind(this)),
-			bus.on("hunt:areaKill", this.handleEnemyDefeated.bind(this)),
-			bus.on("hunt:bossKill", this.handleBossDefeated.bind(this))
-		);
+		bindEvent(this.eventBindings, "player:level-up", (lvl) => this.handleLevelUp(lvl));
+		bindEvent(this.eventBindings, "hunt:areaKill", (data) => this.handleEnemyDefeated(data));
+		bindEvent(this.eventBindings, "hunt:bossKill", (data) => this.handleBossDefeated(data));
 	}
 
 	private initialize() {

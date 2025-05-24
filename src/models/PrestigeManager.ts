@@ -1,11 +1,9 @@
 import { bus } from "@/core/EventBus";
-import { Player } from "../core/Player";
 import { GameContext } from "@/core/GameContext";
 
 export class PrestigeManager {
 	private onCloseClick: ((e: Event) => void) | null = null;
 	private prestigeBtn: HTMLButtonElement;
-	private context = GameContext.getInstance();
 
 	constructor() {
 		this.onCloseClick = (e) => this.closePrestigeModal();
@@ -14,22 +12,27 @@ export class PrestigeManager {
 	}
 	prestige() {
 		if (this.checkCanPrestige()) {
-			this.handlePrestigeRewards();
-			bus.emit("game:prestigePrep");
-			bus.emit("game:prestige");
+			const context = GameContext.getInstance();
+			// 1. Calculate rewards from current run
+
+			const runPoints = context.currentRun?.getRunStats();
+			const buildPoints = context.settlement.getBuildPointsFromPrestige();
+
+			// 2. Apply persistent rewards
+			context.settlement.modifyBuildPoints(buildPoints);
+			//context.player.updatePrestigeStats();
+
+			// 3. Trigger prestige events
+			bus.emit("game:prestigePrep"); // Ends current run
+			bus.emit("game:prestige"); // Starts New Run
+
+			// 4. Show Modal
 			this.showPrestigeModal(["test", "test2"]);
 		}
 	}
 
 	checkCanPrestige(): boolean {
 		return true;
-	}
-
-	private handlePrestigeRewards() {
-		const player = Player.getInstance();
-
-		const settlementBuildPoints = this.context.settlement.getBuildPointsFromPrestige();
-		this.context.settlement.modifyBuildPoints(settlementBuildPoints);
 	}
 
 	showPrestigeModal(rewards: string[]) {

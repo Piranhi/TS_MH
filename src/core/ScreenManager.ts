@@ -4,7 +4,7 @@ import { bus } from "./EventBus";
 
 type Loader<T> = () => Promise<T>;
 
-export class ScreenManager<Name extends ScreenName> {
+export class ScreenManager<Name extends ScreenName = ScreenName> {
 	private lastScreen: Name = "settlement";
 	private current?: GameScreen | null;
 	private registry = new Map<Name, GameScreen>();

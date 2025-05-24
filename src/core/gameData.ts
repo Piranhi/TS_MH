@@ -10,7 +10,7 @@ import rawTriggers from "@/data/progression-triggers.json" assert { type: "json"
 /* ---------- Bring in the class constructors -------------- */
 import { Area } from "@/models/Area";
 import { Monster, MonsterSpec } from "@/models/Monster";
-import { Ability } from "@/models/Ability";
+import { Ability, AbilitySpec } from "@/models/Ability";
 import { ClassCard } from "@/features/classcards/ClassCard";
 import { Equipment } from "@/models/Equipment";
 import { ClassCardItemSpec, EquipmentItemSpec, ProgressionTrigger } from "@/shared/types";
@@ -30,25 +30,8 @@ export function initGameData() {
 	ClassCard.registerSpecs(rawClassCards as ClassCardItemSpec[]);
 	Monster.registerSpecs(rawMonsters as MonsterSpec[]);
 	Area.registerSpecs(rawAreas);
-	Ability.registerSpecs(rawAbilities);
+	Ability.registerSpecs(rawAbilities as AbilitySpec[]);
 	InventoryRegistry.init();
 
 	milestoneManager.registerSpecs(rawTriggers as ProgressionTrigger[]);
 }
-
-/* 	const equipmentSpecs: EquipmentItemSpec[] = (rawEquipment as EquipmentItemSpecRaw[]).map((raw) => ({
-		...raw,
-		statMod: toBigNumberModifier(raw.statMod),
-	}));
-
-	const classCardSpecs: ClassCardItemSpec[] = (rawClassCards as ClassCardItemSpecRaw[]).map((raw) => ({
-		...raw,
-		statMod: toBigNumberModifier(raw.statMod),
-	}));
-
-	Monster.registerSpecs(
-		(rawMonsters as MonsterSpecRaw[]).map((raw) => ({
-			...raw,
-			baseStats: toCoreStats(raw.baseStats),
-		}))
-	); */

@@ -8,6 +8,7 @@ import { InventoryItemSpec } from "../shared/types";
 import { BigNumber } from "@/models/utils/BigNumber";
 import { AreaStats, EnemyStats, GameStats, PrestigeStats, UserStats } from "@/shared/stats-types";
 import { MilestoneEventPayload } from "@/shared/Milestones";
+import { GameRun, RunStats } from "./GameRun";
 
 export interface GameEvents {
 	"Game:UITick": number;
@@ -56,9 +57,11 @@ export interface GameEvents {
 	"milestone:achieved": MilestoneEventPayload;
 	//------------------ DEBUG ---------------------
 	"debug:killEnemy": void;
-	// ------------------ MILESTONES ------------------------
-	/* 	"monster-killed": [entityId: string, meta?: any];
-	"building-built": [entityId: string, meta?: any]; */
+	// ------------------ GAME RUN ------------------------
+	"gameRun:started": GameRun;
+	"gameRun:initialized": GameRun;
+	"gameRun:ended": RunStats;
+	"gameRun:destroyed": string;
 }
 
 export type EventKey = keyof GameEvents;

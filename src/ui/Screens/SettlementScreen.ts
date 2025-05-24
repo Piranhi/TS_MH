@@ -9,7 +9,6 @@ export class SettlementScreen extends BaseScreen {
 	readonly screenName = "settlement";
 	private rootEl!: HTMLElement;
 	private BuildingGridEl!: HTMLElement;
-	private settlement!: SettlementManager;
 	private buildingDisplays: BuildingDisplay[] = [];
 	private buildingTemplate!: HTMLTemplateElement;
 	private settlementBuildPointsEl!: HTMLElement;
@@ -27,12 +26,11 @@ export class SettlementScreen extends BaseScreen {
 		this.settlementPassiveProgressEl = this.rootEl.querySelector(".progress") as HTMLElement;
 		this.settlementBuildPointsEl = this.byId("settlement-build-points");
 
-		this.buildGrid();
 		this.bindEvents();
 	}
 
 	show() {
-		// Set values on new screen
+		this.buildGrid();
 		this.pointsChanged(this.context.settlement.totalBuildPoints);
 	}
 
@@ -48,7 +46,7 @@ export class SettlementScreen extends BaseScreen {
 		this.BuildingGridEl.innerHTML = "";
 		this.buildingDisplays = [];
 
-		for (const building of this.settlement.getAllBuildings()) {
+		for (const building of this.context.settlement.getAllBuildings()) {
 			const display = new BuildingDisplay(this.BuildingGridEl, this.buildingTemplate, building);
 			this.buildingDisplays.push(display);
 		}

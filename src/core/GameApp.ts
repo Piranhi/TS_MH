@@ -5,7 +5,6 @@ import { GameContext } from "./GameContext";
 import { GameServices } from "./GameServices";
 import { Player } from "./Player";
 import { engine } from "./GameEngine";
-import { ScreenManager } from "./ScreenManager";
 import { SidebarDisplay } from "../ui/components/SidebarDisplay";
 import { ScreenName } from "@/shared/ui-types";
 import { HeaderDisplay } from "../ui/components/HeaderDisplay";
@@ -41,10 +40,7 @@ export class GameApp {
 		this.services = GameServices.getInstance();
 
 		// 3. Initialize player
-		const player = Player.initSingleton({
-			inventoryManager: this.services.inventoryManager,
-			settlementManager: this.services.settlementManager,
-		});
+		const player = Player.initSingleton();
 
 		// 4. Initialize context
 		this.context = GameContext.initialize(player, this.services);
@@ -60,11 +56,11 @@ export class GameApp {
 			this.services.saveManager.clearSaves();
 			bus.emit("game:newGame");
 			// Start first run
-			this.context.startNewRun(player.getPrestigeState());
+			this.context.startNewRun(player.getPrestigeState(), true);
 		} else {
 			// Resume existing run
 			const prestigeState = player.getPrestigeState();
-			this.context.startNewRun(prestigeState);
+			this.context.startNewRun(prestigeState, false);
 		}
 
 		// 8. Build UI
@@ -97,6 +93,7 @@ export class GameApp {
 		bus.on("game:prestige", () => this.handlePrestige());
 	}
 
+	// ---------------------- PRESTIGE ----------------------------------
 	private handlePrestigePrep() {
 		console.log("Preparing for prestige...");
 
@@ -119,7 +116,7 @@ export class GameApp {
 
 		// Start new run with updated prestige state
 		const prestigeState = this.context.player.getPrestigeState();
-		this.context.startNewRun(prestigeState);
+		this.context.startNewRun(prestigeState, true);
 
 		// Rebuild UI
 		this.registerScreens();

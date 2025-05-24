@@ -7,7 +7,7 @@ export interface poolChangedPayload {
 
 export class RegenPool {
 	/** The hard ceiling that can never be exceeded */
-	readonly max: number;
+	private _max: number;
 
 	/** How much is currently spendable (may be fractional) */
 	private _current = 0;
@@ -19,7 +19,7 @@ export class RegenPool {
 	private readonly regenRate: number;
 
 	constructor(max: number, regenPerSecond: number, startFull: boolean) {
-		this.max = max;
+		this._max = max;
 		this.regenRate = regenPerSecond;
 		if (startFull) this._current = max; // start full
 	}
@@ -36,9 +36,13 @@ export class RegenPool {
 		return this._allocated;
 	}
 
+	get max(): number {
+		return this._max;
+	}
+
 	/** Dynamic cap = max − allocated */
 	get effective(): number {
-		return this.max - this._allocated;
+		return this._max - this._allocated;
 	}
 
 	/* ─────────────── API ─────────────── */
@@ -60,8 +64,12 @@ export class RegenPool {
 
 		this._allocated -= points;
 		// Current may be fractional, but must never exceed max
-		this._current = Math.min(this._current + points, this.max);
+		this._current = Math.min(this._current + points, this._max);
 		return true;
+	}
+
+	setMax(newMax: number) {
+		this._max = newMax;
 	}
 
 	public destroy() {
@@ -78,7 +86,7 @@ export class RegenPool {
 	toJSON() {
 		return {
 			__type: "RegenPool",
-			max: this.max,
+			max: this._max,
 			regenRate: this.regenRate,
 			current: this.current,
 			allocated: this._allocated,
