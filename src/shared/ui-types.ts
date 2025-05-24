@@ -4,28 +4,27 @@ export type ScreenNav = {
 };
 
 export const screenNav: ScreenNav[] = [
-	{
-		name: "settlement",
-		children: [{ name: "guildHall" }, { name: "mine" }, { name: "library" }, { name: "blacksmith" }, { name: "market" }],
-	},
-
+	{ name: "train" },
 	{
 		name: "hunt",
 		children: [{ name: "outposts" }],
 	},
-	{ name: "train" },
+	{
+		name: "settlement",
+		children: [{ name: "guildHall" }, { name: "mine" }, { name: "library" }, { name: "blacksmith" }, { name: "market" }],
+	},
 	{ name: "character" },
 	{ name: "inventory" },
 ];
 
 export type ScreenName =
+	| "train"
 	| "settlement"
 	| "character"
 	| "hunt"
 	| "outposts"
 	| "inventory"
 	| "research"
-	| "train"
 	| "blacksmith"
 	| "library"
 	| "market"

@@ -1,6 +1,6 @@
 import { printLog } from "@/core/DebugManager";
 import { SpecRegistryBase } from "./SpecRegistryBase";
-import { AreaScaling, CoreStats, scaleEnemyStatsByArea } from "./Stats";
+import { CoreStats, Stats } from "./Stats";
 
 export type MonsterRarity = "common" | "uncommon" | "rare" | "terrifying" | "nightmare";
 
@@ -12,15 +12,6 @@ const renownMultipliers: Record<MonsterRarity, number> = {
 	nightmare: 3.0,
 };
 
-/* export interface MonsterSpecRaw {
-	id: string;
-	displayName: string;
-	rarity: MonsterRarity;
-	baseStats: CoreStatsNumbers;
-	abilities: string[];
-	imgUrl: string;
-} */
-
 export interface MonsterSpec {
 	id: string;
 	displayName: string;
@@ -31,13 +22,24 @@ export interface MonsterSpec {
 }
 
 export class Monster extends SpecRegistryBase<MonsterSpec> {
-	//private areaScaling: AreaScaling;
-	private constructor(private readonly spec: MonsterSpec, private readonly areaScaling: AreaScaling) {
+	private constructor(private readonly spec: MonsterSpec) {
 		super();
 	}
 
-	get scaledStats(): CoreStats {
-		return scaleEnemyStatsByArea(this.spec.baseStats, this.areaScaling);
+	get areaScaledStats(): Stats {
+		return {
+			attack: this.spec.baseStats.attack,
+			defence: this.spec.baseStats.defence,
+			speed: this.spec.baseStats.speed,
+			hp: this.spec.baseStats.hp,
+			power: 0,
+			guard: 0,
+			critChance: 0,
+			critDamage: 0,
+			evasion: 0,
+			lifesteal: 0,
+			encounterChance: 0,
+		};
 	}
 
 	/* --- simple getters --- */
@@ -69,10 +71,9 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 	// Registry.
 	public static override specById = new Map<string, MonsterSpec>();
 
-	static create(id: string, areaScaling: AreaScaling): Monster {
-		const spec = this.specById.get(id);
-		if (!spec) throw new Error(`Unknown monster "${id}"`);
+	// Created in Area.ts - With scaling applied
+	static create(spec: MonsterSpec) {
 		printLog("Spawned new Monster: " + spec.id, 3, "Monster.ts");
-		return new Monster(spec, areaScaling);
+		return new Monster(spec);
 	}
 }

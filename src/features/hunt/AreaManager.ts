@@ -1,4 +1,4 @@
-import { printLog } from "@/core/DebugManager";
+import { debugManager, printLog } from "@/core/DebugManager";
 import { bus } from "@/core/EventBus";
 import { Area, AreaSpec } from "@/models/Area";
 import { Destroyable } from "@/models/Destroyable";
@@ -20,7 +20,14 @@ export class AreaManager extends Destroyable {
 	}
 
 	private checkAllUnlocks() {
+		if (debugManager.get("hunt_allAreasOpen")) {
+		}
 		for (const spec of this.allAreas) {
+			// DEBUG - SET ALL AREAS TO OPEN
+			if (debugManager.get("hunt_allAreasOpen")) {
+				this.unlocked.add(spec.id);
+				continue;
+			}
 			const reqs: MilestoneTag[] = (spec.requires as MilestoneTag[]) || [];
 			if (!this.unlocked.has(spec.id) && MilestoneManager.instance.hasAll(reqs)) {
 				this.unlocked.add(spec.id);

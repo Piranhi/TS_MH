@@ -89,7 +89,7 @@ export class CombatManager extends Destroyable {
 
 	private rewardPlayer() {
 		// Award renown
-		const renownReward = this.area.getScaledValue(this.enemyCharacter.spec.renownMulti, "renown");
+		const renownReward = 1; // TODO - Base it on Tier + Enemy Rarity
 		this.context.player.adjustRenown(renownReward);
 
 		// Award experience

@@ -5,7 +5,7 @@ import { UIBase } from "../components/UIBase";
 export abstract class BaseScreen extends UIBase implements GameScreen {
 	abstract readonly screenName: ScreenName;
 	public element: HTMLElement;
-
+	private unlocked = false;
 
 	constructor() {
 		super();

@@ -6,13 +6,10 @@ import { GameServices } from "./GameServices";
 import { Player } from "./Player";
 import { engine } from "./GameEngine";
 import { SidebarDisplay } from "../ui/components/SidebarDisplay";
-import { ScreenName } from "@/shared/ui-types";
 import { HeaderDisplay } from "../ui/components/HeaderDisplay";
 import { DebugMenu } from "@/ui/components/Debug-Menu";
 import { bus } from "./EventBus";
 import { initGameData } from "./gameData";
-import { screenFactories } from "./screenFactories";
-import { GameScreen } from "@/ui/Screens/gameScreen";
 
 export class GameApp {
 	private readonly root: HTMLElement;
@@ -23,7 +20,6 @@ export class GameApp {
 	// UI Components
 	private sidebar!: SidebarDisplay;
 	private header!: HeaderDisplay;
-	private gameScreens = new Map<ScreenName, GameScreen>();
 
 	constructor(root: HTMLElement) {
 		this.root = root;
@@ -32,7 +28,7 @@ export class GameApp {
 		this.container = maybeArea;
 	}
 
-	async init(home: ScreenName): Promise<void> {
+	async init(): Promise<void> {
 		// 1. Initialize game data
 		initGameData();
 
@@ -65,9 +61,7 @@ export class GameApp {
 
 		// 8. Build UI
 		this.buildUI();
-		this.registerScreens();
-		this.mountScreens();
-		await this.context.screens.show(home);
+		this.context.screens.init(this.container);
 
 		// 9. Start game
 		bus.emit("game:gameReady");
@@ -105,7 +99,6 @@ export class GameApp {
 
 		// Clean up UI
 		this.context.screens.destroyAll();
-		this.gameScreens.clear();
 
 		// Reset player for new run
 		this.context.player.prestigeReset();
@@ -119,9 +112,8 @@ export class GameApp {
 		this.context.startNewRun(prestigeState, true);
 
 		// Rebuild UI
-		this.registerScreens();
-		this.mountScreens();
-		this.context.screens.show("settlement");
+
+		this.context.screens.init(this.container);
 	}
 
 	private buildUI() {
@@ -139,21 +131,5 @@ export class GameApp {
 	private buildDebugMenu() {
 		const debugMenu = new DebugMenu();
 		debugMenu.build();
-	}
-
-	private registerScreens() {
-		Object.entries(screenFactories).forEach(([name, factory]) => {
-			const screen = factory();
-			this.context.screens.register(name as ScreenName, screen);
-			this.gameScreens.set(name as ScreenName, screen);
-		});
-	}
-
-	private mountScreens() {
-		this.gameScreens.forEach((screen) => {
-			this.container.append(screen.element);
-			screen.init();
-			screen.element.classList.remove("active");
-		});
 	}
 }

@@ -54,8 +54,8 @@ export class HuntManager extends Destroyable implements Saveable {
 		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.onTick(dt));
 		bindEvent(this.eventBindings, "hunt:areaSelected", (areaId) => this.setArea(areaId));
 		bindEvent(this.eventBindings, "game:gameReady", () => this.gameReady());
-		bindEvent(this.eventBindings, "game:prestigePrep", () => this.prestigePrep);
-		bindEvent(this.eventBindings, "milestone:achieved", () => this.prestigePrep);
+		//bindEvent(this.eventBindings, "game:prestigePrep", () => this.prestigePrep);
+		bindEvent(this.eventBindings, "milestone:achieved", () => this.handleMilestones);
 	}
 
 	private gameReady() {
@@ -68,17 +68,14 @@ export class HuntManager extends Destroyable implements Saveable {
 		this.areaManager.destroy();
 	}
 
-	public getActiveArea(): Area | null {
-		return this.area;
-	}
-
 	public getActiveAreaID(): string {
 		if (this.area) return this.area.id;
 		return "";
 	}
 
-	private prestigePrep() {
-		//this.clearArea();
+	public getActiveArea(): Area {
+		if (!this.area) throw new Error("No area selected");
+		return this.area;
 	}
 
 	private handleMilestones() {}
@@ -108,9 +105,7 @@ export class HuntManager extends Destroyable implements Saveable {
 	// IDLE STATE
 	private makeIdleState(): StateHandler {
 		return {
-			onEnter: () => {
-				bus.emit("hunt:stateChanged", HuntState.Idle);
-			},
+			onEnter: () => {},
 			onTick: (dt: number) => {},
 			onExit: () => {},
 		};
@@ -121,7 +116,7 @@ export class HuntManager extends Destroyable implements Saveable {
 		// Local closure variable keeps track of an accumulated timer so that we roll
 		// once per second independent of frame rate.
 		let elapsed = 0;
-		const rollTime = debugManager.debugActive ? debugManager.DEBUG_HUNT_SEARCHSPEED : 1;
+		const rollTime = debugManager.printDebug ? debugManager.DEBUG_HUNT_SEARCHSPEED : 1;
 
 		return {
 			onEnter: () => {
@@ -224,7 +219,7 @@ export class HuntManager extends Destroyable implements Saveable {
 	}
 
 	private rollEncounter(): boolean {
-		const BASE_CHANCE = debugManager.debugActive ? 1 : 0.5;
+		const BASE_CHANCE = debugManager.printDebug ? 1 : 0.5;
 		return Math.random() < BASE_CHANCE;
 	}
 

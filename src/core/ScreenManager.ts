@@ -2,40 +2,85 @@ import { GameScreen } from "../ui/Screens/gameScreen";
 import { ScreenName } from "../shared/ui-types";
 import { bus } from "./EventBus";
 
-type Loader<T> = () => Promise<T>;
+// Import game screens
+import { SettlementScreen } from "../ui/Screens/SettlementScreen";
+import { HuntScreen } from "../ui/Screens/HuntScreen";
+import { BlacksmithScreen } from "../ui/Screens/BlacksmithScreen";
+import { CharacterScreen } from "../ui/Screens/CharacterScreen";
+import { InventoryScreen } from "../ui/Screens/InventoryScreen";
+import { ResearchScreen } from "../ui/Screens/ResearchScreen";
+import { TrainScreen } from "../ui/Screens/TrainScreen";
+import { OutpostsScreen } from "@/ui/Screens/OutpostsScreen";
+import { LibraryScreen } from "@/ui/Screens/LibraryScreen";
+import { MarketScreen } from "@/ui/Screens/MarketScreen";
+import { MineScreen } from "@/ui/Screens/MineScreen";
+import { GuildHallScreen } from "@/ui/Screens/GuildHallScreen";
+
+// Screen Factory
 
 export class ScreenManager<Name extends ScreenName = ScreenName> {
-	private lastScreen: Name = "settlement";
-	private current?: GameScreen | null;
-	private registry = new Map<Name, GameScreen>();
+	private screenFactories: Record<ScreenName, () => GameScreen> = {
+		settlement: () => new SettlementScreen(),
+		blacksmith: () => new BlacksmithScreen(),
+		library: () => new LibraryScreen(),
+		market: () => new MarketScreen(),
+		train: () => new TrainScreen(),
+		hunt: () => new HuntScreen(),
+		outposts: () => new OutpostsScreen(),
+		character: () => new CharacterScreen(),
+		inventory: () => new InventoryScreen(),
+		research: () => new ResearchScreen(),
+		mine: () => new MineScreen(),
+		guildHall: () => new GuildHallScreen(),
+	};
 
-	/** Register either an already-constructed Screen, or a loader that returns one */
-	register(name: Name, screen: GameScreen) {
-		this.registry.set(name, screen);
+	private screens = new Map<ScreenName, GameScreen>();
+	private container!: HTMLElement;
+
+	private current?: GameScreen | null;
+
+	init(container: HTMLElement) {
+		this.container = container;
+		this.registerScreens();
+		this.mountScreens();
+		this.show("train" as Name);
+	}
+
+	private registerScreens(): void {
+		// Object.keys gives us a string[], so we cast it to ScreenName[].
+		(Object.keys(this.screenFactories) as ScreenName[]).forEach((name) => {
+			const factory = this.screenFactories[name];
+			const screen = factory();
+			this.screens.set(name, screen);
+		});
+	}
+
+	private mountScreens(): void {
+		this.screens.forEach((screen) => {
+			this.container.append(screen.element);
+			screen.init();
+			screen.element.classList.remove("active");
+		});
 	}
 
 	destroyAll() {
-		this.registry.forEach((s) => s.destroy());
-		this.registry.clear();
+		this.screens.clear();
+		this.screens.forEach((s) => s.destroy());
+		this.screens.clear();
 		this.current = null;
+		this.container.innerHTML = "";
 	}
 
 	/** Switch to a screen by name */
-	async show(name: Name) {
+	show(name: Name) {
 		// Hide the current
 		if (this.current) {
 			this.current.hide();
 			this.current.element.classList.remove("active");
 		}
 
-		let screen = this.registry.get(this.current ? name : this.lastScreen);
+		const screen = this.screens.get(name);
 		if (!screen) throw new Error(`No screen: ${name}`);
-
-		// Init once
-		if (!screen.element.isConnected) {
-			document.getElementById("game-area")!.append(screen.element);
-			screen.init();
-		}
 
 		// Show
 		screen.element.classList.add("active");

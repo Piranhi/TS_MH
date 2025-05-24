@@ -1,4 +1,12 @@
-import { TrainedStat } from "./TrainedStat";
+// ENEMY SCALING - PER TIER
+export const MONSTER_HP_GROWTH = 1.75; // HP   ×1.75 per area
+export const MONSTER_ATTACK_GROWTH = 1.45; // ATK  ×1.45 per area
+export const MONSTER_DEFENCE_GROWTH = 1.4; // DEF  ×1.40 per area
+
+
+// EQUIPMENT SCALING
+
+// PLAYER SCALING
 
 export const STAT_KEYS: (keyof Stats)[] = [
 	"attack",
@@ -80,15 +88,6 @@ export type StatKey = keyof Stats;
 export type StatsModifier = Partial<Stats>;
 export type TrainedStatType = "power" | "guard" | "crit";
 export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden";
-
-export function scaleEnemyStatsByArea(base: CoreStats, scale: AreaScaling): CoreStats {
-	return {
-		hp: base.hp * scale.hp,
-		attack: base.attack * scale.attack,
-		defence: base.defence * scale.defence,
-		speed: base.speed * scale.speed,
-	};
-}
 
 // Specs are loaded from config/data, not created at runtime
 export const TrainedStatSpecs: Record<TrainedStatType, TrainedStatSpec> = {

@@ -1,7 +1,6 @@
-import { Monster } from "./Monster";
+import { Monster, MonsterSpec } from "./Monster";
 import { SpecRegistryBase } from "./SpecRegistryBase";
-import { AreaScaling } from "./Stats";
-import { BigNumber } from "./utils/BigNumber";
+import { MONSTER_ATTACK_GROWTH, MONSTER_DEFENCE_GROWTH, MONSTER_HP_GROWTH } from "./Stats";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 
 export interface AreaSpec {
@@ -11,7 +10,7 @@ export interface AreaSpec {
 	requires: string[];
 	spawns: Array<{ monsterId: string; weight: number; drops: { tags: string[]; chance: number } }>;
 	boss: { monsterId: string; weight: number; drops: { tags: string[]; chance: number } };
-	areaScaling: AreaScaling;
+	//areaScaling: AreaScaling;
 }
 
 export interface Drop {
@@ -37,20 +36,41 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 			roll -= spawn.weight;
 			if (roll <= 0) {
 				this.selectedSpawn = spawn;
-				this.spawnedMonster = Monster.create(spawn.monsterId, this.spec.areaScaling)!;
+				this.spawnedMonster = this.buildMonster(spawn.monsterId);
 				return this.spawnedMonster;
 			}
 		}
+		// Backup in case we don't pick a monster from weighting.
 		this.selectedSpawn = spawns[0];
-		this.spawnedMonster = Monster.create(spawns[0].monsterId, this.spec.areaScaling)!;
+		this.spawnedMonster = this.buildMonster(spawns[0].monsterId);
 		return this.spawnedMonster;
 	}
 
 	pickBoss(): Monster {
 		const spawn = this.spec.boss;
 		this.selectedSpawn = spawn;
-		this.spawnedMonster = Monster.create(spawn.monsterId, this.spec.areaScaling)!;
+		this.spawnedMonster = this.buildMonster(spawn.monsterId);
 		return this.spawnedMonster;
+	}
+
+	private buildMonster(monsterId: string) {
+		const templateSpec = Monster.getSpec(monsterId);
+		if (!templateSpec) throw new Error(`Unknown monster "${monsterId}"`);
+
+		const scaledSpec: MonsterSpec = structuredClone(templateSpec);
+		console.log(this.spec.tier);
+
+		scaledSpec.baseStats.hp = this.growth(templateSpec.baseStats.hp, MONSTER_HP_GROWTH);
+		scaledSpec.baseStats.attack = this.growth(templateSpec.baseStats.attack, MONSTER_ATTACK_GROWTH);
+		scaledSpec.baseStats.defence = this.growth(templateSpec.baseStats.defence, MONSTER_DEFENCE_GROWTH);
+		//scaled.baseStats.speed = this.growth(templateSpec.baseStats.speed, 1);
+
+		return Monster.create(scaledSpec);
+	}
+
+	/** Returns the scaling factor for a given area (area 1 → 1.0) */
+	private growth(base: number, factor: number): number {
+		return base * Math.pow(factor, this.spec.tier - 1);
 	}
 
 	public rollLoot(): string[] {
@@ -64,21 +84,13 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 		// get every spec matching these tags
 		const candidates = InventoryRegistry.getSpecsByTags(tags);
 		for (const spec of candidates) {
-			if (Math.random() < chance * this.spec.areaScaling.dropChance) {
+			if (Math.random() < chance * 5) {
+				// TODO - WORK OUT SCALING FOR DROP CHANCE this.spec.areaScaling.dropChance) {
 				ids.push(spec.id);
 			}
 		}
 
 		return ids;
-	}
-
-	// Scale Monster stats by Area
-	getScaledValue(base: number | BigNumber, prop: keyof AreaScaling): number | BigNumber {
-		if (typeof base === "number") {
-			return base * this.spec.areaScaling[prop];
-		} else {
-			return base.multiply(this.spec.areaScaling[prop]);
-		}
 	}
 
 	/* getters */

@@ -121,7 +121,7 @@ export abstract class BaseCharacter extends Destroyable {
 		if (!this.inCombat || !this.canAttack) return readyEffects;
 
 		this.getActiveAbilities().forEach((ability) => {
-			ability.reduceCooldown(debugManager.debugActive ? debugManager.DEBUG_CHARACTER_ABILITY_CD : dt); // TODO (multiply by speed)
+			ability.reduceCooldown(debugManager.printDebug ? debugManager.DEBUG_CHARACTER_ABILITY_CD : dt); // TODO (multiply by speed)
 			if (ability.isReady()) {
 				for (const effectSpec of ability.spec.effects) {
 					const raw: BigNumber = this.calculateRawValue(effectSpec);
