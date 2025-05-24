@@ -1,5 +1,5 @@
 import { HuntState } from "@/features/hunt/HuntManager";
-import { BaseCharacter } from "@/models/BaseCharacter";
+import { BaseCharacter, PowerLevel } from "@/models/BaseCharacter";
 import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { Player } from "@/core/Player";
@@ -140,13 +140,15 @@ export class CharacterDisplay extends UIBase {
 
 	private createStatsGrid() {
 		this.statGridEl.innerHTML = "";
-		for (const key of STAT_KEYS) {
-			const value = this.character.stats.get(key);
+
+		const powerStats: PowerLevel = this.character.getPowerLevel();
+		for (const [key, value] of Object.entries(powerStats)) {
+			//const value = this.character.stats.get(key);
 			const wrapper = document.createElement("div");
 			const dt = document.createElement("dt");
 			dt.textContent = key;
 			const dd = document.createElement("dd");
-			dd.textContent = value.toString();
+			dd.textContent = value;
 			wrapper.appendChild(dt);
 			wrapper.appendChild(dd);
 			this.statGridEl.appendChild(wrapper);

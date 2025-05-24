@@ -8,8 +8,8 @@ export interface AreaSpec {
 	displayName: string;
 	tier: number;
 	requires: string[];
-	spawns: Array<{ monsterId: string; weight: number; drops: { tags: string[]; chance: number } }>;
-	boss: { monsterId: string; weight: number; drops: { tags: string[]; chance: number } };
+	spawns: Array<{ monsterId: string; weight: number; drops: { tags: string[]; baseDropChance: number } }>;
+	boss: { monsterId: string; weight: number; drops: { tags: string[]; baseDropChance: number } };
 	//areaScaling: AreaScaling;
 }
 
@@ -70,22 +70,27 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 
 	/** Returns the scaling factor for a given area (area 1 → 1.0) */
 	private growth(base: number, factor: number): number {
-		return base * Math.pow(factor, this.spec.tier - 1);
+		return base * 10 * Math.pow(factor, this.spec.tier - 1);
 	}
 
 	public rollLoot(): string[] {
+		// TODO - Change loot in JSON into an array, so we can have different drop chances of rarer categories.
 		if (!this.selectedSpawn) {
 			throw new Error("No monster picked — cannot roll loot");
 		}
 
-		const { tags, chance } = this.selectedSpawn.drops;
+		const { tags, baseDropChance } = this.selectedSpawn.drops;
 		const ids: string[] = [];
 
 		// get every spec matching these tags
 		const candidates = InventoryRegistry.getSpecsByTags(tags);
+		const tier = this.spec.tier;
+		const decayFactor = 0.9;
+		const minFloor = 0.005;
+		const scaledDropChance = minFloor + (baseDropChance - minFloor) * Math.pow(decayFactor, tier - 1);
+
 		for (const spec of candidates) {
-			if (Math.random() < chance * 5) {
-				// TODO - WORK OUT SCALING FOR DROP CHANCE this.spec.areaScaling.dropChance) {
+			if (Math.random() < scaledDropChance) {
 				ids.push(spec.id);
 			}
 		}

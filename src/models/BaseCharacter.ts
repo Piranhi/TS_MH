@@ -17,6 +17,11 @@ export interface CharacterSnapsnot {
 	rarity?: string;
 }
 
+export interface PowerLevel {
+	attack: number;
+	defence: number;
+}
+
 export abstract class BaseCharacter extends Destroyable {
 	/* ──────────────────────── constants ──────────────────────── */
 
@@ -44,6 +49,17 @@ export abstract class BaseCharacter extends Destroyable {
 
 	private calcRealHp(base: number): BigNumber {
 		return new BigNumber(base);
+	}
+
+	calculatePowerStats(): number {
+		// 1) Base weights
+		const ATTACK_WEIGHT = 1.2;
+		const DEFENCE_WEIGHT = 1.0;
+		const HP_WEIGHT = 0.8;
+
+		const powerStats =
+			this.stats.get("attack") * ATTACK_WEIGHT + this.stats.get("defence") * DEFENCE_WEIGHT + this.hp.max.toNumber() * HP_WEIGHT;
+		return powerStats;
 	}
 
 	/* ───────────────────── getters (read-only) ───────────────── */
@@ -78,6 +94,23 @@ export abstract class BaseCharacter extends Destroyable {
 
 	protected getAvatarUrl(): string {
 		return "";
+	}
+
+	getPowerLevel(): PowerLevel {
+		return {
+			attack: this.calcPower().toNumber(),
+			defence: this.stats.get("defence"),
+		};
+	}
+
+	private calcPower(): BigNumber {
+		const attack = new BigNumber(this.stats.get("attack"));
+		const powerMultiplier = new BigNumber(1).add(this.stats.get("power") / 100);
+		const critChance = this.stats.get("critChance") / 100 + 1;
+		const critDamage = this.stats.get("critDamage") / 100 + 1;
+
+		// attack × power × critChance × critDamage
+		return attack.multiply(powerMultiplier).multiply(critChance).multiply(critDamage);
 	}
 
 	/* ───────────────────── combat lifecycle ──────────────────── */

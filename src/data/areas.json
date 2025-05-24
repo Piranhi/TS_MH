@@ -6,20 +6,20 @@
 		"tier": 1,
 
 		"spawns": [
-			{ "monsterId": "slime_basic", "weight": 10, "drops": { "tags": ["t1"], "chance": 0.01 } },
-			{ "monsterId": "wolf_basic", "weight": 10, "drops": { "tags": ["t1"], "chance": 0.01 } },
-			{ "monsterId": "large_rat", "weight": 10, "drops": { "tags": ["t1"], "chance": 0.01 } }
+			{ "monsterId": "slime_basic", "weight": 10, "drops": { "tags": ["t1"], "baseDropChance": 0.01 } },
+			{ "monsterId": "wolf_basic", "weight": 10, "drops": { "tags": ["t1"], "baseDropChance": 0.01 } },
+			{ "monsterId": "large_rat", "weight": 10, "drops": { "tags": ["t1"], "baseDropChance": 0.01 } }
 		],
-		"boss": { "monsterId": "treant", "weight": 1, "drops": { "tags": ["t1, boss"], "chance": 1 } }
+		"boss": { "monsterId": "treant", "weight": 1, "drops": { "tags": ["t1, boss"], "baseDropChance": 1 } }
 	},
 	{
 		"id": "forest_hard",
 		"displayName": "Hard Forest",
 		"requires": ["hunt.boss.tier1"],
-		"tier": 20,
+		"tier": 2,
 
-		"spawns": [{ "monsterId": "swamp_dweller", "weight": 10, "drops": { "tags": ["t2"], "chance": 0.5 } }],
+		"spawns": [{ "monsterId": "swamp_dweller", "weight": 10, "drops": { "tags": ["t2"], "baseDropChance": 0.5 } }],
 
-		"boss": { "monsterId": "treant", "weight": 1, "drops": { "tags": ["t1, boss"], "chance": 1 } }
+		"boss": { "monsterId": "treant", "weight": 1, "drops": { "tags": ["t1, boss"], "baseDropChance": 1 } }
 	}
 ]
