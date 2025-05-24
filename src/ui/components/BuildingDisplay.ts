@@ -2,7 +2,7 @@ import { Tooltip } from "./Tooltip";
 import { Building } from "@/features/settlement/Building";
 import { UIBase } from "./UIBase";
 import { ProgressBar } from "./ProgressBar";
-import { Player } from "@/models/player";
+import { Player } from "@/core/Player";
 
 export class BuildingDisplay extends UIBase {
 	private onUpgradeClick: ((e: Event) => void) | null = null;
@@ -50,7 +50,7 @@ export class BuildingDisplay extends UIBase {
 	}
 
 	private spendPoints(amt: number) {
-		Player.getInstance().settlementManager.spendUnlockPoints(this.building.id, 10);
+		this.context.settlement.spendUnlockPoints(this.building.id, 10);
 	}
 
 	private buildUnlockedCard() {

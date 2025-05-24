@@ -1,7 +1,7 @@
 import { debugManager, printLog } from "@/core/DebugManager";
 import { Ability } from "./Ability";
 import { BoundedBig } from "./value-objects/Bounded";
-import type { Stats, StatsProvider } from "@/models/Stats";
+import type { StatsProvider } from "@/models/Stats";
 import { BigNumber } from "./utils/BigNumber";
 import { Destroyable } from "./Destroyable";
 import { CombatManager } from "@/features/hunt/CombatManager";

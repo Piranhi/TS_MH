@@ -1,10 +1,11 @@
 import { Saveable } from "@/shared/storage-types";
-import { Player } from "./player";
+import { Player } from "../core/Player";
 import { makeDefaultTrainedStatStates, StatsModifier, TrainedStatState } from "./Stats";
 import { TrainedStat } from "./TrainedStat";
 import { mergeStatModifiers } from "@/shared/utils/stat-utils";
 import { Destroyable } from "./Destroyable";
 import { bindEvent } from "@/shared/utils/busUtils";
+import { GameContext } from "@/core/GameContext";
 
 interface TrainedStatManagerSave {
 	trainedStatStates: Record<string, TrainedStatState>;
@@ -12,6 +13,7 @@ interface TrainedStatManagerSave {
 
 export class TrainedStatManager extends Destroyable implements Saveable {
 	private trainedStats: Map<string, TrainedStat> = new Map();
+	private context = GameContext.getInstance();
 
 	constructor() {
 		super();
@@ -58,9 +60,8 @@ export class TrainedStatManager extends Destroyable implements Saveable {
 
 	private recalculate() {
 		const merged = [...this.trainedStats.values()].map((stat) => stat.getBonuses()).reduce(mergeStatModifiers, {} as StatsModifier);
-		Player.getInstance()
-			.getPlayerCharacter()
-			.statsEngine.setLayer("trainedStats", () => merged);
+
+		this.context.character.statsEngine.setLayer("trainedStats", () => merged);
 	}
 
 	get stats() {

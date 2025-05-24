@@ -7,10 +7,11 @@ import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { Area } from "@/models/Area";
 import { Saveable } from "@/shared/storage-types";
 import { debugManager, printLog } from "@/core/DebugManager";
-import { Player } from "@/models/player";
+import { Player } from "@/core/Player";
 import { Destroyable } from "@/models/Destroyable";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { AreaManager } from "./AreaManager";
+import { GameContext } from "@/core/GameContext";
 
 export enum HuntState {
 	Idle = "Idle",
@@ -42,6 +43,7 @@ export class HuntManager extends Destroyable implements Saveable {
 	private area!: Area;
 	private areaIndex: number = 0;
 	public readonly areaManager: AreaManager;
+	private context = GameContext.getInstance();
 
 	constructor() {
 		super();
@@ -147,7 +149,7 @@ export class HuntManager extends Destroyable implements Saveable {
 		let combatManager: CombatManager;
 		return {
 			onEnter: () => {
-				combatManager = new CombatManager(Player.getInstance().getPlayerCharacter(), enemy, this.area);
+				combatManager = new CombatManager(this.context.character, enemy, this.area);
 			},
 			onTick: (dt: number) => {
 				combatManager.onTick(dt);
@@ -178,8 +180,8 @@ export class HuntManager extends Destroyable implements Saveable {
 		return {
 			onEnter: () => {},
 			onTick: (dt: number) => {
-				Player.getInstance().getPlayerCharacter().healInRecovery();
-				if (Player.getInstance().getPlayerCharacter().isAtMaxHp()) {
+				this.context.character.healInRecovery();
+				if (this.context.character.isAtMaxHp()) {
 					this.transition(HuntState.Search, this.makeSearchState());
 				}
 			},

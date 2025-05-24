@@ -6,6 +6,7 @@ export abstract class BaseScreen extends UIBase implements GameScreen {
 	abstract readonly screenName: ScreenName;
 	public element: HTMLElement;
 
+
 	constructor() {
 		super();
 		this.element = document.createElement("div");

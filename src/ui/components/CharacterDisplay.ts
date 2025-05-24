@@ -2,7 +2,7 @@ import { HuntState } from "@/features/hunt/HuntManager";
 import { BaseCharacter } from "@/models/BaseCharacter";
 import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
-import { Player } from "@/models/player";
+import { Player } from "@/core/Player";
 import { STAT_KEYS, StatKey } from "@/models/Stats";
 
 export type HolderStatus = "inactive" | "active";
@@ -24,7 +24,7 @@ export class CharacterDisplay extends UIBase {
 
 		this.element = charCard;
 		this.createDisplay();
-		if (isPlayer) this.setCharacter(Player.getInstance().getPlayerCharacter());
+		if (isPlayer) this.setCharacter(this.context.character);
 
 		//this.setHolderStatus(holderStatus);
 		this.bindEvents();

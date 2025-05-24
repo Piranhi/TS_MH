@@ -1,4 +1,3 @@
-import { Player } from "@/models/player";
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./inventory.html?raw";
 import { bus } from "@/core/EventBus";
@@ -10,7 +9,6 @@ export class InventoryScreen extends BaseScreen {
 	private inventoryGridEl!: HTMLElement;
 	private classCardGridEl!: HTMLElement;
 	private equipmentGridEl!: HTMLElement;
-	private player: Player = Player.getInstance();
 
 	init() {
 		this.addMarkuptoPage(Markup);
@@ -25,14 +23,14 @@ export class InventoryScreen extends BaseScreen {
 
 	private bindEvents() {
 		bindEvent(this.eventBindings, "slot:drop", ({ fromId, toId }) => {
-			const changed = this.player.inventory.moveItem(fromId, toId);
+			const changed = this.context.inventory.moveItem(fromId, toId);
 			if (changed) bus.emit("inventory:changed");
 		});
 		bindEvent(this.eventBindings, "inventory:changed", () => this.renderInventory());
 	}
 
 	private renderInventory() {
-		const inventory = this.player.inventory.getSlots();
+		const inventory = this.context.inventory.getSlots();
 		this.inventoryGridEl.innerHTML = "";
 		this.classCardGridEl.innerHTML = "";
 		this.equipmentGridEl.innerHTML = "";

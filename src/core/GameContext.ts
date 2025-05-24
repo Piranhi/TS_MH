@@ -1,52 +1,88 @@
-import { Player } from "@/models/player";
+// ===================================================
+// GameContext.ts - Central access point
+// ===================================================
+import { Player } from "@/core/Player";
 import { GameServices } from "./GameServices";
 import { GameRun } from "./GameRun";
 import { PlayerCharacter } from "@/models/PlayerCharacter";
 import { HuntManager } from "@/features/hunt/HuntManager";
 import { InventoryManager } from "@/features/inventory/InventoryManager";
+import { SettlementManager } from "@/features/settlement/SettlementManager";
+import { bus } from "./EventBus";
+import { SaveManager } from "./SaveManager";
+import { ScreenManager } from "./ScreenManager";
 
 export class GameContext {
-    private static _instance: GameContext | null = null;
+	private static _instance: GameContext | null = null;
 
-    public readonly player: Player;
-    public readonly services: GameServices;
-    public currentRun: GameRun | null = null;
+	public readonly player: Player;
+	public readonly services: GameServices;
+	public currentRun: GameRun | null = null;
 
-    private constructor(player: Player, services: GameServices) {
-        this.player = player;
-        this.services = services;
-    }
+	private constructor(player: Player, services: GameServices) {
+		this.player = player;
+		this.services = services;
+	}
 
-    public static initialize(player: Player, services: GameServices): GameContext {
-        if (GameContext._instance) {
-            throw new Error("GameContext already initialized!");
-        }
-        GameContext._instance = new GameContext(player, services);
-        return GameContext._instance;
-    }
+	public static initialize(player: Player, services: GameServices): GameContext {
+		if (GameContext._instance) {
+			throw new Error("GameContext already initialized!");
+		}
+		GameContext._instance = new GameContext(player, services);
+		return GameContext._instance;
+	}
 
-    public static getInstance(): GameContext {
-        if (!GameContext._instance) {
-            throw new Error("GameContext not initialized!");
-        }
-        return GameContext._instance;
-    }
+	public static getInstance(): GameContext {
+		if (!GameContext._instance) {
+			throw new Error("GameContext not initialized!");
+		}
+		return GameContext._instance;
+	}
 
-    // Convenience accessors
-    public get character(): PlayerCharacter {
-        if (!this.currentRun) throw new Error("No active run!");
-        return this.currentRun.character;
-    }
+	public startNewRun(prestigeState: PrestigeState): void {
+		if (this.currentRun) {
+			this.currentRun.destroy();
+		}
+		this.currentRun = new GameRun({
+			prestigeState,
+			context: this,
+		});
+		bus.emit("gameRun:started", this.currentRun);
+	}
 
-    public get hunt(): HuntManager {
-        if (!this.currentRun) throw new Error("No active run!");
-        return this.currentRun.huntManager;
-    }
+	public endCurrentRun(): void {
+		if (this.currentRun) {
+			const stats = this.currentRun.getRunStats();
+			bus.emit("gameRun:ended", stats);
+			this.currentRun.destroy();
+			this.currentRun = null;
+		}
+	}
 
-    public get inventory(): InventoryManager {
-        return this.player.inventory;
-    }
+	// Convenience accessors
+	public get character(): PlayerCharacter {
+		if (!this.currentRun) throw new Error("No active run!");
+		return this.currentRun.character;
+	}
+
+	public get hunt(): HuntManager {
+		if (!this.currentRun) throw new Error("No active run!");
+		return this.currentRun.huntManager;
+	}
+
+	public get inventory(): InventoryManager {
+		return this.services.inventoryManager;
+	}
+
+	public get settlement(): SettlementManager {
+		return this.services.settlementManager;
+	}
+
+	public get saves(): SaveManager {
+		return this.services.saveManager;
+	}
+
+	public get screens(): ScreenManager {
+		return this.services.screenManager;
+	}
 }
-
-// Usage: GameContext.getInstance().character.attack
-// Usage: GameContext.getInstance().inventory.addItem(item)

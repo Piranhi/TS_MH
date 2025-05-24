@@ -1,5 +1,5 @@
 import { BoundedNumber } from "../models/value-objects/Bounded";
-import { Player } from "../models/player";
+import { Player } from "./Player";
 import { HuntState } from "../features/hunt/HuntManager";
 import { PlayerCharacter } from "../models/PlayerCharacter";
 import { EnemyCharacter } from "../models/EnemyCharacter";

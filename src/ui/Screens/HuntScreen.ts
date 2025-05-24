@@ -7,7 +7,7 @@ import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { CharacterDisplay } from "../components/CharacterDisplay";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { AreaStats } from "@/shared/stats-types";
-import { Player } from "@/models/player";
+import { Player } from "@/core/Player";
 import { bindEvent } from "@/shared/utils/busUtils";
 
 export class HuntScreen extends BaseScreen {
@@ -39,7 +39,7 @@ export class HuntScreen extends BaseScreen {
 	}
 
 	show() {
-		Player.getInstance().huntManager!.areaManager.refresh();
+		this.context.hunt.areaManager.refresh();
 		this.buildAreaSelect();
 	}
 
@@ -78,7 +78,7 @@ export class HuntScreen extends BaseScreen {
 
 	private onFightBoss = (e: Event) => {
 		e.preventDefault();
-		Player.getInstance().huntManager!.fightBoss();
+		this.context.hunt.fightBoss();
 	};
 
 	private onAreaChanged = (e: Event) => {
@@ -88,7 +88,7 @@ export class HuntScreen extends BaseScreen {
 
 	private buildAreaSelect() {
 		// Setup Area select based on all Areas from JSON
-		const activeArea = Player.getInstance().huntManager!.getActiveAreaID();
+		const activeArea = this.context.hunt.getActiveAreaID();
 
 		this.areaSelectEl.innerHTML = "";
 
@@ -101,7 +101,7 @@ export class HuntScreen extends BaseScreen {
 		this.areaSelectEl.options.add(defaultArea);
 		this.areaSelectEl.selectedIndex = 0;
 
-		const Areas = Player.getInstance().huntManager!.areaManager.getUnlockedAreas();
+		const Areas = this.context.hunt.areaManager.getUnlockedAreas();
 		Areas.forEach((area, index) => {
 			const areaSelect = document.createElement("option");
 			areaSelect.value = area.id;
@@ -123,7 +123,7 @@ export class HuntScreen extends BaseScreen {
 
 	private fightBoss(e: Event) {
 		e.preventDefault();
-		Player.getInstance().huntManager!.fightBoss();
+		this.context.hunt.fightBoss();
 	}
 
 	// Updated from Hunt Manager when area is selected/Stat updated

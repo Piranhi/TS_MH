@@ -1,5 +1,5 @@
 import { bus } from "@/core/EventBus";
-import { Player } from "@/models/player";
+import { Player } from "@/core/Player";
 import { Stats } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
 import { UIBase } from "./UIBase";
@@ -22,7 +22,7 @@ export class PlayerStatsDisplay extends UIBase {
 	}
 
 	private render(): void {
-		const stats = Player.getInstance().getPlayerCharacter().statsEngine.getAll();
+		const stats = this.context.character.statsEngine.getAll();
 		this.container.innerHTML = "";
 		this.container.appendChild(this.createSection("Core Stats", this.coreKeys, stats));
 		this.container.appendChild(this.createSection("Extra Stats", this.extraKeys, stats));

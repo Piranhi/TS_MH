@@ -1,4 +1,4 @@
-import { Player } from "@/models/player";
+import { Player } from "@/core/Player";
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./settlement.html?raw";
 import { SettlementManager } from "@/features/settlement/SettlementManager";
@@ -21,7 +21,6 @@ export class SettlementScreen extends BaseScreen {
 	init() {
 		this.rootEl = this.addMarkuptoPage(Markup);
 		this.BuildingGridEl = this.rootEl.querySelector(".building-grid") as HTMLElement;
-		this.settlement = Player.getInstance().settlementManager;
 		this.buildingTemplate = this.rootEl.querySelector("#building-card") as HTMLTemplateElement;
 		this.settlementRewardInfo = this.rootEl.querySelector("#settlement-reward-info") as HTMLElement;
 		this.settlementTimeInfo = this.rootEl.querySelector("#settlement-time-info") as HTMLElement;
@@ -34,7 +33,7 @@ export class SettlementScreen extends BaseScreen {
 
 	show() {
 		// Set values on new screen
-		this.pointsChanged(Player.getInstance().settlementManager.totalBuildPoints);
+		this.pointsChanged(this.context.settlement.totalBuildPoints);
 	}
 
 	hide() {}
@@ -56,7 +55,7 @@ export class SettlementScreen extends BaseScreen {
 	}
 
 	private handleTick(delta: number) {
-		const snapshot = Player.getInstance().settlementManager.getPassiveSnapshot();
+		const snapshot = this.context.settlement.getPassiveSnapshot();
 
 		this.settlementRewardInfo.textContent = `${snapshot.earnedPoints} build points on Prestige - x ${(1 + snapshot.reward).toFixed(
 			1

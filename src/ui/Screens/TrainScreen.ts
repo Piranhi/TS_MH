@@ -1,6 +1,6 @@
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./train.html?raw";
-import { Player } from "@/models/player";
+import { Player } from "@/core/Player";
 import { TrainedStatDisplay } from "../components/TrainedStatDisplay";
 import { bindEvent } from "@/shared/utils/busUtils";
 
@@ -27,9 +27,12 @@ export class TrainScreen extends BaseScreen {
 
 	addStatElements() {
 		this.trainingListEl.innerHTML = "";
-		Player.getInstance().trainedStatManager?.stats.forEach((stat) => {
-			const statHolder = new TrainedStatDisplay(this.rootEl, this.trainingListEl, stat);
-			statHolder.init();
-		});
+
+		if (this.context.currentRun) {
+			this.context.currentRun.trainedStats.stats.forEach((stat) => {
+				const statHolder = new TrainedStatDisplay(this.rootEl, this.trainingListEl, stat);
+				statHolder.init();
+			});
+		}
 	}
 }

@@ -2,16 +2,20 @@ import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { bus } from "../../core/EventBus";
 import { Area } from "@/models/Area";
-import { Player } from "@/models/player";
+import { Player } from "@/core/Player";
 import { EffectProcessor } from "./EffectProcessor";
 import { Destroyable } from "@/models/Destroyable";
+import { GameContext } from "@/core/GameContext";
 
 export class CombatManager extends Destroyable {
+	private context = GameContext.getInstance();
+
 	private effectProcessor: EffectProcessor;
 	public isFinished: boolean = false;
 	public playerWon: boolean = false;
 	private elapsed: number = 0;
 	private combatEndOverride = false;
+
 	constructor(private readonly playerCharacter: PlayerCharacter, private readonly enemyCharacter: EnemyCharacter, private readonly area: Area) {
 		super();
 		this.effectProcessor = new EffectProcessor();
@@ -35,20 +39,6 @@ export class CombatManager extends Destroyable {
 		if (this.playerCharacter.isAlive() === false || this.enemyCharacter.isAlive() === false) {
 			this.endCombat();
 		}
-		//const allEffects = [...playerEffects, ...enemyEffects];
-		/* 		for (const effect of allEffects) {
-			const target = effect.source === this.playerCharacter ? this.enemyCharacter : this.playerCharacter;
-
-			const result = this.effectProcessor.apply(effect, target);
-
-			// (optional) hook for UI: show floating text, play SFX, etc.
-			// this.handleResult(result);
-
-			if (this.playerCharacter.isAlive() === false || this.enemyCharacter.isAlive() === false) {
-				this.endCombat();
-				break;
-			}
-		} */
 	}
 
 	public endCombatEarly() {
@@ -78,7 +68,7 @@ export class CombatManager extends Destroyable {
 		const lootArray = this.area.rollLoot();
 		if (!lootArray || lootArray.length === 0) return;
 		lootArray.forEach((loot) => {
-			Player.getInstance().inventory.addLootById(loot, 1);
+			this.context.inventory.addLootById(loot, 1);
 		});
 		bus.emit("inventory:dropped", lootArray);
 	}

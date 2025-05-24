@@ -1,9 +1,11 @@
 import { bus } from "@/core/EventBus";
-import { Player } from "./player";
+import { Player } from "../core/Player";
+import { GameContext } from "@/core/GameContext";
 
 export class PrestigeManager {
 	private onCloseClick: ((e: Event) => void) | null = null;
 	private prestigeBtn: HTMLButtonElement;
+	private context = GameContext.getInstance();
 
 	constructor() {
 		this.onCloseClick = (e) => this.closePrestigeModal();
@@ -26,8 +28,8 @@ export class PrestigeManager {
 	private handlePrestigeRewards() {
 		const player = Player.getInstance();
 
-		const settlementBuildPoints = player.settlementManager.getBuildPointsFromPrestige();
-		player.settlementManager.modifyBuildPoints(settlementBuildPoints);
+		const settlementBuildPoints = this.context.settlement.getBuildPointsFromPrestige();
+		this.context.settlement.modifyBuildPoints(settlementBuildPoints);
 	}
 
 	showPrestigeModal(rewards: string[]) {

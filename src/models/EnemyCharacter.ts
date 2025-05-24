@@ -1,7 +1,7 @@
 import { BaseCharacter } from "./BaseCharacter";
 import { Monster } from "@/models/Monster";
-import { CoreStats, Stats } from "./Stats";
-import { debugManager, printLog } from "@/core/DebugManager";
+import { Stats } from "./Stats";
+import { debugManager } from "@/core/DebugManager";
 
 export class EnemyCharacter extends BaseCharacter {
 	public readonly spec: Monster;

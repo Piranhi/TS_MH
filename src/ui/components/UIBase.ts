@@ -1,10 +1,13 @@
 import { GameEvents } from "@/core/EventBus";
-import { unbindAll, bindEvent } from "@/shared/utils/busUtils";
+import { GameContext } from "@/core/GameContext";
+import { unbindAll } from "@/shared/utils/busUtils";
 
 type DomBinding = [HTMLElement, string, EventListenerOrEventListenerObject];
 
 export class UIBase {
 	public element!: HTMLElement;
+	protected context = GameContext.getInstance();
+
 	protected eventBindings: [keyof GameEvents, Function][] = [];
 	protected domEventBindings: DomBinding[] = [];
 

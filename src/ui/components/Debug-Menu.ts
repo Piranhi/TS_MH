@@ -2,7 +2,7 @@ import { printLog } from "@/core/DebugManager";
 import { bus } from "@/core/EventBus";
 import { saveManager } from "@/core/SaveManager";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
-import { Player } from "@/models/player";
+import { Player } from "@/core/Player";
 import { PlayerCharacter } from "@/models/PlayerCharacter";
 import { BigNumber } from "@/models/utils/BigNumber";
 

@@ -1,4 +1,3 @@
-import { printLog } from "@/core/DebugManager";
 import { Monster } from "./Monster";
 import { SpecRegistryBase } from "./SpecRegistryBase";
 import { AreaScaling } from "./Stats";

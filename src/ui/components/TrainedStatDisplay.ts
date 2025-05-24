@@ -1,7 +1,6 @@
 import { TrainedStatStatus } from "@/models/Stats";
 import { TrainedStat } from "@/models/TrainedStat";
 import { TrainedStatManager } from "@/models/TrainedStatManager";
-import { Player } from "@/models/player";
 import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { ProgressBar } from "./ProgressBar";
@@ -21,12 +20,14 @@ export class TrainedStatDisplay extends UIBase {
 
 	constructor(private root: HTMLElement, private trainingListEl: HTMLElement, private trainedStat: TrainedStat) {
 		super();
+		if (this.context.currentRun) {
+			this.manager = this.context.currentRun?.trainedStats;
+		}
 	}
 
 	public init() {
 		this.createAndBuild();
 		bindEvent(this.eventBindings, "Game:GameTick", () => this.updateElement());
-		this.manager = Player.getInstance().trainedStatManager!;
 	}
 
 	private createAndBuild() {
