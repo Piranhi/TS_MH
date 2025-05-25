@@ -123,3 +123,71 @@ button#genericModalButton:disabled {
 .ui-button:active {
 	transform: scale(0.98);
 }
+
+.offline-progress-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1000;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.offline-progress-modal.show {
+	opacity: 1;
+}
+
+.modal-backdrop {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	cursor: pointer;
+}
+
+.modal-content {
+	position: relative;
+	max-width: 500px;
+	margin: 2rem auto;
+	background: white;
+	border-radius: 8px;
+	padding: 2rem;
+	transform: translateY(-20px);
+	transition: transform 0.3s ease;
+}
+
+.offline-progress-modal.show .modal-content {
+	transform: translateY(0);
+}
+
+.chest-opening {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: white;
+	padding: 1rem;
+	border-radius: 8px;
+	text-align: center;
+	z-index: 1001;
+	animation: chestPop 2s ease-out forwards;
+}
+
+@keyframes chestPop {
+	0% {
+		transform: translate(-50%, -50%) scale(0.8);
+		opacity: 0;
+	}
+	20% {
+		transform: translate(-50%, -50%) scale(1.1);
+		opacity: 1;
+	}
+	100% {
+		transform: translate(-50%, -100px) scale(0.8);
+		opacity: 0;
+	}
+}

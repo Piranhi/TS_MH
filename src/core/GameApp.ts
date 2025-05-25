@@ -10,12 +10,14 @@ import { HeaderDisplay } from "../ui/components/HeaderDisplay";
 import { DebugMenu } from "@/ui/components/Debug-Menu";
 import { bus } from "./EventBus";
 import { initGameData } from "./gameData";
+import { OfflineProgressManager } from "@/models/OfflineProgress";
 
 export class GameApp {
 	private readonly root: HTMLElement;
 	private container: HTMLElement;
 	private context!: GameContext;
 	private services!: GameServices;
+	private offlineManager!: OfflineProgressManager;
 
 	// UI Components
 	private sidebar!: SidebarDisplay;
@@ -59,17 +61,21 @@ export class GameApp {
 			this.context.startNewRun(prestigeState, false);
 		}
 
-		// 8. Build UI
+		// 8. Setup Offline Manager
+
+		this.offlineManager = OfflineProgressManager.getInstance();
+
+		// 9. Build UI
 		this.buildUI();
 		this.context.screens.init(this.container);
 
-		// 9. Start game
+		// 10. Start game
 		bus.emit("game:gameReady");
 		this.initUI();
 		engine.start();
 		this.buildDebugMenu();
 
-		// 10. Setup prestige handlers
+		// 11. Setup prestige handlers
 		this.setupPrestigeHandlers();
 	}
 
