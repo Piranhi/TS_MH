@@ -20,6 +20,8 @@ export interface GameEvents {
 	"game:gameSaved": void;
 	"game:prestigePrep": void;
 	"game:prestige": void;
+	"game:systemsPaused": void;
+	"game:systemsResumed": void;
 
 	"ui:screenChanged": string;
 	"renown:changed": BigNumber;

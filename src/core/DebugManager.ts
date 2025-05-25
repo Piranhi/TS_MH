@@ -1,5 +1,5 @@
 const PRINT_VERBOSITY = 3;
-export type DebugType = "combat" | "settlement" | "player";
+export type DebugType = "combat" | "settlement" | "player" | "offline";
 // Define all possible debug options and their types
 type DebugOptions = {
 	player_abilityCD: number;
@@ -20,7 +20,7 @@ export class DebugManager {
 	public readonly enemyCanAttack: boolean = true;
 	public readonly enemyCanTakeDamage: boolean = true;
 	public readonly enemyCanDie: boolean = false;
-	public readonly activeTypes = new Set<DebugType>(["combat"]);
+	public readonly activeTypes = new Set<DebugType>(["offline"]);
 
 	constructor(
 		defaults: DebugOptions = {

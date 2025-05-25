@@ -17,7 +17,7 @@ export class GameApp {
 	private container: HTMLElement;
 	private context!: GameContext;
 	private services!: GameServices;
-	private offlineManager!: OfflineProgressManager;
+	//private offlineManager!: OfflineProgressManager;
 
 	// UI Components
 	private sidebar!: SidebarDisplay;
@@ -61,19 +61,18 @@ export class GameApp {
 			this.context.startNewRun(prestigeState, false);
 		}
 
-		// 8. Setup Offline Manager
-
-		this.offlineManager = OfflineProgressManager.getInstance();
-
-		// 9. Build UI
+		// 8. Build UI
 		this.buildUI();
 		this.context.screens.init(this.container);
 
-		// 10. Start game
+		// 9. Start game
 		bus.emit("game:gameReady");
 		this.initUI();
 		engine.start();
 		this.buildDebugMenu();
+
+		// 10. Setup Offline Manager
+		this.services.offlineManager.initalize();
 
 		// 11. Setup prestige handlers
 		this.setupPrestigeHandlers();

@@ -1,9 +1,11 @@
 import { GameContext } from "@/core/GameContext";
 import { OfflineProgressModal } from "@/ui/components/OfflineProgressModal";
 import { BigNumber } from "./utils/BigNumber";
-import { Monster, MonsterRarity } from "./Monster";
 import { Area } from "./Area";
 import { PlayerCharacter } from "./PlayerCharacter";
+import { printLog } from "@/core/DebugManager";
+import { formatTime } from "@/shared/utils/stringUtils";
+import { bus } from "@/core/EventBus";
 
 export interface OfflineSession {
 	startTime: number;
@@ -99,51 +101,76 @@ interface OfflineSettlementProgress {
 }
 
 export class OfflineTracker {
+	private readonly timeTillOffline = 3000;
+
 	private isOffline = false;
 	private offlineStartTime: number = 0;
 	private lastActiveTime: number = Date.now();
+	private visibilityStartTime = 0;
+	private pauseTimeout?: number;
 
 	constructor() {
 		this.setupEventListeners();
+	}
+
+	public initializeStartupCheck() {
 		this.checkForOfflineOnStartup();
 	}
 
 	private setupEventListeners() {
-		// Page Visibility API - most important
+		// PRIMARY: Tab visibility (use delayed logic)
 		document.addEventListener("visibilitychange", () => {
 			if (document.hidden) {
-				this.startOfflineSession("visibility");
+				this.handleVisibilityHidden();
 			} else {
-				this.endOfflineSession("visibility");
+				this.handleVisibilityVisible();
 			}
 		});
 
-		// Browser/tab closing
-		window.addEventListener("beforeunload", () => {
-			this.startOfflineSession("beforeunload");
+		// MOBILE: App backgrounding (immediate pause - mobile OS throttles aggressively)
+		document.addEventListener("pause", () => {
+			console.log("[OfflineTracker] Mobile app paused");
+			this.startOfflineSession("visibility");
 		});
 
-		// Page focus events (backup)
-		window.addEventListener("blur", () => {
-			if (!this.isOffline) {
-				this.startOfflineSession("visibility");
-			}
-		});
-
-		window.addEventListener("focus", () => {
+		document.addEventListener("resume", () => {
+			console.log("[OfflineTracker] Mobile app resumed");
 			if (this.isOffline) {
 				this.endOfflineSession("visibility");
 			}
 		});
 
-		// Mobile app state changes
-		document.addEventListener("pause", () => {
-			this.startOfflineSession("visibility");
+		// BROWSER CLOSING: Immediate (no delay needed)
+		window.addEventListener("beforeunload", () => {
+			this.startOfflineSession("beforeunload");
 		});
+	}
 
-		document.addEventListener("resume", () => {
+	private handleVisibilityHidden() {
+		this.visibilityStartTime = Date.now();
+		console.log("[OfflineTracker] Tab hidden, starting countdown...");
+
+		// Set a timer to pause after threshold
+		this.pauseTimeout = setTimeout(() => {
+			console.log("[OfflineTracker] Threshold reached, pausing systems");
+			this.startOfflineSession("visibility");
+		}, this.timeTillOffline);
+	}
+
+	private handleVisibilityVisible() {
+		console.log("[OfflineTracker] Tab visible again");
+
+		// Cancel the pause timer if we come back quickly
+		if (this.pauseTimeout) {
+			clearTimeout(this.pauseTimeout);
+			this.pauseTimeout = undefined;
+			console.log("[OfflineTracker] Quick return - no pause needed");
+		}
+
+		// End offline session if we were actually offline
+		if (this.isOffline) {
 			this.endOfflineSession("visibility");
-		});
+		}
 	}
 
 	private checkForOfflineOnStartup() {
@@ -152,7 +179,7 @@ export class OfflineTracker {
 		const timeDiff = now - lastSaveTime;
 
 		// If more than 2 minutes since last save, assume we were offline
-		if (timeDiff > 120000) {
+		if (timeDiff > 2000) {
 			const offlineSession: OfflineSession = {
 				startTime: lastSaveTime,
 				endTime: now,
@@ -171,6 +198,9 @@ export class OfflineTracker {
 		this.offlineStartTime = Date.now();
 		this.saveCurrentTime(); // Save when we went offline
 
+		// Pause game systems to prevent double rewards
+		this.pauseGameSystems();
+
 		console.log(`[OfflineTracker] Started offline session: ${reason}`);
 	}
 
@@ -179,6 +209,9 @@ export class OfflineTracker {
 
 		const now = Date.now();
 		const duration = now - this.offlineStartTime;
+
+		// Resume game systems first
+		this.resumeGameSystems();
 
 		this.isOffline = false;
 		this.lastActiveTime = now;
@@ -193,9 +226,21 @@ export class OfflineTracker {
 		console.log(`[OfflineTracker] Ended offline session: ${reason}, duration: ${duration}ms`);
 
 		// Only process if offline for more than 1 minute
-		if (duration > 60000) {
+		// Should be 1800000 for 30 minutes (browser Throttling)
+		if (duration > this.timeTillOffline) {
 			this.handleOfflineSession(session);
 		}
+	}
+
+	private pauseGameSystems() {
+		// Pause hunt progress, training, etc.
+		const context = GameContext.getInstance();
+		context.services.offlineManager.pauseActiveSystems();
+	}
+
+	private resumeGameSystems() {
+		const context = GameContext.getInstance();
+		context.services.offlineManager.resumeActiveSystems();
 	}
 
 	private handleOfflineSession(session: OfflineSession) {
@@ -205,12 +250,15 @@ export class OfflineTracker {
 	}
 
 	private getLastSaveTime(): number {
-		const saved = localStorage.getItem("lastActiveTime");
-		return saved ? parseInt(saved) : Date.now();
+		const context = GameContext.getInstance();
+		return context.saves.getLastActiveTime();
 	}
 
 	private saveCurrentTime() {
-		localStorage.setItem("lastActiveTime", Date.now().toString());
+		const context = GameContext.getInstance();
+		context.saves.updateLastActiveTime();
+		// Note: This doesn't trigger full save, just updates the timestamp
+		// Full save happens every 30 seconds anyway
 	}
 
 	// Public API
@@ -225,13 +273,17 @@ export class OfflineTracker {
 
 export class OfflineProgressManager {
 	private static _instance: OfflineProgressManager;
-
 	private calculators = new Map<string, SystemOfflineCalculator>();
 	private offlineTracker: OfflineTracker;
+	private systemsPaused = false;
 
 	constructor() {
 		this.offlineTracker = new OfflineTracker();
 		this.registerCalculators();
+	}
+
+	public initalize() {
+		this.offlineTracker.initializeStartupCheck();
 	}
 
 	private registerCalculators() {
@@ -240,10 +292,32 @@ export class OfflineProgressManager {
 		//this.calculators.set("settlement", new OfflineSettlementCalculator());
 	}
 
+	public pauseActiveSystems() {
+		this.systemsPaused = true;
+		printLog("Systems Paused", 3, "OfflineProgress.ts", "offline");
+		// You could emit an event that systems listen to
+		bus.emit("game:systemsPaused");
+	}
+
+	public resumeActiveSystems() {
+		printLog("Systems Resumed", 3, "OfflineProgress.ts", "offline");
+		this.systemsPaused = false;
+		bus.emit("game:systemsResumed");
+	}
+
+	public areSystemsPaused(): boolean {
+		return this.systemsPaused;
+	}
+
 	public processOfflineSession(session: OfflineSession) {
 		const context = GameContext.getInstance();
 		const results: Partial<OfflineProgressResult> = {};
-
+		printLog(
+			`Processing Offline Session: Offline for ${formatTime(session.duration)}, reason: ${session.reason}`,
+			3,
+			"OfflineProgress.ts",
+			"offline"
+		);
 		// Calculate progress for each system with proper typing
 		for (const [systemName, calculator] of this.calculators) {
 			try {
@@ -253,9 +327,12 @@ export class OfflineProgressManager {
 				switch (systemName) {
 					case "hunt":
 						results.hunt = progress as OfflineHuntProgress;
+						printLog(`Hunt:  ${JSON.stringify(results.hunt)}`, 3, "OfflineProgress.ts", "offline");
 						break;
 					case "training":
 						results.training = progress as OfflineTrainingProgress;
+						printLog(`Training:  ${JSON.stringify(results.training)}`, 3, "OfflineProgress.ts", "offline");
+
 						break;
 					case "settlement":
 						results.settlement = progress as OfflineSettlementProgress;
@@ -271,9 +348,17 @@ export class OfflineProgressManager {
 		this.showOfflineProgressModal(session, results);
 	}
 
+	// SHOW MODAL
 	private showOfflineProgressModal(session: OfflineSession, results: Partial<OfflineProgressResult>) {
-		const modal = new OfflineProgressModal(session, results);
-		modal.show();
+		console.log("[OfflineProgressManager] Attempting to show modal with results:", results);
+
+		try {
+			const modal = new OfflineProgressModal(session, results);
+			modal.show();
+			console.log("[OfflineProgressManager] Modal show() called successfully");
+		} catch (error) {
+			console.error("[OfflineProgressManager] Error showing modal:", error);
+		}
 	}
 
 	public applyOfflineRewards(results: Partial<OfflineProgressResult>) {
@@ -291,8 +376,8 @@ export class OfflineProgressManager {
 		}
 
 		if (results.settlement) {
-			const settlementCalculator = this.calculators.get("settlement") as OfflineSettlementCalculator;
-			settlementCalculator?.applyOfflineProgress(results.settlement, context);
+			//const settlementCalculator = this.calculators.get("settlement") as OfflineSettlementCalculator;
+			//settlementCalculator?.applyOfflineProgress(results.settlement, context);
 		}
 
 		// Save the game after applying all rewards
@@ -321,7 +406,7 @@ class OfflineHuntCalculator implements SystemOfflineCalculator {
 
 	calculateOfflineProgress(session: OfflineSession, context: GameContext): OfflineHuntProgress {
 		const huntManager = context.currentRun?.huntManager;
-		const currentArea = huntManager?.getActiveArea();
+		const currentArea = huntManager?.getActiveArea() ?? null;
 
 		if (!currentArea) {
 			return this.createEmptyProgress(session.duration);
@@ -342,7 +427,7 @@ class OfflineHuntCalculator implements SystemOfflineCalculator {
 		return {
 			enemiesKilled: totalKills,
 			renownGained: this.calculateRenown(totalKills, currentArea),
-			experienceGained: totalKills * currentArea.baseExp,
+			experienceGained: 1, // TODOtotalKills * currentArea.baseExp,
 			treasureChests: treasureRewards.chestsEarned,
 			treasureBreakdown: treasureRewards.timeBreakdowns,
 			nextChestIn: treasureRewards.nextChestIn,
@@ -394,6 +479,8 @@ class OfflineHuntCalculator implements SystemOfflineCalculator {
 
 	// Alternative simpler version if you don't want to spawn enemies
 	private estimateKillTimeSimple(character: PlayerCharacter, area: Area): number {
+		// TODO - Work out better formala
+		/*
 		const playerAttack = character.attack;
 
 		// Use area scaling to estimate enemy stats
@@ -405,6 +492,8 @@ class OfflineHuntCalculator implements SystemOfflineCalculator {
 
 		// Cap between reasonable bounds
 		return Math.max(5, Math.min(300, timeToKill)); // 5 sec to 5 min per enemy
+		*/
+		return 30;
 	}
 
 	private calculateRenown(totalKills: number, area: Area): BigNumber {
@@ -414,7 +503,7 @@ class OfflineHuntCalculator implements SystemOfflineCalculator {
 		const baseRenown = 10; // Adjust based on your game balance
 
 		// Apply area scaling
-		const areaMultiplier = area.spec.areaScaling.renown;
+		const areaMultiplier = 1; //TODO add renown calculations area.spec.areaScaling.renown;
 		const renownPerKill = baseRenown * areaMultiplier;
 
 		// Total renown calculation

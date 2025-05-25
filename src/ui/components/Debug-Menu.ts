@@ -1,10 +1,11 @@
-import { printLog } from "@/core/DebugManager";
+import { debugManager, printLog } from "@/core/DebugManager";
 import { bus } from "@/core/EventBus";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { Player } from "@/core/Player";
 import { PlayerCharacter } from "@/models/PlayerCharacter";
 import { BigNumber } from "@/models/utils/BigNumber";
 import { GameContext } from "@/core/GameContext";
+import { OfflineProgressManager, OfflineSession } from "@/models/OfflineProgress";
 
 export class DebugMenu {
 	private rootEl!: HTMLElement;
@@ -42,9 +43,22 @@ export class DebugMenu {
 			}
 			console.log(array);
 		});
+		this.addButton("Fake Offline Session", () => this.testOfflineSession());
 
 		//  Player.getInstance().inventory.addItemToInventory);
 		//this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));
+	}
+
+	private testOfflineSession() {
+		if (debugManager.debugEnabled) {
+			const fakeSession: OfflineSession = {
+				startTime: Date.now() - 8 * 60 * 60 * 1000, // 8 hours ago
+				endTime: Date.now(),
+				duration: 8 * 60 * 60 * 1000,
+				reason: "startup",
+			};
+			GameContext.getInstance().offlineManager.processOfflineSession(fakeSession);
+		}
 	}
 
 	private debugAttack(pc: PlayerCharacter) {

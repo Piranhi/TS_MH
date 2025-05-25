@@ -7,7 +7,6 @@ import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { Area } from "@/models/Area";
 import { Saveable } from "@/shared/storage-types";
 import { debugManager, printLog } from "@/core/DebugManager";
-import { Player } from "@/core/Player";
 import { Destroyable } from "@/models/Destroyable";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { AreaManager } from "./AreaManager";
@@ -73,9 +72,8 @@ export class HuntManager extends Destroyable implements Saveable {
 		return "";
 	}
 
-	public getActiveArea(): Area {
-		if (!this.area) throw new Error("No area selected");
-		return this.area;
+	public getActiveArea(): Area | null {
+		return this.area ?? null;
 	}
 
 	private handleMilestones() {}
@@ -94,6 +92,7 @@ export class HuntManager extends Destroyable implements Saveable {
 	public clearArea() {}
 
 	public onTick(dt: number) {
+		if (this.context.isOfflinePaused) return;
 		this.handler.onTick(dt);
 	}
 

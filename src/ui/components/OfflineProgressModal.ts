@@ -1,5 +1,6 @@
 import { GameContext } from "@/core/GameContext";
 import { OfflineProgressManager, OfflineProgressResult, OfflineSession } from "@/models/OfflineProgress";
+import { formatTime } from "@/shared/utils/stringUtils";
 
 export class OfflineProgressModal {
 	private session: OfflineSession;
@@ -12,13 +13,13 @@ export class OfflineProgressModal {
 
 	show() {
 		const huntProgress = this.results.hunt;
-
+		this.applyBackgroundProgress();
 		// Only show modal if there's meaningful hunt progress
-		if (!huntProgress || huntProgress.enemiesKilled === 0) {
+		/* 		if (!huntProgress || huntProgress.enemiesKilled === 0) {
 			// Still apply background progress (like training) without showing modal
 			this.applyBackgroundProgress();
 			return;
-		}
+		} */
 
 		const modal = this.createModalElement();
 		document.body.appendChild(modal);
@@ -26,72 +27,111 @@ export class OfflineProgressModal {
 	}
 
 	private createModalElement(): HTMLElement {
-		const huntProgress = this.results.hunt!;
+		const hunt = this.results.hunt!;
+		const durationStr = formatTime(this.session.duration);
+		const efficiencyStr = `${Math.round(hunt.efficiency * 100)}%`;
+		const enemiesStr = hunt.enemiesKilled.toLocaleString();
+		const renownStr = hunt.renownGained.toLocaleString();
+		const levelsStr = (hunt.levelsGained ?? 0).toString(); // or experience if you prefer
 
-		const modalHtml = `
-    <div class="offline-progress-modal">
-      <div class="modal-content">
-        <h2>Welcome Back!</h2>
-        <p class="offline-duration">
-          You were away for ${this.formatTime(this.session.duration)}
-        </p>
-        
-        <div class="hunt-area-info">
-          <h3>📍 ${huntProgress.areaName}</h3>
-          <p class="efficiency">Offline efficiency: ${Math.round(huntProgress.efficiency * 100)}%</p>
-        </div>
-
-        <div class="combat-rewards">
-          <h3>⚔️ Combat Progress</h3>
-          <div class="reward-list">
-            <div class="reward-item">
-              <span class="icon">🗡️</span>
-              <span class="label">Enemies Defeated:</span>
-              <span class="value">${huntProgress.enemiesKilled.toLocaleString()}</span>
-            </div>
-            <div class="reward-item">
-              <span class="icon">⭐</span>
-              <span class="label">Renown Gained:</span>
-              <span class="value">${huntProgress.renownGained.toString()}</span>
-            </div>
-            <div class="reward-item">
-              <span class="icon">📈</span>
-              <span class="label">Experience:</span>
-              <span class="value">${huntProgress.experienceGained.toLocaleString()}</span>
-            </div>
-          </div>
-        </div>
-
-        ${this.renderTreasureSection()}
-        ${this.renderBackgroundProgressHint()}
-        
-        <div class="modal-actions">
-          <button class="claim-btn primary" data-action="claim">
-            Claim All Rewards
-          </button>
-          ${
-			huntProgress.treasureChests > 0
-				? `
-            <button class="open-chests-btn highlight" data-action="open-chests">
-              🎁 Open ${huntProgress.treasureChests} Chest${huntProgress.treasureChests > 1 ? "s" : ""}!
-            </button>
-          `
-				: ""
-		}
-        </div>
-      </div>
-      <div class="modal-backdrop" data-action="close"></div>
-    </div>
-  `;
-
+		// Root
 		const modal = document.createElement("div");
-		modal.innerHTML = modalHtml;
-		const modalElement = modal.firstElementChild as HTMLElement;
+		modal.id = "offlineModal";
+		modal.className = "offline-modal";
 
-		// Add event listeners with proper 'this' context
-		this.setupEventListeners(modalElement);
+		// Backdrop
+		const backdrop = document.createElement("div");
+		backdrop.className = "offline-modal__backdrop";
+		backdrop.dataset.action = "close";
+		modal.appendChild(backdrop);
 
-		return modalElement;
+		// Card
+		const card = document.createElement("div");
+		card.className = "offline-modal__card";
+		card.setAttribute("role", "dialog");
+		card.setAttribute("aria-modal", "true");
+
+		// Title
+		const title = document.createElement("h2");
+		title.className = "modal-title";
+		title.textContent = "Welcome Back!";
+		card.appendChild(title);
+
+		// Subtext: away time
+		const sub = document.createElement("p");
+		sub.className = "modal-sub";
+		sub.innerHTML = `You were away for <span class="js-away-time">${durationStr}</span>`;
+		card.appendChild(sub);
+
+		// Meta lines: Area + Efficiency
+		const addMeta = (label: string, value: string, spanClass: string) => {
+			const p = document.createElement("p");
+			p.className = "modal-meta";
+			p.innerHTML = `<strong>${label}</strong> <span class="${spanClass}">${value}</span>`;
+			card.appendChild(p);
+		};
+		addMeta("Area:", hunt.areaName, "js-area");
+		addMeta("Offline efficiency:", efficiencyStr, "js-efficiency");
+
+		// Section title
+		const sectionTitle = document.createElement("h3");
+		sectionTitle.className = "section-title";
+		sectionTitle.textContent = "Combat Progress";
+		card.appendChild(sectionTitle);
+
+		// Progress list
+		const ul = document.createElement("ul");
+		ul.className = "progress-list";
+
+		const makeItem = (label: string, value: string, spanClass: string) => {
+			const li = document.createElement("li");
+
+			const spanLabel = document.createElement("span");
+			spanLabel.className = "label";
+			spanLabel.textContent = label;
+
+			const spanValue = document.createElement("span");
+			spanValue.className = `value ${spanClass}`;
+			spanValue.textContent = value;
+
+			li.appendChild(spanLabel);
+			li.appendChild(spanValue);
+			ul.appendChild(li);
+		};
+
+		makeItem("Enemies Defeated", enemiesStr, "js-enemies");
+		makeItem("Renown Gained", renownStr, "js-renown");
+		makeItem("Levels Gained", levelsStr, "js-levels");
+
+		card.appendChild(ul);
+
+		// Actions
+		const actions = document.createElement("div");
+		actions.className = "modal-actions";
+
+		const btnClaim = document.createElement("button");
+		btnClaim.className = "btn primary";
+		btnClaim.dataset.action = "claim";
+		btnClaim.textContent = "Claim all rewards";
+		actions.appendChild(btnClaim);
+
+		// Only show "Open chests" if you actually have chests
+		if (hunt.treasureChests > 0) {
+			const btnOpen = document.createElement("button");
+			btnOpen.className = "btn secondary";
+			btnOpen.dataset.action = "open-chests";
+			btnOpen.textContent = "Open chests";
+			actions.appendChild(btnOpen);
+		}
+
+		card.appendChild(actions);
+
+		modal.appendChild(card);
+
+		// Wire up listeners just like before
+		this.setupEventListeners(modal);
+
+		return modal;
 	}
 
 	private setupEventListeners(modal: HTMLElement) {
@@ -124,7 +164,7 @@ export class OfflineProgressModal {
 			return `
         <div class="treasure-section no-treasure">
           <p class="next-chest">
-            📦 Next treasure chest in ${this.formatTime(huntProgress.nextChestIn)}
+            📦 Next treasure chest in ${formatTime(huntProgress.nextChestIn)}
           </p>
         </div>
       `;
@@ -148,7 +188,7 @@ export class OfflineProgressModal {
 		huntProgress.nextChestIn > 0
 			? `
           <p class="next-chest">
-            ⏰ Next chest in ${this.formatTime(huntProgress.nextChestIn)}
+            ⏰ Next chest in ${formatTime(huntProgress.nextChestIn)}
           </p>
         `
 			: ""
@@ -185,15 +225,20 @@ export class OfflineProgressModal {
 	}
 
 	private claimAllRewards() {
-		const offlineManager = OfflineProgressManager.getInstance();
-		offlineManager.applyOfflineRewards(this.results);
-		this.close();
+		try {
+			const offlineManager = OfflineProgressManager.getInstance();
+			offlineManager.applyOfflineRewards(this.results);
+		} catch (err) {
+			console.error("Failed to apply offline rewards", err);
+		} finally {
+			this.close();
+		}
 	}
 
 	private async openChestsAnimation() {
 		const huntProgress = this.results.hunt!;
 		const context = GameContext.getInstance();
-		const currentArea = context.currentRun?.huntManager.getActiveArea();
+		const currentArea = context.currentRun?.huntManager.getActiveArea() ?? null;
 
 		if (!currentArea) return;
 
@@ -234,24 +279,12 @@ export class OfflineProgressModal {
 		setTimeout(() => chestElement.remove(), 2000);
 	}
 
-	private formatTime(ms: number): string {
-		const seconds = Math.floor(ms / 1000);
-		const minutes = Math.floor(seconds / 60);
-		const hours = Math.floor(minutes / 60);
-		const days = Math.floor(hours / 24);
-
-		if (days > 0) return `${days}d ${hours % 24}h`;
-		if (hours > 0) return `${hours}h ${minutes % 60}m`;
-		if (minutes > 0) return `${minutes}m`;
-		return `${seconds}s`;
-	}
-
 	private sleep(ms: number): Promise<void> {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
 	private close() {
-		const modal = document.querySelector(".offline-progress-modal");
+		const modal = document.querySelector(".offline-modal");
 		modal?.remove();
 	}
 

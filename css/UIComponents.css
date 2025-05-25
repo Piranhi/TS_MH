@@ -1,3 +1,16 @@
+:root {
+	/* colour tokens (light-on-dark) */
+	--c-hi: #ffffff;
+	--c-mid: rgba(255 255 255 / 0.86);
+	--c-dim: rgba(255 255 255 / 0.64);
+
+	/* type-scale (1.125) */
+	--fs-h2: 1.75rem;
+	--fs-h3: 1.125rem;
+	--fs-base: 1rem;
+	--fs-sm: 0.875rem;
+}
+
 .generic-modal-overlay {
 	position: fixed;
 	inset: 0;
@@ -124,70 +137,293 @@ button#genericModalButton:disabled {
 	transform: scale(0.98);
 }
 
+/*  ===============  Layout wrapper  =============== */
 .offline-progress-modal {
 	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	z-index: 1000;
-	opacity: 0;
-	transition: opacity 0.3s ease;
-}
-
-.offline-progress-modal.show {
-	opacity: 1;
+	inset: 0; /* top/right/bottom/left: 0 */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000; /* on top of game canvas & nav */
+	pointer-events: none; /* let children decide clicks */
 }
 
 .modal-backdrop {
 	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(0, 0, 0, 0.5);
-	cursor: pointer;
+	inset: 0;
+	background: rgba(0 0 0 / 0.55);
+	backdrop-filter: blur(4px); /* subtle blur behind overlay */
+	-webkit-backdrop-filter: blur(4px); /* Safari */
 }
 
-.modal-content {
+/*  ===============  Glass Card  =============== */
+.modal-card {
 	position: relative;
-	max-width: 500px;
-	margin: 2rem auto;
-	background: white;
-	border-radius: 8px;
-	padding: 2rem;
-	transform: translateY(-20px);
-	transition: transform 0.3s ease;
+	width: clamp(320px, 90%, 480px);
+	padding: 2rem 1.75rem;
+	border-radius: 1rem;
+	background: rgba(255 255 255 / 0.12); /* translucent white */
+	backdrop-filter: blur(14px) saturate(180%);
+	-webkit-backdrop-filter: blur(14px) saturate(180%);
+	border: 1px solid rgba(255 255 255 / 0.3);
+	box-shadow: 0 10px 32px rgba(0 0 0 / 0.35);
+	overflow: hidden; /* trims child animations */
+	transform: translateY(24px);
+	opacity: 0;
+	transition: transform 0.35s ease, opacity 0.35s ease;
+	pointer-events: auto; /* re-enable inside card */
 }
 
-.offline-progress-modal.show .modal-content {
+/* slide-in when .show is applied from TS */
+.offline-progress-modal.show .modal-card {
 	transform: translateY(0);
+	opacity: 1;
 }
 
-.chest-opening {
+/*  ===============  Typography & sections  =============== */
+.modal-header h2 {
+	font-size: 1.5rem;
+	font-weight: 600;
+	margin: 0 0 0.25rem;
+}
+
+.offline-duration {
+	font-size: 0.9rem;
+	opacity: 0.8;
+	margin: 0;
+}
+
+section + section {
+	margin-top: 1.5rem; /* vertical rhythm */
+}
+
+.reward-list,
+.chest-breakdown {
+	display: grid;
+	gap: 0.5rem 1rem;
+	grid-template-columns: 1fr auto; /* label ... value */
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.reward-item {
+	display: contents; /* grid children are columns */
+}
+
+.reward-item .icon {
+	grid-column: 1;
+}
+.reward-item .label {
+	grid-column: 1;
+	opacity: 0.8;
+}
+.reward-item .value {
+	grid-column: 2;
+	text-align: right;
+}
+
+/*  ===============  Buttons  =============== */
+.btn {
+	font: inherit;
+	padding: 0.6rem 1.25rem;
+	border-radius: 0.6rem;
+	border: 1px solid rgba(255 255 255 / 0.25);
+	background: rgba(255 255 255 / 0.08);
+	backdrop-filter: blur(8px) saturate(160%);
+	-webkit-backdrop-filter: blur(8px) saturate(160%);
+	color: #fff;
+	cursor: pointer;
+	transition: background 0.2s ease, transform 0.15s ease;
+}
+.btn:hover {
+	background: rgba(255 255 255 / 0.16);
+}
+.btn:active {
+	transform: scale(0.97);
+}
+
+.btn.primary {
+	border-color: rgba(255 255 255 / 0.35);
+}
+
+.btn.accent {
+	border-color: transparent;
+	background: linear-gradient(135deg, rgba(0 212 255 / 0.55) 0%, rgba(0 121 255 / 0.55) 100%);
+}
+
+/*  ===============  Utility / Animation bits  =============== */
+.chest-opening,
+.loot-summary {
+	/* leave your existing JS classes, but give them a frosted card look */
 	position: fixed;
-	top: 50%;
 	left: 50%;
-	transform: translate(-50%, -50%);
-	background: white;
-	padding: 1rem;
-	border-radius: 8px;
-	text-align: center;
-	z-index: 1001;
-	animation: chestPop 2s ease-out forwards;
+	top: 48%;
+	translate: -50% -50%;
+	background: rgba(255 255 255 / 0.1);
+	backdrop-filter: blur(10px);
+	padding: 1rem 1.5rem;
+	border-radius: 1rem;
+	border: 1px solid rgba(255 255 255 / 0.3);
+	box-shadow: 0 6px 20px rgba(0 0 0 / 0.3);
+	color: #fff;
+	pointer-events: none;
+	animation: pop 0.35s both;
 }
 
-@keyframes chestPop {
+@keyframes pop {
 	0% {
-		transform: translate(-50%, -50%) scale(0.8);
+		transform: scale(0.85);
 		opacity: 0;
 	}
-	20% {
-		transform: translate(-50%, -50%) scale(1.1);
-		opacity: 1;
+	60% {
+		transform: scale(1.05);
 	}
 	100% {
-		transform: translate(-50%, -100px) scale(0.8);
-		opacity: 0;
+		transform: scale(1);
+		opacity: 1;
 	}
+}
+
+/* -------------  Overlay wrapper ------------- */
+.offline-modal {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	pointer-events: none; /* clicks only on children */
+	font-family: var(--font-ui);
+}
+
+.offline-modal__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0 0 0 / 0.55);
+	backdrop-filter: blur(4px);
+}
+
+/* -------------  Glass card ------------- */
+.offline-modal__card {
+	position: relative;
+	width: clamp(320px, 90%, 512px);
+	padding: 2rem 2.25rem 2.5rem;
+	border-radius: 1rem;
+	background: rgba(255 255 255 / 0.1);
+	backdrop-filter: blur(14px) saturate(180%);
+	border: 1px solid rgba(255 255 255 / 0.28);
+	box-shadow: 0 10px 32px rgba(0 0 0 / 0.35);
+	color: var(--c-mid);
+	pointer-events: auto; /* re-enable clicks */
+	transform: translateY(24px);
+	opacity: 0;
+	transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.offline-modal.show .offline-modal__card {
+	transform: translateY(0);
+	opacity: 1;
+}
+
+/* -------------  Typography ------------- */
+.modal-title {
+	font-size: var(--fs-h2);
+	font-weight: 600;
+	color: var(--c-hi);
+	margin: 0 0 0.25rem;
+	text-align: center;
+}
+.modal-sub {
+	font-size: var(--fs-base);
+	text-align: center;
+	margin: 0 0 1.5rem;
+}
+
+.modal-meta {
+	font-size: var(--fs-base);
+	text-align: center;
+	margin: 0;
+}
+.modal-meta + .modal-meta {
+	margin-top: 0.25rem;
+}
+
+.section-title {
+	font-size: var(--fs-h3);
+	font-weight: 500;
+	color: var(--c-mid);
+	margin: 2rem 0 0.75rem;
+}
+
+/* -------------  Progress grid ------------- */
+.progress-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 0.75rem 1rem;
+	grid-template-columns: 1fr auto;
+	border-top: 1px solid #3b4754;
+}
+.progress-list li {
+	display: contents;
+	padding-top: 1rem;
+}
+.progress-list li:not(:first-child) {
+	border-top: 1px solid #3b4754;
+	padding-top: 1rem;
+}
+
+.label {
+	font-size: var(--fs-sm);
+	color: var(--c-dim);
+}
+.value {
+	font-size: var(--fs-sm);
+	font-weight: 500;
+	color: var(--c-hi);
+	text-align: right;
+}
+
+/* -------------  Buttons ------------- */
+.modal-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	margin-top: 2rem;
+}
+
+.btn {
+	font: var(--fs-sm) / 1 var(--font-ui);
+	font-weight: 600;
+	padding: 0.75rem 1.25rem;
+	border-radius: 0.75rem;
+	border: 1px solid transparent;
+	cursor: pointer;
+	text-transform: uppercase;
+	letter-spacing: 0.015em;
+	transition: background 0.18s ease, transform 0.12s ease;
+}
+
+.btn.primary {
+	background: #0c7ff2;
+	color: #fff;
+}
+.btn.secondary {
+	background: #283039;
+	color: #fff;
+}
+
+.btn:hover {
+	filter: brightness(1.12);
+}
+.btn:active {
+	transform: scale(0.97);
+}
+
+.chest-opening,
+.loot-summary {
+	/* bring these above the modal’s 1000 */
+	z-index: 1100;
 }

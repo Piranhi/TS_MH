@@ -6,6 +6,7 @@ import { GameContext } from "./GameContext";
 export class SaveManager {
 	private readonly SAVE_KEY = "monster-hunter-save";
 
+	private lastActiveTime: number = Date.now();
 	private registry = new Map<string, Saveable<unknown>>();
 	private saveData?: GameSave;
 
@@ -14,6 +15,14 @@ export class SaveManager {
 		setInterval(() => {
 			this.saveAll();
 		}, 30000);
+	}
+
+	public updateLastActiveTime(): void {
+		this.lastActiveTime = Date.now();
+	}
+
+	public getLastActiveTime(): number {
+		return this.lastActiveTime;
 	}
 
 	register<T>(key: string, system: Saveable<T>): void {
@@ -40,7 +49,10 @@ export class SaveManager {
 	}
 
 	saveAll(): GameSave {
-		const out: GameSave = { _version: 1, _timestamp: Date.now() };
+		// Update time on every save
+		this.updateLastActiveTime();
+
+		const out: GameSave = { _version: 1, _timestamp: Date.now(), _lastActiveTime: this.lastActiveTime };
 		for (const [key, system] of this.registry) {
 			out[key] = system.save();
 		}
@@ -58,6 +70,9 @@ export class SaveManager {
 		//let data: GameSave;
 		try {
 			this.saveData = JSON.parse(raw, reviveGame) as GameSave;
+
+			// Load the last active time
+			this.lastActiveTime = (this.saveData._lastActiveTime as number) || Date.now();
 		} catch (err) {
 			console.error("[SaveManager] could not parse save data:", err);
 			return false;

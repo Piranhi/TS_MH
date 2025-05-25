@@ -12,6 +12,7 @@ import { bus } from "./EventBus";
 import { SaveManager } from "./SaveManager";
 import { ScreenManager } from "./ScreenManager";
 import { PrestigeState } from "@/shared/stats-types";
+import { OfflineProgressManager } from "@/models/OfflineProgress";
 
 export class GameContext {
 	private static _instance: GameContext | null = null;
@@ -90,5 +91,13 @@ export class GameContext {
 
 	public get screens(): ScreenManager {
 		return this.services.screenManager;
+	}
+
+	public get offlineManager(): OfflineProgressManager {
+		return this.services.offlineManager;
+	}
+
+	public get isOfflinePaused(): boolean {
+		return this.services.offlineManager.areSystemsPaused();
 	}
 }

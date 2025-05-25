@@ -7,6 +7,7 @@ import { InventoryManager } from "@/features/inventory/InventoryManager";
 import { SettlementManager } from "@/features/settlement/SettlementManager";
 import { StatsManager } from "@/models/StatsManager";
 import { MilestoneManager } from "@/models/MilestoneManager";
+import { OfflineProgressManager } from "@/models/OfflineProgress";
 
 export class GameServices {
 	private static _instance: GameServices;
@@ -15,6 +16,7 @@ export class GameServices {
 	public readonly screenManager: ScreenManager;
 	public readonly statsManager: StatsManager;
 	public readonly milestoneManager: MilestoneManager;
+	public readonly offlineManager: OfflineProgressManager;
 
 	// Persistent managers that survive prestige
 	public readonly inventoryManager: InventoryManager;
@@ -27,6 +29,7 @@ export class GameServices {
 		this.milestoneManager = MilestoneManager.instance;
 		this.inventoryManager = new InventoryManager();
 		this.settlementManager = new SettlementManager();
+		this.offlineManager = new OfflineProgressManager();
 	}
 
 	static getInstance(): GameServices {
