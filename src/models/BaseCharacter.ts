@@ -6,6 +6,7 @@ import { BigNumber } from "./utils/BigNumber";
 import { Destroyable } from "./Destroyable";
 import { CombatManager } from "@/features/hunt/CombatManager";
 import { EffectInstance, EffectSpec } from "@/shared/types";
+import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
 
 export interface CharacterSnapsnot {
 	name: string;
@@ -27,6 +28,7 @@ export abstract class BaseCharacter extends Destroyable {
 
 	/* ────────────────── public readonly fields ───────────────── */
 	public readonly hp: BoundedBig;
+
 	/* ───────────────────── protected fields ──────────────────── */
 
 	protected abilityMap: Map<string, Ability> = new Map();
@@ -35,6 +37,7 @@ export abstract class BaseCharacter extends Destroyable {
 
 	/* ───────────────────── private fields ────────────────────── */
 	private inCombat = false;
+	private readonly _level: number = 1;
 	/* ───────────────────── debug fields ────────────────────── */
 	public canAttack = true;
 	public canTakeDamage = true;
@@ -80,6 +83,10 @@ export abstract class BaseCharacter extends Destroyable {
 		return this.stats.get("speed");
 	}
 
+	get level(): number {
+		return this._level;
+	}
+
 	isAlive(): boolean {
 		return !this.hp.isEmpty();
 	}
@@ -116,7 +123,7 @@ export abstract class BaseCharacter extends Destroyable {
 	/* ───────────────────── combat lifecycle ──────────────────── */
 
 	public beginCombat(combatManager: CombatManager) {
-		this.setToMaxHP();
+		//this.setToMaxHP();
 		this.combatManager = combatManager;
 		this.inCombat = true;
 		this.getActiveAbilities().forEach((a) => a.init()); // Init abilities
@@ -176,8 +183,9 @@ export abstract class BaseCharacter extends Destroyable {
 
 	/** Helper: roll crit/variance, apply power multipliers, etc. */
 	private calculateRawValue(effectDef: EffectSpec): BigNumber {
-		const attack = new BigNumber(this.stats.get("attack"));
-		const powerMultiplier = 1 + this.stats.get("power") / 100;
+		const baseDamage = calculateRawBaseDamage(this);
+		//const attack = new BigNumber(this.stats.get("attack"));
+		//const powerMultiplier = 1 + this.stats.get("power") / 100;
 		const critChance = this.stats.get("critChance") / 100;
 		const critDamage = this.stats.get("critDamage") / 100;
 		const rolledCrit = Math.random() < critChance;
@@ -185,8 +193,13 @@ export abstract class BaseCharacter extends Destroyable {
 		const variance = 0.9 + Math.random() * 0.2;
 
 		// for a damage effect: attack × power × crit × variance × effect.scale
-		const totalMultiplier = powerMultiplier * critMultiplier * variance * (effectDef.scale ?? 1);
-		return attack.multiply(totalMultiplier);
+		//const totalMultiplier = powerMultiplier * critMultiplier * variance * (effectDef.scale ?? 1);
+		const totalDamage = baseDamage
+			.multiply(critMultiplier)
+			.multiply(variance)
+			.multiply(effectDef.scale ?? 1);
+		console.log(totalDamage.toString());
+		return totalDamage;
 	}
 
 	// HELPER CLASSES

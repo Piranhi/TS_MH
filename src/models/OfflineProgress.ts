@@ -101,7 +101,8 @@ interface OfflineSettlementProgress {
 }
 
 export class OfflineTracker {
-	private readonly timeTillOffline = 3000;
+	private readonly timeTillOffline = 1800000;
+	private readonly timeSinceLastSaveCheck = 120000;
 
 	private isOffline = false;
 	private offlineStartTime: number = 0;
@@ -179,7 +180,7 @@ export class OfflineTracker {
 		const timeDiff = now - lastSaveTime;
 
 		// If more than 2 minutes since last save, assume we were offline
-		if (timeDiff > 2000) {
+		if (timeDiff > this.timeSinceLastSaveCheck) {
 			const offlineSession: OfflineSession = {
 				startTime: lastSaveTime,
 				endTime: now,

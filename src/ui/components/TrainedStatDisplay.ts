@@ -69,8 +69,12 @@ export class TrainedStatDisplay extends UIBase {
 			name: this.$(".training-name"),
 			image: this.$(".training-icon img") as HTMLImageElement,
 		};
+
 		this.bindDomEvent(this.$(".control-button.plus"), "click", () => this.adjustAmount(1));
 		this.bindDomEvent(this.$(".control-button.minus"), "click", () => this.adjustAmount(-1));
+		this.bindDomEvent(this.$(".control-button.zero"), "click", () => this.setToZero());
+		this.bindDomEvent(this.$(".control-button.max"), "click", () => this.setToMax());
+		this.bindDomEvent(this.$(".control-button.half"), "click", () => this.setToHalf());
 
 		this.els.image.alt = this.trainedStat.name;
 
@@ -94,5 +98,40 @@ export class TrainedStatDisplay extends UIBase {
 
 	private adjustAmount(delta: number) {
 		this.manager.allocateTrainedStat(this.trainedStat.id, delta);
+	}
+
+	private setToZero() {
+		// Remove all currently allocated points for this stat
+		const currentlyAllocated = this.trainedStat.assignedPoints;
+		if (currentlyAllocated > 0) {
+			this.adjustAmount(-currentlyAllocated);
+		}
+	}
+	private setToMax() {
+		// Allocate all available stamina to this stat
+		const availableStamina = this.context.player.staminaPool.current;
+		if (availableStamina > 0) {
+			this.adjustAmount(availableStamina);
+		}
+	}
+
+	private setToHalf() {
+		// Try to reach half of max stamina pool, limited by available stamina
+		const targetPoints = Math.floor(this.context.player.staminaPool.max / 2);
+		const currentlyAllocated = this.trainedStat.assignedPoints;
+		const neededPoints = targetPoints - currentlyAllocated;
+
+		if (neededPoints > 0) {
+			// Need to allocate more points
+			const availableStamina = this.context.player.staminaPool.current;
+			const pointsToAllocate = Math.min(neededPoints, availableStamina);
+			if (pointsToAllocate > 0) {
+				this.adjustAmount(pointsToAllocate);
+			}
+		} else if (neededPoints < 0) {
+			// Need to remove points
+			this.adjustAmount(neededPoints);
+		}
+		// If neededPoints === 0, we're already at the target
 	}
 }

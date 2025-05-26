@@ -17,7 +17,6 @@ export class Ability extends SpecRegistryBase<AbilitySpec> {
 		super();
 		this.currentCooldown = spec.cooldown;
 		this.maxCooldown = spec.cooldown;
-		console.log(JSON.stringify(this.spec));
 	}
 
 	get id() {

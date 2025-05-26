@@ -3,7 +3,6 @@ export const MONSTER_HP_GROWTH = 1.75; // HP   ×1.75 per area
 export const MONSTER_ATTACK_GROWTH = 1.45; // ATK  ×1.45 per area
 export const MONSTER_DEFENCE_GROWTH = 1.4; // DEF  ×1.40 per area
 
-
 // EQUIPMENT SCALING
 
 // PLAYER SCALING
@@ -61,10 +60,10 @@ export interface StatsProvider {
 }
 
 export const defaultPlayerStats: Stats = {
-	attack: 1,
+	attack: 10,
 	defence: 10,
-	speed: 1,
-	hp: 1000,
+	speed: 2,
+	hp: 100,
 	power: 0,
 	guard: 0,
 	critChance: 0,
@@ -86,7 +85,7 @@ export interface AreaScaling {
 export type Stats = CoreStats & BuildStats;
 export type StatKey = keyof Stats;
 export type StatsModifier = Partial<Stats>;
-export type TrainedStatType = "power" | "guard" | "crit";
+export type TrainedStatType = "power" | "guard" | "power2" | "guard2" | "crit";
 export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden";
 
 // Specs are loaded from config/data, not created at runtime
@@ -100,6 +99,18 @@ export const TrainedStatSpecs: Record<TrainedStatType, TrainedStatSpec> = {
 	guard: {
 		id: "guard",
 		name: "Guard",
+		baseGainRate: 0.01,
+		statMod: { guard: 1 },
+	},
+	power2: {
+		id: "power2",
+		name: "Advanced Power",
+		baseGainRate: 0.01,
+		statMod: { guard: 1 },
+	},
+	guard2: {
+		id: "guard2",
+		name: "Advanced Guard",
 		baseGainRate: 0.01,
 		statMod: { guard: 1 },
 	},
@@ -117,7 +128,7 @@ export function makeDefaultTrainedStatStates(): Record<TrainedStatType, TrainedS
 			id: "power",
 			level: 1,
 			progress: 0,
-			nextThreshold: 50,
+			nextThreshold: 10,
 			assignedPoints: 0,
 			status: "Unlocked",
 		},
@@ -125,7 +136,23 @@ export function makeDefaultTrainedStatStates(): Record<TrainedStatType, TrainedS
 			id: "guard",
 			level: 1,
 			progress: 0,
-			nextThreshold: 100,
+			nextThreshold: 10,
+			assignedPoints: 0,
+			status: "Unlocked",
+		},
+		power2: {
+			id: "power2",
+			level: 1,
+			progress: 0,
+			nextThreshold: 1000,
+			assignedPoints: 0,
+			status: "Unlocked",
+		},
+		guard2: {
+			id: "guard2",
+			level: 1,
+			progress: 0,
+			nextThreshold: 1000,
 			assignedPoints: 0,
 			status: "Unlocked",
 		},

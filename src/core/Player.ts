@@ -52,15 +52,7 @@ export class Player extends Destroyable implements Saveable {
 		bindEvent(this.eventBindings, "game:prestigePrep", () => this.handlePrestigePrep());
 	}
 
-	private async handleNewGame() {
-		// Give starter items through context
-		const { GameContext } = await import("@/core/GameContext");
-		const context = GameContext.getInstance();
-
-		context.inventory.addLootById("warrior_card_01");
-		context.inventory.addLootById("bulwark_card_01");
-		context.inventory.addLootById("tier1_chest");
-	}
+	private async handleNewGame() {}
 
 	private handleGameReady() {
 		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.regenStamina(dt));

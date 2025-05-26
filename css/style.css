@@ -462,3 +462,32 @@ h3 {
 	color: #161b25;
 	outline: none;
 }
+
+#player-statlist {
+	min-width: 250px;
+	display: block;
+	top: 1rem;
+	right: 1rem;
+	width: auto;
+	background: rgba(58, 58, 58, 0.692);
+	border-radius: 0.1rem;
+	padding: 1rem;
+	color: #e9e9e9;
+}
+
+.stat-section {
+	margin-bottom: 1rem;
+}
+
+.stat-section summary {
+	font-weight: bold;
+	cursor: pointer;
+	list-style: none; /* removes default triangle on some browsers */
+}
+
+.stat-row {
+	display: flex;
+	justify-content: space-between;
+	padding: 0.2rem 0;
+	font-size: 0.9rem;
+}

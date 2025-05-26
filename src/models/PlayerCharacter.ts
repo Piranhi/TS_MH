@@ -2,10 +2,15 @@ import { BaseCharacter } from "./BaseCharacter";
 import { StatsEngine } from "@/core/StatsEngine";
 import { bus } from "@/core/EventBus";
 import { PrestigeState } from "@/shared/stats-types";
+import { GameContext } from "@/core/GameContext";
+import { bindEvent } from "@/shared/utils/busUtils";
+import { BigNumber } from "./utils/BigNumber";
 
 export class PlayerCharacter extends BaseCharacter {
 	readonly statsEngine: StatsEngine;
 	private readonly RECOVERY_HEAL = 0.01;
+
+	private passiveHealTick = 0;
 	private classCardAbilityIds: string[] = [];
 
 	constructor(prestigeStats: PrestigeState) {
@@ -23,12 +28,19 @@ export class PlayerCharacter extends BaseCharacter {
 		this.statsEngine.setLayer("trainedStats", () => ({}));
 		this.statsEngine.setLayer("classCard", () => ({}));
 		this.statsEngine.setLayer("buffs", () => ({}));
+		bindEvent(this.eventBindings, "Game:GameTick", () => this.passiveHeal());
 	}
 
 	public init() {
 		this.defaultAbilityIds.push("basic_heal");
 		this.recalculateAbilities();
 		bus.emit("player:statsChanged");
+	}
+
+	private passiveHeal() {
+		this.passiveHealTick++;
+
+		this.hp.increase(new BigNumber(1));
 	}
 
 	healInRecovery() {
@@ -52,12 +64,8 @@ export class PlayerCharacter extends BaseCharacter {
 		this.updateAbilities(mergedIds);
 	}
 
-	get attack() {
-		return this.statsEngine.get("attack");
-	}
-
-	get speed() {
-		return this.statsEngine.get("speed");
+	get level(): number {
+		return GameContext.getInstance().player.playerLevel;
 	}
 
 	override getAvatarUrl(): string {

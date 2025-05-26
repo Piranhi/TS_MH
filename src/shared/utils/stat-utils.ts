@@ -1,6 +1,7 @@
 import { Stats, StatsModifier } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
 import { ItemRarity, RARITY_MULTIPLIERS } from "../types";
+import { BaseCharacter } from "@/models/BaseCharacter";
 
 // Convert any object of numbers to BigNumbers
 export function toBigNumberStats<T extends Record<string, number>>(raw: T): { [K in keyof T]: BigNumber } {
@@ -74,4 +75,16 @@ export function scaleStatsModifier(mod: StatsModifier, rarity: ItemRarity): Stat
 		scaled[statKey] = rarityAffect(rarity, baseValue);
 	}
 	return scaled;
+}
+
+/** Helper: roll crit/variance, apply power multipliers, etc. */
+export function calculateRawBaseDamage(char: BaseCharacter): BigNumber {
+	// LEVEL * ATTACK * POWER
+	//const level = char.level;
+	const attack = new BigNumber(char.stats.get("attack"));
+	const powerMultiplier = 1 + char.stats.get("power") / 100;
+
+	// for a damage effect: attack × power × crit × variance × effect.scale
+	const totalMultiplier = powerMultiplier;
+	return attack.multiply(totalMultiplier);
 }

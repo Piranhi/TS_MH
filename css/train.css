@@ -118,13 +118,14 @@
 	margin-left: 1rem;
 }
 .control-button {
-	width: 32px;
+	min-width: 32px;
 	height: 32px;
+	padding: 5px;
 	border: none;
 	border-radius: 30%;
 	background: var(--card-bg);
 	color: #fff;
-	font-size: 1.2rem;
+	font-size: 0.7rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -136,7 +137,20 @@
 }
 
 /* UNLOCKED VARIANT (optional color tweak) */
+.training-item.unlocked .control-button.minus {
+	background: var(--accent-red);
+}
+.training-item.unlocked .control-button.zero {
+	background: var(--accent-red);
+}
 .training-item.unlocked .control-button.plus {
+	background: var(--accent-green);
+}
+
+.training-item.unlocked .control-button.max {
+	background: var(--accent-green);
+}
+.training-item.unlocked .control-button.half {
 	background: var(--accent-green);
 }
 .training-item.unlocked .control-button.plus:hover {

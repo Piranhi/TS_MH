@@ -8,9 +8,8 @@ export class CharacterScreen extends BaseScreen {
 
 	init() {
 		this.addMarkuptoPage(Markup);
-		this.element = document.getElementById("character-container")!;
-		this.playerStatsDiplay = new PlayerStatsDisplay(document.getElementById("player-statlist")!);
-		this.bindEvents();
+		//this.element = this.getById("character-container")!;
+		//this.playerStatsDiplay = new PlayerStatsDisplay(this.byId("player-statlist")!);
 	}
 	show() {}
 	hide() {}

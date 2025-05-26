@@ -49,7 +49,7 @@ export class TrainedStat {
 	public handleTick(deltaTime: number) {
 		if (this.state.assignedPoints === 0) return;
 
-		this.state.progress += this.state.assignedPoints * this.spec.baseGainRate * deltaTime;
+		this.state.progress += this.state.assignedPoints * deltaTime;
 
 		while (this.state.progress >= this.state.nextThreshold) {
 			this.state.progress -= this.state.nextThreshold;

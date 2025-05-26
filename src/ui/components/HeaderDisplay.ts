@@ -9,12 +9,18 @@ export class HeaderDisplay extends UIBase {
 	private PlayerStatsEl: HTMLElement;
 	private prestigeButton!: HTMLButtonElement;
 	private staminaProgressBar!: ProgressBar;
+	private levelEl: HTMLElement;
 	constructor(container: HTMLElement) {
 		super();
 		this.element = container;
 		this.PlayerStatsEl = this.byId("header-player-stats"); // document.getElementById("header-player-stats")!;
 		this.prestigeButton = this.byId("prestige-button") as HTMLButtonElement;
+		this.levelEl = this.byId("player-level");
+		this.levelEl.textContent = this.context.player.playerLevel.toString();
 		bindEvent(this.eventBindings, "game:prestige", () => this.handlePrestige());
+		bindEvent(this.eventBindings, "player:level-up", () => {
+			this.levelEl.textContent = `Lvl ${this.context.player.playerLevel}`;
+		});
 		this.prestigeButton.addEventListener("click", () => new PrestigeManager().prestige());
 	}
 

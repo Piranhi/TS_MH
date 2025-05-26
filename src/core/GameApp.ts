@@ -11,6 +11,7 @@ import { DebugMenu } from "@/ui/components/Debug-Menu";
 import { bus } from "./EventBus";
 import { initGameData } from "./gameData";
 import { OfflineProgressManager } from "@/models/OfflineProgress";
+import { PlayerStatsDisplay } from "@/ui/components/PlayerStatsDisplay";
 
 export class GameApp {
 	private readonly root: HTMLElement;
@@ -22,6 +23,7 @@ export class GameApp {
 	// UI Components
 	private sidebar!: SidebarDisplay;
 	private header!: HeaderDisplay;
+	private playerStatsDiplay!: PlayerStatsDisplay;
 
 	constructor(root: HTMLElement) {
 		this.root = root;
@@ -124,6 +126,7 @@ export class GameApp {
 	private buildUI() {
 		this.sidebar = new SidebarDisplay((name) => this.context.screens.show(name));
 		this.header = new HeaderDisplay(this.root.querySelector("#header")!);
+		this.playerStatsDiplay = new PlayerStatsDisplay(this.root.querySelector("#player-statlist")!);
 
 		this.sidebar.build();
 		this.header.build();
