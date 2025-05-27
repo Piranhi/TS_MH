@@ -1,3 +1,5 @@
+export const MAX_BARS_PER_SECOND = 10;
+
 // ENEMY SCALING - PER TIER
 export const MONSTER_HP_GROWTH = 1.75; // HP   ×1.75 per area
 export const MONSTER_ATTACK_GROWTH = 1.45; // ATK  ×1.45 per area
@@ -43,7 +45,7 @@ export interface TrainedStatState {
 	id: TrainedStatType;
 	level: number;
 	progress: number;
-	nextThreshold: number;
+	//nextThreshold: number;
 	assignedPoints: number;
 	status: TrainedStatStatus;
 }
@@ -52,6 +54,8 @@ export interface TrainedStatSpec {
 	id: TrainedStatType;
 	name: string;
 	baseGainRate: number;
+	baseMultiplier: number;
+	maxAssigned: number;
 	statMod: StatsModifier;
 }
 
@@ -87,82 +91,3 @@ export type StatKey = keyof Stats;
 export type StatsModifier = Partial<Stats>;
 export type TrainedStatType = "power" | "guard" | "power2" | "guard2" | "crit";
 export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden";
-
-// Specs are loaded from config/data, not created at runtime
-export const TrainedStatSpecs: Record<TrainedStatType, TrainedStatSpec> = {
-	power: {
-		id: "power",
-		name: "Power",
-		baseGainRate: 0.1,
-		statMod: { power: 1 },
-	},
-	guard: {
-		id: "guard",
-		name: "Guard",
-		baseGainRate: 0.01,
-		statMod: { guard: 1 },
-	},
-	power2: {
-		id: "power2",
-		name: "Advanced Power",
-		baseGainRate: 0.01,
-		statMod: { guard: 1 },
-	},
-	guard2: {
-		id: "guard2",
-		name: "Advanced Guard",
-		baseGainRate: 0.01,
-		statMod: { guard: 1 },
-	},
-	crit: {
-		id: "crit",
-		name: "Crit",
-		baseGainRate: 0.001,
-		statMod: { critDamage: 1 },
-	},
-};
-
-export function makeDefaultTrainedStatStates(): Record<TrainedStatType, TrainedStatState> {
-	return {
-		power: {
-			id: "power",
-			level: 1,
-			progress: 0,
-			nextThreshold: 10,
-			assignedPoints: 0,
-			status: "Unlocked",
-		},
-		guard: {
-			id: "guard",
-			level: 1,
-			progress: 0,
-			nextThreshold: 10,
-			assignedPoints: 0,
-			status: "Unlocked",
-		},
-		power2: {
-			id: "power2",
-			level: 1,
-			progress: 0,
-			nextThreshold: 1000,
-			assignedPoints: 0,
-			status: "Unlocked",
-		},
-		guard2: {
-			id: "guard2",
-			level: 1,
-			progress: 0,
-			nextThreshold: 1000,
-			assignedPoints: 0,
-			status: "Unlocked",
-		},
-		crit: {
-			id: "crit",
-			level: 1,
-			progress: 0,
-			nextThreshold: 100,
-			assignedPoints: 0,
-			status: "Hidden",
-		},
-	};
-}

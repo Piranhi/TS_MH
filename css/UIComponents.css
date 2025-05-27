@@ -111,6 +111,83 @@ button#genericModalButton:disabled {
 	background: linear-gradient(90deg, #bfd8ff 30%, #68d6f1 100%);
 }
 
+/* Animated state (normal speed) */
+.mh-progress__fill.mh-progress--animated {
+	background: linear-gradient(90deg, #4a9eff 0%, #6bb6ff 100%);
+	animation: pulse 1s ease-in-out infinite alternate;
+}
+
+/* Solid state (high speed) */
+.mh-progress__fill.mh-progress--solid {
+	background: #ff6b4a;
+	animation: none;
+}
+
+/* High efficiency color override */
+.mh-progress__fill.mh-progress--high-efficiency {
+	background: linear-gradient(90deg, #ff6b4a 0%, #ff8a6b 100%);
+	box-shadow: 0 0 10px rgba(255, 107, 74, 0.5);
+}
+
+/* Single Progress Bar Styles */
+.mh-progress {
+	position: relative;
+	background: #2a2a2a;
+	border-radius: 4px;
+	overflow: visible; /* Allow percentage to show outside */
+	height: 7px;
+}
+
+.mh-progress__fill {
+	height: 100%;
+	background: #4a9eff;
+	transition: width 0.1s ease-out, background 0.3s ease-out;
+	border-radius: inherit;
+	position: relative;
+}
+
+/* Animated state (normal speed) */
+.mh-progress__fill.mh-progress--animated {
+	background: linear-gradient(90deg, #4a9eff 0%, #6bb6ff 100%);
+	animation: pulse 1s ease-in-out infinite alternate;
+}
+
+/* Solid state (high speed) - green color */
+.mh-progress__fill.mh-progress--solid {
+	background: #00ff88 !important;
+	animation: none;
+	box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+/* Efficiency percentage display on the bar */
+.mh-progress__fill[data-efficiency]::after {
+	content: attr(data-efficiency);
+	position: absolute;
+	right: -40px;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 12px;
+	color: #fff;
+	font-weight: bold;
+	white-space: nowrap;
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* Different color for percentage text when solid */
+.mh-progress__fill.mh-progress--solid[data-efficiency]::after {
+	color: #00ff88;
+}
+
+/* Pulse animation for normal speed bars */
+@keyframes pulse {
+	0% {
+		opacity: 0.8;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
 /* Core button style—use your theme tokens as needed */
 .ui-button {
 	display: inline-flex;

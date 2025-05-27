@@ -246,4 +246,10 @@ export class Player extends Destroyable implements Saveable {
 		super.destroy();
 		this.stamina.destroy();
 	}
+
+	// DEBUG
+	debugStamina() {
+		this.stamina.setMax(5000);
+		this.stamina.setCurrent(5000);
+	}
 }

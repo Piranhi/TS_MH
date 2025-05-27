@@ -55,10 +55,12 @@ export class TrainedStatDisplay extends UIBase {
 		const progressText = document.createElement("div");
 		progressText.className = "progress-text";
 		this.$(".training-bar").appendChild(progressText);
+
+		// Progress bar shows progress toward next level using the level threshold (60)
 		const progressBar = new ProgressBar({
 			container: this.$(".training-bar"),
 			initialValue: this.trainedStat.progress,
-			maxValue: this.trainedStat.nextThreshold,
+			maxValue: this.trainedStat.getLevelThreshold(), // Level threshold (60), not max allocation (600)
 		});
 
 		this.els = {
@@ -86,14 +88,22 @@ export class TrainedStatDisplay extends UIBase {
 	private updateElement() {
 		if (this.trainedStat.status !== "Unlocked") return;
 
-		const { progressBar, progressText, assigned, level, name } = this.els!;
+		const { progressBar, assigned, level, name } = this.els!;
 		name.textContent = this.trainedStat.name;
 		level.textContent = `Lvl ${this.trainedStat.level}`;
-		assigned.textContent = String(this.trainedStat.assignedPoints);
-		progressBar.setValue(this.trainedStat.progress);
-		progressBar.setMax(this.trainedStat.nextThreshold);
+		assigned.textContent = `${this.trainedStat.assignedPoints}`;
 
-		progressText.textContent = `${Math.floor(this.trainedStat.progress)} / ${this.trainedStat.nextThreshold}`;
+		// Update progress bar to show progress toward next level
+		const levelThreshold = this.trainedStat.getLevelThreshold();
+		progressBar.setValue(this.trainedStat.progress);
+		progressBar.setMax(levelThreshold);
+
+		// Provide allocation values for high-efficiency mode
+		progressBar.setAllocationValues(this.trainedStat.assignedPoints, this.trainedStat.maxAssignedPoints);
+
+		// Always call setEfficiencyRate
+		const barsPerSecond = this.trainedStat.getBarsPerSecond();
+		progressBar.setEfficiencyRate(barsPerSecond);
 	}
 
 	private adjustAmount(delta: number) {
@@ -107,17 +117,25 @@ export class TrainedStatDisplay extends UIBase {
 			this.adjustAmount(-currentlyAllocated);
 		}
 	}
+
 	private setToMax() {
-		// Allocate all available stamina to this stat
-		const availableStamina = this.context.player.staminaPool.current;
-		if (availableStamina > 0) {
-			this.adjustAmount(availableStamina);
+		// Allocate up to this stat's maximum, limited by available stamina
+		const maxPointsForThisStat = this.trainedStat.maxAssignedPoints;
+		const currentlyAllocated = this.trainedStat.assignedPoints;
+		const pointsNeeded = maxPointsForThisStat - currentlyAllocated;
+
+		if (pointsNeeded > 0) {
+			const availableStamina = this.context.player.staminaPool.current;
+			const pointsToAllocate = Math.min(pointsNeeded, availableStamina);
+			if (pointsToAllocate > 0) {
+				this.adjustAmount(pointsToAllocate);
+			}
 		}
 	}
 
 	private setToHalf() {
-		// Try to reach half of max stamina pool, limited by available stamina
-		const targetPoints = Math.floor(this.context.player.staminaPool.max / 2);
+		// Try to reach half of this stat's max allocation, limited by available stamina
+		const targetPoints = Math.floor(this.trainedStat.maxAssignedPoints / 2);
 		const currentlyAllocated = this.trainedStat.assignedPoints;
 		const neededPoints = targetPoints - currentlyAllocated;
 

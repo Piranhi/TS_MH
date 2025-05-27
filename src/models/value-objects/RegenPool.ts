@@ -72,6 +72,10 @@ export class RegenPool {
 		this._max = newMax;
 	}
 
+	setCurrent(newCurrent: number) {
+		this._current = newCurrent;
+	}
+
 	public destroy() {
 		this._allocated = 0;
 		this._current = 0;

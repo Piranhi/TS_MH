@@ -1,7 +1,9 @@
 import { bus } from "@/core/EventBus";
-import { StatsModifier, TrainedStatSpec, TrainedStatSpecs, TrainedStatState } from "./Stats";
+import { MAX_BARS_PER_SECOND, StatsModifier, TrainedStatSpec, TrainedStatState } from "./Stats";
+import { TrainedStatSpecs } from "./TrainedStatManager";
 
-const GROWTH_VALUE = 1.35;
+// Remove the old constant - we don't need it anymore
+
 export class TrainedStat {
 	private state: TrainedStatState;
 	private readonly spec: TrainedStatSpec;
@@ -28,11 +30,15 @@ export class TrainedStat {
 	get progress() {
 		return this.state.progress;
 	}
-	get nextThreshold() {
-		return this.state.nextThreshold;
-	}
+
 	get assignedPoints() {
 		return this.state.assignedPoints;
+	}
+	get maxAssignedPoints() {
+		return this.spec.maxAssigned * MAX_BARS_PER_SECOND; // 60 * 10 = 600
+	}
+	get availablePoints() {
+		return this.maxAssignedPoints - this.state.assignedPoints;
 	}
 	get status() {
 		return this.state.status;
@@ -42,26 +48,41 @@ export class TrainedStat {
 	}
 
 	/**
-	 * Call on each “tick” (deltaTime in seconds).
-	 * Increases progress = assignedPoints * baseGainRate * deltaTime
-	 * and handles leveling up.
+	 * Calculate the diminishing effect multiplier based on current level.
+	 * Formula: 0.05 * (8L + 1)^0.5 where L is the number of levels completed
+	 */
+	private getDiminishingMultiplier(): number {
+		return 0.05 * Math.pow(8 * this.state.level + 1, 0.5);
+	}
+
+	/**
+	 * Call on each "tick" (deltaTime in seconds).
+	 * Levels up at constant rate - no diminishing returns on XP gain.
 	 */
 	public handleTick(deltaTime: number) {
 		if (this.state.assignedPoints === 0) return;
 
-		this.state.progress += this.state.assignedPoints * deltaTime;
+		// Constant leveling speed - no diminishing returns here
+		this.state.progress += this.state.assignedPoints * this.spec.baseGainRate * deltaTime;
 
-		while (this.state.progress >= this.state.nextThreshold) {
-			this.state.progress -= this.state.nextThreshold;
+		// Level threshold is just the base maxAssigned (60), not the total possible allocation
+		while (this.state.progress >= this.spec.maxAssigned) {
+			this.state.progress -= this.spec.maxAssigned;
 			this.levelUp();
-
-			// e.g. exponential growth: increase threshold by 15% each level
-			this.state.nextThreshold = Math.floor(this.state.nextThreshold * GROWTH_VALUE);
+			// Note: We no longer increase the threshold - it stays constant
 		}
 	}
 
-	public adjustAssignedPoints(delta: number) {
-		this.state.assignedPoints += delta;
+	public adjustAssignedPoints(delta: number): boolean {
+		const newTotal = this.state.assignedPoints + delta;
+
+		// Check if we're within the allowed range (0 to maxAssigned * MAX_BARS_PER_SECOND)
+		if (newTotal < 0 || newTotal > this.maxAssignedPoints) {
+			return false; // Invalid adjustment
+		}
+
+		this.state.assignedPoints = newTotal;
+		return true; // Successful adjustment
 	}
 
 	private levelUp() {
@@ -70,11 +91,60 @@ export class TrainedStat {
 	}
 
 	public getBonuses(): Partial<StatsModifier> {
+		const diminishingMultiplier = this.getDiminishingMultiplier();
 		return Object.fromEntries(
 			Object.entries(this.spec.statMod).map(([k, v]) => {
-				return [k, v * this.level];
+				// Apply diminishing returns to the actual stat bonus
+				return [k, v * this.level * diminishingMultiplier];
 			})
 		) as Partial<StatsModifier>;
+	}
+
+	/**
+	 * Get the current effective gain rate (for UI display)
+	 * Leveling happens at constant speed, no diminishing returns
+	 */
+	public getEffectiveGainRate(): number {
+		return this.spec.baseGainRate;
+	}
+
+	/**
+	 * Get the current diminishing multiplier (for UI display)
+	 */
+	public getDiminishingFactor(): number {
+		return this.getDiminishingMultiplier();
+	}
+
+	/**
+	 * Get the theoretical stamina needed for maximum efficiency (10 bars/second)
+	 * This helps players understand when they need to move to higher tier stats
+	 */
+	public getTheoreticalOptimalAllocation(): number {
+		return this.spec.maxAssigned * MAX_BARS_PER_SECOND;
+	}
+
+	/**
+	 * Get current efficiency as percentage of maximum possible (10 bars/second)
+	 */
+	public getCurrentEfficiencyPercentage(): number {
+		if (this.state.assignedPoints === 0) return 0;
+		const barsPerSecond = this.state.assignedPoints / this.spec.maxAssigned;
+		return Math.min((barsPerSecond / MAX_BARS_PER_SECOND) * 100, 100);
+	}
+
+	/**
+	 * Get current bars per second rate
+	 */
+	public getBarsPerSecond(): number {
+		if (this.state.assignedPoints === 0) return 0;
+		return this.state.assignedPoints / this.spec.maxAssigned;
+	}
+
+	/**
+	 * Get the level threshold (points needed to gain one level)
+	 */
+	public getLevelThreshold(): number {
+		return this.spec.maxAssigned;
 	}
 
 	getState(): TrainedStatState {
