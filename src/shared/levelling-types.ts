@@ -1,1 +1,0 @@
-export const BUILDING_LEVELLING_MULTIPLIER: number = 2.25;

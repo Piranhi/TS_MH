@@ -1,9 +1,4 @@
-export const MAX_BARS_PER_SECOND = 10;
 
-// ENEMY SCALING - PER TIER
-export const MONSTER_HP_GROWTH = 1.75; // HP   ×1.75 per area
-export const MONSTER_ATTACK_GROWTH = 1.45; // ATK  ×1.45 per area
-export const MONSTER_DEFENCE_GROWTH = 1.4; // DEF  ×1.40 per area
 
 // EQUIPMENT SCALING
 
@@ -53,7 +48,6 @@ export interface TrainedStatState {
 export interface TrainedStatSpec {
 	id: TrainedStatType;
 	name: string;
-	baseGainRate: number;
 	baseMultiplier: number;
 	maxAssigned: number;
 	statMod: StatsModifier;

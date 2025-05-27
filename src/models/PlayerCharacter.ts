@@ -1,21 +1,30 @@
-import { BaseCharacter } from "./BaseCharacter";
+import { BaseCharacter, CharacterSnapsnot } from "./BaseCharacter";
 import { StatsEngine } from "@/core/StatsEngine";
 import { bus } from "@/core/EventBus";
 import { PrestigeState } from "@/shared/stats-types";
-import { GameContext } from "@/core/GameContext";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { BigNumber } from "./utils/BigNumber";
+import { Saveable } from "@/shared/storage-types";
+import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 
-export class PlayerCharacter extends BaseCharacter {
+interface playerCharSaveState {
+	charLevel: number;
+}
+
+export class PlayerCharacter extends BaseCharacter implements Saveable {
 	readonly statsEngine: StatsEngine;
 	private readonly RECOVERY_HEAL = 0.01;
 
 	private passiveHealTick = 0;
 	private classCardAbilityIds: string[] = [];
 
+	private xp = 0;
+	private _nextXPThreshold = 10;
+
 	constructor(prestigeStats: PrestigeState) {
 		const engine = new StatsEngine();
 		super("You", { get: (k) => engine.get(k) });
+		bindEvent(this.eventBindings, "player:statsChanged", () => this.updateStats());
 		this.statsEngine = engine;
 		/* pre‑register empty layers */
 		this.statsEngine.setLayer("level", () => ({}));
@@ -28,7 +37,9 @@ export class PlayerCharacter extends BaseCharacter {
 		this.statsEngine.setLayer("trainedStats", () => ({}));
 		this.statsEngine.setLayer("classCard", () => ({}));
 		this.statsEngine.setLayer("buffs", () => ({}));
+
 		bindEvent(this.eventBindings, "Game:GameTick", () => this.passiveHeal());
+		//bindEvent(this.eventBindings, "hunt:XPearned", (amt) => this.gainXp(amt));
 	}
 
 	public init() {
@@ -45,6 +56,37 @@ export class PlayerCharacter extends BaseCharacter {
 
 	healInRecovery() {
 		this.hp.increase(this.maxHp.multiply(this.RECOVERY_HEAL)); // Always heal at least 1
+	}
+
+	private updateStats() {
+		this.hp.max = new BigNumber(this.stats.get("hp"));
+	}
+
+	public gainXp(amt: number) {
+		this.xp += amt;
+		let levelledUp = false;
+
+		while (this.xp >= this._nextXPThreshold) {
+			this.levelUp();
+			levelledUp = true;
+			this.xp -= this._nextXPThreshold;
+			this._nextXPThreshold *= GAME_BALANCE.player.xpThresholdMultiplier;
+		}
+		if (levelledUp) {
+			this.calcLevelBonuses();
+			bus.emit("char:levelUp", this._charLevel);
+		}
+	}
+
+	public levelUp() {
+		this._charLevel++;
+	}
+
+	private calcLevelBonuses() {
+		// Use centralized calculator
+		const bonuses = BalanceCalculators.getAllPlayerLevelBonuses(this._charLevel);
+
+		this.statsEngine.setLayer("level", () => bonuses);
 	}
 
 	public setClassCardAbilities(abilityIds: string[]) {
@@ -65,10 +107,37 @@ export class PlayerCharacter extends BaseCharacter {
 	}
 
 	get level(): number {
-		return GameContext.getInstance().player.playerLevel;
+		return this._charLevel;
+	}
+
+	get nextXpThreshold(): number {
+		return this._nextXPThreshold;
 	}
 
 	override getAvatarUrl(): string {
 		return "/images/player/player-avatar-01.png";
+	}
+
+	override snapshot(): CharacterSnapsnot {
+		return {
+			name: this.name,
+			realHP: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },
+			attack: this.attack.toString(),
+			defence: this.defence.toString(),
+			abilities: this.getActiveAbilities(),
+			imgUrl: this.getAvatarUrl(),
+			rarity: "Todo",
+			level: { lvl: this._charLevel, current: this.xp, next: this._nextXPThreshold },
+		};
+	}
+
+	save(): playerCharSaveState {
+		return {
+			charLevel: this._charLevel,
+		};
+	}
+
+	load(state: playerCharSaveState): void {
+		this._charLevel = state.charLevel;
 	}
 }

@@ -27,6 +27,8 @@ export interface GameEvents {
 	"renown:changed": BigNumber;
 	"renown:award": BigNumber;
 	"Resource:Changed": { gold: number };
+
+	// PLAYER
 	"player:initialized": Player;
 	"player:level-up": number;
 	"player:stamina-changed": poolChangedPayload;
@@ -34,11 +36,18 @@ export interface GameEvents {
 	"player:equipmentChanged": InventoryItemSpec[];
 	"player:classCardsChanged": InventoryItemSpec[];
 	"player:statsChanged": PlayerCharacter;
+
+	// PLAYER CHARACTER
+	"char:levelUp": number;
+
+	//HUNT
 	"hunt:stateChanged": HuntState;
 	"hunt:areaSelected": string;
 	"hunt:areaKill": { enemyId: string; areaId: string };
 	"hunt:bossKill": { areaId: string };
 	"hunt:areaUnlocked": string;
+	"hunt:XPearned": number;
+
 	"combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };
 	"combat:ended": string;
 	"classCard:levelUp": string;

@@ -194,6 +194,7 @@ export class BigNumber {
             63: "vigintillion",
         }; */
 		const suffixes: Record<number, string> = {
+			3: "T",
 			6: "MI",
 			9: "BI",
 			12: "TR",

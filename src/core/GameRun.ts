@@ -51,6 +51,7 @@ export class GameRun extends Destroyable {
 	}
 
 	private setupEventBindings() {
+		bindEvent(this.eventBindings, "hunt:XPearned", (amt) => this.handleXP(amt));
 		bindEvent(this.eventBindings, "player:level-up", (lvl) => this.handleLevelUp(lvl));
 		bindEvent(this.eventBindings, "hunt:areaKill", (data) => this.handleEnemyDefeated(data));
 		bindEvent(this.eventBindings, "hunt:bossKill", (data) => this.handleBossDefeated(data));
@@ -62,12 +63,15 @@ export class GameRun extends Destroyable {
 
 		// Register transient systems with save manager
 		const saveManager = this.context.services.saveManager;
+		saveManager.updateRegister("playerCharacter", this.character);
 		saveManager.updateRegister("huntManager", this.huntManager);
 		saveManager.updateRegister("trainedManager", this.trainedStats);
 
 		// Emit that run is ready
 		bus.emit("gameRun:initialized", this);
 	}
+
+	private handleXP(amt: number) {}
 
 	private handleLevelUp(newLevel: number) {
 		// Handle run-specific level up logic

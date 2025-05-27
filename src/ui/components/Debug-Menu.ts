@@ -45,6 +45,7 @@ export class DebugMenu {
 		});
 		this.addButton("Fake Offline Session", () => this.testOfflineSession());
 		this.addButton("Set Max Stamina", () => context.player.debugStamina());
+		this.addButton("Char Level Up", () => context.character.gainXp(context.character.nextXpThreshold));
 		//  Player.getInstance().inventory.addItemToInventory);
 		//this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));
 	}

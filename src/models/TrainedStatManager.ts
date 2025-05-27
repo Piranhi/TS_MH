@@ -151,7 +151,6 @@ export const TrainedStatSpecs: Record<TrainedStatType, TrainedStatSpec> = {
 	power: {
 		id: "power",
 		name: "Power",
-		baseGainRate: 6,
 		baseMultiplier: 0.05,
 		maxAssigned: 60,
 		statMod: { power: 1 },
@@ -159,7 +158,6 @@ export const TrainedStatSpecs: Record<TrainedStatType, TrainedStatSpec> = {
 	guard: {
 		id: "guard",
 		name: "Guard",
-		baseGainRate: 0.1,
 		baseMultiplier: 0.05,
 		maxAssigned: 60,
 		statMod: { guard: 1 },
@@ -167,7 +165,6 @@ export const TrainedStatSpecs: Record<TrainedStatType, TrainedStatSpec> = {
 	power2: {
 		id: "power2",
 		name: "Advanced Power",
-		baseGainRate: 0.01,
 		baseMultiplier: 0.125,
 		maxAssigned: 6000,
 		statMod: { guard: 1 },
@@ -175,7 +172,6 @@ export const TrainedStatSpecs: Record<TrainedStatType, TrainedStatSpec> = {
 	guard2: {
 		id: "guard2",
 		name: "Advanced Guard",
-		baseGainRate: 0.01,
 		baseMultiplier: 0.125,
 		maxAssigned: 6000,
 		statMod: { guard: 1 },
@@ -183,7 +179,6 @@ export const TrainedStatSpecs: Record<TrainedStatType, TrainedStatSpec> = {
 	crit: {
 		id: "crit",
 		name: "Crit",
-		baseGainRate: 0.01,
 		baseMultiplier: 0.125,
 		maxAssigned: 600,
 		statMod: { critDamage: 1 },

@@ -1,6 +1,7 @@
 import { bus } from "@/core/EventBus";
-import { MAX_BARS_PER_SECOND, StatsModifier, TrainedStatSpec, TrainedStatState } from "./Stats";
+import { StatsModifier, TrainedStatSpec, TrainedStatState } from "./Stats";
 import { TrainedStatSpecs } from "./TrainedStatManager";
+import { MAX_BARS_PER_SECOND } from "@/balance/GameBalance";
 
 // Remove the old constant - we don't need it anymore
 
@@ -43,9 +44,6 @@ export class TrainedStat {
 	get status() {
 		return this.state.status;
 	}
-	get baseGainRate() {
-		return this.spec.baseGainRate;
-	}
 
 	/**
 	 * Calculate the diminishing effect multiplier based on current level.
@@ -63,14 +61,17 @@ export class TrainedStat {
 		if (this.state.assignedPoints === 0) return;
 
 		// Constant leveling speed - no diminishing returns here
-		this.state.progress += this.state.assignedPoints * this.spec.baseGainRate * deltaTime;
+		this.state.progress += this.state.assignedPoints * deltaTime;
+
+		let levelledUp = false;
 
 		// Level threshold is just the base maxAssigned (60), not the total possible allocation
 		while (this.state.progress >= this.spec.maxAssigned) {
-			this.state.progress -= this.spec.maxAssigned;
 			this.levelUp();
-			// Note: We no longer increase the threshold - it stays constant
+			levelledUp = true;
+			this.state.progress -= this.spec.maxAssigned;
 		}
+		if (levelledUp) bus.emit("player:trainedStatChanged", this.state.id); // Trigger after because we might start adding huge numbers
 	}
 
 	public adjustAssignedPoints(delta: number): boolean {
@@ -87,7 +88,6 @@ export class TrainedStat {
 
 	private levelUp() {
 		this.state.level += 1;
-		bus.emit("player:trainedStatChanged", this.state.id);
 	}
 
 	public getBonuses(): Partial<StatsModifier> {
@@ -105,7 +105,7 @@ export class TrainedStat {
 	 * Leveling happens at constant speed, no diminishing returns
 	 */
 	public getEffectiveGainRate(): number {
-		return this.spec.baseGainRate;
+		return 1;
 	}
 
 	/**

@@ -1,7 +1,8 @@
 import { Stats, StatsModifier } from "@/models/Stats";
 import { BigNumber } from "@/models/utils/BigNumber";
-import { ItemRarity, RARITY_MULTIPLIERS } from "../types";
+import { ItemRarity } from "../types";
 import { BaseCharacter } from "@/models/BaseCharacter";
+import { RARITY_MULTIPLIERS } from "@/balance/GameBalance";
 
 // Convert any object of numbers to BigNumbers
 export function toBigNumberStats<T extends Record<string, number>>(raw: T): { [K in keyof T]: BigNumber } {

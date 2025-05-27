@@ -1,6 +1,7 @@
 import { printLog } from "@/core/DebugManager";
 import { SpecRegistryBase } from "./SpecRegistryBase";
 import { CoreStats, Stats } from "./Stats";
+import { BalanceCalculators } from "@/balance/GameBalance";
 
 export type MonsterRarity = "common" | "uncommon" | "rare" | "terrifying" | "nightmare";
 
@@ -57,7 +58,8 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 	}
 
 	get renownMulti(): number {
-		return renownMultipliers[this.rarity];
+		// Use centralized calculator
+		return BalanceCalculators.getMonsterRenown(1, this.rarity);
 	}
 
 	get abilities(): string[] {

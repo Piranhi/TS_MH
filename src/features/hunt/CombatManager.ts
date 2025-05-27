@@ -93,8 +93,10 @@ export class CombatManager extends Destroyable {
 		this.context.player.adjustRenown(renownReward);
 
 		// Award experience
-		const expReward = this.enemyCharacter.spec.baseStats.hp * 10; // Example formula
-		this.context.player.gainExperience(expReward);
+		const expReward = this.area.tier * 2;
+		this.context.character.gainXp(expReward);
+
+		//this.context.player.gainExperience(expReward);
 
 		// Roll and award loot
 		const lootArray = this.area.rollLoot();

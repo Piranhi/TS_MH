@@ -1,5 +1,5 @@
-import { MAX_BARS_PER_SECOND } from "@/models/Stats";
 import { UIBase } from "./UIBase";
+import { MAX_BARS_PER_SECOND } from "@/balance/GameBalance";
 
 export interface ProgressBarOptions {
 	/**

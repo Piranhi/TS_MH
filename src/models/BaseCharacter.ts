@@ -16,6 +16,7 @@ export interface CharacterSnapsnot {
 	imgUrl: string;
 	abilities: Ability[];
 	rarity?: string;
+	level: { lvl: number; current: number; next: number };
 }
 
 export interface PowerLevel {
@@ -34,10 +35,11 @@ export abstract class BaseCharacter extends Destroyable {
 	protected abilityMap: Map<string, Ability> = new Map();
 	protected target?: BaseCharacter;
 	protected combatManager!: CombatManager;
+	protected _charLevel: number = 1;
 
 	/* ───────────────────── private fields ────────────────────── */
 	private inCombat = false;
-	private readonly _level: number = 1;
+
 	/* ───────────────────── debug fields ────────────────────── */
 	public canAttack = true;
 	public canTakeDamage = true;
@@ -84,7 +86,7 @@ export abstract class BaseCharacter extends Destroyable {
 	}
 
 	get level(): number {
-		return this._level;
+		return this._charLevel;
 	}
 
 	isAlive(): boolean {
@@ -212,6 +214,7 @@ export abstract class BaseCharacter extends Destroyable {
 			abilities: this.getActiveAbilities(),
 			imgUrl: this.getAvatarUrl(),
 			rarity: "Todo",
+			level: { lvl: this._charLevel, current: 0, next: 0 },
 		};
 	}
 }

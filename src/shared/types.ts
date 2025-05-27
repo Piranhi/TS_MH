@@ -46,8 +46,6 @@ export const CONSTRUCTION_RESOURCE_TYPES = ["stone", "metal"] as const;
 export type ConstructionResourceType = (typeof CONSTRUCTION_RESOURCE_TYPES)[number];
 
 // ------------------- AREA + COMBAT ------------------------------
-export const AREATIER_MULTIPLIERS = [1, 1.2, 1.5, 2, 2.5, 3];
-
 export type EffectType = "physical" | "magical" | "heal" | "buff" | "debuff";
 
 export interface EffectSpec {
@@ -81,15 +79,6 @@ export interface EffectResult {
 
 // -------------------- ITEMS ------------------------------
 export const ITEM_RARITIES = ["common", "uncommon", "rare", "epic", "legendary", "unique"] as const;
-
-export const RARITY_MULTIPLIERS: Record<ItemRarity, number> = {
-	common: 1.0,
-	uncommon: 1.1,
-	rare: 1.25,
-	epic: 1.5,
-	legendary: 2,
-	unique: 3,
-};
 
 const rarityChances: [ItemRarity, number][] = [
 	["unique", 1],

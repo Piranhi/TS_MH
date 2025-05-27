@@ -3,6 +3,7 @@ import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { prettify } from "@/shared/utils/stringUtils";
 import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
+import { BigNumber } from "@/models/utils/BigNumber";
 
 export class PlayerStatsDisplay extends UIBase {
 	private coreKeys: (keyof Stats)[] = ["attack", "defence", "speed", "hp"];
@@ -91,7 +92,7 @@ export class PlayerStatsDisplay extends UIBase {
 			} else {
 				valueStr = String(val); // fallback for non-BigNumber
 			} */
-			valueStr = String(val);
+			valueStr = new BigNumber(val).toString();
 			valueSpan.textContent = valueStr; //String(Math.round((stats[key] + Number.EPSILON) * 100) / 100); // (FIX UP)
 
 			row.append(nameSpan, valueSpan);
