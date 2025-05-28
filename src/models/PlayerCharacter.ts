@@ -18,8 +18,8 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 	private passiveHealTick = 0;
 	private classCardAbilityIds: string[] = [];
 
-	private xp = 0;
-	private _nextXPThreshold = 10;
+	private _currentXp: BigNumber = new BigNumber(0);
+	private _nextXpThreshold: BigNumber = new BigNumber(10);
 
 	constructor(prestigeStats: PrestigeState) {
 		const engine = new StatsEngine();
@@ -62,20 +62,30 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		this.hp.max = new BigNumber(this.stats.get("hp"));
 	}
 
-	public gainXp(amt: number) {
-		this.xp += amt;
+	public gainXp(amt: BigNumber) {
+		// BigNumber.add() returns a new instance, so we need to assign it back
+		this._currentXp = this._currentXp.add(amt);
 		let levelledUp = false;
 
-		while (this.xp >= this._nextXPThreshold) {
+		// Use BigNumber comparison methods instead of >= operator
+		while (this._currentXp.gte(this._nextXpThreshold)) {
 			this.levelUp();
 			levelledUp = true;
-			this.xp -= this._nextXPThreshold;
-			this._nextXPThreshold *= GAME_BALANCE.player.xpThresholdMultiplier;
+
+			// Subtract and assign back
+			this._currentXp = this._currentXp.subtract(this._nextXpThreshold);
+
+			// For threshold calculation, convert to number, calculate, then back to BigNumber
+			const currentThreshold = this._nextXpThreshold.toNumber();
+			const newThreshold = Math.floor(currentThreshold * GAME_BALANCE.player.xpThresholdMultiplier);
+			this._nextXpThreshold = new BigNumber(newThreshold);
 		}
+
 		if (levelledUp) {
 			this.calcLevelBonuses();
 			bus.emit("char:levelUp", this._charLevel);
 		}
+		bus.emit("char:gainedXp", amt);
 	}
 
 	public levelUp() {
@@ -110,8 +120,12 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		return this._charLevel;
 	}
 
-	get nextXpThreshold(): number {
-		return this._nextXPThreshold;
+	get currentXp(): BigNumber {
+		return this._currentXp;
+	}
+
+	get nextXpThreshold(): BigNumber {
+		return this._nextXpThreshold;
 	}
 
 	override getAvatarUrl(): string {
@@ -127,7 +141,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 			abilities: this.getActiveAbilities(),
 			imgUrl: this.getAvatarUrl(),
 			rarity: "Todo",
-			level: { lvl: this._charLevel, current: this.xp, next: this._nextXPThreshold },
+			level: { lvl: this._charLevel, current: this._currentXp, next: this._nextXpThreshold },
 		};
 	}
 

@@ -7,6 +7,7 @@ import { BigNumber } from "@/models/utils/BigNumber";
 import { RegenPool } from "@/models/value-objects/RegenPool";
 import { Destroyable } from "@/models/Destroyable";
 import { StatsModifier } from "@/models/Stats";
+import { BalanceCalculators } from "@/balance/GameBalance";
 
 interface PlayerSaveState {
 	level: number;
@@ -67,12 +68,18 @@ export class Player extends Destroyable implements Saveable {
 
 		if (context.currentRun) {
 			const character = context.character;
-			const stats = character.stats;
 
-			// Calculate permanent stat bonuses (2% of current stats)
-			this.prestigeState.permanentAttack += Math.floor(0.02 * stats.get("attack"));
-			this.prestigeState.permanentDefence += Math.floor(0.02 * stats.get("defence"));
-			this.prestigeState.permanentHP += Math.floor(0.02 * character.maxHp.toNumber());
+			// Use centralized calculator instead of hardcoded 2%
+			const bonuses = BalanceCalculators.calculatePrestigeBonuses({
+				attack: character.stats.get("attack"),
+				defence: character.stats.get("defence"),
+				hp: character.maxHp.toNumber(),
+			});
+
+			this.prestigeState.permanentAttack += bonuses.permanentAttack;
+			this.prestigeState.permanentDefence += bonuses.permanentDefence;
+			this.prestigeState.permanentHP += bonuses.permanentHP;
+
 			this.prestigeState.runsCompleted++;
 
 			// You could add more prestige rewards here

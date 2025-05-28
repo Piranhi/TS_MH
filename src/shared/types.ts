@@ -46,6 +46,61 @@ export const CONSTRUCTION_RESOURCE_TYPES = ["stone", "metal"] as const;
 export type ConstructionResourceType = (typeof CONSTRUCTION_RESOURCE_TYPES)[number];
 
 // ------------------- AREA + COMBAT ------------------------------
+
+export const ENEMY_ARCHETYPES = {
+	tank: {
+		hp: 6,
+		attack: 2,
+		defence: 4,
+		speed: 1,
+		defaultAbilities: ["basic_melee", "defensive_stance"],
+	},
+	bruiser: {
+		hp: 4,
+		attack: 4,
+		defence: 2,
+		speed: 2,
+		defaultAbilities: ["basic_melee", "power_strike"],
+	},
+	glass_cannon: {
+		hp: 2,
+		attack: 6,
+		defence: 1,
+		speed: 2,
+		defaultAbilities: ["basic_melee", "critical_strike"],
+	},
+	dodger: {
+		hp: 3,
+		attack: 3,
+		defence: 1,
+		speed: 4,
+		defaultAbilities: ["basic_melee", "quick_strike"],
+	},
+	balanced: {
+		hp: 4,
+		attack: 3,
+		defence: 2,
+		speed: 2,
+		defaultAbilities: ["basic_melee"],
+	},
+	rare_elite: {
+		hp: 5,
+		attack: 5,
+		defence: 3,
+		speed: 3,
+		defaultAbilities: ["basic_melee", "elite_combo"],
+	},
+	boss: {
+		hp: 40,
+		attack: 20,
+		defence: 15,
+		speed: 3,
+		defaultAbilities: ["basic_melee", "boss_slam", "area_attack"],
+	},
+} as const;
+
+// Create a union type from the archetype keys
+export type EnemyArchetype = keyof typeof ENEMY_ARCHETYPES;
 export type EffectType = "physical" | "magical" | "heal" | "buff" | "debuff";
 
 export interface EffectSpec {

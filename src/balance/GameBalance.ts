@@ -3,6 +3,7 @@
 // Centralized Game Balance Configuration
 // Single source of truth for all scaling values
 // ===================================================
+
 export const GAME_BALANCE = {
 	// === MONSTER SCALING ===
 	monsters: {
@@ -97,6 +98,39 @@ export const GAME_BALANCE = {
 			levelExponent: 0.5,
 			levelMultiplier: 8,
 		},
+	},
+
+	// === PRESTIGE SCALING ===
+	prestige: {
+		// Permanent bonus percentages (from Player.ts)
+		permanentBonusRate: 0.02, // 2% of stats become permanent
+
+		// Stamina growth per prestige
+		staminaPerPrestige: 2,
+		staminaRegenPerPrestige: 0.1,
+
+		// Meta progression scaling
+		metaPointsPerLevel: 10,
+
+		// Prestige requirements
+		minimumLevelToPrestige: 10,
+
+		// Expected prestige frequency (for balance)
+		targetPrestigeHours: 2, // How many hours per prestige cycle
+	},
+
+	// === RESEARCH SCALING ===
+	research: {
+		// Research unlock costs
+		baseCostMultiplier: 1.5, // Each tier costs 50% more
+		timeToUnlockHours: [0.5, 1, 2, 4, 8], // Expected unlock times
+
+		// Research power scaling
+		powerBonusPerNode: 0.05, // 5% bonus per research node
+		maxResearchMultiplier: 2.0, // Cap total research bonus
+
+		// Prerequisites validation
+		maxPrerequisiteDepth: 5, // Prevent overly deep trees
 	},
 
 	// === DROP SCALING ===
@@ -216,6 +250,35 @@ export const BalanceCalculators = {
 		const variance = min + Math.random() * (max - min);
 		return Math.floor(damage * variance);
 	},
+
+	// === PRESTIGE CALCULATIONS ===
+
+	/**
+	 * Calculate prestige bonuses from current stats
+	 */
+	calculatePrestigeBonuses(currentStats: { attack: number; defence: number; hp: number }) {
+		const rate = GAME_BALANCE.prestige.permanentBonusRate;
+		return {
+			permanentAttack: Math.floor(currentStats.attack * rate),
+			permanentDefence: Math.floor(currentStats.defence * rate),
+			permanentHP: Math.floor(currentStats.hp * rate),
+		};
+	},
+
+	/**
+	 * Calculate total power after N prestiges
+	 */
+	getPrestigePowerMultiplier(prestigeCount: number): number {
+		// Compound growth: each prestige adds 2% which compounds
+		return Math.pow(1 + GAME_BALANCE.prestige.permanentBonusRate, prestigeCount);
+	},
+
+	/**
+	 * Calculate meta points earned from a run
+	 */
+	getMetaPointsFromRun(finalLevel: number): number {
+		return finalLevel * GAME_BALANCE.prestige.metaPointsPerLevel;
+	},
 } as const;
 
 // ===================================================
@@ -283,6 +346,55 @@ export const BalanceDebug = {
 			console.log("⚠️ Balance issues found:");
 			issues.forEach((issue) => console.log(`  - ${issue}`));
 		}
+	},
+
+	/**
+	 * Validate prestige progression and power scaling
+	 */
+	validatePrestigeBalance() {
+		console.log("=== PRESTIGE BALANCE VALIDATION ===");
+
+		let issues: string[] = [];
+
+		// Test prestige power growth
+		console.log("\n--- Prestige Power Multipliers ---");
+		[1, 3, 5, 10, 20].forEach((prestiges) => {
+			const multiplier = BalanceCalculators.getPrestigePowerMultiplier(prestiges);
+			console.log(`${prestiges} prestiges: ${multiplier.toFixed(2)}x power`);
+
+			// Check if growth is too fast/slow
+			if (prestiges >= 5 && multiplier > 5) {
+				issues.push(`${prestiges} prestiges gives ${multiplier.toFixed(1)}x power - might be too strong`);
+			}
+			if (prestiges >= 3 && multiplier < 1.2) {
+				issues.push(`${prestiges} prestiges gives only ${multiplier.toFixed(2)}x power - might be too weak`);
+			}
+		});
+
+		// Test progression time
+		console.log("\n--- Prestige Timing Validation ---");
+		const targetHours = GAME_BALANCE.prestige.targetPrestigeHours;
+		const minLevel = GAME_BALANCE.prestige.minimumLevelToPrestige;
+		console.log(`Target: ${targetHours}h per prestige, min level ${minLevel}`);
+
+		// You could add actual timing calculations here based on XP rates
+
+		if (issues.length === 0) {
+			console.log("✅ Prestige balance looks good!");
+		} else {
+			console.log("⚠️ Prestige balance issues:");
+			issues.forEach((issue) => console.log(`  - ${issue}`));
+		}
+	},
+
+	/**
+	 * Full balance health check
+	 */
+	runFullBalanceCheck() {
+		this.validateBalance();
+		this.validatePrestigeBalance();
+		console.log("\n=== BALANCE SUMMARY ===");
+		console.log("Run this regularly during development to catch balance issues early!");
 	},
 };
 

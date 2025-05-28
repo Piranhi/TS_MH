@@ -3,7 +3,7 @@
 		"id": "slime_basic",
 		"displayName": "Green Slime",
 		"rarity": "common",
-		"baseStats": { "hp": 4, "attack": 2, "defence": 0, "speed": 1 },
+		"archetype": "balanced",
 		"abilities": ["basic_melee"],
 		"imgUrl": "/images/monsters/monster-slime-basic.png"
 	},
@@ -11,7 +11,7 @@
 		"id": "wolf_basic",
 		"displayName": "Forest Wolf",
 		"rarity": "common",
-		"baseStats": { "hp": 3, "attack": 3, "defence": 1, "speed": 1 },
+		"archetype": "bruiser",
 		"abilities": ["basic_melee"],
 		"imgUrl": "/images/monsters/monster-wolf-basic.png"
 	},
@@ -19,7 +19,7 @@
 		"id": "large_rat",
 		"displayName": "Large Rat",
 		"rarity": "common",
-		"baseStats": { "hp": 5, "attack": 2, "defence": 1, "speed": 1 },
+		"archetype": "tank",
 		"abilities": ["basic_melee"],
 		"imgUrl": "/images/monsters/monster-large-rat.png"
 	},
@@ -27,16 +27,56 @@
 		"id": "treant",
 		"displayName": "Treant",
 		"rarity": "common",
-		"baseStats": { "hp": 20, "attack": 8, "defence": 8, "speed": 1 },
+		"archetype": "boss",
 		"abilities": ["basic_melee"],
 		"imgUrl": "/images/monsters/monster-treant-basic.png"
 	},
 	{
-		"id": "swamp_dweller",
-		"displayName": "Swamp Dweller",
+		"id": "shadow_wolf",
+		"displayName": "Shadow Wolf",
 		"rarity": "common",
-		"baseStats": { "hp": 50, "attack": 2, "defence": 1, "speed": 1 },
+		"archetype": "dodger",
 		"abilities": ["basic_melee"],
-		"imgUrl": ""
+		"imgUrl": "/images/monsters/monster-shadow-wolf.png"
+	},
+	{
+		"id": "thorn_boar",
+		"displayName": "Thorn Boar",
+		"rarity": "common",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-thorn-boar.png"
+	},
+	{
+		"id": "rogue_bandit",
+		"displayName": "Rogue Bandit",
+		"rarity": "uncommon",
+		"archetype": "glass_cannon",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-rogue-bandit.png"
+	},
+	{
+		"id": "dusk_sprite",
+		"displayName": "Dusk Sprite",
+		"rarity": "uncommon",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-dusk-sprite.png"
+	},
+	{
+		"id": "stray_bear_cub",
+		"displayName": "Stray Bear Cub",
+		"rarity": "uncommon",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-stray-bear-cub.png"
+	},
+	{
+		"id": "moonlit_lynx",
+		"displayName": "Moonlit Lynx",
+		"rarity": "rare",
+		"archetype": "rare_elite",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-moonlit-lynx.png"
 	}
 ]

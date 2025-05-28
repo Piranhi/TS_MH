@@ -491,3 +491,160 @@ h3 {
 	padding: 0.2rem 0;
 	font-size: 0.9rem;
 }
+
+.stats-container {
+	max-width: 960px;
+	margin: 0 auto;
+}
+
+.stats-title {
+	font-size: 28px;
+	font-weight: bold;
+	text-align: center;
+	margin-bottom: 15px;
+	letter-spacing: -0.025em;
+}
+
+.table-wrapper {
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid #4d4d4d;
+	border-radius: 12px;
+	overflow: hidden;
+	backdrop-filter: blur(10px);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.stats-table {
+	width: 100%;
+	border-collapse: collapse;
+	background: transparent;
+}
+
+.stats-table thead {
+	background: rgba(64, 64, 64, 0.8);
+}
+
+.stats-table th {
+	padding: 2px 8px;
+	text-align: left;
+	font-size: 16px;
+	font-weight: 500;
+	color: white;
+	border: none;
+}
+
+.stats-table td {
+	padding: 6px;
+	font-size: 13px;
+	border-top: 1px solid #4d4d4d;
+	height: 12px;
+	vertical-align: middle;
+}
+
+.stat-name {
+	color: white;
+	font-weight: normal;
+}
+
+.stat-value {
+	color: #adadad;
+	font-weight: normal;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+	body {
+		padding: 20px 16px;
+	}
+
+	.stats-title {
+		font-size: 24px;
+	}
+
+	.stats-table th,
+	.stats-table td {
+		padding: 12px;
+	}
+
+	.stats-table td {
+		height: 60px;
+	}
+}
+
+@media (max-width: 480px) {
+	.stats-table th,
+	.stats-table td {
+		padding: 8px;
+		font-size: 13px;
+	}
+
+	.stats-table td {
+		height: 50px;
+	}
+}
+
+.player-level-section {
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid #4d4d4d;
+	border-radius: 10px;
+	padding: 12px;
+	margin-bottom: 12px;
+	backdrop-filter: blur(12px);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+	text-align: center;
+}
+
+.level-display {
+	display: flex;
+	align-items: center;
+	justify-content: left;
+	gap: 6px;
+	margin-bottom: 2px;
+}
+
+.level-text {
+	font-size: 10px;
+	font-weight: 500;
+	color: #adadad;
+	letter-spacing: 0.02em;
+}
+
+.level-number {
+	font-size: 16px;
+	font-weight: bold;
+	color: white;
+	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.xp-progress-container {
+	width: 100%;
+	max-width: 400px;
+	margin: 0 auto 4px auto;
+	height: auto;
+}
+
+.xp-text {
+	font-size: 14px;
+	color: #adadad;
+	font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.player-level-section {
+		padding: 16px;
+		margin-bottom: 20px;
+	}
+
+	.level-text {
+		font-size: 20px;
+	}
+
+	.level-number {
+		font-size: 12px;
+	}
+
+	.xp-progress-container {
+		max-width: 300px;
+	}
+}

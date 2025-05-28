@@ -1,7 +1,6 @@
 import { BalanceCalculators } from "@/balance/GameBalance";
 import { Monster, MonsterSpec } from "./Monster";
 import { SpecRegistryBase } from "./SpecRegistryBase";
-import { MONSTER_ATTACK_GROWTH, MONSTER_DEFENCE_GROWTH, MONSTER_HP_GROWTH } from "./Stats";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 
 export interface AreaSpec {
@@ -54,19 +53,12 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 		return this.spawnedMonster;
 	}
 
-	private buildMonster(monsterId: string) {
+	private buildMonster(monsterId: string): Monster {
 		const templateSpec = Monster.getSpec(monsterId);
 		if (!templateSpec) throw new Error(`Unknown monster "${monsterId}"`);
 
-		const scaledSpec: MonsterSpec = structuredClone(templateSpec);
-
-		scaledSpec.baseStats.hp = BalanceCalculators.getMonsterStat(templateSpec.baseStats.hp, this.spec.tier, "hp");
-		scaledSpec.baseStats.attack = BalanceCalculators.getMonsterStat(templateSpec.baseStats.attack, this.spec.tier, "attack");
-		scaledSpec.baseStats.defence = BalanceCalculators.getMonsterStat(templateSpec.baseStats.defence, this.spec.tier, "defense");
-
-		//scaled.baseStats.speed = this.growth(templateSpec.baseStats.speed, 1);
-
-		return Monster.create(scaledSpec);
+		// Much simpler - let Monster handle the scaling
+		return Monster.create(templateSpec, this.spec.tier);
 	}
 
 	public rollLoot(): string[] {
@@ -125,6 +117,11 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 		}
 
 		return ids;
+	}
+
+	public getXpPerKill(boss: boolean): number {
+		if (boss) return this.tier * 40;
+		return this.tier * 3;
 	}
 
 	// Helper method to pick a spawn without mutating current combat state

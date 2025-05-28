@@ -1,31 +1,21 @@
 // progressBar.ts
+import { BigNumber } from "@/models/utils/BigNumber";
 import { UIBase } from "./UIBase";
 
 export interface ProgressBarOptions {
-	/**
-	 * The container into which the cloned template will be appended.
-	 * Must be an HTMLElement (e.g. a <div> or <li> you’ve already selected).
-	 */
 	container: HTMLElement;
-
-	/**
-	 * The ID of your <template> element:
-	 * <template id="progress-bar-template">…</template>
-	 */
 	templateId?: string;
-
-	/** Starting “current” value; defaults to 0 */
-	initialValue?: number;
-
-	/** Starting “max”   value; defaults to 100 */
-	maxValue?: number;
+	/** Starting "current" value; defaults to 0 */
+	initialValue?: number | BigNumber;
+	/** Starting "max" value; defaults to 100 */
+	maxValue?: number | BigNumber;
 }
 
 export class ProgressBarSimple extends UIBase {
 	private root: HTMLElement;
 	private fillEl: HTMLElement;
-	private current = 0;
-	private max = 100;
+	private current: BigNumber;
+	private max: BigNumber;
 
 	constructor(options: ProgressBarOptions) {
 		super();
@@ -36,12 +26,17 @@ export class ProgressBarSimple extends UIBase {
 		this.fillEl = this.root.querySelector(".mh-progress__fill")!;
 		this.fillEl.classList.add("mh-progress--generic");
 
-		// Apply any overrides
-		if (options.maxValue !== undefined) this.max = options.maxValue;
-		if (options.initialValue !== undefined) this.current = options.initialValue;
+		// Convert everything to BigNumber at construction time
+		this.max = this.toBigNumber(options.maxValue ?? 100);
+		this.current = this.toBigNumber(options.initialValue ?? 0);
 
 		// Render initial state
 		this.updateFill();
+	}
+
+	/** Helper to convert number | BigNumber to BigNumber */
+	private toBigNumber(value: number | BigNumber): BigNumber {
+		return value instanceof BigNumber ? value : new BigNumber(value);
 	}
 
 	/** Clones the <template> and appends it to the container */
@@ -52,22 +47,51 @@ export class ProgressBarSimple extends UIBase {
 		return root;
 	}
 
-	/** Set a new “current” value (clamped 0–max) and redraws the fill */
-	public setValue(value: number): void {
-		this.current = Math.min(Math.max(value, 0), this.max);
+	/** Set a new "current" value (clamped 0–max) and redraws the fill */
+	public setValue(value: number | BigNumber): void {
+		const bigValue = this.toBigNumber(value);
+		// Clamp between 0 and max using BigNumber methods
+		const zero = new BigNumber(0);
+		this.current = BigNumber.min(BigNumber.max(bigValue, zero), this.max);
 		this.updateFill();
 	}
 
-	/** Change the “max” value and re-apply the current fill */
-	public setMax(max: number): void {
-		this.max = max;
-		this.setValue(this.current);
+	/** Change the "max" value and re-apply the current fill */
+	public setMax(max: number | BigNumber): void {
+		this.max = this.toBigNumber(max);
+		this.setValue(this.current); // Re-clamp current value against new max
 	}
 
-	/** Computes percentage and writes it to the fill’s width */
+	/** Computes percentage and writes it to the fill's width */
 	private updateFill(): void {
-		const pct = this.max > 0 ? (this.current / this.max) * 100 : 0;
+		// Only convert to number at display time for percentage calculation
+		const pct = this.max.eq(0) ? 0 : this.current.div(this.max).toNumber() * 100;
 		this.fillEl.style.width = `${pct}%`;
+	}
+
+	/** Get current value as BigNumber */
+	public getValue(): BigNumber {
+		return this.current;
+	}
+
+	/** Get max value as BigNumber */
+	public getMax(): BigNumber {
+		return this.max;
+	}
+
+	/** Get current percentage as number (0-100) */
+	public getPercentage(): number {
+		return this.max.eq(0) ? 0 : this.current.div(this.max).toNumber() * 100;
+	}
+
+	/** Check if progress bar is full */
+	public isFull(): boolean {
+		return this.current.gte(this.max);
+	}
+
+	/** Check if progress bar is empty */
+	public isEmpty(): boolean {
+		return this.current.eq(0);
 	}
 
 	/** Clean up the DOM when you no longer need this bar */

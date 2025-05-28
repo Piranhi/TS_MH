@@ -38,7 +38,8 @@ export interface GameEvents {
 	"player:statsChanged": PlayerCharacter;
 
 	// PLAYER CHARACTER
-	"char:levelUp": number;
+	"char:levelUp": number; // New Level
+	"char:gainedXp": BigNumber; // Amount incoming
 
 	//HUNT
 	"hunt:stateChanged": HuntState;

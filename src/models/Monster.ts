@@ -2,37 +2,35 @@ import { printLog } from "@/core/DebugManager";
 import { SpecRegistryBase } from "./SpecRegistryBase";
 import { CoreStats, Stats } from "./Stats";
 import { BalanceCalculators } from "@/balance/GameBalance";
+import { ENEMY_ARCHETYPES, EnemyArchetype } from "@/shared/types";
 
 export type MonsterRarity = "common" | "uncommon" | "rare" | "terrifying" | "nightmare";
-
-const renownMultipliers: Record<MonsterRarity, number> = {
-	common: 1.0,
-	uncommon: 1.2,
-	rare: 1.5,
-	terrifying: 2.0,
-	nightmare: 3.0,
-};
 
 export interface MonsterSpec {
 	id: string;
 	displayName: string;
 	rarity: MonsterRarity;
-	baseStats: CoreStats;
+	archetype: EnemyArchetype; // Changed from baseStats
 	abilities: string[];
 	imgUrl: string;
 }
 
+// In Monster.ts
 export class Monster extends SpecRegistryBase<MonsterSpec> {
-	private constructor(private readonly spec: MonsterSpec) {
+	private constructor(
+		private readonly spec: MonsterSpec,
+		private readonly areaTier: number = 1 // Add area tier
+	) {
 		super();
 	}
 
 	get areaScaledStats(): Stats {
+		const base = this.baseStats;
 		return {
-			attack: this.spec.baseStats.attack,
-			defence: this.spec.baseStats.defence,
-			speed: this.spec.baseStats.speed,
-			hp: this.spec.baseStats.hp,
+			attack: this.scaleForArea(base.attack, "attack"),
+			defence: this.scaleForArea(base.defence, "defense"),
+			speed: base.speed, // Don't scale speed, or scale differently
+			hp: this.scaleForArea(base.hp, "hp"),
 			power: 0,
 			guard: 0,
 			critChance: 0,
@@ -43,7 +41,25 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 		};
 	}
 
+	private scaleForArea(baseStat: number, statType: "hp" | "attack" | "defense"): number {
+		// Use your existing BalanceCalculators or growth formula
+		return BalanceCalculators.getMonsterStat(baseStat, this.areaTier, statType);
+		// OR use the old growth formula:
+		// const growthFactors = { hp: 1.75, attack: 1.45, defense: 1.4 };
+		// return baseStat * 10 * Math.pow(growthFactors[statType], this.areaTier - 1);
+	}
+
 	/* --- simple getters --- */
+
+	get archetype(): EnemyArchetype {
+		return this.spec.archetype;
+	}
+
+	// Add this getter to access the full archetype object
+	get archetypeData() {
+		return ENEMY_ARCHETYPES[this.spec.archetype];
+	}
+
 	get id() {
 		return this.spec.id;
 	}
@@ -53,17 +69,17 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 	get rarity() {
 		return this.spec.rarity;
 	}
-	get baseStats() {
-		return this.spec.baseStats;
+
+	get baseStats(): CoreStats {
+		return ENEMY_ARCHETYPES[this.spec.archetype];
 	}
 
 	get renownMulti(): number {
-		// Use centralized calculator
 		return BalanceCalculators.getMonsterRenown(1, this.rarity);
 	}
-
 	get abilities(): string[] {
-		return this.spec.abilities;
+		// Fallback to spec abilities or just basic_melee
+		return this.spec.abilities?.length ? this.spec.abilities : ["basic_melee"];
 	}
 
 	get imgUrl(): string {
@@ -73,9 +89,9 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 	// Registry.
 	public static override specById = new Map<string, MonsterSpec>();
 
-	// Created in Area.ts - With scaling applied
-	static create(spec: MonsterSpec) {
+	// Update create method
+	static create(spec: MonsterSpec, areaTier: number = 1): Monster {
 		printLog("Spawned new Monster: " + spec.id, 3, "Monster.ts");
-		return new Monster(spec);
+		return new Monster(spec, areaTier);
 	}
 }

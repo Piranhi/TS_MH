@@ -16,7 +16,7 @@ export interface CharacterSnapsnot {
 	imgUrl: string;
 	abilities: Ability[];
 	rarity?: string;
-	level: { lvl: number; current: number; next: number };
+	level: { lvl: number; current: BigNumber; next: BigNumber };
 }
 
 export interface PowerLevel {
@@ -214,7 +214,7 @@ export abstract class BaseCharacter extends Destroyable {
 			abilities: this.getActiveAbilities(),
 			imgUrl: this.getAvatarUrl(),
 			rarity: "Todo",
-			level: { lvl: this._charLevel, current: 0, next: 0 },
+			level: { lvl: this._charLevel, current: new BigNumber(0), next: new BigNumber(0) },
 		};
 	}
 }

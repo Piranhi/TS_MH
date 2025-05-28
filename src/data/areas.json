@@ -1,25 +1,178 @@
 [
-    {
-        "id": "forest_easy",
-        "displayName": "Easy Forest",
-        "requires": [],
-        "tier": 1,
+	{
+		"id": "forest_easy",
+		"displayName": "Easy Forest",
+		"requires": [],
+		"tier": 1,
 
-        "spawns": [
-            { "monsterId": "slime_basic", "weight": 10, "drops": { "tags": ["t1"], "baseDropChance": 0.01 } },
-            { "monsterId": "wolf_basic", "weight": 10, "drops": { "tags": ["t1"], "baseDropChance": 0.01 } },
-            { "monsterId": "large_rat", "weight": 10, "drops": { "tags": ["t1"], "baseDropChance": 0.01 } }
-        ],
-        "boss": { "monsterId": "treant", "weight": 1, "drops": { "tags": ["t1, boss"], "baseDropChance": 1 } }
-    },
-    {
-        "id": "forest_hard",
-        "displayName": "Hard Forest",
-        "requires": ["hunt.boss.tier1"],
-        "tier": 2,
+		"spawns": [
+			{ "monsterId": "slime_basic", "weight": 10, "drops": { "tags": ["t1"], "baseDropChance": 0.01 } },
+			{ "monsterId": "wolf_basic", "weight": 7, "drops": { "tags": ["t1"], "baseDropChance": 0.01 } },
+			{ "monsterId": "large_rat", "weight": 10, "drops": { "tags": ["t1"], "baseDropChance": 0.01 } }
+		],
 
-        "spawns": [{ "monsterId": "swamp_dweller", "weight": 10, "drops": { "tags": ["t2"], "baseDropChance": 0.5 } }],
+		"boss": { "monsterId": "treant", "weight": 1, "drops": { "tags": ["t1, boss"], "baseDropChance": 1 } }
+	},
 
-        "boss": { "monsterId": "treant", "weight": 1, "drops": { "tags": ["t2, boss"], "baseDropChance": 1 } }
-    }
+	{
+		"id": "duskwolf_grove",
+		"displayName": "Duskwolf Grove",
+		"requires": ["hunt.boss.tier1"],
+		"tier": 2,
+
+		"spawns": [
+			{ "monsterId": "shadow_wolf", "weight": 10, "drops": { "tags": ["t2"], "baseDropChance": 0.005 } },
+			{ "monsterId": "thorn_boar", "weight": 8, "drops": { "tags": ["t2"], "baseDropChance": 0.005 } },
+			{ "monsterId": "rogue_bandit", "weight": 6, "drops": { "tags": ["t2"], "baseDropChance": 0.005 } },
+			{ "monsterId": "dusk_sprite", "weight": 5, "drops": { "tags": ["t2"], "baseDropChance": 0.005 } },
+			{ "monsterId": "stray_bear_cub", "weight": 4, "drops": { "tags": ["t2"], "baseDropChance": 0.005 } },
+			{ "monsterId": "moonlit_lynx", "weight": 0.1, "drops": { "tags": ["t2, rare"], "baseDropChance": 0.0005 } }
+		],
+
+		"boss": { "monsterId": "duskwolf_matriarch", "weight": 1, "drops": { "tags": ["t2, boss"], "baseDropChance": 1 } }
+	},
+
+	{
+		"id": "murkfen_bog",
+		"displayName": "Murkfen Bog",
+		"requires": ["hunt.boss.tier2"],
+		"tier": 3,
+
+		"spawns": [
+			{ "monsterId": "swamp_leech", "weight": 9, "drops": { "tags": ["t3"], "baseDropChance": 0.002 } },
+			{ "monsterId": "bog_lurker", "weight": 9, "drops": { "tags": ["t3"], "baseDropChance": 0.002 } },
+			{ "monsterId": "foul_wisp", "weight": 7, "drops": { "tags": ["t3"], "baseDropChance": 0.002 } },
+			{ "monsterId": "lurching_ghast", "weight": 6, "drops": { "tags": ["t3"], "baseDropChance": 0.002 } },
+			{ "monsterId": "reed_serpent", "weight": 4, "drops": { "tags": ["t3"], "baseDropChance": 0.002 } },
+			{ "monsterId": "gleamglade_dryad", "weight": 0.1, "drops": { "tags": ["t3, rare"], "baseDropChance": 0.0004 } }
+		],
+
+		"boss": { "monsterId": "mireback_behemoth", "weight": 1, "drops": { "tags": ["t3, boss"], "baseDropChance": 1 } }
+	},
+
+	{
+		"id": "emberfall_quarry",
+		"displayName": "Emberfall Quarry",
+		"requires": ["hunt.boss.tier3"],
+		"tier": 4,
+
+		"spawns": [
+			{ "monsterId": "magma_imp", "weight": 10, "drops": { "tags": ["t4"], "baseDropChance": 0.002 } },
+			{ "monsterId": "scorched_miner_shade", "weight": 8, "drops": { "tags": ["t4"], "baseDropChance": 0.002 } },
+			{ "monsterId": "ash_crawler", "weight": 7, "drops": { "tags": ["t4"], "baseDropChance": 0.002 } },
+			{ "monsterId": "ember_bat", "weight": 5, "drops": { "tags": ["t4"], "baseDropChance": 0.002 } },
+			{ "monsterId": "molten_hound", "weight": 4, "drops": { "tags": ["t4"], "baseDropChance": 0.002 } },
+			{ "monsterId": "coalheart_phoenixlet", "weight": 0.1, "drops": { "tags": ["t4, rare"], "baseDropChance": 0.0003 } }
+		],
+
+		"boss": { "monsterId": "igneous_golem", "weight": 1, "drops": { "tags": ["t4, boss"], "baseDropChance": 1 } }
+	},
+
+	{
+		"id": "moonlit_moor",
+		"displayName": "Moonlit Moor",
+		"requires": ["hunt.boss.tier4"],
+		"tier": 5,
+
+		"spawns": [
+			{ "monsterId": "restless_peasant", "weight": 10, "drops": { "tags": ["t5"], "baseDropChance": 0.0015 } },
+			{ "monsterId": "barrow_wight", "weight": 8, "drops": { "tags": ["t5"], "baseDropChance": 0.0015 } },
+			{ "monsterId": "mist_raven", "weight": 7, "drops": { "tags": ["t5"], "baseDropChance": 0.0015 } },
+			{ "monsterId": "moor_hound", "weight": 6, "drops": { "tags": ["t5"], "baseDropChance": 0.0015 } },
+			{ "monsterId": "dirge_toad", "weight": 5, "drops": { "tags": ["t5"], "baseDropChance": 0.0015 } },
+			{ "monsterId": "silver_stag_spirit", "weight": 0.1, "drops": { "tags": ["t5, rare"], "baseDropChance": 0.00025 } }
+		],
+
+		"boss": { "monsterId": "graven_lich", "weight": 1, "drops": { "tags": ["t5, boss"], "baseDropChance": 1 } }
+	},
+
+	{
+		"id": "frostbite_ridge",
+		"displayName": "Frostbite Ridge",
+		"requires": ["hunt.boss.tier5"],
+		"tier": 6,
+
+		"spawns": [
+			{ "monsterId": "ice_wolf", "weight": 10, "drops": { "tags": ["t6"], "baseDropChance": 0.001 } },
+			{ "monsterId": "frost_sprite", "weight": 8, "drops": { "tags": ["t6"], "baseDropChance": 0.001 } },
+			{ "monsterId": "glacial_boar", "weight": 7, "drops": { "tags": ["t6"], "baseDropChance": 0.001 } },
+			{ "monsterId": "snow_troll", "weight": 6, "drops": { "tags": ["t6"], "baseDropChance": 0.001 } },
+			{ "monsterId": "shard_viper", "weight": 5, "drops": { "tags": ["t6"], "baseDropChance": 0.001 } },
+			{ "monsterId": "aurora_fox", "weight": 0.11, "drops": { "tags": ["t6, rare"], "baseDropChance": 0.0002 } }
+		],
+
+		"boss": { "monsterId": "rimefang_yeti", "weight": 1, "drops": { "tags": ["t6, boss"], "baseDropChance": 1 } }
+	},
+
+	{
+		"id": "thunderclap_plateau",
+		"displayName": "Thunderclap Plateau",
+		"requires": ["hunt.boss.tier6"],
+		"tier": 7,
+
+		"spawns": [
+			{ "monsterId": "storm_drakelet", "weight": 10, "drops": { "tags": ["t7"], "baseDropChance": 0.0008 } },
+			{ "monsterId": "rock_raptor", "weight": 8, "drops": { "tags": ["t7"], "baseDropChance": 0.0008 } },
+			{ "monsterId": "thunder_ram", "weight": 7, "drops": { "tags": ["t7"], "baseDropChance": 0.0008 } },
+			{ "monsterId": "static_sprite", "weight": 6, "drops": { "tags": ["t7"], "baseDropChance": 0.0008 } },
+			{ "monsterId": "wind_bandit", "weight": 5, "drops": { "tags": ["t7"], "baseDropChance": 0.0008 } },
+			{ "monsterId": "tempest_gryphonet", "weight": 0.1, "drops": { "tags": ["t7, rare"], "baseDropChance": 0.00015 } }
+		],
+
+		"boss": { "monsterId": "skyhammer_titan", "weight": 1, "drops": { "tags": ["t7, boss"], "baseDropChance": 1 } }
+	},
+
+	{
+		"id": "hollowbone_catacombs",
+		"displayName": "Hollowbone Catacombs",
+		"requires": ["hunt.boss.tier7"],
+		"tier": 8,
+
+		"spawns": [
+			{ "monsterId": "bone_spider", "weight": 10, "drops": { "tags": ["t8"], "baseDropChance": 0.0006 } },
+			{ "monsterId": "crypt_bat", "weight": 8, "drops": { "tags": ["t8"], "baseDropChance": 0.0006 } },
+			{ "monsterId": "skeletal_hound", "weight": 7, "drops": { "tags": ["t8"], "baseDropChance": 0.0006 } },
+			{ "monsterId": "plague_rat", "weight": 6, "drops": { "tags": ["t8"], "baseDropChance": 0.0006 } },
+			{ "monsterId": "dust_wraith", "weight": 5, "drops": { "tags": ["t8"], "baseDropChance": 0.0006 } },
+			{ "monsterId": "obsidian_scarab", "weight": 0.1, "drops": { "tags": ["t8, rare"], "baseDropChance": 0.0001 } }
+		],
+
+		"boss": { "monsterId": "deathbone_colossus", "weight": 1, "drops": { "tags": ["t8, boss"], "baseDropChance": 1 } }
+	},
+
+	{
+		"id": "ashen_wastes",
+		"displayName": "Ashen Wastes",
+		"requires": ["hunt.boss.tier8"],
+		"tier": 9,
+
+		"spawns": [
+			{ "monsterId": "cinder_ghoul", "weight": 10, "drops": { "tags": ["t9"], "baseDropChance": 0.0005 } },
+			{ "monsterId": "ash_viper", "weight": 8, "drops": { "tags": ["t9"], "baseDropChance": 0.0005 } },
+			{ "monsterId": "scorched_scavenger", "weight": 7, "drops": { "tags": ["t9"], "baseDropChance": 0.0005 } },
+			{ "monsterId": "ember_scorpion", "weight": 6, "drops": { "tags": ["t9"], "baseDropChance": 0.0005 } },
+			{ "monsterId": "smog_drake", "weight": 5, "drops": { "tags": ["t9"], "baseDropChance": 0.0005 } },
+			{ "monsterId": "eclipse_salamander", "weight": 0.1, "drops": { "tags": ["t9, rare"], "baseDropChance": 0.00008 } }
+		],
+
+		"boss": { "monsterId": "blightfire_dragon", "weight": 1, "drops": { "tags": ["t9, boss"], "baseDropChance": 1 } }
+	},
+
+	{
+		"id": "shattered_sky_bastion",
+		"displayName": "Shattered Sky Bastion",
+		"requires": ["hunt.boss.tier9"],
+		"tier": 10,
+
+		"spawns": [
+			{ "monsterId": "rune_sentinel", "weight": 10, "drops": { "tags": ["t10"], "baseDropChance": 0.0003 } },
+			{ "monsterId": "arcane_wisp", "weight": 8, "drops": { "tags": ["t10"], "baseDropChance": 0.0003 } },
+			{ "monsterId": "sky_shade", "weight": 7, "drops": { "tags": ["t10"], "baseDropChance": 0.0003 } },
+			{ "monsterId": "broken_golem", "weight": 6, "drops": { "tags": ["t10"], "baseDropChance": 0.0003 } },
+			{ "monsterId": "pale_harrier", "weight": 5, "drops": { "tags": ["t10"], "baseDropChance": 0.0003 } },
+			{ "monsterId": "celestial_moth", "weight": 0.1, "drops": { "tags": ["t10, rare"], "baseDropChance": 0.00005 } }
+		],
+
+		"boss": { "monsterId": "astral_warder", "weight": 1, "drops": { "tags": ["t10, boss"], "baseDropChance": 1 } }
+	}
 ]

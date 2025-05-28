@@ -4,100 +4,188 @@ import { bindEvent } from "@/shared/utils/busUtils";
 import { prettify } from "@/shared/utils/stringUtils";
 import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
 import { BigNumber } from "@/models/utils/BigNumber";
+import { ProgressBarSimple } from "./ProgressBarSimple";
+
+interface StatData {
+	name: string;
+	value: string | number;
+}
 
 export class PlayerStatsDisplay extends UIBase {
-	private coreKeys: (keyof Stats)[] = ["attack", "defence", "speed", "hp"];
-	private extraKeys: (keyof Stats)[] = ["power", "guard", "critChance", "critDamage", "lifesteal"];
+	private tableBody!: HTMLTableSectionElement;
+	private levelNumberEl!: HTMLElement;
+	private xpTextEl!: HTMLElement;
+	private xpProgressBar!: ProgressBarSimple;
 
-	private sectionOpen: Record<string, boolean> = {
-		"Core Stats": true, // default open
-		"Extra Stats": true,
-	};
+	private statsData: StatData[] = [
+		{ name: "Strength", value: 0 },
+		{ name: "Power", value: 0 },
+		{ name: "CritChance", value: 0 },
+		{ name: "CritDamage", value: 0 },
+		{ name: "Defence", value: 0 },
+		{ name: "Guard", value: 0 },
+		{ name: "Evasion", value: 0 },
+		{ name: "Health", value: 0 },
+		{ name: "Speed", value: 0 },
+		{ name: "Encounter Chance", value: 0 },
+	];
 
-	constructor(private container: HTMLElement) {
+	constructor(container: HTMLElement) {
 		super();
-		this.render();
-
-		bindEvent(this.eventBindings, "player:statsChanged", () => this.render());
+		this.element = container;
+		this.createTable();
+		this.bindEvents();
 	}
 
-	private render(): void {
-		if (!this.context.currentRun) return;
-		const stats = this.context.character.statsEngine.getAll();
-		this.container.innerHTML = "";
-		this.container.appendChild(this.createOverview());
-		this.container.appendChild(this.createSection("Core Stats", this.coreKeys, stats));
-		this.container.appendChild(this.createSection("Extra Stats", this.extraKeys, stats));
+	private createTable() {
+		this.element.innerHTML = `
+        <div class="stats-container">
+            <!-- Player Level Section -->
+            <div class="player-level-section">
+                <div class="level-display">
+                    <span class="level-text">Lvl</span>
+                    <span class="level-number" id="player-level-number">1</span>
+                </div>
+                <div class="xp-progress-container" id="xp-progress-container">
+                    <!-- ProgressBarSimple will be inserted here -->
+                </div>
+                <div class="xp-text" id="xp-text">0 / 100 XP</div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>Stat</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+		this.tableBody = this.element.querySelector("tbody")!;
+		this.setupLevelDisplay();
+		this.renderStats();
 	}
 
-	private createOverview(): HTMLElement {
-		const details = document.createElement("details");
-		details.classList.add("stat-section");
+	private setupLevelDisplay() {
+		// Cache DOM elements
+		this.levelNumberEl = this.element.querySelector("#player-level-number")!;
+		this.xpTextEl = this.element.querySelector("#xp-text")!;
 
-		details.open = !!this.sectionOpen["overview"];
-
-		details.addEventListener("toggle", () => {
-			this.sectionOpen["overview"] = details.open;
+		// Create XP progress bar
+		const progressContainer = this.element.querySelector("#xp-progress-container")!;
+		this.xpProgressBar = new ProgressBarSimple({
+			container: progressContainer as HTMLElement,
+			templateId: "progress-bar-template",
+			maxValue: 100,
+			initialValue: 0,
 		});
-		const summary = document.createElement("summary");
-		summary.textContent = "Overview";
-		details.appendChild(summary);
 
-		const row = document.createElement("div");
-		row.classList.add("stat-row");
-
-		const nameSpan = document.createElement("span");
-		nameSpan.textContent = prettify("DAMAGE");
-
-		const valueSpan = document.createElement("span");
-
-		valueSpan.textContent = calculateRawBaseDamage(this.context.character).toString(); //String(Math.round((stats[key] + Number.EPSILON) * 100) / 100); // (FIX UP)
-
-		row.append(nameSpan, valueSpan);
-		details.appendChild(row);
-
-		return details;
+		// Initial update
+		this.updateLevelDisplay();
 	}
 
-	private createSection(title: string, keys: (keyof Stats)[], stats: Stats): HTMLElement {
-		const details = document.createElement("details");
-		details.classList.add("stat-section");
+	private updateLevelDisplay() {
+		const char = this.context.character;
+		const currentLevel = char.level;
+		const currentXP = char.currentXp;
+		const xpForNextLevel = char.nextXpThreshold;
 
-		details.open = !!this.sectionOpen[title];
+		// Update level number
+		this.levelNumberEl.textContent = currentLevel.toString();
 
-		details.addEventListener("toggle", () => {
-			this.sectionOpen[title] = details.open;
+		// Update XP progress bar
+		this.xpProgressBar.setMax(xpForNextLevel);
+		this.xpProgressBar.setValue(currentXP);
+
+		// Update XP text
+		this.xpTextEl.textContent = `${currentXP} / ${xpForNextLevel} XP`;
+	}
+
+	private renderStats() {
+		// Clear existing rows
+		this.tableBody.innerHTML = "";
+
+		// Create rows for each stat
+		this.statsData.forEach((stat) => {
+			const row = document.createElement("tr");
+			row.innerHTML = `
+                <td class="stat-name">${stat.name}</td>
+                <td class="stat-value" data-stat="${stat.name}">${stat.value}</td>
+            `;
+			this.tableBody.appendChild(row);
 		});
+	}
 
-		const summary = document.createElement("summary");
-		summary.textContent = title;
-		details.appendChild(summary);
+	// Update a single stat
+	public updateStat(statName: string, value: string | number) {
+		// Update in data array
+		const statIndex = this.statsData.findIndex((stat) => stat.name === statName);
+		if (statIndex !== -1) {
+			this.statsData[statIndex].value = value;
 
-		// One per row
-		for (const key of keys) {
-			const row = document.createElement("div");
-			row.classList.add("stat-row");
-
-			const nameSpan = document.createElement("span");
-			nameSpan.textContent = prettify(key);
-
-			const valueSpan = document.createElement("span");
-			const val = stats[key];
-			let valueStr: string;
-			/* 			if ( val instanceof BigNumber) {
-				// To display as a rounded number
-				valueStr = val.toNumber().toFixed(2); // 2 decimals, or whatever you want
-				// Or if you want prettified scientific display:
-				// valueStr = val.toString();
-			} else {
-				valueStr = String(val); // fallback for non-BigNumber
-			} */
-			valueStr = new BigNumber(val).toString();
-			valueSpan.textContent = valueStr; //String(Math.round((stats[key] + Number.EPSILON) * 100) / 100); // (FIX UP)
-
-			row.append(nameSpan, valueSpan);
-			details.appendChild(row);
+			// Update DOM element
+			const valueCell = this.element.querySelector(`[data-stat="${statName}"]`);
+			if (valueCell) {
+				valueCell.textContent = value.toString();
+			}
 		}
-		return details;
+	}
+
+	// Update multiple stats at once
+	public updateStats(updates: Record<string, string | number>) {
+		Object.entries(updates).forEach(([statName, value]) => {
+			this.updateStat(statName, value);
+		});
+	}
+
+	// Integration with your game's event system
+	private bindEvents() {
+		// Listen for stat changes
+		bindEvent(this.eventBindings, "player:statsChanged", () => {
+			this.updateFromPlayerStats();
+		});
+
+		// Listen for level changes
+		bindEvent(this.eventBindings, "char:gainedXp", () => {
+			this.updateLevelDisplay();
+		});
+
+		// Listen for any game tick to update XP (in case XP changes without leveling)
+		bindEvent(this.eventBindings, "Game:UITick", () => {
+			this.updateLevelDisplay();
+		});
+	}
+
+	private updateFromPlayerStats() {
+		if (!this.context.currentRun) return;
+
+		const character = this.context.character;
+		const stats = character.statsEngine.getAll();
+
+		// Map your game stats to display stats
+		this.updateStats({
+			Strength: stats.attack.toPrecision(2) || 0,
+			Power: stats.power.toPrecision(2) || 0,
+			Defence: stats.defence.toPrecision(2) || 0,
+			Health: character.maxHp.toString() || 0,
+			Guard: stats.guard.toPrecision(2) || 0,
+			Speed: stats.speed.toPrecision(2) || 0,
+			Evasion: stats.evasion.toPrecision(2) || 0,
+			CritChance: stats.critChance.toPrecision(2) || 0,
+			CritDamage: stats.critDamage.toPrecision(2) || 0,
+		});
+	}
+
+	// Clean up when component is destroyed
+	public destroy() {
+		if (this.xpProgressBar) {
+			this.xpProgressBar.destroy();
+		}
+		super.destroy();
 	}
 }

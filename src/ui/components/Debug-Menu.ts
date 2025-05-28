@@ -1,11 +1,11 @@
 import { debugManager, printLog } from "@/core/DebugManager";
 import { bus } from "@/core/EventBus";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
-import { Player } from "@/core/Player";
 import { PlayerCharacter } from "@/models/PlayerCharacter";
 import { BigNumber } from "@/models/utils/BigNumber";
 import { GameContext } from "@/core/GameContext";
-import { OfflineProgressManager, OfflineSession } from "@/models/OfflineProgress";
+import { OfflineSession } from "@/models/OfflineProgress";
+import { BalanceDebug } from "@/balance/GameBalance";
 
 export class DebugMenu {
 	private rootEl!: HTMLElement;
@@ -46,6 +46,10 @@ export class DebugMenu {
 		this.addButton("Fake Offline Session", () => this.testOfflineSession());
 		this.addButton("Set Max Stamina", () => context.player.debugStamina());
 		this.addButton("Char Level Up", () => context.character.gainXp(context.character.nextXpThreshold));
+		// In Debug-Menu.ts
+		this.addButton("Full Balance Check", () => BalanceDebug.runFullBalanceCheck());
+		this.addButton("Test Prestige Scaling", () => BalanceDebug.validatePrestigeBalance());
+		this.addButton("Progression Curves", () => BalanceDebug.logProgressionCurves());
 		//  Player.getInstance().inventory.addItemToInventory);
 		//this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));
 	}

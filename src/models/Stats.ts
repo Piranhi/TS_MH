@@ -1,5 +1,3 @@
-
-
 // EQUIPMENT SCALING
 
 // PLAYER SCALING
@@ -23,6 +21,10 @@ export interface CoreStats {
 	defence: number;
 	speed: number;
 	hp: number;
+}
+
+export interface EnemyArchetypeData extends CoreStats {
+	defaultAbilities: string[];
 }
 
 /** Build Stats */
@@ -64,7 +66,7 @@ export const defaultPlayerStats: Stats = {
 	hp: 100,
 	power: 0,
 	guard: 0,
-	critChance: 0,
+	critChance: 1,
 	critDamage: 0,
 	evasion: 0,
 	lifesteal: 0,

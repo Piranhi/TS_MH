@@ -69,3 +69,5 @@ export const DEFAULT_AREA_STATS: AreaStats = {
 	bossKilledThisRun: false,
 	bossKillsTotal: 0,
 };
+
+
