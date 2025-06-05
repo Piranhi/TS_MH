@@ -4,8 +4,9 @@ import { SpecRegistryBase } from "@/models/SpecRegistryBase";
 import { StatsModifier } from "@/models/Stats";
 import { ClassCardItemSpec, InventoryItemState } from "@/shared/types";
 import { InventoryRegistry } from "../inventory/InventoryRegistry";
+import { UpgradableItem, getNextRarity } from "@/models/UpgradableItem";
 
-export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements ClassCardItemSpec {
+export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements ClassCardItemSpec, UpgradableItem {
 	readonly category = "classCard";
 
 	private constructor(private readonly spec: ClassCardItemSpec, private state: InventoryItemState) {
@@ -53,12 +54,15 @@ export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements Cl
 	get iconUrl() {
 		return this.spec.iconUrl;
 	}
-	get rarity() {
-		return this.state.rarity;
-	}
-	get quantity() {
-		return 1;
-	}
+        get rarity() {
+                return this.state.rarity;
+        }
+        get level() {
+                return this.state.level ?? 1;
+        }
+        get quantity() {
+                return 1;
+        }
 
 	get abilities() {
 		return this.spec.abilities;
@@ -94,9 +98,18 @@ export class ClassCard extends SpecRegistryBase<ClassCardItemSpec> implements Cl
 
 	public static override specById = new Map<string, ClassCardItemSpec>();
 
-	static createFromState(state: InventoryItemState): ClassCard {
-		const spec = this.specById.get(state.specId);
-		if (!spec) throw new Error(`Unknown card "${state.specId}"`);
-		return new ClassCard(spec, state);
-	}
+        static createFromState(state: InventoryItemState): ClassCard {
+                const spec = this.specById.get(state.specId);
+                if (!spec) throw new Error(`Unknown card "${state.specId}"`);
+                return new ClassCard(spec, state);
+        }
+
+        addLevels(amount: number): void {
+                this.state.level = (this.state.level ?? 1) + amount;
+                while ((this.state.level ?? 0) >= 100) {
+                        this.state.level = (this.state.level ?? 0) - 100;
+                        this.state.rarity = getNextRarity(this.state.rarity!);
+                        if (this.state.level === 0) this.state.level = 1;
+                }
+        }
 }

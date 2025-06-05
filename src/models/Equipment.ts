@@ -1,7 +1,8 @@
 import { EquipmentItemSpec, InventoryItemState } from "@/shared/types";
 import { SpecRegistryBase } from "./SpecRegistryBase";
+import { UpgradableItem, getNextRarity } from "./UpgradableItem";
 
-export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements EquipmentItemSpec {
+export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements EquipmentItemSpec, UpgradableItem {
 	readonly category = "equipment";
 
 	private constructor(private readonly spec: EquipmentItemSpec, private state: InventoryItemState) {
@@ -17,12 +18,15 @@ export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements Eq
 	get iconUrl() {
 		return this.spec.iconUrl;
 	}
-	get rarity() {
-		return this.state.rarity;
-	}
-	get quantity() {
-		return 1;
-	}
+        get rarity() {
+                return this.state.rarity;
+        }
+        get level() {
+                return this.state.level ?? 1;
+        }
+        get quantity() {
+                return 1;
+        }
 
 	get description() {
 		return this.spec.description;
@@ -52,9 +56,18 @@ export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements Eq
 
 	public static override specById = new Map<string, EquipmentItemSpec>();
 
-	static createFromState(state: InventoryItemState): Equipment {
-		const spec = this.specById.get(state.specId);
-		if (!spec) throw new Error(`Unknown card "${state.specId}"`);
-		return new Equipment(spec, state);
-	}
+        static createFromState(state: InventoryItemState): Equipment {
+                const spec = this.specById.get(state.specId);
+                if (!spec) throw new Error(`Unknown card "${state.specId}"`);
+                return new Equipment(spec, state);
+        }
+
+        addLevels(amount: number): void {
+                this.state.level = (this.state.level ?? 1) + amount;
+                while ((this.state.level ?? 0) >= 100) {
+                        this.state.level = (this.state.level ?? 0) - 100;
+                        this.state.rarity = getNextRarity(this.state.rarity!);
+                        if (this.state.level === 0) this.state.level = 1;
+                }
+        }
 }

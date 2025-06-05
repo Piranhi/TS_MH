@@ -113,9 +113,35 @@ export class InventoryManager implements Saveable {
 			if (!isEquipmentItemSpec(spec)) return false;
 			if (spec.equipType !== to.key) return false;
 		}
-		// Swap
-		[from.itemState, to.itemState] = [to.itemState, from.itemState];
-		this.emitChange();
+                // Merge if dropping onto duplicate upgradable item
+                if (to.itemState) {
+                        const toSpec = InventoryRegistry.getItemById(to.itemState.specId);
+                        if (
+                                spec.id === toSpec.id &&
+                                from.itemState.rarity === to.itemState.rarity &&
+                                (spec.category === "equipment" || spec.category === "classCard")
+                        ) {
+                                if (spec.category === "equipment") {
+                                        const target = Equipment.createFromState(to.itemState);
+                                        target.addLevels(from.itemState.level ?? 0);
+                                } else if (spec.category === "classCard") {
+                                        const target = ClassCard.createFromState(to.itemState);
+                                        target.addLevels(from.itemState.level ?? 0);
+                                }
+                                from.itemState = null;
+                                this.emitChange();
+                                if (from.type === "equipment" || to.type === "equipment") {
+                                        bus.emit("player:equipmentChanged", this.getEquippedEquipment());
+                                }
+                                if (from.type === "classCard" || to.type === "classCard") {
+                                        bus.emit("player:classCardsChanged", this.getEquippedCards());
+                                }
+                                return true;
+                        }
+                }
+                // Swap items between slots
+                [from.itemState, to.itemState] = [to.itemState, from.itemState];
+                this.emitChange();
 
 		// Emit smaller bus changes.
 		if (from.type === "equipment" || to.type === "equipment") {
