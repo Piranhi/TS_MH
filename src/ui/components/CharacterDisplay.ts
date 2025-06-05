@@ -75,7 +75,6 @@ export class CharacterDisplay extends UIBase {
         this.avatarImg = this.$(".char-card__portrait") as HTMLImageElement;
         this.element.classList.add(this.isPlayer ? "player" : "enemy");
         this.abilitiesListEl = this.$(".ability-list") as HTMLUListElement;
-        if (this.isPlayer) this.charLevelEl = this.$(".char-card__level");
     }
 
     setup() {
@@ -101,10 +100,6 @@ export class CharacterDisplay extends UIBase {
             const dmg = document.createElement("span");
             dmg.className = "ability-dmg";
             dmg.textContent = "21";
-
-            if (this.isPlayer) {
-                this.charLevelEl!.textContent = `[${level.lvl}] - ${level.current} / ${level.next}`;
-            }
 
             li.appendChild(fill);
             li.appendChild(icon);

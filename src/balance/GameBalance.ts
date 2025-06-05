@@ -47,6 +47,11 @@ export const GAME_BALANCE = {
             critChance: 0.5,
             critDamage: 1,
         },
+
+        healing: {
+            passiveHealAmount: 1,
+            recoveryStateHeal: 0.01,
+        },
     },
 
     // === EQUIPMENT SCALING ===
@@ -138,6 +143,12 @@ export const GAME_BALANCE = {
         baseDropChance: 0.01,
         dropDecayFactor: 0.9, // Drops get rarer in higher tiers
         dropFloorChance: 0.005, // Minimum drop chance
+    },
+
+    // === HUNT BALANCE ===
+    hunt: {
+        baseSearchTime: 5,
+        baseEncounterChance: 0.5,
     },
 } as const;
 

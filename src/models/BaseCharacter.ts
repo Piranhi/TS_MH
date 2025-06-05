@@ -4,7 +4,6 @@ import { BoundedBig } from "./value-objects/Bounded";
 import type { StatsProvider } from "@/models/Stats";
 import { BigNumber } from "./utils/BigNumber";
 import { Destroyable } from "./Destroyable";
-import { CombatManager } from "@/features/hunt/CombatManager";
 import { EffectInstance, EffectSpec } from "@/shared/types";
 import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
 
@@ -34,7 +33,6 @@ export abstract class BaseCharacter extends Destroyable {
 
     protected abilityMap: Map<string, Ability> = new Map();
     protected target?: BaseCharacter;
-    protected combatManager!: CombatManager;
     protected _charLevel: number = 1;
 
     /* ───────────────────── private fields ────────────────────── */
@@ -123,9 +121,8 @@ export abstract class BaseCharacter extends Destroyable {
 
     /* ───────────────────── combat lifecycle ──────────────────── */
 
-    public beginCombat(combatManager: CombatManager) {
+    public beginCombat() {
         //this.setToMaxHP();
-        this.combatManager = combatManager;
         this.inCombat = true;
         this.getActiveAbilities().forEach((a) => a.init()); // Init abilities
     }
@@ -156,6 +153,7 @@ export abstract class BaseCharacter extends Destroyable {
     // Each tick
     // Loop through abilities, tick time down.
     // If ready, create instance from Spec and submit it back to Combat Manager for Effect Processing.
+    // Note: Called from Combat Manager - Listened for on tick
     public getReadyEffects(dt: number): EffectInstance[] {
         const readyEffects: EffectInstance[] = [];
 

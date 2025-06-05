@@ -3,52 +3,55 @@ import { bus } from "@/core/EventBus";
 import { Area, AreaSpec } from "@/models/Area";
 import { Destroyable } from "@/models/Destroyable";
 import { MilestoneManager } from "@/models/MilestoneManager";
+import { StatsManager } from "@/models/StatsManager";
 import { MilestoneTag } from "@/shared/Milestones";
 import { bindEvent } from "@/shared/utils/busUtils";
 
 export class AreaManager extends Destroyable {
-	private readonly allAreas: AreaSpec[];
-	private unlocked = new Set<string>();
+    private readonly statsManager = StatsManager.instance;
 
-	constructor() {
-		super();
-		this.allAreas = Array.from(Area.specById.values());
+    private readonly allAreas: AreaSpec[];
+    private unlocked = new Set<string>();
 
-		this.checkAllUnlocks();
-		bindEvent(this.eventBindings, "milestone:achieved", () => this.checkAllUnlocks());
-		bindEvent(this.eventBindings, "game:gameLoaded", () => this.checkAllUnlocks());
-	}
+    constructor() {
+        super();
+        this.allAreas = Array.from(Area.specById.values());
 
-	private checkAllUnlocks() {
-		if (debugManager.get("hunt_allAreasOpen")) {
-		}
-		for (const spec of this.allAreas) {
-			// DEBUG - SET ALL AREAS TO OPEN
-			if (debugManager.get("hunt_allAreasOpen")) {
-				this.unlocked.add(spec.id);
-				continue;
-			}
-			const reqs: MilestoneTag[] = (spec.requires as MilestoneTag[]) || [];
-			if (!this.unlocked.has(spec.id) && MilestoneManager.instance.hasAll(reqs)) {
-				this.unlocked.add(spec.id);
-				bus.emit("hunt:areaUnlocked", spec.id);
-				printLog(`Area unlocked: ${spec.id} using Milestone Tags - ${reqs}`, 2, "AreaManager.ts");
-				console.log();
-			}
-		}
-	}
+        this.checkAllUnlocks();
+        bindEvent(this.eventBindings, "milestone:achieved", () => this.checkAllUnlocks());
+        bindEvent(this.eventBindings, "game:gameLoaded", () => this.checkAllUnlocks());
+    }
 
-	private handlePrestige() {}
+    private checkAllUnlocks() {
+        if (debugManager.get("hunt_allAreasOpen")) {
+        }
+        for (const spec of this.allAreas) {
+            // DEBUG - SET ALL AREAS TO OPEN
+            if (debugManager.get("hunt_allAreasOpen")) {
+                this.unlocked.add(spec.id);
+                continue;
+            }
+            const reqs: MilestoneTag[] = (spec.requires as MilestoneTag[]) || [];
+            if (!this.unlocked.has(spec.id) && MilestoneManager.instance.hasAll(reqs)) {
+                this.unlocked.add(spec.id);
+                bus.emit("hunt:areaUnlocked", spec.id);
+                printLog(`Area unlocked: ${spec.id} using Milestone Tags - ${reqs}`, 2, "AreaManager.ts");
+                console.log();
+            }
+        }
+    }
 
-	public getUnlockedAreas(): AreaSpec[] {
-		return this.allAreas.filter((a) => this.unlocked.has(a.id));
-	}
+    private handlePrestige() {}
 
-	public isUnlocked(areaId: string): boolean {
-		return this.unlocked.has(areaId);
-	}
+    public getUnlockedAreas(): AreaSpec[] {
+        return this.allAreas.filter((a) => this.unlocked.has(a.id));
+    }
 
-	public refresh() {
-		this.checkAllUnlocks();
-	}
+    public isUnlocked(areaId: string): boolean {
+        return this.unlocked.has(areaId);
+    }
+
+    public refresh() {
+        this.checkAllUnlocks();
+    }
 }

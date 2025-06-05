@@ -1,73 +1,78 @@
 [
-	{
-		"id": "basic_melee",
-		"displayName": "Slam",
-		"cooldown": 2,
-		"effects": [
-			{
-				"type": "physical",
-				"scale": 1.0,
-				"target": "enemy"
-			}
-		]
-	},
-	{
-		"id": "basic_heal",
-		"displayName": "Heal",
-		"cooldown": 5,
-		"effects": [
-			{
-				"type": "heal",
-				"scale": 0.1,
-				"target": "self"
-			}
-		]
-	},
-	{
-		"id": "root_snare",
-		"displayName": "Root Snare",
-		"cooldown": 4,
-		"effects": [
-			{
-				"type": "debuff",
-				"scale": 1.25,
-				"durationSeconds": 3,
-				"statKey": "speed",
-				"target": "enemy"
-			}
-		]
-	},
-	{
-		"id": "warrior_chage",
-		"displayName": "Warrior Charge",
-		"cooldown": 4,
-		"effects": [
-			{
-				"type": "physical",
-				"scale": 0.8,
-				"target": "enemy"
-			},
-			{
-				"type": "debuff",
-				"scale": 30,
-				"durationSeconds": 5,
-				"statKey": "power",
-				"target": "enemy"
-			}
-		]
-	},
-	{
-		"id": "bulward_defende",
-		"displayName": "Bulwark Defend",
-		"cooldown": 4,
-		"effects": [
-			{
-				"type": "buff",
-				"scale": 20,
-				"durationSeconds": 5,
-				"statKey": "guard",
-				"target": "enemy"
-			}
-		]
-	}
+    {
+        "id": "basic_melee",
+        "displayName": "Slam",
+        "cooldown": 2,
+        "startReady": false,
+        "effects": [
+            {
+                "type": "physical",
+                "scale": 1.0,
+                "target": "enemy"
+            }
+        ]
+    },
+    {
+        "id": "basic_heal",
+        "displayName": "Heal",
+        "cooldown": 5,
+        "startReady": false,
+        "effects": [
+            {
+                "type": "heal",
+                "scale": 0.1,
+                "target": "self"
+            }
+        ]
+    },
+    {
+        "id": "root_snare",
+        "displayName": "Root Snare",
+        "cooldown": 4,
+        "startReady": false,
+        "effects": [
+            {
+                "type": "debuff",
+                "scale": 1.25,
+                "durationSeconds": 3,
+                "statKey": "speed",
+                "target": "enemy"
+            }
+        ]
+    },
+    {
+        "id": "warrior_chage",
+        "displayName": "Warrior Charge",
+        "cooldown": 4,
+        "startReady": false,
+        "effects": [
+            {
+                "type": "physical",
+                "scale": 0.8,
+                "target": "enemy"
+            },
+            {
+                "type": "debuff",
+                "scale": 30,
+                "durationSeconds": 5,
+                "statKey": "power",
+                "target": "enemy"
+            }
+        ]
+    },
+    {
+        "id": "bulward_defende",
+        "displayName": "Bulwark Defend",
+        "cooldown": 10,
+        "startReady": true,
+        "effects": [
+            {
+                "type": "buff",
+                "scale": 20,
+                "durationSeconds": 3,
+                "statKey": "guard",
+                "target": "enemy"
+            }
+        ]
+    }
 ]

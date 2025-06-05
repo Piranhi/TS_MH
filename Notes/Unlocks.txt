@@ -1,0 +1,30 @@
+Boss Kills
+        "id": "treant" - "unlocks": ["hunt.boss.tier1"]
+        "id": "duskwolf_matriarch" - "unlocks": ["hunt.boss.tier2"]
+        "id": "mireback_behemoth" - "unlocks": ["hunt.boss.tier3"]
+        "id": "igneous_golem" - "unlocks": ["hunt.boss.tier4"]
+        "id": "graven_lich" - "unlocks": ["hunt.boss.tier5"]
+        "id": "rimefang_yeti" - "unlocks": ["hunt.boss.tier6"]
+        "id": "skyhammer_titan" - "unlocks": ["hunt.boss.tier7"]
+
+
+        "event": "building-built",
+        "id": "guild_hall",
+        "unlocks": ["building.guildHall"]
+    },
+    {
+        "event": "building-built",
+        "id": "blacksmith",
+        "unlocks": ["building.blacksmith"]
+    },
+    {
+        "event": "building-built",
+        "id": "mine",
+        "unlocks": ["building.mine"]
+    },
+    {
+        "event": "building-built",
+        "id": "library",
+        "unlocks": ["building.library"]
+    }
+]
