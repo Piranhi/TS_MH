@@ -225,3 +225,18 @@ export function getNextRarity(rarity: ItemRarity): ItemRarity {
     const idx = ITEM_RARITIES.indexOf(rarity);
     return ITEM_RARITIES[Math.min(idx + 1, ITEM_RARITIES.length - 1)];
 }
+
+// -------------------------- OUTPOSTS ----------------------------------------
+export interface OutpostSpec {
+    id: string;
+    areaId: string;
+    displayName: string;
+    description: string;
+    baseResourceRate: number;
+    maxLevel: number;
+    resourceTypes: string[];
+    levelUpCosts: {
+        baseCost: number;
+        multiplier: number;
+    };
+}

@@ -1,0 +1,28 @@
+[
+    {
+        "id": "forest_easy_outpost",
+        "areaId": "forest_easy",
+        "displayName": "Forest Outpost",
+        "description": "A small trading post in the peaceful woods",
+        "baseResourceRate": 1.0,
+        "maxLevel": 10,
+        "resourceTypes": ["wood", "herbs"],
+        "levelUpCosts": {
+            "baseCost": 100,
+            "multiplier": 1.5
+        }
+    },
+    {
+        "id": "duskwolf_grove_outpost",
+        "areaId": "duskwolf_grove",
+        "displayName": "Grove Outpost",
+        "description": "A fortified outpost watching over the dangerous grove",
+        "baseResourceRate": 1.2,
+        "maxLevel": 10,
+        "resourceTypes": ["pelts", "moonstone"],
+        "levelUpCosts": {
+            "baseCost": 5,
+            "multiplier": 1.3
+        }
+    }
+]
