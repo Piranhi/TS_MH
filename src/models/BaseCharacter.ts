@@ -7,7 +7,7 @@ import { Destroyable } from "./Destroyable";
 import { EffectInstance, EffectSpec } from "@/shared/types";
 import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
 
-export interface CharacterSnapsnot {
+export interface CharacterSnapshot {
     name: string;
     realHP: { current: string; max: string; percent: string };
     attack: string;
@@ -201,7 +201,7 @@ export abstract class BaseCharacter extends Destroyable {
     }
 
     // HELPER CLASSES
-    snapshot(): CharacterSnapsnot {
+    snapshot(): CharacterSnapshot {
         return {
             name: this.name,
             realHP: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },

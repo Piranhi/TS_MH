@@ -1,71 +1,42 @@
 <section class="game settlement-screen">
-
-
-
-  <template id="building-card">
-    <div class="building-card">
-      <div class="building-icon library"></div>
-      <div class="building-title">Library</div>
-      <div class="building-contents">test
-        <div class="building-level">Lv 2</div>
-        <button class="upgrade-btn">Upgrade</button>
-      </div>
-    </div>
-  </template>
-
-
-
-
-  <header class="settlement-header">
-    <div>
-      <span class="settlement-title">Settlement:</span>
-      <span class="settlement-name">Hunter’s Rest</span>
-    </div>
-    <div>
-      <span id="settlement-build-points">Build Points : N/A</span>
-    </div>
-  </header>
-
-  <div class="settlement-container">
-    <div class="settlement-main">
-      <main class="building-grid" id="settlement-building-grid">
-
-      </main>
-
-
-      <aside class="outposts-panel">
-        <h2>Outposts</h2>
-        <div class="outpost-row">
-          <div class="outpost-name">Forest</div>
-          <div class="outpost-level">Lv 3</div>
-          <div class="outpost-status skippable">Skippable</div>
-          <div class="outpost-relics"><span class="relic leaf"></span>6/10</div>
+    <template id="building-card">
+        <div class="building-card">
+            <div class="building-icon library"></div>
+            <div class="building-title">Library</div>
+            <div class="building-contents">
+                test
+                <div class="building-level">Lv 2</div>
+                <button class="upgrade-btn">Upgrade</button>
+            </div>
         </div>
-        <div class="outpost-row">
-          <div class="outpost-name">Tundra</div>
-          <div class="outpost-level">Lv 1</div>
-          <div class="outpost-status active">Active</div>
-          <div class="outpost-relics"><span class="relic snow"></span>2/8</div>
-        </div>
-        <div class="outpost-row">
-          <div class="outpost-name">Trophy</div>
-          <div class="outpost-level">Lv 0</div>
-          <div class="outpost-status locked">Locked</div>
-          <div class="outpost-relics"><span class="relic trophy"></span>0/6</div>
-        </div>
-        <button class="upgrade-outpost-btn">Upgrade Outpost</button>
-      </aside>
-    </div>
-    <footer class="settlement-footer">
-      <div class="settlement-passive-bar">
-        <div class="progress"></div>
-      </div>
-      <div class="footer-info">
-        <span id="settlement-reward-info">Reward x1.8</span>
-        <span class="dot-sep">•</span>
-        <span id="settlement-time-info">Peak in 3h</span>
-      </div>
-    </footer>
-  </div>
+    </template>
 
+    <header class="settlement-header">
+        <div>
+            <span class="settlement-title">Settlement:</span>
+            <span class="settlement-name">Hunter’s Rest</span>
+        </div>
+        <div>
+            <span id="settlement-build-points">Build Points : N/A</span>
+        </div>
+    </header>
+
+    <div class="settlement-container">
+        <div class="settlement-main">
+            <main
+                class="building-grid"
+                id="settlement-building-grid"
+            ></main>
+        </div>
+        <footer class="settlement-footer">
+            <div class="settlement-passive-bar">
+                <div class="progress"></div>
+            </div>
+            <div class="footer-info">
+                <span id="settlement-reward-info">Reward x1.8</span>
+                <span class="dot-sep">•</span>
+                <span id="settlement-time-info">Peak in 3h</span>
+            </div>
+        </footer>
+    </div>
 </section>

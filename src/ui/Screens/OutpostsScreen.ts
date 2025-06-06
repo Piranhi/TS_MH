@@ -1,9 +1,12 @@
 import { BaseScreen } from "./BaseScreen";
+import Markup from "./outposts.html?raw";
 
 export class OutpostsScreen extends BaseScreen {
-	readonly screenName = "outposts";
+    readonly screenName = "outposts";
 
-	init() {}
-	show() {}
-	hide() {}
+    init() {
+        this.addMarkuptoPage(Markup);
+    }
+    show() {}
+    hide() {}
 }

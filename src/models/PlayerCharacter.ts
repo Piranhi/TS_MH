@@ -1,4 +1,4 @@
-import { BaseCharacter, CharacterSnapsnot } from "./BaseCharacter";
+import { BaseCharacter, CharacterSnapshot } from "./BaseCharacter";
 import { StatsEngine } from "@/core/StatsEngine";
 import { bus } from "@/core/EventBus";
 import { PrestigeState } from "@/shared/stats-types";
@@ -131,7 +131,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
         return "/images/player/player-avatar-01.png";
     }
 
-    override snapshot(): CharacterSnapsnot {
+    override snapshot(): CharacterSnapshot {
         return {
             name: this.name,
             realHP: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },
