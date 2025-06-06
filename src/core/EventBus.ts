@@ -54,9 +54,10 @@ export interface GameEvents {
 	"classCard:levelUp": string;
 	"inventory:changed": void;
 	"inventory:dropped": string[];
-	"slot:drop": { fromId: string; toId: string };
-	"slot:drag-start": { slotId: string };
-	"slot:click": string;
+        "slot:drop": { fromId: string; toId: string };
+        "slot:drag-start": { slotId: string };
+        "slot:click": string;
+        "slot:dblclick": string;
 
 	"settlement:changed": void;
 	"settlement:buildPointsChanged": number;
