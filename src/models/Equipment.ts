@@ -2,6 +2,8 @@ import { EquipmentItemSpec, InventoryItemState, UpgradableItem } from "@/shared/
 import { SpecRegistryBase } from "./SpecRegistryBase";
 import { UpgradeCalculator } from "./UpgradeCalculator";
 import { bus } from "@/core/EventBus";
+import { StatsModifier } from "./Stats";
+import { scaleStatsModifier } from "@/shared/utils/stat-utils";
 
 export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements EquipmentItemSpec, UpgradableItem {
     readonly category = "equipment";
@@ -39,6 +41,13 @@ export class Equipment extends SpecRegistryBase<EquipmentItemSpec> implements Eq
 
     get statMod() {
         return this.spec.statMod;
+    }
+
+    /**
+     * Stat bonuses after applying rarity multiplier
+     */
+    public getBonuses(): StatsModifier {
+        return scaleStatsModifier(this.spec.statMod, this.rarity ?? "common");
     }
 
     toJSON() {
