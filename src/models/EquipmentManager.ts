@@ -4,7 +4,7 @@
 import { bus } from "@/core/EventBus";
 import { StatsModifier } from "@/models/Stats";
 import { Equipment } from "./Equipment";
-import { mergeStatModifiers, scaleStatsModifier } from "@/shared/utils/stat-utils";
+import { mergeStatModifiers } from "@/shared/utils/stat-utils";
 import { GameContext } from "@/core/GameContext";
 import { Destroyable } from "./Destroyable";
 
@@ -26,9 +26,9 @@ export class EquipmentManager extends Destroyable {
 		const equippedItems = this.getEquippedEquipment();
 
 		// Calculate total stat bonuses from equipment
-		const statBonuses = equippedItems
-			.map((eq) => scaleStatsModifier(eq.statMod, eq.rarity ?? "common"))
-			.reduce(mergeStatModifiers, {} as StatsModifier);
+                const statBonuses = equippedItems
+                        .map((eq) => eq.getBonuses())
+                        .reduce(mergeStatModifiers, {} as StatsModifier);
 
 		// Apply to character if we have an active run
 		if (this.context.currentRun) {
