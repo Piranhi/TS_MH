@@ -29,6 +29,7 @@ export class InventorySlot extends UIBase {
         this.bindDomEvent("mouseenter", (e) => this.handleMouseEnter());
         this.bindDomEvent("mouseleave", (e) => this.handleMouseLeave());
         this.bindDomEvent("click", (e) => this.handleClick());
+        this.bindDomEvent("dblclick", (e) => this.handleDoubleClick());
     }
 
     private handleMouseEnter() {
@@ -87,6 +88,9 @@ export class InventorySlot extends UIBase {
     }
     private handleClick() {
         bus.emit("slot:click", this.slotId);
+    }
+    private handleDoubleClick() {
+        bus.emit("slot:dblclick", this.slotId);
     }
 
     update(itemState: InventoryItemState | null) {

@@ -151,10 +151,32 @@ export class InventoryManager implements Saveable {
 			bus.emit("player:classCardsChanged", this.getEquippedCards());
 		}
 
-		return true;
-	}
+                return true;
+        }
 
-	public expandInventorySize(by: number) {
+        /**
+         * Automatically move an item from an inventory slot to the
+         * appropriate equipment or class card slot.
+         */
+        public autoEquip(fromId: string): boolean {
+                const from = this.getSlot(fromId);
+                if (!from || from.type !== "inventory" || !from.itemState) return false;
+
+                const spec = InventoryRegistry.getItemById(from.itemState.specId);
+                if (isEquipmentItemSpec(spec)) {
+                        const target = this.getSlot(`equipment-${spec.equipType}`);
+                        if (!target) return false;
+                        return this.moveItem(fromId, target.id);
+                }
+                if (spec.category === "classCard") {
+                        const cardSlot = this.getSlotsByType("classCard")[0];
+                        if (!cardSlot) return false;
+                        return this.moveItem(fromId, cardSlot.id);
+                }
+                return false;
+        }
+
+        public expandInventorySize(by: number) {
 		const start = this.slots.filter((s) => s.type === "inventory").length;
 		for (let i = 0; i < by; i++) {
 			this.slots.push(this.makeSlot("inventory", start + i));
