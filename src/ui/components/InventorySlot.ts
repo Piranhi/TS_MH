@@ -7,6 +7,7 @@ import { UIBase } from "./UIBase";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { isEquipmentItemSpec } from "@/shared/type-guards";
 import { StatsModifier } from "@/models/Stats";
+import { scaleStatsModifier } from "@/shared/utils/stat-utils";
 
 /** Pure UI component – no game logic */
 export class InventorySlot extends UIBase {
@@ -40,8 +41,12 @@ export class InventorySlot extends UIBase {
             // Now TypeScript knows this.spec is an EquipmentSpec
             const equipmentSpec = this.spec as EquipmentItemSpec;
 
-            // Prepare stat modifiers for display
-            const statModifiers = this.formatStatModifiers(equipmentSpec.statMod);
+            // Apply rarity scaling to stats for tooltip display
+            const scaled = scaleStatsModifier(
+                equipmentSpec.statMod,
+                this.itemState.rarity ?? "common",
+            );
+            const statModifiers = this.formatStatModifiers(scaled);
 
             Tooltip.instance.show(this.element, {
                 icon: this.spec.iconUrl,
