@@ -1,4 +1,4 @@
-import { debugManager, printLog } from "@/core/DebugManager";
+import { debugManager, type DebugOptions, printLog } from "@/core/DebugManager";
 import { bus } from "@/core/EventBus";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { PlayerCharacter } from "@/models/PlayerCharacter";
@@ -8,21 +8,96 @@ import { OfflineSession } from "@/models/OfflineProgress";
 import { BalanceDebug } from "@/balance/GameBalance";
 
 export class DebugMenu {
-	private rootEl!: HTMLElement;
-	constructor() {}
+        private rootEl!: HTMLElement;
+        private toggleBtn!: HTMLButtonElement;
+        constructor() {}
 
-	build() {
-		this.rootEl = document.getElementById("debug-menu")!;
-		this.rootEl.innerHTML = "";
-		this.addOptions();
-	}
+        build() {
+                this.rootEl = document.getElementById("debug-menu")!;
+                this.rootEl.innerHTML = "";
+                this.rootEl.classList.add("debug-panel");
+                this.rootEl.style.display = "none";
 
-	addOptions() {
-		const context = GameContext.getInstance();
-		this.addButton("Save", () => context.saves.saveAll());
-		this.addButton("Load", () => window.location.reload()); //saveManager.loadAll());
-		this.addButton("New Game", () => context.saves.startNewGame());
-		this.addButton("Add Renown", () => bus.emit("renown:award", new BigNumber(100000)));
+                this.buildToggleButton();
+                this.buildControls();
+                this.addActions();
+        }
+
+        private buildToggleButton() {
+                this.toggleBtn = document.createElement("button");
+                this.toggleBtn.id = "debug-toggle";
+                this.toggleBtn.textContent = "\uD83D\uDC1E"; // bug emoji
+                document.body.appendChild(this.toggleBtn);
+                this.toggleBtn.addEventListener("click", () => this.toggle());
+                document.addEventListener("keydown", (e) => {
+                        if (e.key === "F1") {
+                                e.preventDefault();
+                                this.toggle();
+                        }
+                });
+        }
+
+        private toggle() {
+                const visible = this.rootEl.style.display === "none";
+                this.rootEl.style.display = visible ? "block" : "none";
+        }
+
+        private buildControls() {
+                const options: { key: keyof DebugOptions; label: string; type: "bool" | "num"; step?: number }[] = [
+                        { key: "enemy_canAttack", label: "Enemy Can Attack", type: "bool" },
+                        { key: "enemy_canTakeDamage", label: "Enemy Takes Damage", type: "bool" },
+                        { key: "enemy_canDie", label: "Enemy Can Die", type: "bool" },
+                        { key: "hunt_allAreasOpen", label: "All Areas Open", type: "bool" },
+                        { key: "player_abilityCD", label: "Ability CD", type: "num", step: 0.1 },
+                        { key: "hunt_searchSpeed", label: "Search Speed", type: "num", step: 0.1 },
+                ];
+
+                options.forEach((opt) => {
+                        if (opt.type === "bool") {
+                                this.addToggle(opt.label, opt.key);
+                        } else {
+                                this.addNumber(opt.label, opt.key, opt.step ?? 1);
+                        }
+                });
+        }
+
+        private addToggle(label: string, key: keyof DebugOptions) {
+                const wrap = document.createElement("label");
+                wrap.classList.add("debug-option");
+                const input = document.createElement("input");
+                input.type = "checkbox";
+                input.checked = !!debugManager.get(key);
+                input.addEventListener("change", () => {
+                        debugManager.set(key, input.checked as any);
+                });
+                wrap.appendChild(input);
+                wrap.appendChild(document.createTextNode(label));
+                this.rootEl.appendChild(wrap);
+        }
+
+        private addNumber(label: string, key: keyof DebugOptions, step: number) {
+                const wrap = document.createElement("label");
+                wrap.classList.add("debug-option");
+                const span = document.createElement("span");
+                span.textContent = label + ": ";
+                const input = document.createElement("input");
+                input.type = "number";
+                input.step = String(step);
+                input.value = String(debugManager.get(key));
+                input.addEventListener("change", () => {
+                        debugManager.set(key, Number(input.value) as any);
+                });
+                wrap.appendChild(span);
+                wrap.appendChild(input);
+                this.rootEl.appendChild(wrap);
+        }
+
+        private addActions() {
+                const context = GameContext.getInstance();
+                this.addButton("Save", () => context.saves.saveAll());
+                this.addButton("Load", () => window.location.reload()); //saveManager.loadAll());
+                this.addButton("New Game", () => context.saves.startNewGame());
+                this.addButton("Add Renown", () => bus.emit("renown:award", new BigNumber(100000)));
 		//this.addButton("Kill Player", () => Player.getInstance().character?.takeDamage(new BigNumber(1000000)));
 		this.addButton("Kill Enemy", () => bus.emit("debug:killEnemy"));
 		this.addButton("Test Loot", () => {
@@ -50,9 +125,9 @@ export class DebugMenu {
 		this.addButton("Full Balance Check", () => BalanceDebug.runFullBalanceCheck());
 		this.addButton("Test Prestige Scaling", () => BalanceDebug.validatePrestigeBalance());
 		this.addButton("Progression Curves", () => BalanceDebug.logProgressionCurves());
-		//  Player.getInstance().inventory.addItemToInventory);
-		//this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));
-	}
+                //  Player.getInstance().inventory.addItemToInventory);
+                //this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));
+        }
 
 	private testOfflineSession() {
 		if (debugManager.debugEnabled) {
