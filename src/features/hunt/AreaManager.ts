@@ -1,4 +1,4 @@
-// AreaManager.ts - Updated to work with Outpost class
+// AreaManager.ts - Updated to work with SettlementManager for outposts
 import { debugManager, printLog } from "@/core/DebugManager";
 import { bus } from "@/core/EventBus";
 import { Area, AreaSpec } from "@/models/Area";
@@ -7,27 +7,23 @@ import { MilestoneManager } from "@/models/MilestoneManager";
 import { StatsManager } from "@/models/StatsManager";
 import { MilestoneTag } from "@/shared/Milestones";
 import { bindEvent } from "@/shared/utils/busUtils";
-import { Outpost } from "./Outpost";
-import { OutpostSpec } from "@/shared/types";
+import { GameContext } from "@/core/GameContext";
 
 export class AreaManager extends Destroyable {
     private readonly statsManager = StatsManager.instance;
-
     private readonly allAreas: AreaSpec[];
     private unlocked = new Set<string>();
-
-    // ✅ UPDATED: Outpost management
-    private outposts = new Map<string, Outpost>();
-    private availableOutposts = new Set<string>();
+    private context: GameContext;
 
     constructor() {
         super();
         this.allAreas = Array.from(Area.specById.values());
+        this.context = GameContext.getInstance();
 
         this.checkAllUnlocks();
         bindEvent(this.eventBindings, "milestone:achieved", () => this.checkAllUnlocks());
         bindEvent(this.eventBindings, "game:gameLoaded", () => this.checkAllUnlocks());
-        bindEvent(this.eventBindings, "hunt:bossKill", () => this.checkOutpostUnlocks());
+        bindEvent(this.eventBindings, "hunt:bossKill", ({ areaId }) => this.checkOutpostAvailability(areaId));
     }
 
     private checkAllUnlocks() {
@@ -48,105 +44,72 @@ export class AreaManager extends Destroyable {
             }
         }
 
-        this.checkOutpostUnlocks();
+        // Check all areas for outpost availability
+        this.checkAllOutpostAvailability();
     }
 
-    private checkOutpostUnlocks() {
-        for (const spec of this.allAreas) {
-            // Skip if already available or built
-            if (this.availableOutposts.has(spec.id) || this.hasOutpost(spec.id)) {
-                continue;
-            }
-
-            if (this.canBuildOutpost(spec.id)) {
-                this.availableOutposts.add(spec.id);
-
-                bus.emit("outpost:available", {
-                    areaId: spec.id,
-                    areaName: spec.displayName,
-                });
-
-                printLog(`Outpost available in: ${spec.displayName}`, 2, "AreaManager.ts");
-            }
-        }
-    }
-
-    private canBuildOutpost(areaId: string): boolean {
+    /**
+     * Check if an outpost can be built in a specific area
+     */
+    private checkOutpostAvailability(areaId: string) {
         const areaStats = this.statsManager.getAreaStats(areaId);
+        const settlement = this.context.settlement;
 
-        return this.unlocked.has(areaId) && areaStats.bossKillsTotal >= 10;
-    }
-
-    // ✅ UPDATED: Build outpost method
-    public buildOutpost(areaId: string): boolean {
-        if (!this.availableOutposts.has(areaId)) {
-            console.warn(`Outpost not available for area: ${areaId}`);
-            return false;
+        // Skip if not unlocked or already has outpost
+        if (!this.unlocked.has(areaId) || settlement.hasOutpost(areaId)) {
+            return;
         }
 
-        // ✅ Get outpost spec and create instance
-        const outpostSpec = this.getOutpostSpec(areaId);
-        if (!outpostSpec) {
-            console.error(`No outpost spec found for area: ${areaId}`);
-            return false;
+        // Check if requirements are met (e.g., 10 boss kills)
+        if (areaStats.bossKillsTotal >= 10) {
+            const areaSpec = this.allAreas.find((area) => area.id === areaId);
+
+            // Notify settlement that this outpost is available
+            bus.emit("outpost:available", {
+                areaId: areaId,
+                areaName: areaSpec?.displayName || areaId,
+            });
+
+            printLog(`Outpost available in: ${areaSpec?.displayName}`, 2, "AreaManager.ts");
         }
-
-        const outpost = Outpost.create(outpostSpec);
-        this.outposts.set(areaId, outpost);
-
-        // Remove from available (now built)
-        this.availableOutposts.delete(areaId);
-
-        const areaSpec = this.allAreas.find((area) => area.id === areaId);
-
-        // ✅ Trigger milestone for other systems
-        MilestoneManager.instance.processPersistent("outpost-built", areaId, {
-            areaName: areaSpec?.displayName,
-        });
-
-        // ✅ Emit specific outpost event
-        bus.emit("outpost:built", {
-            areaId: areaId,
-            areaName: areaSpec?.displayName,
-            outpost: outpost,
-        });
-
-        printLog(`Outpost built in: ${areaSpec?.displayName}`, 2, "AreaManager.ts");
-        return true;
     }
 
-    // ✅ NEW: Get outpost spec for an area
-    private getOutpostSpec(areaId: string): OutpostSpec | null {
-        // Option 1: Get from Outpost registry (like your other specs)
-        return Outpost.getSpec(areaId) ?? null;
-
-        // Option 2: Generate dynamically based on area
-        // const areaSpec = this.allAreas.find(area => area.id === areaId);
-        // return this.generateOutpostSpec(areaSpec);
+    /**
+     * Check all areas for outpost availability
+     */
+    private checkAllOutpostAvailability() {
+        for (const spec of this.allAreas) {
+            if (this.unlocked.has(spec.id)) {
+                this.checkOutpostAvailability(spec.id);
+            }
+        }
     }
 
-    // ✅ UPDATED: API methods for Outpost instances
-    public getAvailableOutposts(): string[] {
-        return Array.from(this.availableOutposts);
+    /**
+     * Get area modifiers (including outpost bonuses)
+     */
+    public getAreaModifiers(areaId: string) {
+        // Ask settlement for any outpost modifiers
+        return this.context.settlement.getAreaModifiers(areaId);
     }
 
-    public getBuiltOutposts(): string[] {
-        return Array.from(this.outposts.keys());
+    /**
+     * Check if player meets requirements to skip this area
+     */
+    public canSkipArea(areaId: string): boolean {
+        const modifiers = this.getAreaModifiers(areaId);
+        return modifiers.canSkipArea;
     }
 
-    public hasOutpost(areaId: string): boolean {
-        return this.outposts.has(areaId);
+    /**
+     * Get adjusted boss unlock requirement
+     */
+    public getBossUnlockRequirement(areaId: string): number {
+        const modifiers = this.getAreaModifiers(areaId);
+        return modifiers.killsToUnlockBoss;
     }
 
-    public getOutpost(areaId: string): Outpost | undefined {
-        return this.outposts.get(areaId);
-    }
-
-    public canPlayerBuildOutpost(areaId: string): boolean {
-        return this.availableOutposts.has(areaId);
-    }
-
-    // Your existing methods remain unchanged...
+    // Existing methods remain unchanged...
     public getUnlockedAreas(): AreaSpec[] {
         return this.allAreas.filter((a) => this.unlocked.has(a.id));
     }
@@ -159,12 +122,23 @@ export class AreaManager extends Destroyable {
         this.checkAllUnlocks();
     }
 
+    /**
+     * Apply area modifiers to drop rates
+     */
+    public getAdjustedDropRate(areaId: string, baseRate: number): number {
+        const modifiers = this.getAreaModifiers(areaId);
+        return baseRate * modifiers.dropRateMultiplier;
+    }
+
+    /**
+     * Apply area modifiers to experience
+     */
+    public getAdjustedExperience(areaId: string, baseExp: number): number {
+        const modifiers = this.getAreaModifiers(areaId);
+        return Math.floor(baseExp * modifiers.experienceMultiplier);
+    }
+
     public destroy() {
         super.destroy();
-        // ✅ Clean up outpost instances
-        for (const outpost of this.outposts.values()) {
-            outpost.destroy();
-        }
-        this.outposts.clear();
     }
 }
