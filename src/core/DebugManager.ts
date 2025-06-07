@@ -1,7 +1,7 @@
 const PRINT_VERBOSITY = 3;
 export type DebugType = "combat" | "settlement" | "player" | "offline";
 // Define all possible debug options and their types
-type DebugOptions = {
+export type DebugOptions = {
 	player_abilityCD: number;
 	enemy_canAttack: boolean;
 	enemy_canTakeDamage: boolean;
@@ -41,12 +41,17 @@ export class DebugManager {
 	}
 
 	// Get either the override (when enabled) or the default value
-	public get<K extends keyof DebugOptions>(key: K): DebugOptions[K] {
-		if (this.debugEnabled && key in this.overrides) {
-			return this.overrides[key] as DebugOptions[K];
-		}
-		return this.defaults[key];
-	}
+        public get<K extends keyof DebugOptions>(key: K): DebugOptions[K] {
+                if (this.debugEnabled && key in this.overrides) {
+                        return this.overrides[key] as DebugOptions[K];
+                }
+                return this.defaults[key];
+        }
+
+        // Update a debug option override
+        public set<K extends keyof DebugOptions>(key: K, value: DebugOptions[K]): void {
+                this.overrides[key] = value;
+        }
 
 	public setEnabled(enabled: boolean): void {
 		this.debugEnabled = enabled;
