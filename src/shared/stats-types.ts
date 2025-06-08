@@ -65,6 +65,9 @@ export const DEFAULT_PRESTIGE_STATS: PrestigeStats = {};
 export const DEFAULT_OUTPOST_STATS: OutpostStats = {};
 
 export const DEFAULT_AREA_STATS: AreaStats = {
+    areaUnlocked: false,
+    outpostAvailable: false,
+    outpostBuilt: false,
     killsTotal: 0,
     killsThisRun: 0,
     bossUnlockedEver: false,
