@@ -1,6 +1,6 @@
 import { bus } from "@/core/EventBus";
 import { Saveable } from "@/shared/storage-types";
-import { AreaStats, DEFAULT_AREA_STATS, DEFAULT_ENEMY_STATS, DEFAULT_GAME_STATS, DEFAULT_PRESTIGE_STATS, DEFAULT_USER_STATS, EnemyStats, GameStats, OutpostStats, PrestigeStats, UserStats } from "@/shared/stats-types";
+import { AreaStats, DEFAULT_AREA_STATS, DEFAULT_ENEMY_STATS, DEFAULT_GAME_STATS, DEFAULT_PRESTIGE_STATS, DEFAULT_USER_STATS, EnemyStats, GameStats, PrestigeStats, UserStats } from "@/shared/stats-types";
 
 interface StatsManagerSaveState {
     areaStats: [string, AreaStats][];
@@ -17,7 +17,6 @@ export class StatsManager implements Saveable {
     private gameStats: GameStats;
     private areaStats = new Map<string, AreaStats>();
     private enemyStats = new Map<string, EnemyStats>();
-    private outpostStats = new Map<string, OutpostStats>();
 
     private constructor() {
         this.userStats = { ...DEFAULT_USER_STATS };
@@ -36,6 +35,8 @@ export class StatsManager implements Saveable {
         bus.on("hunt:bossKill", ({ areaId }) => this.bossKill(areaId));
         bus.on("hunt:areaSelected", (areaId) => this.setAreaStats(areaId, this.getAreaStats(areaId)));
         bus.on("game:prestigePrep", () => this.prestigeInit());
+        bus.on("outpost:available", ({ areaId }) => this.markOutpostAvailable(areaId));
+        bus.on("outpost:built", ({ areaId }) => this.markOutpostBuilt(areaId));
     }
 
     // ------------------ SETTERS -----------------------
@@ -143,6 +144,28 @@ export class StatsManager implements Saveable {
         const stats = this.getUserStats();
         stats.level++;
         this.setUserStats(stats);
+    }
+
+    // ----- Outpost helpers -----
+    private markOutpostAvailable(areaId: string) {
+        const stats = this.getAreaStats(areaId);
+        stats.outpostAvailable = true;
+        this.setAreaStats(areaId, stats);
+    }
+
+    private markOutpostBuilt(areaId: string) {
+        const stats = this.getAreaStats(areaId);
+        stats.outpostBuilt = true;
+        stats.outpostAvailable = false;
+        this.setAreaStats(areaId, stats);
+    }
+
+    public isOutpostBuilt(areaId: string): boolean {
+        return this.getAreaStats(areaId).outpostBuilt ?? false;
+    }
+
+    public isOutpostAvailable(areaId: string): boolean {
+        return this.getAreaStats(areaId).outpostAvailable ?? false;
     }
 
     static get instance(): StatsManager {
