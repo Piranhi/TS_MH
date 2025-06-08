@@ -40,6 +40,19 @@ export interface BuildingSnapshot {
     nextUnlock: number;
 }
 
+export interface ResearchSpec {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    baseTime: number; // seconds required at base speed
+}
+
+export interface ResearchState {
+    progress: number;
+    unlocked: boolean;
+}
+
 // List as a readonly tuple
 export const CONSTRUCTION_RESOURCE_TYPES = ["stone", "metal"] as const;
 // Derive the union type automatically

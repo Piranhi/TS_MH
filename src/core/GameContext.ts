@@ -8,6 +8,7 @@ import { PlayerCharacter } from "@/models/PlayerCharacter";
 import { HuntManager } from "@/features/hunt/HuntManager";
 import { InventoryManager } from "@/features/inventory/InventoryManager";
 import { SettlementManager } from "@/features/settlement/SettlementManager";
+import { LibraryManager } from "@/features/settlement/LibraryManager";
 import { bus } from "./EventBus";
 import { SaveManager } from "./SaveManager";
 import { ScreenManager } from "./ScreenManager";
@@ -81,9 +82,13 @@ export class GameContext {
 		return this.services.inventoryManager;
 	}
 
-	public get settlement(): SettlementManager {
-		return this.services.settlementManager;
-	}
+        public get settlement(): SettlementManager {
+                return this.services.settlementManager;
+        }
+
+        public get library(): LibraryManager {
+                return this.services.libraryManager;
+        }
 
 	public get saves(): SaveManager {
 		return this.services.saveManager;

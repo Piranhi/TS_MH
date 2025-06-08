@@ -27,11 +27,11 @@
 		"icon": "",
 		"baseCost": 200
 	},
-	{
-		"id": "library",
-		"displayName": "Library",
-		"description": "Library todo",
-		"icon": "",
-		"baseCost": 200
-	}
+        {
+                "id": "library",
+                "displayName": "Library",
+                "description": "Study tomes to unlock powerful upgrades.",
+                "icon": "icons/library.png",
+                "baseCost": 200
+        }
 ]
