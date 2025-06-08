@@ -7,7 +7,7 @@ import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { Area } from "@/models/Area";
 import { Saveable } from "@/shared/storage-types";
 import { debugManager, printLog } from "@/core/DebugManager";
-import { Destroyable } from "@/models/Destroyable";
+import { Destroyable } from "@/core/Destroyable";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { AreaManager } from "./AreaManager";
 import { GameContext } from "@/core/GameContext";

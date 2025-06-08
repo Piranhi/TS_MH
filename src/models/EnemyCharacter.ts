@@ -15,9 +15,9 @@ export class EnemyCharacter extends BaseCharacter {
         this.spec = spec;
 
         // Debug Options
-        this.canAttack = debugManager.printDebug ? debugManager.enemyCanAttack : true;
-        this.canTakeDamage = debugManager.printDebug ? debugManager.enemyCanTakeDamage : true;
-        this.canDie = debugManager.printDebug ? debugManager.enemyCanDie : true;
+        this.canAttack = debugManager.get("enemy_canAttack");
+        this.canTakeDamage = debugManager.get("enemy_canTakeDamage");
+        this.canDie = debugManager.get("enemy_canDie");
     }
 
     override getAvatarUrl(): string {

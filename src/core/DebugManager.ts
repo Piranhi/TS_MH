@@ -2,6 +2,7 @@ const PRINT_VERBOSITY = 3;
 export type DebugType = "combat" | "settlement" | "player" | "offline";
 // Define all possible debug options and their types
 export type DebugOptions = {
+    player_overrideAbilityCD: boolean;
     player_abilityCD: number;
     enemy_canAttack: boolean;
     enemy_canTakeDamage: boolean;
@@ -20,6 +21,7 @@ export class DebugManager {
 
     constructor(
         defaults: DebugOptions = {
+            player_overrideAbilityCD: false,
             player_abilityCD: 1,
             enemy_canAttack: true,
             enemy_canTakeDamage: true,

@@ -3,6 +3,7 @@ import { Building } from "./Building";
 import { Saveable } from "@/shared/storage-types";
 import { BuildingType, BuildingUnlockStatus } from "@/shared/types";
 import { Outpost } from "../hunt/Outpost";
+import { GameBase } from "@/core/GameBase";
 
 interface SettlementSaveState {
     buildings: [BuildingType, Building][];
@@ -21,7 +22,7 @@ interface SettlementRewardSnapshot {
     earnedPoints: number;
 }
 
-export class SettlementManager implements Saveable {
+export class SettlementManager extends GameBase implements Saveable {
     // ── Passive-reward config ─────────────────────────────────────────────────
     private readonly rewardIntervalMs = 4000; // 8640000 for 10 in a day
     private readonly rewardIncrement = 0.1; // how much each interval gives
@@ -39,6 +40,7 @@ export class SettlementManager implements Saveable {
     private availableOutposts = new Set<string>();
 
     constructor() {
+        super();
         // When the game is ready, setup everything
         bus.on("game:gameReady", () => {
             // Setup variables for the first reward cycle:

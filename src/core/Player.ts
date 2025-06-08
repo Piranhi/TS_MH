@@ -5,9 +5,10 @@ import { bindEvent } from "@/shared/utils/busUtils";
 import { PrestigeState } from "@/shared/stats-types";
 import { BigNumber } from "@/models/utils/BigNumber";
 import { RegenPool } from "@/models/value-objects/RegenPool";
-import { Destroyable } from "@/models/Destroyable";
+import { Destroyable } from "@/core/Destroyable";
 import { StatsModifier } from "@/models/Stats";
 import { BalanceCalculators } from "@/balance/GameBalance";
+import { GameBase } from "./GameBase";
 
 interface PlayerSaveState {
     level: number;
@@ -29,7 +30,7 @@ const DEFAULT_PRESTIGE_STATE: PrestigeState = {
  * Player represents persistent player data that survives prestige.
  * All transient/run-specific data lives in GameRun instead.
  */
-export class Player extends Destroyable implements Saveable {
+export class Player extends GameBase implements Saveable {
     private static _instance: Player | null = null;
 
     // Persistent player stats
@@ -245,13 +246,6 @@ export class Player extends Destroyable implements Saveable {
         // Emit initial state
         this.emitStaminaChanged();
         bus.emit("renown:changed", this.renown);
-    }
-
-    // ================ CLEANUP ================
-
-    destroy() {
-        super.destroy();
-        this.stamina.destroy();
     }
 
     // DEBUG

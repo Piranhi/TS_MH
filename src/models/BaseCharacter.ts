@@ -3,7 +3,7 @@ import { Ability } from "./Ability";
 import { BoundedBig } from "./value-objects/Bounded";
 import type { StatsProvider } from "@/models/Stats";
 import { BigNumber } from "./utils/BigNumber";
-import { Destroyable } from "./Destroyable";
+import { Destroyable } from "../core/Destroyable";
 import { EffectInstance, EffectSpec } from "@/shared/types";
 import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
 
@@ -160,7 +160,7 @@ export abstract class BaseCharacter extends Destroyable {
         if (!this.inCombat || !this.canAttack) return readyEffects;
 
         this.getActiveAbilities().forEach((ability) => {
-            ability.reduceCooldown(debugManager.printDebug ? debugManager.DEBUG_CHARACTER_ABILITY_CD : dt); // TODO (multiply by speed)
+            ability.reduceCooldown(debugManager.get("player_overrideAbilityCD") ? debugManager.get("player_abilityCD") : dt); // TODO (multiply by speed)
             if (ability.isReady()) {
                 for (const effectSpec of ability.spec.effects) {
                     const raw: BigNumber = this.calculateRawValue(effectSpec);

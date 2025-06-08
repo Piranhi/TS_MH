@@ -2,7 +2,7 @@
 import { debugManager, printLog } from "@/core/DebugManager";
 import { bus } from "@/core/EventBus";
 import { Area, AreaSpec } from "@/models/Area";
-import { Destroyable } from "@/models/Destroyable";
+import { Destroyable } from "@/core/Destroyable";
 import { MilestoneManager } from "@/models/MilestoneManager";
 import { StatsManager } from "@/models/StatsManager";
 import { MilestoneTag } from "@/shared/Milestones";

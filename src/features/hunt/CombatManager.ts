@@ -6,7 +6,7 @@ import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { bus } from "../../core/EventBus";
 import { Area } from "@/models/Area";
 import { EffectProcessor } from "./EffectProcessor";
-import { Destroyable } from "@/models/Destroyable";
+import { Destroyable } from "@/core/Destroyable";
 import { GameContext } from "@/core/GameContext";
 import { BigNumber } from "@/models/utils/BigNumber";
 
