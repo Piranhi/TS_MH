@@ -8,6 +8,9 @@ import { SettlementManager } from "@/features/settlement/SettlementManager";
 import { StatsManager } from "@/models/StatsManager";
 import { MilestoneManager } from "@/models/MilestoneManager";
 import { OfflineProgressManager } from "@/models/OfflineProgress";
+import { LibraryManager } from "@/features/settlement/LibraryManager";
+import rawResearch from "@/data/research.json" assert { type: "json" };
+import { ResearchSpec } from "@/shared/types";
 
 export class GameServices {
 	private static _instance: GameServices;
@@ -20,7 +23,8 @@ export class GameServices {
 
 	// Persistent managers that survive prestige
 	public readonly inventoryManager: InventoryManager;
-	public readonly settlementManager: SettlementManager;
+        public readonly settlementManager: SettlementManager;
+        public readonly libraryManager: LibraryManager;
 
 	private constructor() {
 		this.saveManager = new SaveManager();
@@ -28,8 +32,10 @@ export class GameServices {
 		this.statsManager = StatsManager.instance;
 		this.milestoneManager = MilestoneManager.instance;
 		this.inventoryManager = new InventoryManager();
-		this.settlementManager = new SettlementManager();
-		this.offlineManager = new OfflineProgressManager();
+                this.settlementManager = new SettlementManager();
+                this.libraryManager = new LibraryManager();
+                this.libraryManager.registerResearch(rawResearch as ResearchSpec[]);
+                this.offlineManager = new OfflineProgressManager();
 	}
 
 	static getInstance(): GameServices {

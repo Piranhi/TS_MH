@@ -1,0 +1,23 @@
+[
+    {
+        "id": "xp_boost_1",
+        "name": "Basic Monster Lore",
+        "description": "Monsters yield 10% more experience.",
+        "icon": "icons/book1.png",
+        "baseTime": 600
+    },
+    {
+        "id": "resource_boost_1",
+        "name": "Efficient Gathering",
+        "description": "Prestiging grants 2% more permanent resources.",
+        "icon": "icons/book2.png",
+        "baseTime": 900
+    },
+    {
+        "id": "library_speed",
+        "name": "Improved Scribes",
+        "description": "Research speed increased by 10%.",
+        "icon": "icons/book3.png",
+        "baseTime": 1200
+    }
+]

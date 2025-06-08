@@ -1,0 +1,90 @@
+/* Library Screen styles */
+.library-page {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    width: 100%;
+}
+.library-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.library-section-header {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--primary-text, #fff);
+}
+.library-active-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 22px;
+    padding: 1rem 1.5rem;
+    backdrop-filter: blur(12px);
+}
+.library-research-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 0.5rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.07);
+}
+.library-research-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 12px;
+    font-size: 1.8rem;
+}
+.library-research-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.library-research-title {
+    font-weight: 500;
+}
+.library-right {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
+    padding: 1rem;
+}
+.library-completed-header {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.library-completed-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.library-upgrade-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+.library-upgrade-card {
+    background: rgba(255, 255, 255, 0.14);
+    padding: 1rem;
+    border-radius: 16px;
+    cursor: pointer;
+}
+.library-upgrade-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
