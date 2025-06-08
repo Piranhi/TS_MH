@@ -122,6 +122,15 @@ export class StatsManager implements Saveable {
         this.setAreaStats(areaId, areaStats);
     }
 
+    public unlockArea(areaId: string) {
+        const areaStats = this.getAreaStats(areaId);
+        if (!areaStats) return;
+        if (areaStats.areaUnlocked) return; // Already unlocked
+        areaStats.areaUnlocked = true;
+        this.setAreaStats(areaId, areaStats);
+        bus.emit("hunt:areaUnlocked", areaId);
+    }
+
     private bossKill(areaId: string) {
         const areaStats = this.getAreaStats(areaId);
         if (!areaStats) return;

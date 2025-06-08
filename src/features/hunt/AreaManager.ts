@@ -12,7 +12,6 @@ import { GameContext } from "@/core/GameContext";
 export class AreaManager extends Destroyable {
     private readonly statsManager = StatsManager.instance;
     private readonly allAreas: AreaSpec[];
-    private unlocked = new Set<string>();
     private context: GameContext;
 
     constructor() {
@@ -30,16 +29,18 @@ export class AreaManager extends Destroyable {
         // Your existing area unlock logic
         if (debugManager.get("hunt_allAreasOpen")) {
             for (const spec of this.allAreas) {
-                this.unlocked.add(spec.id);
+                this.statsManager.unlockArea(spec.id);
             }
             return;
         }
 
         for (const spec of this.allAreas) {
             const reqs: MilestoneTag[] = (spec.requires as MilestoneTag[]) || [];
-            if (!this.unlocked.has(spec.id) && MilestoneManager.instance.hasAll(reqs)) {
-                this.unlocked.add(spec.id);
-                bus.emit("hunt:areaUnlocked", spec.id);
+            const currentStats = this.statsManager.getAreaStats(spec.id);
+
+            // Check conditions but let StatsManager store the result
+            if (!currentStats.areaUnlocked && MilestoneManager.instance.hasAll(reqs)) {
+                this.statsManager.unlockArea(spec.id);
                 printLog(`Area unlocked: ${spec.id} using Milestone Tags - ${reqs}`, 2, "AreaManager.ts");
             }
         }
@@ -56,7 +57,7 @@ export class AreaManager extends Destroyable {
         const settlement = this.context.settlement;
 
         // Skip if not unlocked or already has outpost
-        if (!this.unlocked.has(areaId) || settlement.hasOutpost(areaId)) {
+        if (!this.statsManager.getAreaStats(areaId).areaUnlocked || settlement.hasOutpost(areaId)) {
             return;
         }
 
@@ -79,7 +80,7 @@ export class AreaManager extends Destroyable {
      */
     private checkAllOutpostAvailability() {
         for (const spec of this.allAreas) {
-            if (this.unlocked.has(spec.id)) {
+            if (this.statsManager.getAreaStats(spec.id).areaUnlocked) {
                 this.checkOutpostAvailability(spec.id);
             }
         }
@@ -111,11 +112,15 @@ export class AreaManager extends Destroyable {
 
     // Existing methods remain unchanged...
     public getUnlockedAreas(): AreaSpec[] {
-        return this.allAreas.filter((a) => this.unlocked.has(a.id));
+        return this.allAreas.filter((area) => {
+            const stats = this.statsManager.getAreaStats(area.id);
+            return stats.areaUnlocked; // ← Use this instead of this.unlocked.has()
+        });
     }
 
     public isUnlocked(areaId: string): boolean {
-        return this.unlocked.has(areaId);
+        const stats = this.statsManager.getAreaStats(areaId);
+        return stats?.areaUnlocked ?? false; // Safe fallback
     }
 
     public refresh() {
