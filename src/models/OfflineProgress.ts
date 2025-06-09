@@ -1,3 +1,32 @@
+/**
+ * offlineProgress.ts
+ *
+ * Handles detection of the player leaving the game (tab hidden / browser closed / app backgrounded)
+ * and calculates / applies idle rewards for each game subsystem (hunt, training, settlement ...).
+ *
+ * ───────────────────────────────────────────────────────────────────────────────
+ * MODULE STRUCTURE
+ *  1. Global configuration & shared types
+ *  2. OfflineTracker      – Detects when the player goes inactive
+ *  3. OfflineProgressManager – Coordinates calculators & shows modal
+ *  4. System calculators  – Hunt, Training, Settlement
+ *  5. Utility: Treasure chest calculation
+ *
+ * Keep‑Alives:
+ *  - All constants are grouped at the very top → easier balancing
+ *  - Every public class exposes a *tiny* surface area (single public method set)
+ *
+ * Simplification tip:
+ *  You can remove any subsystem you are not using yet by commenting its calculator in
+ *  registerCalculators() – nothing else needs to change.
+ *
+ * ───────────────────────────────────────────────────────────────────────────────
+ **/
+
+/* -------------------------------------------------------------------------- */
+/*                         1. GLOBAL CONFIG & TYPES                           */
+/* -------------------------------------------------------------------------- */
+
 import { GameContext } from "@/core/GameContext";
 import { OfflineProgressModal } from "@/ui/components/OfflineProgressModal";
 import { BigNumber } from "./utils/BigNumber";
@@ -6,33 +35,46 @@ import { PlayerCharacter } from "./PlayerCharacter";
 import { printLog } from "@/core/DebugManager";
 import { formatTime } from "@/shared/utils/stringUtils";
 import { bus } from "@/core/EventBus";
+import { GAME_BALANCE } from "@/balance/GameBalance";
+
+/**
+ * Reasons why we entered / left an offline state.
+ * Switched from a union‑string‑literal to a real enum for type‑safety & re‑usability.
+ */
+export enum OfflineReason {
+	Visibility = "visibility",
+	BeforeUnload = "beforeunload",
+	Startup = "startup",
+}
 
 export interface OfflineSession {
 	startTime: number;
 	endTime: number;
 	duration: number;
-	reason: "visibility" | "beforeunload" | "startup";
+	reason: OfflineReason;
 }
 
-export interface SystemOfflineCalculator {
-	calculateOfflineProgress(session: OfflineSession, context: GameContext): any;
-	applyOfflineProgress(progress: any, context: GameContext): void;
+/** Contract every subsystem must fulfil to support offline rewards. */
+export interface SystemOfflineCalculator<TProgress = unknown> {
+	/** Compute rewards; *never* mutate context here. */
+	calculateOfflineProgress(session: OfflineSession, context: GameContext): TProgress;
+	/** Apply rewards & side effects. */
+	applyOfflineProgress(progress: TProgress, context: GameContext): void;
 }
+
+/* --------------- Result DTOs returned by individual calculators ------------ */
 
 export interface OfflineProgressResult {
-	hunt: OfflineHuntProgress;
-	training: OfflineTrainingProgress;
-	settlement: OfflineSettlementProgress;
-	// Add more systems as needed
+	hunt?: OfflineHuntProgress;
+	training?: OfflineTrainingProgress;
+	settlement?: OfflineSettlementProgress;
+	research?: OfflineResearchProgress;
 }
 
 interface OfflineTreasureReward {
 	chestsEarned: number;
-	timeBreakdowns: Array<{
-		interval: string;
-		chestsFromInterval: number;
-	}>;
-	nextChestIn: number; // seconds until next chest if they stay offline
+	timeBreakdowns: Array<{ interval: string; chestsFromInterval: number }>;
+	nextChestIn: number; // secs
 }
 
 interface OfflineHuntProgress {
@@ -40,22 +82,39 @@ interface OfflineHuntProgress {
 	renownGained: BigNumber;
 	experienceGained: BigNumber;
 	treasureChests: number;
-	treasureBreakdown: Array<{
-		interval: string;
-		chestsFromInterval: number;
-	}>;
-	nextChestIn: number; // seconds until next chest if they went back offline now
-	sessionDuration: number;
+	treasureBreakdown: OfflineTreasureReward["timeBreakdowns"];
+	nextChestIn: number;
+	sessionDuration: number; // ms
 	areaName: string;
-	efficiency: number; // 0.8 = 80% efficiency vs online play
+	efficiency: number; // 0.8 → 80 %
+}
+
+// Define the research progress interface
+interface OfflineResearchProgress {
+	researchCompleted: Array<{
+		id: string;
+		name: string;
+		startProgress: number;
+		endProgress: number;
+		completed: boolean;
+	}>;
+	researchInProgress: Array<{
+		id: string;
+		name: string;
+		progressGained: number;
+		percentComplete: number;
+	}>;
+	totalCompleted: number;
+	hasAnyProgress: boolean;
+	offlineSeconds: number;
 }
 
 interface OfflineTrainingProgress {
 	statsProgressed: Record<
 		string,
 		{
-			offlineSeconds: number; // ← Add this (the time to pass to handleTick)
-			estimatedLevels: number; // ← Keep this for display in modal
+			offlineSeconds: number;
+			estimatedLevels: number;
 			startLevel: number;
 			endLevel: number;
 			statName: string;
@@ -66,17 +125,12 @@ interface OfflineTrainingProgress {
 }
 
 interface OfflineSettlementProgress {
-	// If you have buildings that generate resources over time
-	resourcesGenerated: Record<string, number>; // { "wood": 150, "stone": 75 }
-
-	// If buildings can be constructed/upgraded over time
+	resourcesGenerated: Record<string, number>;
 	buildingsCompleted: Array<{
 		buildingId: string;
 		buildingName: string;
 		level: number;
 	}>;
-
-	// If you have research that progresses over time
 	researchProgress: Record<
 		string,
 		{
@@ -85,602 +139,604 @@ interface OfflineSettlementProgress {
 			researchName: string;
 		}
 	>;
-
-	// MINING
-	miningProgress: Record<
-		string,
-		{
-			resourceType: string;
-			amountReady: number;
-			maxCapacity: number;
-			isFull: boolean;
-		}
-	>;
-
+	miningProgress: Record<string, { resourceType: string; amountReady: number; maxCapacity: number; isFull: boolean }>;
 	hasAnyProgress: boolean;
 }
 
-export class OfflineTracker {
-	private readonly timeTillOffline = 1800000;
-	private readonly timeSinceLastSaveCheck = 120000;
+/* -------------------------------------------------------------------------- */
+/*                             2. OFFLINE TRACKER                             */
+/* -------------------------------------------------------------------------- */
 
+/**
+ * Stays alive at all times and notifies the OfflineProgressManager once a
+ * player session transitions into or out of an "offline" state.
+ */
+export class OfflineTracker {
 	private isOffline = false;
-	private offlineStartTime: number = 0;
-	private lastActiveTime: number = Date.now();
-	private visibilityStartTime = 0;
-	private pauseTimeout?: number;
+	private offlineStart = 0;
+	private lastActive = Date.now();
+	private hideTimestamp = 0;
+	private pauseTimer?: ReturnType<typeof setTimeout>;
 
 	constructor() {
 		this.setupEventListeners();
 	}
 
+	/**
+	 * Initializes startup check for offline rewards from previous session.
+	 * Checks if enough time has passed since last save to warrant offline rewards.
+	 */
 	public initializeStartupCheck() {
-		this.checkForOfflineOnStartup();
+		const lastSave = this.getLastSaveTime();
+		const idleTime = Date.now() - lastSave;
+		if (idleTime > GAME_BALANCE.offline.startupStaleTime_MS) {
+			this.handleOfflineSession({
+				startTime: lastSave,
+				endTime: Date.now(),
+				duration: idleTime,
+				reason: OfflineReason.Startup,
+			});
+		}
 	}
 
+	/* -------------------------- Event Registration ------------------------- */
+
+	/**
+	 * Sets up all browser and mobile event listeners for detecting when player goes offline.
+	 * Includes visibility API, mobile pause/resume events, and beforeunload.
+	 */
 	private setupEventListeners() {
-		// PRIMARY: Tab visibility (use delayed logic)
-		document.addEventListener("visibilitychange", () => {
-			if (document.hidden) {
-				this.handleVisibilityHidden();
-			} else {
-				this.handleVisibilityVisible();
-			}
-		});
+		document.addEventListener("visibilitychange", () => (document.hidden ? this.onTabHidden() : this.onTabVisible()));
 
-		// MOBILE: App backgrounding (immediate pause - mobile OS throttles aggressively)
-		document.addEventListener("pause", () => {
-			console.log("[OfflineTracker] Mobile app paused");
-			this.startOfflineSession("visibility");
-		});
+		// Cordova / Capacitor emit these on mobile.
+		document.addEventListener("pause", () => this.startOffline(OfflineReason.Visibility));
+		document.addEventListener("resume", () => this.endOffline(OfflineReason.Visibility));
 
-		document.addEventListener("resume", () => {
-			console.log("[OfflineTracker] Mobile app resumed");
-			if (this.isOffline) {
-				this.endOfflineSession("visibility");
-			}
-		});
-
-		// BROWSER CLOSING: Immediate (no delay needed)
-		window.addEventListener("beforeunload", () => {
-			this.startOfflineSession("beforeunload");
-		});
+		// Browser window / tab about to close.
+		window.addEventListener("beforeunload", () => this.startOffline(OfflineReason.BeforeUnload));
 	}
 
-	private handleVisibilityHidden() {
-		this.visibilityStartTime = Date.now();
-		console.log("[OfflineTracker] Tab hidden, starting countdown...");
+	/* --------------------------- Visibility Logic -------------------------- */
 
-		// Set a timer to pause after threshold
-		this.pauseTimeout = setTimeout(() => {
-			console.log("[OfflineTracker] Threshold reached, pausing systems");
-			this.startOfflineSession("visibility");
-		}, this.timeTillOffline);
+	/**
+	 * Handles tab becoming hidden. Starts a timer that will trigger offline mode
+	 * after the configured threshold time.
+	 */
+	private onTabHidden() {
+		this.hideTimestamp = Date.now();
+		this.pauseTimer = setTimeout(() => this.startOffline(OfflineReason.Visibility), GAME_BALANCE.offline.offlineThreshold_MS);
 	}
 
-	private handleVisibilityVisible() {
-		console.log("[OfflineTracker] Tab visible again");
-
-		// Cancel the pause timer if we come back quickly
-		if (this.pauseTimeout) {
-			clearTimeout(this.pauseTimeout);
-			this.pauseTimeout = undefined;
-			console.log("[OfflineTracker] Quick return - no pause needed");
+	/**
+	 * Handles tab becoming visible again. Cancels pending offline timer if player
+	 * returns quickly, or ends offline session if they were truly offline.
+	 */
+	private onTabVisible() {
+		// 1) Player came back quickly → just cancel timer.
+		if (this.pauseTimer) {
+			clearTimeout(this.pauseTimer);
+			this.pauseTimer = undefined;
 		}
-
-		// End offline session if we were actually offline
-		if (this.isOffline) {
-			this.endOfflineSession("visibility");
-		}
+		// 2) …or they were truly gone → stop offline session & hand over to manager.
+		if (this.isOffline) this.endOffline(OfflineReason.Visibility);
 	}
 
-	private checkForOfflineOnStartup() {
-		const lastSaveTime = this.getLastSaveTime();
-		const now = Date.now();
-		const timeDiff = now - lastSaveTime;
+	/* --------------------------- State Transitions ------------------------- */
 
-		// If more than 2 minutes since last save, assume we were offline
-		if (timeDiff > this.timeSinceLastSaveCheck) {
-			const offlineSession: OfflineSession = {
-				startTime: lastSaveTime,
-				endTime: now,
-				duration: timeDiff,
-				reason: "startup",
-			};
-
-			this.handleOfflineSession(offlineSession);
-		}
-	}
-
-	private startOfflineSession(reason: OfflineSession["reason"]) {
-		if (this.isOffline) return; // Already offline
-
+	/**
+	 * Begins offline session. Saves current time, pauses game systems,
+	 * and marks the game as offline.
+	 */
+	private startOffline(reason: OfflineReason) {
+		if (this.isOffline) return;
 		this.isOffline = true;
-		this.offlineStartTime = Date.now();
-		this.saveCurrentTime(); // Save when we went offline
-
-		// Pause game systems to prevent double rewards
+		this.offlineStart = Date.now();
+		this.saveCurrentTime();
 		this.pauseGameSystems();
-
-		console.log(`[OfflineTracker] Started offline session: ${reason}`);
+		printLog(`▶ Offline (${reason})`, 3, "OfflineTracker", "offline");
 	}
 
-	private endOfflineSession(reason: OfflineSession["reason"]) {
-		if (!this.isOffline) return; // Wasn't offline
-
-		const now = Date.now();
-		const duration = now - this.offlineStartTime;
-
-		// Resume game systems first
+	/**
+	 * Ends offline session. Resumes game systems, calculates session duration,
+	 * and triggers offline reward processing if player was gone long enough.
+	 */
+	private endOffline(reason: OfflineReason) {
+		if (!this.isOffline) return;
 		this.resumeGameSystems();
-
 		this.isOffline = false;
-		this.lastActiveTime = now;
-
+		const now = Date.now();
 		const session: OfflineSession = {
-			startTime: this.offlineStartTime,
+			startTime: this.offlineStart,
 			endTime: now,
-			duration,
+			duration: now - this.offlineStart,
 			reason,
 		};
+		printLog(`◀ Online (${reason}) after ${formatTime(session.duration)}`, 3, "OfflineTracker", "offline");
 
-		console.log(`[OfflineTracker] Ended offline session: ${reason}, duration: ${duration}ms`);
-
-		// Only process if offline for more than 1 minute
-		// Should be 1800000 for 30 minutes (browser Throttling)
-		if (duration > this.timeTillOffline) {
-			this.handleOfflineSession(session);
-		}
+		// Only bother if player was actually away for 'offlineThreshold' or longer.
+		if (session.duration >= GAME_BALANCE.offline.offlineThreshold_MS) this.handleOfflineSession(session);
+		this.lastActive = now;
 	}
 
+	/* -------------------------- Helper Shortcuts -------------------------- */
+
+	/**
+	 * Pauses all active game systems by notifying the offline manager.
+	 */
 	private pauseGameSystems() {
-		// Pause hunt progress, training, etc.
-		const context = GameContext.getInstance();
-		context.services.offlineManager.pauseActiveSystems();
+		GameContext.getInstance().services.offlineManager.pauseActiveSystems();
 	}
 
+	/**
+	 * Resumes all paused game systems by notifying the offline manager.
+	 */
 	private resumeGameSystems() {
-		const context = GameContext.getInstance();
-		context.services.offlineManager.resumeActiveSystems();
+		GameContext.getInstance().services.offlineManager.resumeActiveSystems();
 	}
 
+	/**
+	 * Passes offline session to the manager for processing rewards.
+	 */
 	private handleOfflineSession(session: OfflineSession) {
-		// Delegate to the centralized offline manager
-		const offlineManager = OfflineProgressManager.getInstance();
-		offlineManager.processOfflineSession(session);
+		// Access through GameContext services instead of singleton
+		GameContext.getInstance().services.offlineManager.processOfflineSession(session);
 	}
 
-	private getLastSaveTime(): number {
-		const context = GameContext.getInstance();
-		return context.saves.getLastActiveTime();
+	/**
+	 * Gets the last saved timestamp from the game's save system.
+	 */
+	private getLastSaveTime() {
+		return GameContext.getInstance().saves.getLastActiveTime();
 	}
 
+	/**
+	 * Updates the last active time in the game's save system.
+	 */
 	private saveCurrentTime() {
-		const context = GameContext.getInstance();
-		context.saves.updateLastActiveTime();
-		// Note: This doesn't trigger full save, just updates the timestamp
-		// Full save happens every 30 seconds anyway
+		GameContext.getInstance().saves.updateLastActiveTime();
 	}
 
-	// Public API
-	public getTimeSinceLastActive(): number {
-		return Date.now() - this.lastActiveTime;
+	/* ----------------------------- Public API ----------------------------- */
+
+	/**
+	 * Returns milliseconds since the player was last active.
+	 */
+	public getTimeSinceLastActive() {
+		return Date.now() - this.lastActive;
 	}
 
-	public isCurrentlyOffline(): boolean {
+	/**
+	 * Returns whether the game is currently in offline mode.
+	 */
+	public isCurrentlyOffline() {
 		return this.isOffline;
 	}
 }
 
-export class OfflineProgressManager {
-	private static _instance: OfflineProgressManager;
-	private calculators = new Map<string, SystemOfflineCalculator>();
-	private offlineTracker: OfflineTracker;
-	private systemsPaused = false;
+/* -------------------------------------------------------------------------- */
+/*                         3. OFFLINE PROGRESS MANAGER                        */
+/* -------------------------------------------------------------------------- */
 
-	constructor() {
-		this.offlineTracker = new OfflineTracker();
+/**
+ * Singleton that owns:
+ *  - A registry of "sub‑system calculators".
+ *  - The modal that shows rewards to the player.
+ *
+ * Add new idle systems by implementing `SystemOfflineCalculator` and calling
+ * `registerCalculators` in the constructor.
+ */
+export class OfflineProgressManager {
+	private readonly calculators = new Map<keyof OfflineProgressResult, SystemOfflineCalculator<unknown>>();
+	private readonly tracker = new OfflineTracker();
+	private systemsPaused = false;
+	private initialized = false;
+
+	private constructor() {
 		this.registerCalculators();
 	}
 
+	/**
+	 * Initialize the offline progress system after GameContext is ready.
+	 * This should be called from GameApp after all core systems are initialized.
+	 * NOTE: Method name has typo to match existing GameApp.ts call
+	 */
 	public initalize() {
-		this.offlineTracker.initializeStartupCheck();
+		if (this.initialized) return;
+		this.initialized = true;
+		this.tracker.initializeStartupCheck();
 	}
 
+	/* ---------------------------- Registration ---------------------------- */
+
+	/**
+	 * Registers all subsystem calculators. Comment out any systems you haven't
+	 * implemented yet to disable their offline progress.
+	 */
 	private registerCalculators() {
 		this.calculators.set("hunt", new OfflineHuntCalculator());
 		this.calculators.set("training", new OfflineTrainingCalculator());
-		//this.calculators.set("settlement", new OfflineSettlementCalculator());
+		this.calculators.set("research", new OfflineResearchCalculator());
+		// this.calculators.set("settlement", new OfflineSettlementCalculator());
 	}
 
+	/* -------------------------- Pause / Resume ---------------------------- */
+
+	/**
+	 * Pauses all active game systems and emits a pause event.
+	 */
 	public pauseActiveSystems() {
 		this.systemsPaused = true;
-		printLog("Systems Paused", 3, "OfflineProgress.ts", "offline");
 		bus.emit("game:systemsPaused");
 	}
 
+	/**
+	 * Resumes all paused game systems and emits a resume event.
+	 */
 	public resumeActiveSystems() {
-		printLog("Systems Resumed", 3, "OfflineProgress.ts", "offline");
 		this.systemsPaused = false;
 		bus.emit("game:systemsResumed");
 	}
 
-	public areSystemsPaused(): boolean {
+	/**
+	 * Returns whether game systems are currently paused.
+	 */
+	public areSystemsPaused() {
 		return this.systemsPaused;
 	}
 
+	/* ------------------------- Session Processing ------------------------ */
+
+	/**
+	 * Processes an offline session by calculating rewards for each subsystem
+	 * and showing the results modal to the player.
+	 */
 	public processOfflineSession(session: OfflineSession) {
 		const context = GameContext.getInstance();
-		const results: Partial<OfflineProgressResult> = {};
-		printLog(
-			`Processing Offline Session: Offline for ${formatTime(session.duration)}, reason: ${session.reason}`,
-			3,
-			"OfflineProgress.ts",
-			"offline"
-		);
-		// Calculate progress for each system with proper typing
-		for (const [systemName, calculator] of this.calculators) {
+		const results: OfflineProgressResult = {} as OfflineProgressResult;
+
+		// Calculate rewards for each registered subsystem
+		for (const [name, calc] of this.calculators) {
 			try {
-				const progress = calculator.calculateOfflineProgress(session, context);
-
-				// Type-safe assignment
-				switch (systemName) {
-					case "hunt":
-						results.hunt = progress as OfflineHuntProgress;
-						printLog(`Hunt:  ${JSON.stringify(results.hunt)}`, 3, "OfflineProgress.ts", "offline");
-						break;
-					case "training":
-						results.training = progress as OfflineTrainingProgress;
-						printLog(`Training:  ${JSON.stringify(results.training)}`, 3, "OfflineProgress.ts", "offline");
-
-						break;
-					case "settlement":
-						results.settlement = progress as OfflineSettlementProgress;
-						break;
-					default:
-						console.warn(`Unknown system: ${systemName}`);
-				}
-			} catch (error) {
-				console.error(`Error calculating offline progress for ${systemName}:`, error);
+				// TS keeps type safety because `name` is keyof OfflineProgressResult
+				// and we cast calc to the matching interface when retrieving.
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(results as any)[name] = calc.calculateOfflineProgress(session, context);
+			} catch (err) {
+				console.error(`⚠️ Error while calculating ${name}:`, err);
 			}
 		}
 
-		this.showOfflineProgressModal(session, results);
+		this.showOfflineModal(session, results);
 	}
 
-	// SHOW MODAL
-	private showOfflineProgressModal(session: OfflineSession, results: Partial<OfflineProgressResult>) {
-		console.log("[OfflineProgressManager] Attempting to show modal with results:", results);
-
+	/**
+	 * Creates and displays the offline progress modal with calculated rewards.
+	 */
+	private showOfflineModal(session: OfflineSession, results: OfflineProgressResult) {
 		try {
-			const modal = new OfflineProgressModal(session, results);
-			modal.show();
-			console.log("[OfflineProgressManager] Modal show() called successfully");
-		} catch (error) {
-			console.error("[OfflineProgressManager] Error showing modal:", error);
+			new OfflineProgressModal(session, results).show();
+		} catch (err) {
+			console.error("⚠️ Could not show OfflineProgressModal:", err);
 		}
 	}
 
-	public applyOfflineRewards(results: Partial<OfflineProgressResult>) {
+	/**
+	 * Applies all offline rewards when player confirms the modal.
+	 * Called from UI after player clicks "Accept" on the modal.
+	 */
+	public applyOfflineRewards(results: OfflineProgressResult) {
 		const context = GameContext.getInstance();
 
-		// Apply rewards with proper typing
-		if (results.hunt) {
-			const huntCalculator = this.calculators.get("hunt") as OfflineHuntCalculator;
-			huntCalculator?.applyOfflineProgress(results.hunt, context);
+		// Apply rewards for each subsystem
+		for (const [name, calc] of this.calculators) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const progress = (results as any)[name];
+			if (progress) calc.applyOfflineProgress(progress, context);
 		}
 
-		if (results.training) {
-			const trainingCalculator = this.calculators.get("training") as OfflineTrainingCalculator;
-			trainingCalculator?.applyOfflineProgress(results.training, context);
-		}
-
-		if (results.settlement) {
-			//const settlementCalculator = this.calculators.get("settlement") as OfflineSettlementCalculator;
-			//settlementCalculator?.applyOfflineProgress(results.settlement, context);
-		}
-
-		// Save the game after applying all rewards
 		context.saves.saveAll();
-	}
-
-	static getInstance(): OfflineProgressManager {
-		if (!OfflineProgressManager._instance) {
-			OfflineProgressManager._instance = new OfflineProgressManager();
-		}
-		return OfflineProgressManager._instance;
 	}
 }
 
-// Hunt system calculator
-class OfflineHuntCalculator implements SystemOfflineCalculator {
-	private getOfflineEfficiency(context: GameContext): number {
-		let baseEfficiency = 0.8; // 80% base
+/* -------------------------------------------------------------------------- */
+/*                        4. SYSTEM‑SPECIFIC CALCULATORS                      */
+/* -------------------------------------------------------------------------- */
 
-		// Example upgrades:
-		// if (context.settlement.hasBuilding("training_grounds")) baseEfficiency += 0.1;
-		// if (context.inventory.hasItem("offline_training_manual")) baseEfficiency += 0.05;
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ H U N T   S Y S T E M ~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-		return Math.min(1.0, baseEfficiency); // Cap at 100%
-	}
+class OfflineHuntCalculator implements SystemOfflineCalculator<OfflineHuntProgress> {
+	private readonly treasure = new OfflineTreasureCalculator();
 
+	/**
+	 * Calculates offline hunting progress including enemies killed, renown gained,
+	 * experience earned, and treasure chests found.
+	 */
 	calculateOfflineProgress(session: OfflineSession, context: GameContext): OfflineHuntProgress {
-		const huntManager = context.currentRun?.huntManager;
-		const currentArea = huntManager?.getActiveArea() ?? null;
-
-		if (!currentArea) {
-			return this.createEmptyProgress(session.duration);
-		}
+		const area = context.currentRun?.huntManager.getActiveArea();
+		if (!area) return this.emptyProgress(session.duration);
 
 		const character = context.character;
 		const offlineSeconds = session.duration / 1000;
+		const avgKillTime = this.estimateKillTime(character, area);
+		const efficiency = GAME_BALANCE.offline.defaultOfflineEfficieny;
+		const kills = Math.floor((offlineSeconds / avgKillTime) * efficiency);
 
-		// Combat calculations
-		const avgKillTime = this.estimateKillTimeSimple(character, currentArea);
-		const efficiency = 0.8; // 80% offline efficiency
-		const totalKills = Math.floor((offlineSeconds / avgKillTime) * efficiency);
-
-		// Treasure calculations
-		const treasureCalc = new OfflineTreasureCalculator();
-		const treasureRewards = treasureCalc.calculateTreasureRewards(offlineSeconds);
+		const chests = this.treasure.calculateTreasureRewards(offlineSeconds);
 
 		return {
-			enemiesKilled: totalKills,
-			renownGained: this.calculateRenown(totalKills, currentArea),
-			experienceGained: new BigNumber(totalKills).multiply(currentArea.getXpPerKill(false)),
-			treasureChests: treasureRewards.chestsEarned,
-			treasureBreakdown: treasureRewards.timeBreakdowns,
-			nextChestIn: treasureRewards.nextChestIn,
+			enemiesKilled: kills,
+			renownGained: this.calcRenown(kills, area),
+			experienceGained: new BigNumber(kills).multiply(area.getXpPerKill(false)),
+			treasureChests: chests.chestsEarned,
+			treasureBreakdown: chests.timeBreakdowns,
+			nextChestIn: chests.nextChestIn,
 			sessionDuration: session.duration,
-			areaName: currentArea.displayName,
+			areaName: area.displayName,
 			efficiency,
 		};
 	}
 
-	private createEmptyProgress(duration: number): OfflineHuntProgress {
+	/**
+	 * Applies calculated hunting rewards to the game state.
+	 */
+	applyOfflineProgress(progress: OfflineHuntProgress, context: GameContext) {
+		context.player.adjustRenown(progress.renownGained);
+		context.character.gainXp(progress.experienceGained);
+
+		if (progress.treasureChests > 0) {
+			for (let i = 0; i < progress.treasureChests; i++) {
+				context.inventory.addLootById("basic_treasure_chest");
+			}
+		}
+	}
+
+	/* ---------------------------- Helpers ---------------------------- */
+
+	/**
+	 * Calculates renown reward based on number of kills and area tier.
+	 */
+	private calcRenown(kills: number, area: Area) {
+		return new BigNumber(kills * area.tier);
+	}
+
+	/**
+	 * Estimates average time to kill an enemy. Currently uses a simple constant.
+	 * TODO: Make this dynamic based on player stats vs enemy stats.
+	 */
+	private estimateKillTime(_: PlayerCharacter, __: Area) {
+		return GAME_BALANCE.offline.offlineEstimatedKillTimeSec;
+	}
+
+	/**
+	 * Returns an empty progress object when no area is active.
+	 */
+	private emptyProgress(duration: number): OfflineHuntProgress {
 		return {
 			enemiesKilled: 0,
 			renownGained: new BigNumber(0),
 			experienceGained: new BigNumber(0),
 			treasureChests: 0,
 			treasureBreakdown: [],
-			nextChestIn: 30 * 60, // 30 minutes
+			nextChestIn: 30 * 60,
 			sessionDuration: duration,
-			areaName: "No Area",
+			areaName: "Unknown",
 			efficiency: 0,
 		};
 	}
-
-	// Probably don't need (but good to keep)
-	/* 	private estimateKillTime(character: PlayerCharacter, area: Area): number {
-		// Get a sample enemy from the area to estimate stats
-		const sampleEnemy = area.pickMonster(); // You might want a non-mutating version
-
-		// Simple DPS calculation
-		const playerAttack = character.attack;
-		const enemyHp = sampleEnemy.scaledStats.hp;
-		const enemyDefence = sampleEnergy.scaledStats.defence;
-
-		// Effective damage per attack (minimum 1)
-		const effectiveDamage = Math.max(1, playerAttack - enemyDefence * 0.1);
-
-		// Attacks needed to kill
-		const attacksNeeded = Math.ceil(enemyHp / effectiveDamage);
-
-		// Assume 1 attack per second + variance
-		const baseTimePerAttack = 1.0;
-		const estimatedKillTime = attacksNeeded * baseTimePerAttack;
-
-		// Add some randomness/inefficiency for offline play
-		const variance = 0.8 + Math.random() * 0.4; // 80-120% variance
-
-		return Math.max(5, estimatedKillTime * variance); // Minimum 5 seconds per kill
-	} */
-
-	// Alternative simpler version if you don't want to spawn enemies
-	private estimateKillTimeSimple(character: PlayerCharacter, area: Area): number {
-		// TODO - Work out better formala
-		/*
-		const playerAttack = character.attack;
-
-		// Use area scaling to estimate enemy stats
-		const baseEnemyHp = 100; // Adjust based on your game balance
-		const scaledEnemyHp = baseEnemyHp * area.spec.areaScaling.hp;
-
-		// Simple time calculation
-		const timeToKill = scaledEnemyHp / playerAttack;
-
-		// Cap between reasonable bounds
-		return Math.max(5, Math.min(300, timeToKill)); // 5 sec to 5 min per enemy
-		*/
-		return 30;
-	}
-
-	private calculateRenown(totalKills: number, area: Area): BigNumber {
-		if (totalKills === 0) return new BigNumber(0);
-		// Total renown calculation
-		const totalRenown = totalKills * area.tier;
-
-		return new BigNumber(totalRenown);
-	}
-
-	applyOfflineProgress(progress: OfflineHuntProgress, context: GameContext): void {
-		// Apply combat rewards
-		//context.player.gainExperience(progress.experienceGained);
-		context.player.adjustRenown(progress.renownGained);
-		context.character.gainXp(progress.experienceGained);
-
-		// Add treasure chests to inventory
-		const currentArea = context.currentRun?.huntManager.getActiveArea();
-		if (currentArea && progress.treasureChests > 0) {
-			// Add basic treasure chests - you can implement this however you want
-			for (let i = 0; i < progress.treasureChests; i++) {
-				context.inventory.addLootById("basic_treasure_chest"); // or whatever ID you use
-			}
-		}
-	}
 }
 
-// Training system calculator
-class OfflineTrainingCalculator implements SystemOfflineCalculator {
-	calculateOfflineProgress(session: OfflineSession, context: GameContext): OfflineTrainingProgress {
-		if (!context.currentRun?.trainedStats) {
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~ R E S E A R C H   S Y S T E M ~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+// The Research Calculator
+class OfflineResearchCalculator implements SystemOfflineCalculator<OfflineResearchProgress> {
+	/**
+	 * Calculates offline research progress for all active research.
+	 * Simulates the tick behavior to determine what would complete.
+	 */
+	calculateOfflineProgress(session: OfflineSession, context: GameContext): OfflineResearchProgress {
+		const library = context.library;
+		if (!library) {
 			return {
-				statsProgressed: {},
-				totalLevelsGained: 0,
+				researchCompleted: [],
+				researchInProgress: [],
+				totalCompleted: 0,
 				hasAnyProgress: false,
+				offlineSeconds: 0,
 			};
 		}
 
-		const trainedStats = context.currentRun.trainedStats;
 		const offlineSeconds = session.duration / 1000;
-		const progressMade: Record<string, any> = {};
-		let totalLevelsGained = 0;
+		const activeResearch = library.getActive();
+		const speedMultiplier = GAME_BALANCE.research.baseResearchSpeedMultiplier || 1;
 
-		for (const [statId, trainedStat] of trainedStats.stats) {
-			if (trainedStat.assignedPoints > 0) {
-				// Calculate what WOULD happen (for display purposes)
-				const potentialProgress = trainedStat.assignedPoints * trainedStat.baseGainRate * offlineSeconds;
-				const estimatedLevels = Math.floor(potentialProgress / trainedStat.nextThreshold);
+		const completed: OfflineResearchProgress["researchCompleted"] = [];
+		const inProgress: OfflineResearchProgress["researchInProgress"] = [];
 
-				progressMade[statId] = {
-					offlineSeconds, // Just store the time - much simpler!
-					estimatedLevels,
-					startLevel: trainedStat.level,
-					endLevel: trainedStat.level + estimatedLevels,
-					statName: trainedStat.name,
-				};
+		// Calculate progress for each active research
+		for (const research of activeResearch) {
+			const startProgress = research.progress;
+			const progressGain = offlineSeconds * speedMultiplier;
+			const endProgress = startProgress + progressGain;
+			const requiredTime = research.requiredTime;
 
-				totalLevelsGained += estimatedLevels;
+			if (endProgress >= requiredTime) {
+				// This research completed during offline
+				completed.push({
+					id: research.id,
+					name: research.name,
+					startProgress,
+					endProgress: requiredTime,
+					completed: true,
+				});
+			} else {
+				// Still in progress
+				inProgress.push({
+					id: research.id,
+					name: research.name,
+					progressGained: progressGain,
+					percentComplete: (endProgress / requiredTime) * 100,
+				});
 			}
 		}
 
 		return {
-			statsProgressed: progressMade,
-			totalLevelsGained,
-			hasAnyProgress: totalLevelsGained > 0,
+			researchCompleted: completed,
+			researchInProgress: inProgress,
+			totalCompleted: completed.length,
+			hasAnyProgress: completed.length > 0 || inProgress.length > 0,
+			offlineSeconds: offlineSeconds, // Pass along for apply phase
 		};
 	}
 
-	applyOfflineProgress(progress: OfflineTrainingProgress, context: GameContext): void {
+	/**
+	 * Applies calculated research progress by calling tick with the offline duration.
+	 * The LibraryManager's tick handler will automatically handle completion.
+	 */
+	applyOfflineProgress(progress: OfflineResearchProgress, context: GameContext) {
+		const library = context.library;
+		if (!library || !progress.hasAnyProgress) return;
+
+		// Use the offline seconds we stored during calculation
+		library.handleTick(progress.offlineSeconds);
+	}
+}
+
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~ T R A I N I N G   S Y S T E M ~~~~~~~~~~~~~~~~~~ */
+
+class OfflineTrainingCalculator implements SystemOfflineCalculator<OfflineTrainingProgress> {
+	/**
+	 * Calculates training progress for all stats with assigned points.
+	 * Progress is based on assigned points * offline time.
+	 */
+	calculateOfflineProgress(session: OfflineSession, context: GameContext): OfflineTrainingProgress {
+		const trainedStats = context.currentRun?.trainedStats;
+		if (!trainedStats) return { statsProgressed: {}, totalLevelsGained: 0, hasAnyProgress: false };
+
+		const offlineSeconds = session.duration / 1000;
+		const stats: OfflineTrainingProgress["statsProgressed"] = {};
+		let total = 0;
+
+		// Calculate progress for each stat with assigned points
+		for (const [id, stat] of trainedStats.stats) {
+			if (!stat.assignedPoints) continue;
+
+			// Calculate potential progress: assignedPoints * seconds
+			const potentialProgress = stat.assignedPoints * offlineSeconds;
+
+			// Level threshold is the stat's maxAssigned value (e.g., 60 for basic stats)
+			const levelThreshold = stat.getLevelThreshold();
+			const levels = Math.floor(potentialProgress / levelThreshold);
+
+			stats[id] = {
+				offlineSeconds,
+				estimatedLevels: levels,
+				startLevel: stat.level,
+				endLevel: stat.level + levels,
+				statName: stat.name,
+			};
+			total += levels;
+		}
+
+		return { statsProgressed: stats, totalLevelsGained: total, hasAnyProgress: total > 0 };
+	}
+
+	/**
+	 * Applies training progress by calling handleTick with the offline duration.
+	 * The TrainedStat class handles the actual leveling logic.
+	 */
+	applyOfflineProgress(progress: OfflineTrainingProgress, context: GameContext) {
 		const trainedStats = context.currentRun?.trainedStats;
 		if (!trainedStats) return;
 
-		for (const [statId, progressData] of Object.entries(progress.statsProgressed)) {
-			const trainedStat = trainedStats.stats.get(statId);
-			if (trainedStat && progressData.offlineSeconds > 0) {
-				// Just pass the offline time - let TrainedStat handle it naturally!
-				trainedStat.handleTick(progressData.offlineSeconds);
+		// Apply progress to each stat that had offline gains
+		for (const [id, info] of Object.entries(progress.statsProgressed)) {
+			const stat = trainedStats.stats.get(id);
+			if (stat && info.offlineSeconds > 0) {
+				// Let the TrainedStat handle the tick naturally
+				stat.handleTick(info.offlineSeconds);
 			}
 		}
 	}
 }
 
-class OfflineSettlementCalculator implements SystemOfflineCalculator {
-	calculateOfflineProgress(session: OfflineSession, context: GameContext): OfflineSettlementProgress {
-		const offlineSeconds = session.duration / 1000;
-		const miningProgress = {};
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~ S E T T L E M E N T   S Y S T E M ~~~~~~~~~~~~~~ */
 
-		// For each active mine
-		const activeMines = context.settlement.getActiveMines();
-		for (const mine of activeMines) {
-			const productionRate = mine.getProductionRate(); // per second
-			const maxCapacity = mine.getMaxCapacity();
-			const currentAmount = mine.getCurrentAmount();
-
-			const newAmount = Math.min(maxCapacity, currentAmount + productionRate * offlineSeconds);
-
-			miningProgress[mine.id] = {
-				resourceType: mine.resourceType,
-				amountReady: newAmount,
-				maxCapacity,
-				isFull: newAmount >= maxCapacity,
-			};
-		}
-
+/**
+ * Stub calculator for settlement system. Enable once mines, research, etc. are implemented.
+ */
+class OfflineSettlementCalculator implements SystemOfflineCalculator<OfflineSettlementProgress> {
+	/**
+	 * Calculates offline settlement progress. Currently returns empty progress.
+	 * TODO: Implement resource generation, building completion, research progress, etc.
+	 */
+	calculateOfflineProgress(): OfflineSettlementProgress {
 		return {
-			resourcesGenerated: 0,
-			buildingsCompleted: 0,
-			miningProgress,
-			hasAnyProgress: Object.keys(miningProgress).length > 0,
+			resourcesGenerated: {},
+			buildingsCompleted: [],
+			researchProgress: {},
+			miningProgress: {},
+			hasAnyProgress: false,
 		};
 	}
 
-	applyOfflineProgress(progress: OfflineTrainingProgress, context: GameContext): void {
-		// TODO
+	/**
+	 * Applies settlement progress. Currently does nothing.
+	 * TODO: Apply resource gains, complete buildings, advance research, etc.
+	 */
+	applyOfflineProgress(): void {
+		/* TODO: Implement when settlement systems are ready */
 	}
 }
 
-// ------------- TREASURE CHEST CALCULATOR --------------------
+/* -------------------------------------------------------------------------- */
+/*            5. UTILITY: TREASURE CHEST REWARD CALC (ESCALATING)             */
+/* -------------------------------------------------------------------------- */
 
 class OfflineTreasureCalculator {
-	// Escalating intervals in seconds
-	private readonly chestIntervals = [
-		30 * 60, // 30 minutes
-		60 * 60, // 1 hour
-		2 * 60 * 60, // 2 hours
-		4 * 60 * 60, // 4 hours
-		8 * 60 * 60, // 8 hours (cap - repeats every 8h after this)
-	];
+	private readonly intervals = GAME_BALANCE.offline.chestIntervalsSec;
 
+	/**
+	 * Calculates treasure chest rewards using an escalating interval system.
+	 * First chest at 30m, second at 1h, third at 2h, etc., then every 8h after.
+	 */
 	calculateTreasureRewards(offlineSeconds: number): OfflineTreasureReward {
-		let remainingTime = offlineSeconds;
-		let totalChests = 0;
-		const breakdown = [];
-		let intervalIndex = 0;
+		let time = offlineSeconds;
+		let earned = 0;
+		const breakdown: OfflineTreasureReward["timeBreakdowns"] = [];
 
-		// Work through each escalating interval
-		while (remainingTime > 0 && intervalIndex < this.chestIntervals.length) {
-			const currentInterval = this.chestIntervals[intervalIndex];
+		// Escalating Intervals: 30m, 1h, 2h, 4h, then every 8h.
+		for (let i = 0; i < this.intervals.length && time >= this.intervals[i]; i++) {
+			time -= this.intervals[i];
+			earned++;
+			breakdown.push({ interval: this.fmt(this.intervals[i]), chestsFromInterval: 1 });
+		}
 
-			if (remainingTime >= currentInterval) {
-				remainingTime -= currentInterval;
-				totalChests++;
-
+		// After all escalating intervals, use the longest interval repeatedly
+		if (time > 0) {
+			const long = this.intervals.at(-1)!;
+			const extra = Math.floor(time / long);
+			if (extra) {
+				earned += extra;
 				breakdown.push({
-					interval: this.formatInterval(currentInterval),
-					chestsFromInterval: 1,
+					interval: `${this.fmt(long)} ×${extra}`,
+					chestsFromInterval: extra,
 				});
-
-				intervalIndex++;
-			} else {
-				break; // Not enough time for next chest
+				time -= extra * long;
 			}
 		}
 
-		// After all intervals, repeat the longest one (8h cycles)
-		if (remainingTime > 0 && intervalIndex >= this.chestIntervals.length) {
-			const finalInterval = this.chestIntervals[this.chestIntervals.length - 1];
-			const additionalChests = Math.floor(remainingTime / finalInterval);
+		// Calculate time until next chest
+		const nextIn = (breakdown.length < this.intervals.length ? this.intervals[breakdown.length] : this.intervals.at(-1)!) - time;
 
-			if (additionalChests > 0) {
-				totalChests += additionalChests;
-				breakdown.push({
-					interval: `${this.formatInterval(finalInterval)} (×${additionalChests})`,
-					chestsFromInterval: additionalChests,
-				});
-				remainingTime -= additionalChests * finalInterval;
-			}
-		}
-
-		// Calculate when next chest would arrive
-		const nextInterval =
-			intervalIndex < this.chestIntervals.length
-				? this.chestIntervals[intervalIndex] - remainingTime
-				: this.chestIntervals[this.chestIntervals.length - 1] - remainingTime;
-
-		return {
-			chestsEarned: totalChests,
-			timeBreakdowns: breakdown,
-			nextChestIn: Math.max(0, nextInterval),
-		};
+		return { chestsEarned: earned, timeBreakdowns: breakdown, nextChestIn: nextIn };
 	}
 
-	private formatInterval(seconds: number): string {
-		const hours = Math.floor(seconds / 3600);
-		const minutes = Math.floor((seconds % 3600) / 60);
-
-		if (hours > 0) return `${hours}h`;
-		return `${minutes}m`;
+	/**
+	 * Formats seconds into a human-readable time string (e.g., "2h" or "30m").
+	 */
+	private fmt(sec: number) {
+		const h = Math.floor(sec / 3600);
+		const m = Math.floor((sec % 3600) / 60);
+		return h ? `${h}h` : `${m}m`;
 	}
 }
