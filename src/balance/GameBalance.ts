@@ -28,6 +28,7 @@ export const GAME_BALANCE = {
     player: {
         // XP system
         xpThresholdMultiplier: 1.75, // XP needed increases by 75% per level
+        baseAbilityCD: 1,
 
         // Level bonus growth rates (exponential)
         levelBonuses: {
@@ -123,6 +124,16 @@ export const GAME_BALANCE = {
         targetPrestigeHours: 2, // How many hours per prestige cycle
     },
 
+    // === OUTPOSTS SCALING ===
+
+    outpost: {
+        bossKillsNeededForUnlock: 10,
+        bossKillsNeededForSkip: 10,
+        outpostBuildCost: 100,
+        outpostBuildScaler: 1.5, // Each outpost costs 50% more than the last
+        outpostMaxLevel: 10, // Maximum level for outposts
+    },
+
     // === RESEARCH SCALING ===
     research: {
         // Research unlock costs
@@ -142,13 +153,14 @@ export const GAME_BALANCE = {
         // Base drop chances that scale with area tier
         baseDropChance: 0.01,
         dropDecayFactor: 0.9, // Drops get rarer in higher tiers
-        dropFloorChance: 0.005, // Minimum drop chance
+        dropFloorChance: 0.0005, // Minimum drop chance
     },
 
     // === HUNT BALANCE ===
     hunt: {
-        baseSearchTime: 5,
-        baseEncounterChance: 0.5,
+        baseSearchTime: 1, // Base time between encounter rolls in seconds
+        baseEncounterChance: 0.5, // Base chance to encounter a monster per search
+        enemiesNeededForBoss: 10, // How many enemies to defeat for a boss encounter
     },
 } as const;
 

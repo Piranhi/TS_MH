@@ -117,7 +117,7 @@ export class HuntManager extends Destroyable implements Saveable {
         // Local closure variable keeps track of an accumulated timer so that we roll
         // once per second independent of frame rate.
         let elapsed = 0;
-        const rollTime = GAME_BALANCE.hunt.baseSearchTime; //= debugManager.printDebug ? debugManager.DEBUG_HUNT_SEARCHSPEED : 1;
+        const rollTime = GAME_BALANCE.hunt.baseSearchTime;
 
         return {
             onEnter: () => {
@@ -219,7 +219,7 @@ export class HuntManager extends Destroyable implements Saveable {
     }
 
     private rollEncounter(): boolean {
-        const BASE_CHANCE = GAME_BALANCE.hunt.baseEncounterChance; //debugManager.printDebug ? 1 : 0.5;
+        const BASE_CHANCE = GAME_BALANCE.hunt.baseEncounterChance;
         return Math.random() < BASE_CHANCE;
     }
 

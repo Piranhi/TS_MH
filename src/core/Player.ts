@@ -5,7 +5,6 @@ import { bindEvent } from "@/shared/utils/busUtils";
 import { PrestigeState } from "@/shared/stats-types";
 import { BigNumber } from "@/models/utils/BigNumber";
 import { RegenPool } from "@/models/value-objects/RegenPool";
-import { Destroyable } from "@/core/Destroyable";
 import { StatsModifier } from "@/models/Stats";
 import { BalanceCalculators } from "@/balance/GameBalance";
 import { GameBase } from "./GameBase";

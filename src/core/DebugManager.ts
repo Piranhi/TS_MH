@@ -1,9 +1,10 @@
+import { GAME_BALANCE } from "@/balance/GameBalance";
+
 const PRINT_VERBOSITY = 3;
 export type DebugType = "combat" | "settlement" | "player" | "offline";
 // Define all possible debug options and their types
 export type DebugOptions = {
     player_overrideAbilityCD: boolean;
-    player_abilityCD: number;
     enemy_canAttack: boolean;
     enemy_canTakeDamage: boolean;
     enemy_canDie: boolean;
@@ -21,12 +22,11 @@ export class DebugManager {
 
     constructor(
         defaults: DebugOptions = {
-            player_overrideAbilityCD: false,
-            player_abilityCD: 1,
+            player_overrideAbilityCD: false, // TODO - Setup the player to have instant or fast CD's when this is true;
             enemy_canAttack: true,
             enemy_canTakeDamage: true,
             enemy_canDie: true,
-            hunt_searchSpeed: 1,
+            hunt_searchSpeed: GAME_BALANCE.hunt.baseSearchTime,
             hunt_allAreasOpen: false,
         },
         overrides: Partial<DebugOptions> = {},

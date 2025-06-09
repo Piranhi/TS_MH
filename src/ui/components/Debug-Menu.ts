@@ -48,7 +48,6 @@ export class DebugMenu {
             { key: "enemy_canTakeDamage", label: "Enemy Takes Damage", type: "bool" },
             { key: "enemy_canDie", label: "Enemy Can Die", type: "bool" },
             { key: "hunt_allAreasOpen", label: "All Areas Open", type: "bool" },
-            { key: "player_abilityCD", label: "Ability CD", type: "num", step: 0.1 },
             { key: "hunt_searchSpeed", label: "Search Speed", type: "num", step: 0.1 },
         ];
 
