@@ -4,6 +4,8 @@
 // Single source of truth for all scaling values
 // ===================================================
 
+import { ItemRarity } from "@/shared/types";
+
 export const GAME_BALANCE = {
     // === MONSTER SCALING ===
     monsters: {
@@ -137,6 +139,7 @@ export const GAME_BALANCE = {
     // === RESEARCH SCALING ===
     research: {
         // Research unlock costs
+        baseResearchSpeedMultiplier: 1,
         baseCostMultiplier: 1.5, // Each tier costs 50% more
         timeToUnlockHours: [0.5, 1, 2, 4, 8], // Expected unlock times
 
@@ -146,6 +149,10 @@ export const GAME_BALANCE = {
 
         // Prerequisites validation
         maxPrerequisiteDepth: 5, // Prevent overly deep trees
+
+        data: {
+
+        },
     },
 
     // === DROP SCALING ===
@@ -154,7 +161,17 @@ export const GAME_BALANCE = {
         baseDropChance: 0.01,
         dropDecayFactor: 0.9, // Drops get rarer in higher tiers
         dropFloorChance: 0.0005, // Minimum drop chance
+        rarityChances: [ItemRarity, number][] = [
+    ["unique", 1],
+    ["legendary", 50],
+    ["epic", 150],
+    ["rare", 300],
+    ["uncommon", 500],
+    ["common", 10000],
+],
     },
+
+    
 
     // === HUNT BALANCE ===
     hunt: {
@@ -191,7 +208,9 @@ export const BalanceCalculators = {
      */
     getMonsterRenown(baseTier: number, rarity: keyof typeof GAME_BALANCE.monsters.renownMultipliers): number {
         const rarityMultiplier = GAME_BALANCE.monsters.renownMultipliers[rarity];
-        return Math.floor(baseTier * rarityMultiplier);
+        // Renown increases 5x per tier, then scaled by rarity
+        // TODO - Hook in library upgrades.
+        return Math.floor(Math.pow(5, baseTier - 1) * rarityMultiplier);
     },
 
     // === PLAYER CALCULATIONS ===
@@ -207,6 +226,16 @@ export const BalanceCalculators = {
         return Math.pow(base, level - 1);
     },
 
+    // === LOOT CALCULATIONS === 
+    getItemRarity(): ItemRarity {
+        const chance = Math.random() * 10000;
+        printLog("Creating Item - Rarity Chance: " + chance, 4, "types.ts");
+        for (const [rarity, max] of GAME_BALANCE.loot.rarityChances) {
+            if (chance <= max) return rarity;
+        }
+        // Fallback if none match (shouldn't happen)
+        return "common";
+    }
     /**
      * Get all player level bonuses for a given level
      */

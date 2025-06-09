@@ -92,7 +92,8 @@ export class Player extends GameBase implements Saveable {
         const metaPointsEarned = Math.floor(this.level * 10);
         this.prestigeState.totalMetaPoints += metaPointsEarned;
 
-        bus.emit("prestige:metaPointsEarned", metaPointsEarned);
+        // TODO Emit prestige points, whatever they will be.
+        // bus.emit("prestige:metaPointsEarned", metaPointsEarned);
     }
 
     // ================ STAMINA MANAGEMENT ================

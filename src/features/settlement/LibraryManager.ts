@@ -1,13 +1,20 @@
 import { bus } from "@/core/EventBus";
-import { ResearchSpec } from "@/shared/types";
+import { ResearchSpec, ResearchState } from "@/shared/types";
 import { ResearchUpgrade } from "./ResearchUpgrade";
+import { Saveable } from "@/shared/storage-types";
+import { GAME_BALANCE } from "@/balance/GameBalance";
 
-export class LibraryManager {
+interface LibrarySaveState {
+    active: ResearchUpgrade[];
+    completed: string[];
+    slots: number;
+}
+
+export class LibraryManager implements Saveable {
     private researchMap = new Map<string, ResearchUpgrade>();
     private activeResearch: ResearchUpgrade[] = [];
     private completedResearch = new Set<string>();
-    private slots = 1;
-    private speedMultiplier = 1;
+    private unlockedSlots = 1;
 
     constructor() {
         bus.on("Game:GameTick", (dt) => this.handleTick(dt));
@@ -24,7 +31,7 @@ export class LibraryManager {
     startResearch(id: string) {
         const upgrade = this.researchMap.get(id);
         if (!upgrade || upgrade.unlocked) return;
-        if (this.activeResearch.length >= this.slots) return;
+        if (this.activeResearch.length >= this.unlockedSlots) return;
         if (this.activeResearch.includes(upgrade)) return;
         this.activeResearch.push(upgrade);
         bus.emit("library:changed");
@@ -32,7 +39,7 @@ export class LibraryManager {
 
     private handleTick(dt: number) {
         for (const upg of this.activeResearch) {
-            upg.tick(dt, this.speedMultiplier);
+            upg.tick(dt, 1); //GAME_BALANCE.research.baseResearchSpeedMultiplier);
             if (upg.unlocked) {
                 this.completedResearch.add(upg.id);
             }
@@ -41,17 +48,36 @@ export class LibraryManager {
         if (this.activeResearch.length > 0) bus.emit("library:changed");
     }
 
+    private emitChange() {}
+
     getActive() {
         return this.activeResearch;
     }
 
     getAvailable() {
-        return [...this.researchMap.values()].filter(
-            (u) => !u.unlocked && !this.activeResearch.includes(u)
-        );
+        return [...this.researchMap.values()].filter((u) => !u.unlocked && !this.activeResearch.includes(u));
     }
 
     getCompleted() {
         return [...this.completedResearch];
+    }
+
+    // ----------------------- SAVE LOAD -------------------------------
+    save(): LibrarySaveState {
+        return {
+            completed: Array.from(this.completedResearch),
+            active: Array.from(this.activeResearch),
+            slots: this.unlockedSlots,
+        };
+    }
+
+    load(state: LibrarySaveState): void {
+        this.completedResearch = new Set(state.completed || []);
+        this.activeResearch = state.active || [];
+        this.unlockedSlots = state.slots;
+
+        // …then immediately catch up any offline progress
+        //this.updatePassiveRewards();
+        this.emitChange();
     }
 }
