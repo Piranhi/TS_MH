@@ -12,7 +12,7 @@ export const GAME_BALANCE = {
 	offline: {
 		offlineThreshold_MS: 30 * 60 * 1000, // 30 min hidden → count as offline
 		startupStaleTime_MS: 2 * 60 * 1000, // If last save is older than this on boot
-		defaultOfflineEfficieny: 0.8, // 80 % of normal rewards while idle
+		defaultOfflineEfficiency: 0.8, // 80 % of normal rewards while idle
 
 		chestIntervalsSec: [
 			30 * 60, // 30 m
@@ -25,7 +25,7 @@ export const GAME_BALANCE = {
 		Default_Next_Chest_Sec: 30 * 60, // UI fallback when none earned
 
 		// ─ Hunt calculations
-		offlineEstimatedKillTimeSec: 30, // Simple average kill-time placeholder
+		estimatedKillTimeSec: 30, // Simple average kill-time placeholder
 		minKillTimeSec: 5, // Safety floor
 		maxKillTimeSec: 300, // Safety ceiling
 

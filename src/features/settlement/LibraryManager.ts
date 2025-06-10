@@ -3,6 +3,7 @@ import { ResearchSpec, ResearchState } from "@/shared/types";
 import { ResearchUpgrade } from "./ResearchUpgrade";
 import { Saveable } from "@/shared/storage-types";
 import { GAME_BALANCE } from "@/balance/GameBalance";
+import { OfflineProgressHandler } from "@/models/OfflineProgress";
 
 interface LibrarySaveState {
 	active: any[];
@@ -10,7 +11,7 @@ interface LibrarySaveState {
 	slots: number;
 }
 
-export class LibraryManager implements Saveable {
+export class LibraryManager implements Saveable, OfflineProgressHandler {
 	private researchMap = new Map<string, ResearchUpgrade>();
 	private activeResearch: ResearchUpgrade[] = [];
 	private completedResearch = new Set<string>();
@@ -18,6 +19,11 @@ export class LibraryManager implements Saveable {
 
 	constructor() {
 		bus.on("Game:GameTick", (dt) => this.handleTick(dt));
+	}
+
+	handleOfflineProgress(offlineSeconds: number): null {
+		this.handleTick(offlineSeconds);
+		return null;
 	}
 
 	registerResearch(specs: ResearchSpec[]) {
