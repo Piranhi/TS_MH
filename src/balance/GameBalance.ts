@@ -5,7 +5,7 @@
 // ===================================================
 
 import { printLog } from "@/core/DebugManager";
-import { ITEM_RARITIES, ItemRarity } from "@/shared/types";
+import { ITEM_RARITIES, ItemRarity, TraitRarity } from "@/shared/types";
 
 export const GAME_BALANCE = {
 	// === OFFLINE SCALING ===
@@ -180,20 +180,30 @@ export const GAME_BALANCE = {
 	},
 
 	// === DROP SCALING ===
-	loot: {
-		// Base drop chances that scale with area tier
-		baseDropChance: 0.01,
-		dropDecayFactor: 0.9, // Drops get rarer in higher tiers
-		// Minimum drop chance
-		rarityChances: [
-			["unique", 1],
-			["legendary", 50],
-			["epic", 150],
-			["rare", 300],
-			["uncommon", 500],
-			["common", 10000],
-		] as [(typeof ITEM_RARITIES)[number], number][],
-	},
+        loot: {
+                // Base drop chances that scale with area tier
+                baseDropChance: 0.01,
+                dropDecayFactor: 0.9, // Drops get rarer in higher tiers
+                // Minimum drop chance
+                rarityChances: [
+                        ["unique", 1],
+                        ["legendary", 50],
+                        ["epic", 150],
+                        ["rare", 300],
+                        ["uncommon", 500],
+                        ["common", 10000],
+                ] as [(typeof ITEM_RARITIES)[number], number][],
+        },
+
+        // === TRAIT RARITIES ===
+        traits: {
+                rarityChances: [
+                        ["epic", 50],
+                        ["rare", 300],
+                        ["uncommon", 1500],
+                        ["common", 10000],
+                ] as [TraitRarity, number][],
+        },
 
 	// === HUNT BALANCE ===
 	hunt: {
@@ -249,15 +259,23 @@ export const BalanceCalculators = {
 	},
 
 	// === LOOT CALCULATIONS ===
-	getItemRarity(): ItemRarity {
-		const chance = Math.random() * 10000;
-		printLog("Creating Item - Rarity Chance: " + chance, 4, "types.ts");
-		for (const [rarity, max] of GAME_BALANCE.loot.rarityChances) {
-			if (chance <= max) return rarity;
-		}
-		// Fallback if none match (shouldn't happen)
-		return "common";
-	},
+        getItemRarity(): ItemRarity {
+                const chance = Math.random() * 10000;
+                printLog("Creating Item - Rarity Chance: " + chance, 4, "types.ts");
+                for (const [rarity, max] of GAME_BALANCE.loot.rarityChances) {
+                        if (chance <= max) return rarity;
+                }
+                // Fallback if none match (shouldn't happen)
+                return "common";
+        },
+
+        getTraitRarity(): TraitRarity {
+                const chance = Math.random() * 10000;
+                for (const [rarity, max] of GAME_BALANCE.traits.rarityChances) {
+                        if (chance <= max) return rarity;
+                }
+                return "common";
+        },
 	/**
 	 * Get all player level bonuses for a given level
 	 */

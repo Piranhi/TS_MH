@@ -1,0 +1,10 @@
+[
+  { "id": "speedy", "name": "Speedy", "description": "Finds enemies 10% faster", "rarity": "common" },
+  { "id": "keen_eye", "name": "Keen Eye", "description": "Enemies have a chance of dropping more resources", "rarity": "common" },
+  { "id": "resolute", "name": "Resolute", "description": "Takes 5% less damage", "rarity": "uncommon" },
+  { "id": "steady_hands", "name": "Steady Hands", "description": "Slightly increases accuracy", "rarity": "uncommon" },
+  { "id": "swift", "name": "Swift", "description": "Has a chance of attacking twice", "rarity": "rare" },
+  { "id": "revered", "name": "Revered", "description": "Next prestige provides double build points", "rarity": "rare" },
+  { "id": "muscle_memory", "name": "Muscle Memory", "description": "Gains two levels of training for every 1 level", "rarity": "epic" },
+  { "id": "smart", "name": "Smart", "description": "Library researches at double speed", "rarity": "epic" }
+]

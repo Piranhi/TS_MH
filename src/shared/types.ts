@@ -157,6 +157,17 @@ export const RARITY_DISPLAY_NAMES: Record<ItemRarity, string> = {
     unique: "Unique",
 };
 
+// -------------------- TRAITS ------------------------------
+export const TRAIT_RARITIES = ["common", "uncommon", "rare", "epic"] as const;
+export type TraitRarity = (typeof TRAIT_RARITIES)[number];
+
+export interface TraitSpec extends Identifiable {
+    id: string;
+    name: string;
+    description: string;
+    rarity: TraitRarity;
+}
+
 export type ItemRarity = (typeof ITEM_RARITIES)[number];
 export type ItemCategory = "equipment" | "classCard" | "consumable";
 export const ItemCategoryDisplay: Record<ItemCategory, string> = {

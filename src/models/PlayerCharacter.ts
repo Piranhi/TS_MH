@@ -6,6 +6,7 @@ import { bindEvent } from "@/shared/utils/busUtils";
 import { BigNumber } from "./utils/BigNumber";
 import { Saveable } from "@/shared/storage-types";
 import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
+import { Trait } from "./Trait";
 
 interface playerCharSaveState {
     charLevel: number;
@@ -13,6 +14,7 @@ interface playerCharSaveState {
 
 export class PlayerCharacter extends BaseCharacter implements Saveable {
     readonly statsEngine: StatsEngine;
+    private traits: Trait[];
 
     private passiveHealTick = 0;
     private classCardAbilityIds: string[] = [];
@@ -20,9 +22,10 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
     private _currentXp: BigNumber = new BigNumber(0);
     private _nextXpThreshold: BigNumber = new BigNumber(10);
 
-    constructor(prestigeStats: PrestigeState) {
+    constructor(prestigeStats: PrestigeState, traits: Trait[]) {
         const engine = new StatsEngine();
         super("You", { get: (k) => engine.get(k) });
+        this.traits = traits;
         bindEvent(this.eventBindings, "player:statsChanged", () => this.updateStats());
         this.statsEngine = engine;
 
@@ -152,5 +155,9 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 
     load(state: playerCharSaveState): void {
         this._charLevel = state.charLevel;
+    }
+
+    public getTraits(): Trait[] {
+        return this.traits;
     }
 }
