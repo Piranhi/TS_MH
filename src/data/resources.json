@@ -1,0 +1,18 @@
+[
+	{
+		"id": "raw_ore",
+		"name": "Raw Ore",
+		"description": "Todo",
+		"iconUrl": "",
+		"requires": [{}],
+		"craftTime": 0
+	},
+	{
+		"id": "metal",
+		"name": "Metal",
+		"description": "Todo",
+		"iconUrl": "",
+		"requires": [{ "resource": "raw_ore", "quantity": 2 }],
+		"craftTime": 10
+	}
+]

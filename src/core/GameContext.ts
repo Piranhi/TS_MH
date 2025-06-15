@@ -14,6 +14,7 @@ import { SaveManager } from "./SaveManager";
 import { ScreenManager } from "./ScreenManager";
 import { PrestigeState } from "@/shared/stats-types";
 import { OfflineProgressManager } from "@/models/OfflineProgress";
+import { ResourceManager } from "@/features/inventory/ResourceManager";
 
 export class GameContext {
 	private static _instance: GameContext | null = null;
@@ -78,17 +79,22 @@ export class GameContext {
 		return this.currentRun.huntManager;
 	}
 
+	public get resources(): ResourceManager {
+		if (!this.currentRun) throw new Error("No active run!");
+		return this.currentRun?.resourceManager;
+	}
+
 	public get inventory(): InventoryManager {
 		return this.services.inventoryManager;
 	}
 
-        public get settlement(): SettlementManager {
-                return this.services.settlementManager;
-        }
+	public get settlement(): SettlementManager {
+		return this.services.settlementManager;
+	}
 
-        public get library(): LibraryManager {
-                return this.services.libraryManager;
-        }
+	public get library(): LibraryManager {
+		return this.services.libraryManager;
+	}
 
 	public get saves(): SaveManager {
 		return this.services.saveManager;

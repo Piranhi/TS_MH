@@ -6,7 +6,8 @@ import { InventoryRegistry } from "./InventoryRegistry";
 import { Equipment } from "@/models/Equipment";
 import { Saveable } from "@/shared/storage-types";
 import { printLog } from "@/core/DebugManager";
-export type SlotType = "inventory" | "equipment" | "classCard";
+import { Resource } from "./Resource";
+export type SlotType = "inventory" | "equipment" | "classCard" | "resource";
 
 interface Slot {
 	id: string;
@@ -44,9 +45,11 @@ export class InventoryManager implements Saveable {
 		inventory: ["equipment", "classCard", "consumable"],
 		equipment: ["equipment"],
 		classCard: ["classCard"],
+		resource: ["resource"],
 	};
 
 	constructor() {
+		// Create and populate initial slots
 		this.slots = [
 			...Array(this.maxInventorySlots)
 				.fill(0)
@@ -55,6 +58,9 @@ export class InventoryManager implements Saveable {
 			...Array(this.maxCardSlots)
 				.fill(0)
 				.map((_, i) => this.makeSlot("classCard", i)),
+			...Array(2) // or however many you want
+				.fill(0)
+				.map((_, i) => this.makeSlot("resource", i)),
 		];
 		this.updateSlotMap();
 	}
@@ -81,6 +87,9 @@ export class InventoryManager implements Saveable {
 			...Array(this.maxCardSlots)
 				.fill(0)
 				.map((_, i) => this.makeSlot("classCard", i)),
+			...Array(2) // or however many you want
+				.fill(0)
+				.map((_, i) => this.makeSlot("resource", i)),
 		];
 	}
 
@@ -113,35 +122,35 @@ export class InventoryManager implements Saveable {
 			if (!isEquipmentItemSpec(spec)) return false;
 			if (spec.equipType !== to.key) return false;
 		}
-                // Merge if dropping onto duplicate upgradable item
-                if (to.itemState) {
-                        const toSpec = InventoryRegistry.getItemById(to.itemState.specId);
-                        if (
-                                spec.id === toSpec.id &&
-                                from.itemState.rarity === to.itemState.rarity &&
-                                (spec.category === "equipment" || spec.category === "classCard")
-                        ) {
-                                if (spec.category === "equipment") {
-                                        const target = Equipment.createFromState(to.itemState);
-                                        target.addLevels(from.itemState.level ?? 0);
-                                } else if (spec.category === "classCard") {
-                                        const target = ClassCard.createFromState(to.itemState);
-                                        target.addLevels(from.itemState.level ?? 0);
-                                }
-                                from.itemState = null;
-                                this.emitChange();
-                                if (from.type === "equipment" || to.type === "equipment") {
-                                        bus.emit("player:equipmentChanged", this.getEquippedEquipment());
-                                }
-                                if (from.type === "classCard" || to.type === "classCard") {
-                                        bus.emit("player:classCardsChanged", this.getEquippedCards());
-                                }
-                                return true;
-                        }
-                }
-                // Swap items between slots
-                [from.itemState, to.itemState] = [to.itemState, from.itemState];
-                this.emitChange();
+		// Merge if dropping onto duplicate upgradable item
+		if (to.itemState) {
+			const toSpec = InventoryRegistry.getItemById(to.itemState.specId);
+			if (
+				spec.id === toSpec.id &&
+				from.itemState.rarity === to.itemState.rarity &&
+				(spec.category === "equipment" || spec.category === "classCard")
+			) {
+				if (spec.category === "equipment") {
+					const target = Equipment.createFromState(to.itemState);
+					target.addLevels(from.itemState.level ?? 0);
+				} else if (spec.category === "classCard") {
+					const target = ClassCard.createFromState(to.itemState);
+					target.addLevels(from.itemState.level ?? 0);
+				}
+				from.itemState = null;
+				this.emitChange();
+				if (from.type === "equipment" || to.type === "equipment") {
+					bus.emit("player:equipmentChanged", this.getEquippedEquipment());
+				}
+				if (from.type === "classCard" || to.type === "classCard") {
+					bus.emit("player:classCardsChanged", this.getEquippedCards());
+				}
+				return true;
+			}
+		}
+		// Swap items between slots
+		[from.itemState, to.itemState] = [to.itemState, from.itemState];
+		this.emitChange();
 
 		// Emit smaller bus changes.
 		if (from.type === "equipment" || to.type === "equipment") {
@@ -151,35 +160,35 @@ export class InventoryManager implements Saveable {
 			bus.emit("player:classCardsChanged", this.getEquippedCards());
 		}
 
-                return true;
-        }
+		return true;
+	}
 
-        /**
-         * Automatically move an item from an inventory slot to the
-         * appropriate equipment or class card slot.
-         */
-        public autoEquip(fromId: string): boolean {
-                const from = this.getSlot(fromId);
-                if (!from || from.type !== "inventory" || !from.itemState) return false;
+	/**
+	 * Automatically move an item from an inventory slot to the
+	 * appropriate equipment or class card slot.
+	 */
+	public autoEquip(fromId: string): boolean {
+		const from = this.getSlot(fromId);
+		if (!from || from.type !== "inventory" || !from.itemState) return false;
 
-                const spec = InventoryRegistry.getItemById(from.itemState.specId);
-                if (isEquipmentItemSpec(spec)) {
-                        const target = this.getSlot(`equipment-${spec.equipType}`);
-                        if (!target) return false;
-                        return this.moveItem(fromId, target.id);
-                }
-                if (spec.category === "classCard") {
-                        const cardSlot = this.getSlotsByType("classCard")[0];
-                        if (!cardSlot) return false;
-                        return this.moveItem(fromId, cardSlot.id);
-                }
-                return false;
-        }
+		const spec = InventoryRegistry.getItemById(from.itemState.specId);
+		if (isEquipmentItemSpec(spec)) {
+			const target = this.getSlot(`equipment-${spec.equipType}`);
+			if (!target) return false;
+			return this.moveItem(fromId, target.id);
+		}
+		if (spec.category === "classCard") {
+			const cardSlot = this.getSlotsByType("classCard")[0];
+			if (!cardSlot) return false;
+			return this.moveItem(fromId, cardSlot.id);
+		}
+		return false;
+	}
 
-        public expandInventorySize(by: number) {
-		const start = this.slots.filter((s) => s.type === "inventory").length;
+	public expandInventorySize(by: number, type: SlotType) {
+		const start = this.slots.filter((s) => s.type === type).length;
 		for (let i = 0; i < by; i++) {
-			this.slots.push(this.makeSlot("inventory", start + i));
+			this.slots.push(this.makeSlot(type, start + i));
 		}
 		this.updateSlotMap();
 		this.emitChange();
@@ -187,17 +196,20 @@ export class InventoryManager implements Saveable {
 
 	public addLootById(itemId: string, qty = 1): boolean {
 		const state = InventoryRegistry.createItemState(itemId, qty);
-		printLog(`${qty} item [${state.specId}] added to inventory`, 3, "InventoryManager.ts");
 		return this.addItemToInventory(state);
 	}
 
 	public addItemToInventory(itemState: InventoryItemState): boolean {
 		const slot = this.slots.find((s) => s.type === "inventory" && s.itemState === null);
 		if (!slot) return false; // Inventory is full
-
+		printLog(`${itemState.quantity} item [${itemState.specId}] added to inventory`, 3, "InventoryManager.ts");
 		slot.itemState = itemState;
 		this.emitChange();
 		return true;
+	}
+
+	private findResourceSlot(resourceId: string): Slot | undefined {
+		return this.slots.find((slot) => slot.type === "inventory" && slot.itemState?.specId === resourceId);
 	}
 
 	public removeItemFromInventory(itemState: InventoryItemState): boolean {

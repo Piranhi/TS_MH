@@ -9,6 +9,7 @@ import rawResearch from "@/data/research.json" assert { type: "json" };
 import rawTriggers from "@/data/progression-triggers.json" assert { type: "json" };
 import rawOutposts from "@/data/outposts.json" assert { type: "json" };
 import rawTraits from "@/data/traits.json" assert { type: "json" };
+import rawResource from "@/data/resources.json" assert { type: "json" };
 
 /* ---------- Bring in the class constructors -------------- */
 import { Area } from "@/models/Area";
@@ -23,25 +24,28 @@ import { MilestoneManager } from "@/models/MilestoneManager";
 import { Outpost } from "@/features/hunt/Outpost";
 import { ResearchUpgrade } from "@/features/settlement/ResearchUpgrade";
 import { Trait } from "@/models/Trait";
+import { Resource } from "@/features/inventory/Resource";
+import { ResourceSpec } from "@/features/inventory/ResourceManager";
 
 /* ---------- Register Data ---------------------------- */
 
 //export let areaManager: AreaManager;
 export const milestoneManager = MilestoneManager.instance;
 export function initGameData() {
-    console.log("📦 Registering game data…");
+	console.log("📦 Registering game data…");
 
-    Building.registerSpecs(rawBuilding);
-    ResearchUpgrade.registerSpecs(rawResearch as ResearchSpec[]);
-    Equipment.registerSpecs(rawEquipment as EquipmentItemSpec[]);
-    ClassCard.registerSpecs(rawClassCards as ClassCardItemSpec[]);
-    Monster.registerSpecs(rawMonsters as MonsterSpec[]);
-    Area.registerSpecs(rawAreas);
-    Ability.registerSpecs(rawAbilities as AbilitySpec[]);
-    Outpost.registerSpecs(rawOutposts as OutpostSpec[]);
-    Trait.registerSpecs(rawTraits as TraitSpec[]);
+	Building.registerSpecs(rawBuilding);
+	ResearchUpgrade.registerSpecs(rawResearch as ResearchSpec[]);
+	Equipment.registerSpecs(rawEquipment as EquipmentItemSpec[]);
+	ClassCard.registerSpecs(rawClassCards as ClassCardItemSpec[]);
+	Monster.registerSpecs(rawMonsters as MonsterSpec[]);
+	Area.registerSpecs(rawAreas);
+	Ability.registerSpecs(rawAbilities as AbilitySpec[]);
+	Outpost.registerSpecs(rawOutposts as OutpostSpec[]);
+	Trait.registerSpecs(rawTraits as TraitSpec[]);
+	Resource.registerSpecs(rawResource as ResourceSpec[]);
 
-    InventoryRegistry.init();
+	InventoryRegistry.init();
 
-    milestoneManager.registerSpecs(rawTriggers as ProgressionTrigger[]);
+	milestoneManager.registerSpecs(rawTriggers as ProgressionTrigger[]);
 }
