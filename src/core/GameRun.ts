@@ -6,6 +6,7 @@ import { Destroyable } from "@/core/Destroyable";
 import { PlayerCharacter } from "@/models/PlayerCharacter";
 import { TrainedStatManager } from "@/models/TrainedStatManager";
 import { PrestigeState } from "@/shared/stats-types";
+import { Trait } from "@/models/Trait";
 import { bus } from "./EventBus";
 import { GameContext } from "./GameContext";
 import { ClassCardManager } from "@/features/classcards/ClassCardManager";
@@ -29,6 +30,7 @@ export class GameRun extends Destroyable {
     public readonly equipmentManager: EquipmentManager;
     public readonly runStartTime: number;
     public readonly runId: string;
+    public readonly traits: Trait[];
 
     private context: GameContext;
 
@@ -40,7 +42,8 @@ export class GameRun extends Destroyable {
         this.runStartTime = Date.now();
 
         // Create transient systems
-        this.character = new PlayerCharacter(opts.prestigeState);
+        this.traits = [Trait.getRandomTrait()];
+        this.character = new PlayerCharacter(opts.prestigeState, this.traits);
         this.huntManager = new HuntManager();
         this.trainedStats = new TrainedStatManager();
         this.classCardManager = new ClassCardManager();
