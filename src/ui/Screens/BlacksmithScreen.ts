@@ -4,15 +4,21 @@ import Markup from "./blacksmith.html?raw";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { Resource } from "@/features/inventory/Resource";
 import { ProgressBar } from "../components/ProgressBar";
+import { ProgressBarSimple } from "../components/ProgressBarSimple";
 import { Tooltip } from "../components/Tooltip";
 import { BlacksmithUpgrade } from "@/features/settlement/BlacksmithUpgrade";
 
 interface SlotElements {
         container: HTMLElement;
-        select: HTMLSelectElement;
-        bar: ProgressBar;
-        label: HTMLElement;
+        selectBtn: HTMLButtonElement;
+        view: HTMLElement;
+        optionRow: HTMLElement;
+        icon: HTMLImageElement;
+        level: HTMLElement;
+        xpBar: ProgressBarSimple;
+        xpText: HTMLElement;
         cost: HTMLElement;
+        bar: ProgressBar;
         progressText: HTMLElement;
 }
 
@@ -56,47 +62,105 @@ export class BlacksmithScreen extends BaseScreen {
                         .filter(([id, d]) => id !== "raw_ore" && d.isUnlocked && !d.infinite)
                         .map(([id]) => id);
                 slots.forEach((slot, idx) => {
+                        const wrapper = document.createElement("div");
+                        wrapper.className = "bs-slot-wrapper";
+
+                        const selectBtn = document.createElement("button");
+                        selectBtn.className = "bs-select-btn";
+                        selectBtn.textContent = "Choose";
+                        wrapper.appendChild(selectBtn);
+
                         const el = document.createElement("div");
                         el.className = "blacksmith-slot";
-                        const sel = document.createElement("select");
-                        const emptyOpt = document.createElement("option");
-                        emptyOpt.value = "";
-                        emptyOpt.textContent = "-- Select --";
-                        sel.appendChild(emptyOpt);
+                        wrapper.appendChild(el);
+
+                        const view = document.createElement("div");
+                        view.className = "bs-slot-view";
+                        el.appendChild(view);
+
+                        const optionRow = document.createElement("div");
+                        optionRow.className = "bs-option-row";
+                        el.appendChild(optionRow);
+
                         available.forEach((id) => {
                                 const spec = Resource.getSpec(id);
                                 if (!spec) return;
-                                const o = document.createElement("option");
-                                o.value = id;
-                                const costs = spec.requires
-                                        .filter((r) => r.resource)
-                                        .map((r) => {
-                                                const have = this.context.resources.getResourceQuantity(r.resource);
-                                                return `${r.quantity}/${have}`;
-                                        })
-                                        .join(" ");
-                                o.textContent = costs;
-                                sel.appendChild(o);
+                                const card = document.createElement("div");
+                                card.className = "bs-recipe-card";
+                                const img = document.createElement("img");
+                                img.src = spec.iconUrl;
+                                card.appendChild(img);
+                                const costsEl = document.createElement("div");
+                                costsEl.className = "bs-recipe-costs";
+                                spec.requires.forEach((r) => {
+                                        if (!r.resource) return;
+                                        const ic = document.createElement("img");
+                                        ic.src = Resource.getSpec(r.resource)?.iconUrl ?? "";
+                                        ic.title = `${r.quantity}/${this.context.resources.getResourceQuantity(r.resource)}`;
+                                        costsEl.appendChild(ic);
+                                });
+                                card.appendChild(costsEl);
+                                const timeEl = document.createElement("div");
+                                timeEl.className = "bs-recipe-time";
+                                timeEl.textContent = `${spec.craftTime}s`;
+                                card.appendChild(timeEl);
+                                card.addEventListener("click", () => {
+                                        this.context.blacksmith.setSlotResource(idx, id);
+                                        wrapper.classList.remove("show-options");
+                                        this.handleTick(0);
+                                });
+                                optionRow.appendChild(card);
                         });
-                        sel.value = slot.resourceId ?? "";
-                        sel.addEventListener("change", () => {
-                                this.context.blacksmith.setSlotResource(idx, sel.value || null);
+
+                        selectBtn.addEventListener("click", () => {
+                                wrapper.classList.toggle("show-options");
                         });
-                        el.appendChild(sel);
-                        const label = document.createElement("div");
-                        label.textContent = "";
-                        el.appendChild(label);
+
+                        const info = document.createElement("div");
+                        info.className = "bs-selected-info";
+                        const iconWrap = document.createElement("div");
+                        iconWrap.className = "bs-icon-wrapper";
+                        const icon = document.createElement("img");
+                        icon.className = "bs-resource-icon";
+                        iconWrap.appendChild(icon);
+                        const xpContainer = document.createElement("div");
+                        xpContainer.className = "bs-xp-bar-container";
+                        iconWrap.appendChild(xpContainer);
+                        const xpText = document.createElement("div");
+                        xpText.className = "bs-xp-text";
+                        xpContainer.appendChild(xpText);
+                        const xpBar = new ProgressBarSimple({ container: xpContainer, maxValue: 1, initialValue: 0 });
+                        info.appendChild(iconWrap);
+                        const lvlEl = document.createElement("div");
+                        lvlEl.className = "bs-level";
+                        info.appendChild(lvlEl);
+                        view.appendChild(info);
+
                         const costEl = document.createElement("div");
-                        costEl.className = "blacksmith-slot-cost";
-                        el.appendChild(costEl);
+                        costEl.className = "bs-cost-icons";
+                        view.appendChild(costEl);
+
                         const barContainer = document.createElement("div");
-                        el.appendChild(barContainer);
+                        view.appendChild(barContainer);
                         const progressText = document.createElement("div");
                         progressText.className = "progress-text";
                         barContainer.appendChild(progressText);
                         const bar = new ProgressBar({ container: barContainer, maxValue: 1, initialValue: 0 });
-                        this.slotGrid.appendChild(el);
-                        this.slotEls.push({ container: el, select: sel, bar, label, cost: costEl, progressText });
+
+                        this.slotGrid.appendChild(wrapper);
+                        this.slotEls.push({
+                                container: wrapper,
+                                view,
+                                selectBtn,
+                                optionRow,
+                                icon,
+                                level: lvlEl,
+                                xpBar,
+                                xpText,
+                                cost: costEl,
+                                bar,
+                                progressText,
+                        });
                 });
         }
 
@@ -174,24 +238,39 @@ export class BlacksmithScreen extends BaseScreen {
                         const el = this.slotEls[idx];
                         if (!el) return;
                         const spec = slot.resourceId ? Resource.getSpec(slot.resourceId) : null;
+                        const data = slot.resourceId ? this.context.resources.getResourceData(slot.resourceId) : undefined;
                         if (spec) {
                                 el.bar.setMax(spec.craftTime);
                                 el.bar.setValue(spec.craftTime - slot.progress);
-                                el.label.textContent = spec.name;
-                                const costStr = spec.requires
-                                        .filter((r) => r.resource)
-                                        .map((r) => {
-                                                const have = this.context.resources.getResourceQuantity(r.resource);
-                                                return `${r.quantity}/${have}`;
-                                        })
-                                        .join(" ");
-                                el.cost.textContent = costStr;
+                                el.selectBtn.textContent = spec.name;
+                                el.icon.src = spec.iconUrl;
+                                el.cost.innerHTML = "";
+                                spec.requires.forEach((r) => {
+                                        if (!r.resource) return;
+                                        const img = document.createElement("img");
+                                        img.src = Resource.getSpec(r.resource)?.iconUrl ?? "";
+                                        img.title = `${r.quantity}/${this.context.resources.getResourceQuantity(r.resource)}`;
+                                        el.cost.appendChild(img);
+                                });
                                 el.progressText.textContent = `${Math.ceil(slot.progress)}s`;
+
+                                if (data) {
+                                        const xpNeeded = data.level * 10;
+                                        el.level.textContent = `Lv ${data.level}`;
+                                        el.xpBar.setMax(xpNeeded);
+                                        el.xpBar.setValue(data.xp);
+                                        el.xpText.textContent = `XP ${data.xp}/${xpNeeded}`;
+                                }
                         } else {
                                 el.bar.setMax(1);
                                 el.bar.setValue(0);
-                                el.label.textContent = "";
-                                el.cost.textContent = "";
+                                el.selectBtn.textContent = "Choose";
+                                el.icon.src = "";
+                                el.level.textContent = "";
+                                el.xpBar.setMax(1);
+                                el.xpBar.setValue(0);
+                                el.xpText.textContent = "";
+                                el.cost.innerHTML = "";
                                 el.progressText.textContent = "";
                         }
                 });
