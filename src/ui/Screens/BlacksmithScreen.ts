@@ -12,6 +12,7 @@ interface SlotElements {
         container: HTMLElement;
         selectBtn: HTMLButtonElement;
         optionRow: HTMLElement;
+        content: HTMLElement;
         icon: HTMLImageElement;
         level: HTMLElement;
         xpBar: ProgressBarSimple;
@@ -69,6 +70,10 @@ export class BlacksmithScreen extends BaseScreen {
                         selectBtn.textContent = "Choose";
                         el.appendChild(selectBtn);
 
+                        const content = document.createElement("div");
+                        content.className = "bs-slot-content";
+                        el.appendChild(content);
+
                         const optionRow = document.createElement("div");
                         optionRow.className = "bs-option-row";
                         el.appendChild(optionRow);
@@ -97,14 +102,14 @@ export class BlacksmithScreen extends BaseScreen {
                                 card.appendChild(timeEl);
                                 card.addEventListener("click", () => {
                                         this.context.blacksmith.setSlotResource(idx, id);
-                                        optionRow.classList.remove("show");
+                                        el.classList.remove("choosing");
                                         this.handleTick(0);
                                 });
                                 optionRow.appendChild(card);
                         });
 
                         selectBtn.addEventListener("click", () => {
-                                optionRow.classList.toggle("show");
+                                el.classList.toggle("choosing");
                         });
 
                         const info = document.createElement("div");
@@ -125,14 +130,14 @@ export class BlacksmithScreen extends BaseScreen {
                         const lvlEl = document.createElement("div");
                         lvlEl.className = "bs-level";
                         info.appendChild(lvlEl);
-                        el.appendChild(info);
+                        content.appendChild(info);
 
                         const costEl = document.createElement("div");
                         costEl.className = "bs-cost-icons";
-                        el.appendChild(costEl);
+                        content.appendChild(costEl);
 
                         const barContainer = document.createElement("div");
-                        el.appendChild(barContainer);
+                        content.appendChild(barContainer);
                         const progressText = document.createElement("div");
                         progressText.className = "progress-text";
                         barContainer.appendChild(progressText);
@@ -143,6 +148,7 @@ export class BlacksmithScreen extends BaseScreen {
                                 container: el,
                                 selectBtn,
                                 optionRow,
+                                content,
                                 icon,
                                 level: lvlEl,
                                 xpBar,
