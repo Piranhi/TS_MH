@@ -1,0 +1,79 @@
+.blacksmith-page {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    width: 100%;
+}
+.blacksmith-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.blacksmith-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+.blacksmith-slot {
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.blacksmith-slot select {
+    width: 100%;
+}
+.blacksmith-resources {
+    width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
+    padding: 1rem;
+}
+.blacksmith-resource-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+}
+.blacksmith-resource-row img {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.2);
+}
+.blacksmith-resource-level {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 0.7rem;
+    background: rgba(0,0,0,0.5);
+    padding: 0 2px;
+    border-radius: 4px;
+}
+.blacksmith-upgrade-section {
+    background: rgba(255,255,255,0.1);
+    border-radius: 22px;
+    padding: 1rem;
+}
+.blacksmith-upgrade-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+    gap: 1rem;
+    max-height: 220px;
+    overflow-y: auto;
+}
+.blacksmith-upgrade-card {
+    background: rgba(255,255,255,0.14);
+    padding: 0.8rem;
+    border-radius: 12px;
+    cursor: pointer;
+}
+.blacksmith-upgrade-card.purchased {
+    opacity: 0.5;
+}
