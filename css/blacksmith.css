@@ -118,20 +118,21 @@
     background: var(--glass-bg);
     cursor: pointer;
 }
+.bs-slot-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
 .bs-option-row {
     display: none;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 2.2rem;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 8px;
-    padding: 0.5rem;
+    flex-wrap: wrap;
     gap: 0.5rem;
-    overflow-x: auto;
-    z-index: 10;
+    margin-top: 0.5rem;
 }
-.bs-option-row.show {
+.blacksmith-slot.choosing .bs-slot-content {
+    display: none;
+}
+.blacksmith-slot.choosing .bs-option-row {
     display: flex;
 }
 .bs-recipe-card {
