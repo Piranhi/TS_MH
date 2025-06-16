@@ -11,6 +11,7 @@ import { BlacksmithUpgrade } from "@/features/settlement/BlacksmithUpgrade";
 interface SlotElements {
         container: HTMLElement;
         selectBtn: HTMLButtonElement;
+        view: HTMLElement;
         optionRow: HTMLElement;
         icon: HTMLImageElement;
         level: HTMLElement;
@@ -61,13 +62,21 @@ export class BlacksmithScreen extends BaseScreen {
                         .filter(([id, d]) => id !== "raw_ore" && d.isUnlocked && !d.infinite)
                         .map(([id]) => id);
                 slots.forEach((slot, idx) => {
-                        const el = document.createElement("div");
-                        el.className = "blacksmith-slot";
+                        const wrapper = document.createElement("div");
+                        wrapper.className = "bs-slot-wrapper";
 
                         const selectBtn = document.createElement("button");
                         selectBtn.className = "bs-select-btn";
                         selectBtn.textContent = "Choose";
-                        el.appendChild(selectBtn);
+                        wrapper.appendChild(selectBtn);
+
+                        const el = document.createElement("div");
+                        el.className = "blacksmith-slot";
+                        wrapper.appendChild(el);
+
+                        const view = document.createElement("div");
+                        view.className = "bs-slot-view";
+                        el.appendChild(view);
 
                         const optionRow = document.createElement("div");
                         optionRow.className = "bs-option-row";
@@ -97,14 +106,14 @@ export class BlacksmithScreen extends BaseScreen {
                                 card.appendChild(timeEl);
                                 card.addEventListener("click", () => {
                                         this.context.blacksmith.setSlotResource(idx, id);
-                                        optionRow.classList.remove("show");
+                                        wrapper.classList.remove("show-options");
                                         this.handleTick(0);
                                 });
                                 optionRow.appendChild(card);
                         });
 
                         selectBtn.addEventListener("click", () => {
-                                optionRow.classList.toggle("show");
+                                wrapper.classList.toggle("show-options");
                         });
 
                         const info = document.createElement("div");
@@ -125,22 +134,23 @@ export class BlacksmithScreen extends BaseScreen {
                         const lvlEl = document.createElement("div");
                         lvlEl.className = "bs-level";
                         info.appendChild(lvlEl);
-                        el.appendChild(info);
+                        view.appendChild(info);
 
                         const costEl = document.createElement("div");
                         costEl.className = "bs-cost-icons";
-                        el.appendChild(costEl);
+                        view.appendChild(costEl);
 
                         const barContainer = document.createElement("div");
-                        el.appendChild(barContainer);
+                        view.appendChild(barContainer);
                         const progressText = document.createElement("div");
                         progressText.className = "progress-text";
                         barContainer.appendChild(progressText);
                         const bar = new ProgressBar({ container: barContainer, maxValue: 1, initialValue: 0 });
 
-                        this.slotGrid.appendChild(el);
+                        this.slotGrid.appendChild(wrapper);
                         this.slotEls.push({
-                                container: el,
+                                container: wrapper,
+                                view,
                                 selectBtn,
                                 optionRow,
                                 icon,

@@ -106,8 +106,18 @@
     opacity: 0.5;
 }
 /* New styles for expanded recipe selection and slot display */
+.bs-slot-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
 .blacksmith-slot {
     position: relative;
+}
+.bs-slot-view {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 .bs-select-btn {
     width: 100%;
@@ -120,10 +130,6 @@
 }
 .bs-option-row {
     display: none;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 2.2rem;
     background: rgba(0, 0, 0, 0.8);
     border-radius: 8px;
     padding: 0.5rem;
@@ -131,7 +137,10 @@
     overflow-x: auto;
     z-index: 10;
 }
-.bs-option-row.show {
+.bs-slot-wrapper.show-options .bs-slot-view {
+    display: none;
+}
+.bs-slot-wrapper.show-options .bs-option-row {
     display: flex;
 }
 .bs-recipe-card {
