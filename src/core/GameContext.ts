@@ -9,6 +9,7 @@ import { HuntManager } from "@/features/hunt/HuntManager";
 import { InventoryManager } from "@/features/inventory/InventoryManager";
 import { SettlementManager } from "@/features/settlement/SettlementManager";
 import { LibraryManager } from "@/features/settlement/LibraryManager";
+import { BlacksmithManager } from "@/features/settlement/BlacksmithManager";
 import { bus } from "./EventBus";
 import { SaveManager } from "./SaveManager";
 import { ScreenManager } from "./ScreenManager";
@@ -92,9 +93,13 @@ export class GameContext {
 		return this.services.settlementManager;
 	}
 
-	public get library(): LibraryManager {
-		return this.services.libraryManager;
-	}
+        public get library(): LibraryManager {
+                return this.services.libraryManager;
+        }
+
+        public get blacksmith(): BlacksmithManager {
+                return this.services.blacksmithManager;
+        }
 
 	public get saves(): SaveManager {
 		return this.services.saveManager;

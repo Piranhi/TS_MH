@@ -4,7 +4,8 @@ import { Saveable } from "@/shared/storage-types";
 import { ResourceData, ResourceRequirement } from "@/shared/types";
 
 export class ResourceManager extends Destroyable implements Saveable {
-	private resources = new Map<string, ResourceData>();
+        private resources = new Map<string, ResourceData>();
+        private readonly MAX_LEVEL = 5;
 
 	constructor() {
 		super();
@@ -13,18 +14,19 @@ export class ResourceManager extends Destroyable implements Saveable {
 
 	private handleTick(dt: number) {}
 
-	addResource(id: string, qty: number) {
-		const existing = this.resources.get(id);
+        addResource(id: string, qty: number) {
+                const existing = this.resources.get(id);
 
 		if (existing) {
 			existing.quantity += qty;
 		} else {
-			this.resources.set(id, {
-				quantity: qty,
-				level: 1,
-				xp: 0,
-				isUnlocked: true,
-			});
+                        this.resources.set(id, {
+                                quantity: qty,
+                                level: 1,
+                                xp: 0,
+                                isUnlocked: true,
+                                infinite: false,
+                        });
 		}
 		this.emitChange();
 		console.log(this.resources);
@@ -38,14 +40,35 @@ export class ResourceManager extends Destroyable implements Saveable {
 		return this.resources.has(id);
 	}
 
-	public consumeResource(id: string, qty: number): boolean {
-		const resourceAmt = this.resources.get(id)?.quantity;
-		if (!resourceAmt || resourceAmt < qty) return false; // Not enough resources
+        public consumeResource(id: string, qty: number): boolean {
+                const resourceAmt = this.resources.get(id)?.quantity;
+                if (!resourceAmt || resourceAmt < qty) return false; // Not enough resources
 
-		this.resources.get(id)!.quantity -= qty;
-		this.emitChange();
-		return true;
-	}
+                this.resources.get(id)!.quantity -= qty;
+                this.emitChange();
+                return true;
+        }
+
+        public addResourceXP(id: string, xp: number) {
+                const data = this.resources.get(id);
+                if (!data) return;
+                if (data.infinite) return;
+                data.xp += xp;
+                while (data.level < this.MAX_LEVEL && data.xp >= this.getXpForNextLevel(data.level)) {
+                        data.xp -= this.getXpForNextLevel(data.level);
+                        data.level += 1;
+                        if (data.level >= this.MAX_LEVEL) {
+                                data.infinite = true;
+                                data.quantity = Number.MAX_SAFE_INTEGER;
+                                break;
+                        }
+                }
+                this.emitChange();
+        }
+
+        private getXpForNextLevel(level: number): number {
+                return level * 10;
+        }
 
 	public canAfford(requirements: ResourceRequirement[]): boolean {
 		return requirements.every((req) => this.getResourceQuantity(req.resource) >= req.quantity);

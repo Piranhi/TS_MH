@@ -9,8 +9,11 @@ import { StatsManager } from "@/models/StatsManager";
 import { MilestoneManager } from "@/models/MilestoneManager";
 import { OfflineProgressManager } from "@/models/OfflineProgress";
 import { LibraryManager } from "@/features/settlement/LibraryManager";
+import { BlacksmithManager } from "@/features/settlement/BlacksmithManager";
 import rawResearch from "@/data/research.json" assert { type: "json" };
+import rawBlacksmithUpgrades from "@/data/blacksmith-upgrades.json" assert { type: "json" };
 import { ResearchSpec } from "@/shared/types";
+import { BlacksmithUpgradeSpec } from "@/shared/types";
 
 export class GameServices {
 	private static _instance: GameServices;
@@ -25,16 +28,19 @@ export class GameServices {
 	public readonly inventoryManager: InventoryManager;
         public readonly settlementManager: SettlementManager;
         public readonly libraryManager: LibraryManager;
+        public readonly blacksmithManager: BlacksmithManager;
 
 	private constructor() {
 		this.saveManager = new SaveManager();
 		this.screenManager = new ScreenManager();
 		this.statsManager = StatsManager.instance;
 		this.milestoneManager = MilestoneManager.instance;
-		this.inventoryManager = new InventoryManager();
+                this.inventoryManager = new InventoryManager();
                 this.settlementManager = new SettlementManager();
                 this.libraryManager = new LibraryManager();
                 this.libraryManager.registerResearch(rawResearch as ResearchSpec[]);
+                this.blacksmithManager = new BlacksmithManager();
+                this.blacksmithManager.registerUpgrades(rawBlacksmithUpgrades as BlacksmithUpgradeSpec[]);
                 this.offlineManager = new OfflineProgressManager();
 	}
 

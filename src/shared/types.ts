@@ -49,8 +49,17 @@ export interface ResearchSpec {
 }
 
 export interface ResearchState {
-	progress: number;
-	unlocked: boolean;
+        progress: number;
+        unlocked: boolean;
+}
+
+export interface BlacksmithUpgradeSpec {
+        id: string;
+        name: string;
+        description: string;
+        cost: ResourceRequirement[];
+        icon?: string;
+        effect?: string;
 }
 
 // ------------------- AREA + COMBAT ------------------------------
@@ -155,10 +164,11 @@ export const RARITY_DISPLAY_NAMES: Record<ItemRarity, string> = {
 // -------------------- RESOURCES ------------------------------
 
 export interface ResourceData {
-	quantity: number;
-	level: number;
-	xp: number;
-	isUnlocked: boolean;
+        quantity: number;
+        level: number;
+        xp: number;
+        isUnlocked: boolean;
+        infinite?: boolean;
 }
 
 export interface ResourceSpec {

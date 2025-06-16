@@ -1,0 +1,16 @@
+[
+  {
+    "id": "slot_2",
+    "name": "Extra Slot",
+    "description": "Unlock an additional crafting slot.",
+    "cost": [{"resource": "metal", "quantity": 10}],
+    "icon": ""
+  },
+  {
+    "id": "better_tools",
+    "name": "Better Tools",
+    "description": "Craft 20% faster.",
+    "cost": [{"resource": "metal", "quantity": 20}],
+    "icon": ""
+  }
+]
