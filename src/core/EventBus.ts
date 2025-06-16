@@ -9,6 +9,7 @@ import { BigNumber } from "@/models/utils/BigNumber";
 import { AreaStats, EnemyStats, GameStats, PrestigeStats, UserStats } from "@/shared/stats-types";
 import { MilestoneEventPayload } from "@/shared/Milestones";
 import { GameRun, RunStats } from "./GameRun";
+import { Resource } from "@/features/inventory/Resource";
 
 export interface GameEvents {
 	"Game:UITick": number;
@@ -26,7 +27,9 @@ export interface GameEvents {
 	"ui:screenChanged": string;
 	"renown:changed": BigNumber;
 	"renown:award": BigNumber;
-	"Resource:Changed": { gold: number };
+
+	// RESOURCES
+	"resources:changed": Resource;
 
 	// PLAYER
 	"player:initialized": Player;
@@ -54,10 +57,10 @@ export interface GameEvents {
 	"classCard:levelUp": string;
 	"inventory:changed": void;
 	"inventory:dropped": string[];
-        "slot:drop": { fromId: string; toId: string };
-        "slot:drag-start": { slotId: string };
-        "slot:click": string;
-        "slot:dblclick": string;
+	"slot:drop": { fromId: string; toId: string };
+	"slot:drag-start": { slotId: string };
+	"slot:click": string;
+	"slot:dblclick": string;
 
 	"settlement:changed": void;
 	"settlement:buildPointsChanged": number;

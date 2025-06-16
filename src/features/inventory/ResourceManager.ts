@@ -55,8 +55,15 @@ export class ResourceManager extends Destroyable implements Saveable {
 		return this.resources.get(id);
 	}
 
+	public getAllResources(): Map<string, ResourceData> {
+		return new Map(Array.from(this.resources.entries()).map(([key, value]) => [key, { ...value }]));
+	}
+
+	// SAVE + LOAD
+
 	public save(): Map<string, ResourceData> {
-		return this.resources;
+		// Return a shallow copy of the map and a shallow copy of each ResourceData object
+		return new Map(Array.from(this.resources.entries()).map(([key, value]) => [key, { ...value }]));
 	}
 
 	public load(data: Map<string, ResourceData>): void {

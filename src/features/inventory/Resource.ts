@@ -1,5 +1,5 @@
 import { SpecRegistryBase } from "@/models/SpecRegistryBase";
-import { ResourceSpec } from "./ResourceManager";
+import { ResourceSpec } from "@/shared/types";
 
 export class Resource extends SpecRegistryBase<ResourceSpec> {
 	private constructor(private readonly spec: ResourceSpec) {
