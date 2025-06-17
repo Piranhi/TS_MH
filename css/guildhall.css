@@ -1,0 +1,66 @@
+.guildhall-screen {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: #e7eaf1;
+}
+
+.guildhall-section {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+
+.guildhall-section h2 {
+    margin-top: 0;
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+}
+
+.run-stats {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px,1fr));
+    gap: 8px;
+}
+.run-stats li {
+    background: rgba(0,0,0,0.2);
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.prestige-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 8px 0;
+}
+
+.challenge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+    gap: 10px;
+}
+.challenge-card {
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.challenge-card.active {
+    border: 2px solid var(--accent);
+}
+.challenge-title {
+    font-weight: 600;
+}
+.challenge-progress {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
