@@ -106,8 +106,14 @@
 	opacity: 0.5;
 }
 /* New styles for expanded recipe selection and slot display */
+.blacksmith-slot-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+}
 .blacksmith-slot {
-	position: relative;
+        position: relative;
+        min-height: 240px;
 }
 .bs-select-btn {
 	width: 100%;
@@ -153,13 +159,13 @@
 	margin-bottom: 0.2rem;
 }
 .bs-recipe-costs {
-	display: flex;
-	gap: 0.2rem;
+        display: flex;
+        gap: 0.4rem;
 }
 .bs-recipe-costs img {
-	width: 24px;
-	height: 24px;
-	border-radius: 4px;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
 }
 .bs-recipe-time {
 	font-size: 0.75rem;
@@ -204,8 +210,16 @@
 	font-size: 14px;
 }
 .bs-cost-icons img {
-	width: 24px;
-	height: 24px;
-	border-radius: 4px;
-	position: relative;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        position: relative;
+}
+.bs-cost-item {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+}
+.bs-cost-item .insufficient {
+        color: #e53e3e;
 }

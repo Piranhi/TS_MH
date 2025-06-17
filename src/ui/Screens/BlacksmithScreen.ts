@@ -75,14 +75,17 @@ export class BlacksmithScreen extends BaseScreen {
 		const available = Array.from(resources.entries())
 			.filter(([id, d]) => id !== "raw_ore" && d.isUnlocked && !d.infinite)
 			.map(([id]) => id);
-		slots.forEach((slot, idx) => {
-			const el = document.createElement("div");
-			el.className = "blacksmith-slot";
+                slots.forEach((slot, idx) => {
+                        const wrapper = document.createElement("div");
+                        wrapper.className = "blacksmith-slot-wrapper";
+                        const el = document.createElement("div");
+                        el.className = "blacksmith-slot";
+                        wrapper.appendChild(el);
 
-			const selectBtn = document.createElement("button");
-			selectBtn.className = "bs-select-btn";
-			selectBtn.textContent = "Choose";
-			el.appendChild(selectBtn);
+                        const selectBtn = document.createElement("button");
+                        selectBtn.className = "bs-select-btn";
+                        selectBtn.textContent = "Choose";
+                        wrapper.appendChild(selectBtn);
 
 			const content = document.createElement("div");
 			content.className = "bs-slot-content";
@@ -100,15 +103,22 @@ export class BlacksmithScreen extends BaseScreen {
 				const img = document.createElement("img");
 				img.src = spec.iconUrl;
 				card.appendChild(img);
-				const costsEl = document.createElement("div");
-				costsEl.className = "bs-recipe-costs";
-				spec.requires.forEach((r) => {
-					if (!r.resource) return;
-					const ic = document.createElement("img");
-					ic.src = Resource.getSpec(r.resource)?.iconUrl ?? "";
-					ic.title = `${r.quantity}/${this.context.resources.getResourceQuantity(r.resource)}`;
-					costsEl.appendChild(ic);
-				});
+                        const costsEl = document.createElement("div");
+                        costsEl.className = "bs-recipe-costs";
+                        spec.requires.forEach((r) => {
+                                if (!r.resource) return;
+                                const have = this.context.resources.getResourceQuantity(r.resource);
+                                const item = document.createElement("div");
+                                item.className = "bs-cost-item";
+                                const ic = document.createElement("img");
+                                ic.src = Resource.getSpec(r.resource)?.iconUrl ?? "";
+                                item.appendChild(ic);
+                                const txt = document.createElement("span");
+                                txt.textContent = `${have}/${r.quantity}`;
+                                if (have < r.quantity) txt.classList.add("insufficient");
+                                item.appendChild(txt);
+                                costsEl.appendChild(item);
+                        });
 				card.appendChild(costsEl);
 				const timeEl = document.createElement("div");
 				timeEl.className = "bs-recipe-time";
@@ -146,12 +156,9 @@ export class BlacksmithScreen extends BaseScreen {
 			info.appendChild(lvlEl);
 			content.appendChild(info);
 
-			const costEl = document.createElement("div");
-			costEl.className = "bs-cost-icons";
-			content.appendChild(costEl);
-			const costTextEl = document.createElement("span");
-			costTextEl.textContent = "hello";
-			content.appendChild(costTextEl);
+                        const costEl = document.createElement("div");
+                        costEl.className = "bs-cost-icons";
+                        content.appendChild(costEl);
 
 			const barContainer = document.createElement("div");
 			content.appendChild(barContainer);
@@ -160,7 +167,7 @@ export class BlacksmithScreen extends BaseScreen {
 			barContainer.appendChild(progressText);
 			const bar = new ProgressBar({ container: barContainer, maxValue: 1, initialValue: 0 });
 
-			this.slotGrid.appendChild(el);
+                        this.slotGrid.appendChild(wrapper);
 			this.slotEls.push({
 				container: el,
 				selectBtn,
@@ -272,14 +279,21 @@ export class BlacksmithScreen extends BaseScreen {
 				el.bar.setValue(spec.craftTime - slot.progress);
 				el.selectBtn.textContent = spec.name;
 				el.icon.src = spec.iconUrl;
-				el.cost.innerHTML = "";
-				spec.requires.forEach((r) => {
-					if (!r.resource) return;
-					const img = document.createElement("img");
-					img.src = Resource.getSpec(r.resource)?.iconUrl ?? "";
-					img.title = `${r.quantity}/${this.context.resources.getResourceQuantity(r.resource)}`;
-					el.cost.appendChild(img);
-				});
+                                el.cost.innerHTML = "";
+                                spec.requires.forEach((r) => {
+                                        if (!r.resource) return;
+                                        const have = this.context.resources.getResourceQuantity(r.resource);
+                                        const item = document.createElement("div");
+                                        item.className = "bs-cost-item";
+                                        const img = document.createElement("img");
+                                        img.src = Resource.getSpec(r.resource)?.iconUrl ?? "";
+                                        item.appendChild(img);
+                                        const txt = document.createElement("span");
+                                        txt.textContent = `${have}/${r.quantity}`;
+                                        if (have < r.quantity) txt.classList.add("insufficient");
+                                        item.appendChild(txt);
+                                        el.cost.appendChild(item);
+                                });
 				el.progressText.textContent = `${Math.ceil(slot.progress)}s`;
 
 				if (data) {
