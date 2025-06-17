@@ -31,6 +31,10 @@ export interface GameEvents {
 	// RESOURCES
 	"resources:changed": Resource;
 
+	// BLACKSMITH
+	"blacksmith:slots-changed": void;
+	"blacksmith:upgrades-changed": void;
+
 	// PLAYER
 	"player:initialized": Player;
 	"player:level-up": number;

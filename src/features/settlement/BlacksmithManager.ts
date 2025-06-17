@@ -5,7 +5,7 @@ import { BlacksmithUpgrade } from "./BlacksmithUpgrade";
 import { BlacksmithUpgradeSpec, ResourceRequirement } from "@/shared/types";
 import { Resource } from "@/features/inventory/Resource";
 
-interface CraftSlot {
+export interface CraftSlot {
     resourceId: string | null;
     progress: number;
 }

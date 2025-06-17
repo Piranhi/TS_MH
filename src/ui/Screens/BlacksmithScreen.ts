@@ -3,318 +3,354 @@ import { BaseScreen } from "./BaseScreen";
 import Markup from "./blacksmith.html?raw";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { Resource } from "@/features/inventory/Resource";
-import { ProgressBar } from "../components/ProgressBar";
-import { ProgressBarSimple } from "../components/ProgressBarSimple";
 import { Tooltip } from "../components/Tooltip";
-import { BlacksmithUpgrade } from "@/features/settlement/BlacksmithUpgrade";
+import { BlacksmithSlot } from "../components/BlacksmithSlot";
 
-interface SlotElements {
-	container: HTMLElement;
-	selectBtn: HTMLButtonElement;
-	optionRow: HTMLElement;
-	content: HTMLElement;
-	icon: HTMLImageElement;
-	level: HTMLElement;
-	xpBar: ProgressBarSimple;
-	xpText: HTMLElement;
-	cost: HTMLElement;
-	bar: ProgressBar;
-	progressText: HTMLElement;
+interface ResourceRowData {
+	element: HTMLElement;
+	quantityEl: HTMLSpanElement;
+	levelEl: HTMLSpanElement;
+	lastQuantity: number;
+	lastLevel: number;
 }
 
+interface UpgradeCardData {
+	element: HTMLElement;
+	purchased: boolean;
+}
+
+/**
+ * Optimized BlacksmithScreen that updates only what changes.
+ * Uses component-based architecture to avoid rebuilding the UI.
+ */
 export class BlacksmithScreen extends BaseScreen {
 	readonly screenName = "blacksmith";
 
 	private slotGrid!: HTMLElement;
 	private resourceList!: HTMLElement;
 	private upgradeGrid!: HTMLElement;
-	private slotEls: SlotElements[] = [];
+
+	// Component instances
+	private slotComponents: BlacksmithSlot[] = [];
+
+	// Cached resource row elements for efficient updates
+	private resourceRows: Map<string, ResourceRowData> = new Map();
+
+	// Cached upgrade cards
+	private upgradeCards: Map<string, UpgradeCardData> = new Map();
 
 	init() {
 		this.addMarkuptoPage(Markup);
 		this.slotGrid = this.byId("bsSlotGrid");
 		this.resourceList = this.byId("bsResourceList");
 		this.upgradeGrid = this.byId("bsUpgradeGrid");
-		this.build();
+
+		this.buildInitial();
 		this.bindEvents();
 	}
-	show() {}
-	hide() {}
 
-	private build() {
+	show() {
+		// Update everything when screen is shown
+		this.updateAll();
+	}
+
+	hide() {
+		// Cleanup tooltips when hidden
+		Tooltip.instance.hide();
+	}
+
+	/**
+	 * Builds the initial UI structure once.
+	 * All future updates will modify existing elements.
+	 */
+	private buildInitial() {
 		this.buildSlots();
+		this.buildResourceRows();
+		this.buildUpgradeCards();
+	}
+
+	/**
+	 * Binds event handlers for UI updates.
+	 */
+	private bindEvents() {
+		// Update slots every tick
+		bus.on("Game:UITick", () => this.updateSlots());
+
+		// Update resources when they change
+		bindEvent(this.eventBindings, "resources:changed", () => this.updateResourcesDisplay());
+
+		// Full rebuild only when slots change (rare)
+		bindEvent(this.eventBindings, "blacksmith:slots-changed", () => this.rebuildSlots());
+
+		// Update upgrades when they change
+		bindEvent(this.eventBindings, "blacksmith:upgrades-changed", () => this.updateUpgrades());
+	}
+
+	/**
+	 * Creates BlacksmithSlot components for each slot.
+	 * Only called once during initialization or when slot count changes.
+	 */
+	private buildSlots() {
+		// Clear existing components
+		this.slotComponents.forEach((slot) => slot.destroy());
+		this.slotComponents = [];
+		this.slotGrid.innerHTML = "";
+
+		const slots = this.context.blacksmith.getSlots();
+
+		slots.forEach((_, idx) => {
+			const container = document.createElement("div");
+			this.slotGrid.appendChild(container);
+
+			const component = new BlacksmithSlot(container, idx);
+			this.slotComponents.push(component);
+		});
+	}
+
+	/**
+	 * Updates all slot components.
+	 * Called every tick - components handle their own efficient updates.
+	 */
+	private updateSlots() {
+		this.slotComponents.forEach((slot) => slot.update());
+	}
+
+	/**
+	 * Rebuilds slots only when the number of slots changes.
+	 * Rare event - typically only happens with upgrades.
+	 */
+	private rebuildSlots() {
+		const currentCount = this.slotComponents.length;
+		const newCount = this.context.blacksmith.getSlots().length;
+
+		if (currentCount !== newCount) {
+			this.buildSlots();
+		}
+	}
+
+	/**
+	 * Creates resource row elements once.
+	 * Updates will modify these elements rather than recreating them.
+	 */
+	private buildResourceRows() {
+		this.resourceList.innerHTML = "";
+		this.resourceRows.clear();
+
+		const resources = this.context.resources.getAllResources();
+
+		for (let [id, data] of resources) {
+			if (!data.isUnlocked || data.infinite) continue;
+
+			const spec = Resource.getSpec(id);
+			if (!spec) continue;
+
+			const row = this.createResourceRow(id, spec, data);
+			this.resourceList.appendChild(row.element);
+			this.resourceRows.set(id, row);
+		}
+	}
+
+	/**
+	 * Creates a single resource row with cached element references.
+	 */
+	private createResourceRow(id: string, spec: any, data: any): ResourceRowData {
+		const row = document.createElement("div");
+		row.className = "blacksmith-resource-row";
+
+		const img = document.createElement("img");
+		img.src = spec.iconUrl;
+		row.appendChild(img);
+
+		const qty = document.createElement("span");
+		qty.textContent = String(data.quantity);
+		row.appendChild(qty);
+
+		const lvl = document.createElement("span");
+		lvl.className = "blacksmith-resource-level";
+		lvl.textContent = `Lv ${data.level}`;
+		row.appendChild(lvl);
+
+		// Tooltip handling
+		row.addEventListener("mouseenter", () => {
+			Tooltip.instance.show(row, {
+				icon: spec.iconUrl,
+				name: spec.name,
+				description: spec.description,
+			});
+		});
+		row.addEventListener("mouseleave", () => Tooltip.instance.hide());
+
+		return {
+			element: row,
+			quantityEl: qty,
+			levelEl: lvl,
+			lastQuantity: data.quantity,
+			lastLevel: data.level,
+		};
+	}
+
+	/**
+	 * Updates only the resource values that have changed.
+	 * Much more efficient than rebuilding all rows.
+	 */
+	private updateResourcesDisplay() {
+		const resources = this.context.resources.getAllResources();
+
+		// Check for new resources that need rows
+		for (let [id, data] of resources) {
+			if (!data.isUnlocked || data.infinite) continue;
+
+			if (!this.resourceRows.has(id)) {
+				// New resource unlocked - add its row
+				const spec = Resource.getSpec(id);
+				if (spec) {
+					const row = this.createResourceRow(id, spec, data);
+					this.resourceList.appendChild(row.element);
+					this.resourceRows.set(id, row);
+				}
+			}
+		}
+
+		// Update existing rows
+		this.resourceRows.forEach((row, id) => {
+			const data = resources.get(id);
+			if (!data) {
+				// Resource no longer exists - remove row
+				row.element.remove();
+				this.resourceRows.delete(id);
+				return;
+			}
+
+			// Only update if values changed
+			if (data.quantity !== row.lastQuantity) {
+				row.quantityEl.textContent = String(data.quantity);
+				row.lastQuantity = data.quantity;
+			}
+
+			if (data.level !== row.lastLevel) {
+				row.levelEl.textContent = `Lv ${data.level}`;
+				row.lastLevel = data.level;
+			}
+		});
+
+		// Notify slots that resources changed (for cost updates)
+		this.slotComponents.forEach((slot) => slot.onResourcesChanged());
+	}
+
+	/**
+	 * Creates upgrade cards once.
+	 * Updates will modify these elements rather than recreating them.
+	 */
+	private buildUpgradeCards() {
+		this.upgradeGrid.innerHTML = "";
+		this.upgradeCards.clear();
+
+		const upgrades = this.context.blacksmith.getUpgrades();
+
+		upgrades.forEach((upg) => {
+			const card = this.createUpgradeCard(upg);
+			this.upgradeGrid.appendChild(card.element);
+			this.upgradeCards.set(upg.id, card);
+		});
+	}
+
+	/**
+	 * Creates a single upgrade card element.
+	 */
+	private createUpgradeCard(upg: any): UpgradeCardData {
+		const card = document.createElement("div");
+		card.className = "blacksmith-upgrade-card";
+		if (upg.isPurchased) card.classList.add("purchased");
+
+		const nameEl = document.createElement("div");
+		nameEl.className = "blacksmith-upgrade-title";
+		nameEl.textContent = upg.name;
+		card.appendChild(nameEl);
+
+		const costEl = document.createElement("div");
+		costEl.className = "blacksmith-upgrade-cost";
+		costEl.textContent = upg.cost.map((c: any) => `${c.quantity} ${Resource.getSpec(c.resource)?.name ?? c.resource}`).join(", ");
+		card.appendChild(costEl);
+
+		// Check affordability
+		const canAfford = this.context.resources.canAfford(upg.cost);
+		if (!canAfford) card.classList.add("disabled");
+
+		// Tooltip
+		card.addEventListener("mouseenter", () => {
+			Tooltip.instance.show(card, {
+				icon: upg.icon,
+				name: upg.name,
+				description: upg.description,
+			});
+		});
+		card.addEventListener("mouseleave", () => Tooltip.instance.hide());
+
+		// Click handler
+		card.addEventListener("click", () => {
+			if (!upg.isPurchased) {
+				this.context.blacksmith.purchaseUpgrade(upg.id);
+			}
+		});
+
+		return {
+			element: card,
+			purchased: upg.isPurchased,
+		};
+	}
+
+	/**
+	 * Updates upgrade cards when upgrades change.
+	 * Only modifies what has changed.
+	 */
+	private updateUpgrades() {
+		const upgrades = this.context.blacksmith.getUpgrades();
+
+		upgrades.forEach((upg) => {
+			const card = this.upgradeCards.get(upg.id);
+			if (!card) {
+				// New upgrade - add it
+				const newCard = this.createUpgradeCard(upg);
+				this.upgradeGrid.appendChild(newCard.element);
+				this.upgradeCards.set(upg.id, newCard);
+				return;
+			}
+
+			// Update purchase status if changed
+			if (upg.isPurchased !== card.purchased) {
+				card.purchased = upg.isPurchased;
+				if (upg.isPurchased) {
+					card.element.classList.add("purchased");
+				} else {
+					card.element.classList.remove("purchased");
+				}
+			}
+
+			// Update affordability
+			const canAfford = this.context.resources.canAfford(upg.cost);
+			if (canAfford) {
+				card.element.classList.remove("disabled");
+			} else {
+				card.element.classList.add("disabled");
+			}
+		});
+	}
+
+	/**
+	 * Updates all UI elements.
+	 * Called when screen is shown or major changes occur.
+	 */
+	private updateAll() {
+		this.updateSlots();
 		this.updateResourcesDisplay();
 		this.updateUpgrades();
 	}
 
-	private bindEvents() {
-		bus.on("Game:UITick", (delta) => this.handleTick(delta));
-		bindEvent(this.eventBindings, "resources:changed", () => this.updateResourcesDisplay());
-		bindEvent(this.eventBindings, "blacksmith:changed", () => this.build());
-	}
 	/**
-	 * Builds and renders the blacksmith slots UI, including resource selection and progress indicators.
-	 *
-	 * This method clears the current slot grid, creates UI elements for each blacksmith slot,
-	 * and populates them with selectable resource options, progress bars, and relevant information.
-	 *
-	 * For each slot:
-	 * - Adds a "Choose" button to toggle resource selection.
-	 * - Displays available resources (excluding "raw_ore", locked, or infinite resources) as selectable cards.
-	 * - Shows resource icons, crafting costs, and crafting time for each option.
-	 * - Handles resource selection and updates the slot accordingly.
-	 * - Displays selected resource info, including icon, XP bar, level, and crafting progress.
-	 *
-	 * The created slot elements are stored in `this.slotEls` for later reference.
+	 * Cleanup when screen is destroyed.
 	 */
-	private buildSlots() {
-		this.slotGrid.innerHTML = "";
-		this.slotEls = [];
-		const slots = this.context.blacksmith.getSlots();
-		const resources = this.context.resources.getAllResources();
-		const available = Array.from(resources.entries())
-			.filter(([id, d]) => id !== "raw_ore" && d.isUnlocked && !d.infinite)
-			.map(([id]) => id);
-                slots.forEach((slot, idx) => {
-                        const wrapper = document.createElement("div");
-                        wrapper.className = "blacksmith-slot-wrapper";
-                        const el = document.createElement("div");
-                        el.className = "blacksmith-slot";
-                        wrapper.appendChild(el);
-
-                        const selectBtn = document.createElement("button");
-                        selectBtn.className = "bs-select-btn";
-                        selectBtn.textContent = "Choose";
-                        wrapper.appendChild(selectBtn);
-
-			const content = document.createElement("div");
-			content.className = "bs-slot-content";
-			el.appendChild(content);
-
-			const optionRow = document.createElement("div");
-			optionRow.className = "bs-option-row";
-			el.appendChild(optionRow);
-
-			available.forEach((id) => {
-				const spec = Resource.getSpec(id);
-				if (!spec) return;
-				const card = document.createElement("div");
-				card.className = "bs-recipe-card";
-				const img = document.createElement("img");
-				img.src = spec.iconUrl;
-				card.appendChild(img);
-                        const costsEl = document.createElement("div");
-                        costsEl.className = "bs-recipe-costs";
-                        spec.requires.forEach((r) => {
-                                if (!r.resource) return;
-                                const have = this.context.resources.getResourceQuantity(r.resource);
-                                const item = document.createElement("div");
-                                item.className = "bs-cost-item";
-                                const ic = document.createElement("img");
-                                ic.src = Resource.getSpec(r.resource)?.iconUrl ?? "";
-                                item.appendChild(ic);
-                                const txt = document.createElement("span");
-                                txt.textContent = `${have}/${r.quantity}`;
-                                if (have < r.quantity) txt.classList.add("insufficient");
-                                item.appendChild(txt);
-                                costsEl.appendChild(item);
-                        });
-				card.appendChild(costsEl);
-				const timeEl = document.createElement("div");
-				timeEl.className = "bs-recipe-time";
-				timeEl.textContent = `${spec.craftTime}s`;
-				card.appendChild(timeEl);
-				card.addEventListener("click", () => {
-					this.context.blacksmith.setSlotResource(idx, id);
-					el.classList.remove("choosing");
-					this.handleTick(0);
-				});
-				optionRow.appendChild(card);
-			});
-
-			selectBtn.addEventListener("click", () => {
-				el.classList.toggle("choosing");
-			});
-
-			const info = document.createElement("div");
-			info.className = "bs-selected-info";
-			const iconWrap = document.createElement("div");
-			iconWrap.className = "bs-icon-wrapper";
-			const icon = document.createElement("img");
-			icon.className = "bs-resource-icon";
-			iconWrap.appendChild(icon);
-			const xpContainer = document.createElement("div");
-			xpContainer.className = "bs-xp-bar-container";
-			iconWrap.appendChild(xpContainer);
-			const xpText = document.createElement("div");
-			xpText.className = "bs-xp-text";
-			xpContainer.appendChild(xpText);
-			const xpBar = new ProgressBarSimple({ container: xpContainer, maxValue: 1, initialValue: 0 });
-			info.appendChild(iconWrap);
-			const lvlEl = document.createElement("div");
-			lvlEl.className = "bs-level";
-			info.appendChild(lvlEl);
-			content.appendChild(info);
-
-                        const costEl = document.createElement("div");
-                        costEl.className = "bs-cost-icons";
-                        content.appendChild(costEl);
-
-			const barContainer = document.createElement("div");
-			content.appendChild(barContainer);
-			const progressText = document.createElement("div");
-			progressText.className = "progress-text";
-			barContainer.appendChild(progressText);
-			const bar = new ProgressBar({ container: barContainer, maxValue: 1, initialValue: 0 });
-
-                        this.slotGrid.appendChild(wrapper);
-			this.slotEls.push({
-				container: el,
-				selectBtn,
-				optionRow,
-				content,
-				icon,
-				level: lvlEl,
-				xpBar,
-				xpText,
-				cost: costEl,
-				bar,
-				progressText,
-			});
-		});
-	}
-
-	private updateResourcesDisplay() {
-		this.resourceList.innerHTML = "";
-		const resources = this.context.resources.getAllResources();
-		for (let [id, data] of resources) {
-			if (!data.isUnlocked || data.infinite) continue;
-			const spec = Resource.getSpec(id);
-			if (!spec) continue;
-			const row = document.createElement("div");
-			row.className = "blacksmith-resource-row";
-			const img = document.createElement("img");
-			img.src = spec.iconUrl;
-			row.appendChild(img);
-			const qty = document.createElement("span");
-			qty.textContent = String(data.quantity);
-			row.appendChild(qty);
-			const lvl = document.createElement("span");
-			lvl.className = "blacksmith-resource-level";
-			lvl.textContent = `Lv ${data.level}`;
-			row.appendChild(lvl);
-			row.addEventListener("mouseenter", () => {
-				Tooltip.instance.show(row, { icon: spec.iconUrl, name: spec.name, description: spec.description });
-			});
-			row.addEventListener("mouseleave", () => Tooltip.instance.hide());
-			this.resourceList.appendChild(row);
-		}
-	}
-
-	private updateUpgrades() {
-		this.upgradeGrid.innerHTML = "";
-		const upgrades = this.context.blacksmith.getUpgrades();
-		upgrades.forEach((upg) => {
-			const card = document.createElement("div");
-			card.className = "blacksmith-upgrade-card";
-			if (upg.isPurchased) card.classList.add("purchased");
-
-			const nameEl = document.createElement("div");
-			nameEl.className = "blacksmith-upgrade-title";
-			nameEl.textContent = upg.name;
-			card.appendChild(nameEl);
-
-			const costEl = document.createElement("div");
-			costEl.className = "blacksmith-upgrade-cost";
-			costEl.textContent = upg.cost.map((c) => `${c.quantity} ${Resource.getSpec(c.resource)?.name ?? c.resource}`).join(", ");
-			card.appendChild(costEl);
-
-			const canAfford = this.context.resources.canAfford(upg.cost);
-			if (!canAfford) card.classList.add("disabled");
-
-			card.addEventListener("mouseenter", () => {
-				Tooltip.instance.show(card, {
-					icon: upg.icon,
-					name: upg.name,
-					description: upg.description,
-				});
-			});
-			card.addEventListener("mouseleave", () => Tooltip.instance.hide());
-
-			card.addEventListener("click", () => {
-				if (canAfford && !upg.isPurchased) {
-					this.context.blacksmith.purchaseUpgrade(upg.id);
-				}
-			});
-			this.upgradeGrid.appendChild(card);
-		});
-	}
-
-	/**
-	 * Updates the UI elements for each blacksmith slot on every tick.
-	 *
-	 * This method iterates through all blacksmith slots and updates their corresponding UI elements
-	 * based on the current crafting state. It handles both the case where a resource is being crafted
-	 * and the case where no resource is selected.
-	 *
-	 * @param dt - The delta time since the last tick, in seconds.
-	 *
-	 * For each slot:
-	 * - If a resource is assigned:
-	 *   - Updates the progress bar, button text, icon, and cost display.
-	 *   - Shows the crafting progress and required resources.
-	 *   - If resource data is available, updates the level and XP bars.
-	 * - If no resource is assigned:
-	 *   - Resets the UI elements to their default state.
-	 */
-	private handleTick(dt: number) {
-		const slots = this.context.blacksmith.getSlots();
-		slots.forEach((slot, idx) => {
-			const el = this.slotEls[idx];
-			if (!el) return;
-			const spec = slot.resourceId ? Resource.getSpec(slot.resourceId) : null;
-			const data = slot.resourceId ? this.context.resources.getResourceData(slot.resourceId) : undefined;
-			if (spec) {
-				el.bar.setMax(spec.craftTime);
-				el.bar.setValue(spec.craftTime - slot.progress);
-				el.selectBtn.textContent = spec.name;
-				el.icon.src = spec.iconUrl;
-                                el.cost.innerHTML = "";
-                                spec.requires.forEach((r) => {
-                                        if (!r.resource) return;
-                                        const have = this.context.resources.getResourceQuantity(r.resource);
-                                        const item = document.createElement("div");
-                                        item.className = "bs-cost-item";
-                                        const img = document.createElement("img");
-                                        img.src = Resource.getSpec(r.resource)?.iconUrl ?? "";
-                                        item.appendChild(img);
-                                        const txt = document.createElement("span");
-                                        txt.textContent = `${have}/${r.quantity}`;
-                                        if (have < r.quantity) txt.classList.add("insufficient");
-                                        item.appendChild(txt);
-                                        el.cost.appendChild(item);
-                                });
-				el.progressText.textContent = `${Math.ceil(slot.progress)}s`;
-
-				if (data) {
-					const xpNeeded = data.level * 10;
-					el.level.textContent = `Lv ${data.level}`;
-					el.xpBar.setMax(xpNeeded);
-					el.xpBar.setValue(data.xp);
-					el.xpText.textContent = `XP ${data.xp}/${xpNeeded}`;
-				}
-			} else {
-				el.bar.setMax(1);
-				el.bar.setValue(0);
-				el.selectBtn.textContent = "Choose";
-				el.icon.src = "";
-				el.level.textContent = "";
-				el.xpBar.setMax(1);
-				el.xpBar.setValue(0);
-				el.xpText.textContent = "";
-				el.cost.innerHTML = "";
-				el.progressText.textContent = "";
-			}
-		});
+	destroy() {
+		this.slotComponents.forEach((slot) => slot.destroy());
+		super.destroy();
 	}
 }
