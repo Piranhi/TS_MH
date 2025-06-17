@@ -1,209 +1,211 @@
 .blacksmith-page {
-    display: flex;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    width: 100%;
+	display: flex;
+	gap: 1.5rem;
+	padding: 1.5rem;
+	width: 100%;
 }
 .blacksmith-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
 }
 .blacksmith-slot-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1rem;
 }
 .blacksmith-slot {
-    background: rgba(255, 255, 255, 0.07);
-    border-radius: 16px;
-    padding: 0.8rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+	background: rgba(255, 255, 255, 0.07);
+	border-radius: 16px;
+	padding: 0.8rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
 }
 .blacksmith-slot select {
-    width: 100%;
-    margin: 0.5rem 0;
-    padding: 0.2rem;
-    font: inherit;
-    border-radius: 0.3rem;
-    border: 1px solid var(--glass-border);
-    background: var(--glass-bg);
+	width: 100%;
+	margin: 0.5rem 0;
+	padding: 0.2rem;
+	font: inherit;
+	border-radius: 0.3rem;
+	border: 1px solid var(--glass-border);
+	background: var(--glass-bg);
 }
 .blacksmith-slot select:focus {
-    outline: none;
-    background: rgba(82, 74, 74, 0.849);
-    border-color: var(--accent);
+	outline: none;
+	background: rgba(82, 74, 74, 0.849);
+	border-color: var(--accent);
 }
 
 .blacksmith-slot-cost {
-    font-size: 0.8rem;
-    opacity: 0.8;
+	font-size: 0.8rem;
+	opacity: 0.8;
 }
 .blacksmith-resources {
-    width: 180px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 22px;
-    padding: 1rem;
+	width: 180px;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 22px;
+	padding: 1rem;
 }
 .blacksmith-resource-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	position: relative;
 }
 .blacksmith-resource-row img {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    background: rgba(0,0,0,0.2);
+	width: 32px;
+	height: 32px;
+	border-radius: 8px;
+	background: rgba(0, 0, 0, 0.2);
 }
 .blacksmith-resource-level {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    font-size: 0.7rem;
-    background: rgba(0,0,0,0.5);
-    padding: 0 2px;
-    border-radius: 4px;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	font-size: 0.7rem;
+	background: rgba(0, 0, 0, 0.5);
+	padding: 0 2px;
+	border-radius: 4px;
 }
 .blacksmith-upgrade-section {
-    background: rgba(255,255,255,0.1);
-    border-radius: 22px;
-    padding: 1rem;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 22px;
+	padding: 1rem;
 }
 .blacksmith-upgrade-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-    gap: 1rem;
-    max-height: 220px;
-    overflow-y: auto;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1rem;
+	max-height: 220px;
+	overflow-y: auto;
 }
 .blacksmith-upgrade-card {
-    background: rgba(255,255,255,0.14);
-    padding: 0.8rem;
-    border-radius: 12px;
-    cursor: pointer;
+	background: rgba(255, 255, 255, 0.14);
+	padding: 0.8rem;
+	border-radius: 12px;
+	cursor: pointer;
 }
 .blacksmith-upgrade-title {
-    font-weight: 500;
-    margin-bottom: 0.25rem;
+	font-weight: 500;
+	margin-bottom: 0.25rem;
 }
 .blacksmith-upgrade-cost {
-    font-size: 0.8rem;
-    opacity: 0.8;
+	font-size: 0.8rem;
+	opacity: 0.8;
 }
 .blacksmith-upgrade-card.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+	opacity: 0.5;
+	cursor: not-allowed;
 }
 .blacksmith-upgrade-card.purchased {
-    opacity: 0.5;
+	opacity: 0.5;
 }
 /* New styles for expanded recipe selection and slot display */
 .blacksmith-slot {
-    position: relative;
+	position: relative;
 }
 .bs-select-btn {
-    width: 100%;
-    padding: 0.3rem;
-    font: inherit;
-    border-radius: 0.3rem;
-    border: 1px solid var(--glass-border);
-    background: var(--glass-bg);
-    cursor: pointer;
+	width: 100%;
+	padding: 0.3rem;
+	font: inherit;
+	border-radius: 0.3rem;
+	border: 1px solid var(--glass-border);
+	background: var(--glass-bg);
+	cursor: pointer;
 }
 .bs-slot-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
 }
 .bs-option-row {
-    display: none;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+	display: none;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
 }
 .blacksmith-slot.choosing .bs-slot-content {
-    display: none;
+	display: none;
 }
 .blacksmith-slot.choosing .bs-option-row {
-    display: flex;
+	display: flex;
 }
 .bs-recipe-card {
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
-    padding: 0.3rem;
-    width: 120px;
-    cursor: pointer;
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 8px;
+	padding: 0.3rem;
+	width: 120px;
+	cursor: pointer;
 }
 .bs-recipe-card img {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-    margin-bottom: 0.2rem;
+	width: 40px;
+	height: 40px;
+	object-fit: contain;
+	margin-bottom: 0.2rem;
 }
 .bs-recipe-costs {
-    display: flex;
-    gap: 0.2rem;
+	display: flex;
+	gap: 0.2rem;
 }
 .bs-recipe-costs img {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
+	width: 24px;
+	height: 24px;
+	border-radius: 4px;
 }
 .bs-recipe-time {
-    font-size: 0.75rem;
-    opacity: 0.8;
+	font-size: 0.75rem;
+	opacity: 0.8;
 }
 .bs-selected-info {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
 }
 .bs-icon-wrapper {
-    position: relative;
+	position: relative;
 }
 .bs-resource-icon {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
-    border-radius: 8px;
+	width: 100px;
+	height: 100px;
+	object-fit: contain;
+	border-radius: 8px;
 }
 .bs-xp-bar-container {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
 }
 .bs-xp-text {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -1.2rem;
-    text-align: center;
-    font-size: 0.75rem;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -1.2rem;
+	text-align: center;
+	font-size: 0.75rem;
 }
 .bs-level {
-    font-size: 0.9rem;
+	font-size: 1.25rem;
 }
 .bs-cost-icons {
-    display: flex;
-    gap: 0.25rem;
-    margin-bottom: 0.5rem;
+	display: flex;
+	gap: 4px;
+	align-items: center;
+	color: #fff;
+	font-size: 14px;
 }
 .bs-cost-icons img {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
+	width: 24px;
+	height: 24px;
+	border-radius: 4px;
+	position: relative;
 }
-

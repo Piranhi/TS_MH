@@ -38,7 +38,10 @@ export class ResourceManager extends Destroyable implements Saveable {
 
 	private setUnlockedResources() {
 		this.setResourceUnlocked("raw_ore");
-		this.setResourceUnlocked("metal");
+		this.setResourceUnlocked("iron_ingot");
+		this.setResourceUnlocked("charstone");
+		this.setResourceUnlocked("copper_bar");
+		this.setResourceUnlocked("clear_quartz");
 	}
 
 	private setResourceUnlocked(id: string) {
