@@ -16,6 +16,7 @@ import { ScreenManager } from "./ScreenManager";
 import { PrestigeState } from "@/shared/stats-types";
 import { OfflineProgressManager } from "@/models/OfflineProgress";
 import { ResourceManager } from "@/features/inventory/ResourceManager";
+import { MineManager } from "@/features/mine/MineManager";
 
 export class GameContext {
 	private static _instance: GameContext | null = null;
@@ -80,10 +81,15 @@ export class GameContext {
 		return this.currentRun.huntManager;
 	}
 
-	public get resources(): ResourceManager {
-		if (!this.currentRun) throw new Error("No active run!");
-		return this.currentRun?.resourceManager;
-	}
+        public get resources(): ResourceManager {
+                if (!this.currentRun) throw new Error("No active run!");
+                return this.currentRun?.resourceManager;
+        }
+
+        public get mine(): MineManager {
+                if (!this.currentRun) throw new Error("No active run!");
+                return this.currentRun.mineManager;
+        }
 
 	public get inventory(): InventoryManager {
 		return this.services.inventoryManager;

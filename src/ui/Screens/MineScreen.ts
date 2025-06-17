@@ -1,46 +1,47 @@
-import { MineResourceDisplay } from "../components/MineResourceDisplay";
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./mine.html?raw";
 import { bus } from "@/core/EventBus";
-import { UpgradeSelectionContainer } from "../components/UpgradeSelectionContainer";
+import { MineShaft } from "../components/MineShaft";
 
 export class MineScreen extends BaseScreen {
-	readonly screenName = "mine";
-	private tempMineTimer = 0;
-	//private mineDisplaysMap = new Map<ConstructionResourceType, MineResourceDisplay>();
-	private upgradeContainer!: UpgradeSelectionContainer;
+    readonly screenName = "mine";
+    private shafts: MineShaft[] = [];
+    private logEl!: HTMLElement;
 
-	init() {
-		this.addMarkuptoPage(Markup);
-		this.build();
-		bus.on("Game:UITick", (delta) => this.handleTick(delta));
-	}
-	show() {}
-	hide() {}
+    init() {
+        this.addMarkuptoPage(Markup);
+        this.build();
+        bus.on("Game:UITick", () => this.update());
+        bus.on("settlement:changed", () => this.syncShafts());
+    }
 
-	private handleTick(dt: number) {
-		/* 		for (const mineDisplay of Array.from(this.mineDisplaysMap.values())) {
-			if (mineDisplay) mineDisplay.tick(dt);
-		} */
-		this.tempMineTimer += dt;
-		if (this.tempMineTimer >= 2) {
-			this.tempMineTimer -= 2;
-			this.context.resources.addResource("raw_ore", 1);
-		}
-	}
+    show() {}
+    hide() {}
 
-	private build() {
-		// Clear and populate the mine resource list with Classes
-		const resourceListEl = this.byId("mineResourceList");
-		resourceListEl.innerHTML = "";
+    private update() {
+        for (const shaft of this.shafts) shaft.tick();
+    }
 
-		const mineResource = new MineResourceDisplay(resource, resourceListEl);
-		//this.mineDisplaysMap.set(resource, mineResource);
+    private syncShafts() {
+        const level = this.context.settlement.getBuilding("mine")?.level || 0;
+        while (this.shafts.length < level) {
+            const listEl = this.byId("mineResourceList");
+            const shaft = new MineShaft(this.context.mine, this.shafts.length, listEl, (msg) => this.log(msg));
+            this.shafts.push(shaft);
+        }
+    }
 
-		const upgGrid = this.byId("mineUpgradesGrid");
-		this.upgradeContainer = new UpgradeSelectionContainer({
-			container: upgGrid,
-			upgrades: [],
-		});
-	}
+    private log(msg: string) {
+        const div = document.createElement("div");
+        div.textContent = msg;
+        this.logEl.appendChild(div);
+    }
+
+    private build() {
+        const listEl = this.byId("mineResourceList");
+        listEl.innerHTML = "";
+        this.logEl = this.byId("mineOutput");
+        this.logEl.innerHTML = "";
+        this.syncShafts();
+    }
 }
