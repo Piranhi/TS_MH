@@ -5,10 +5,10 @@ import { bus } from "@/core/EventBus";
 import { UpgradeSelectionContainer } from "../components/UpgradeSelectionContainer";
 
 export class MineScreen extends BaseScreen {
-        readonly screenName = "mine";
-        private tempMineTimer = 0;
-        //private mineDisplaysMap = new Map<ConstructionResourceType, MineResourceDisplay>();
-        private upgradeContainer!: UpgradeSelectionContainer;
+	readonly screenName = "mine";
+	private tempMineTimer = 0;
+	//private mineDisplaysMap = new Map<ConstructionResourceType, MineResourceDisplay>();
+	private upgradeContainer!: UpgradeSelectionContainer;
 
 	init() {
 		this.addMarkuptoPage(Markup);
@@ -34,10 +34,9 @@ export class MineScreen extends BaseScreen {
 		const resourceListEl = this.byId("mineResourceList");
 		resourceListEl.innerHTML = "";
 
-		/* 		CONSTRUCTION_RESOURCE_TYPES.forEach((resource) => {
-			const mineResource = new MineResourceDisplay(resource, resourceListEl);
-			this.mineDisplaysMap.set(resource, mineResource);
-		}); */
+		const mineResource = new MineResourceDisplay(resource, resourceListEl);
+		//this.mineDisplaysMap.set(resource, mineResource);
+
 		const upgGrid = this.byId("mineUpgradesGrid");
 		this.upgradeContainer = new UpgradeSelectionContainer({
 			container: upgGrid,
@@ -45,4 +44,3 @@ export class MineScreen extends BaseScreen {
 		});
 	}
 }
-

@@ -1,4 +1,3 @@
-import { ConstructionResourceType } from "@/shared/types";
 import { UIBase } from "./UIBase";
 import { ProgressBar } from "./ProgressBar";
 import { UIButton } from "./UIButton";
