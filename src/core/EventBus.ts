@@ -31,6 +31,9 @@ export interface GameEvents {
 	// RESOURCES
 	"resources:changed": Resource;
 
+	// MINE
+	"mine:opened": { index: number; rewards: Record<string, number> };
+
 	// BLACKSMITH
 	"blacksmith:slots-changed": void;
 	"blacksmith:upgrades-changed": void;

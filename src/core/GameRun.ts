@@ -30,8 +30,8 @@ export class GameRun extends Destroyable {
 	public readonly trainedStats: TrainedStatManager;
 	public readonly classCardManager: ClassCardManager;
 	public readonly equipmentManager: EquipmentManager;
-        public readonly resourceManager: ResourceManager;
-        public readonly mineManager: MineManager;
+	public readonly resourceManager: ResourceManager;
+	public readonly mineManager: MineManager;
 	public readonly runStartTime: number;
 	public readonly runId: string;
 	public readonly traits: Trait[];
@@ -52,9 +52,9 @@ export class GameRun extends Destroyable {
 		this.trainedStats = new TrainedStatManager();
 		this.classCardManager = new ClassCardManager();
 		this.equipmentManager = new EquipmentManager();
-                this.resourceManager = new ResourceManager();
-                const mineLevel = this.context.settlement.getBuilding("mine")?.level || 0;
-                this.mineManager = new MineManager(mineLevel);
+		this.resourceManager = new ResourceManager();
+		const mineLevel = this.context.settlement.getBuilding("mine")?.level || 0;
+		this.mineManager = new MineManager(mineLevel);
 
 		this.setupEventBindings();
 		this.initialize();
@@ -76,8 +76,8 @@ export class GameRun extends Destroyable {
 		saveManager.updateRegister("playerCharacter", this.character);
 		saveManager.updateRegister("huntManager", this.huntManager);
 		saveManager.updateRegister("trainedManager", this.trainedStats);
-                saveManager.updateRegister("resourceManager", this.resourceManager);
-                saveManager.updateRegister("mineManager", this.mineManager);
+		saveManager.updateRegister("resourceManager", this.resourceManager);
+		saveManager.updateRegister("mineManager", this.mineManager);
 
 		// Emit that run is ready
 		bus.emit("gameRun:initialized", this);
@@ -119,8 +119,8 @@ export class GameRun extends Destroyable {
 		this.trainedStats.destroy();
 		this.classCardManager.destroy();
 		this.equipmentManager.destroy();
-                this.resourceManager.destroy();
-                this.mineManager.destroy();
+		this.resourceManager.destroy();
+		this.mineManager.destroy();
 
 		bus.emit("gameRun:destroyed", this.runId);
 		super.destroy();
