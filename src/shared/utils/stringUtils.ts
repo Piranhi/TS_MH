@@ -13,3 +13,13 @@ export function formatTime(ms: number): string {
 	if (minutes > 0) return `${minutes}m`;
 	return `${seconds}s`;
 }
+
+export function formatTimeFull(ms: number): string {
+	let totalSeconds = Math.floor(ms / 1000);
+	const hours = Math.floor(totalSeconds / 3600);
+	totalSeconds %= 3600;
+	const minutes = Math.floor(totalSeconds / 60);
+	const seconds = totalSeconds % 60;
+	const pad = (n: number) => n.toString().padStart(2, "0");
+	return `${hours}:${pad(minutes)}:${pad(seconds)}`;
+}
