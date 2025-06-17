@@ -308,6 +308,9 @@ export class BlacksmithSlot extends UIBase {
 			this.progressBar.setValue(0);
 			this.contentEl.style.display = "none";
 		}
+		// Reset the progress bar.
+		this.lastProgress = 0;
+		this.progressBar.setValue(0);
 	}
 
 	/**

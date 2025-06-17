@@ -34,6 +34,7 @@ export interface GameEvents {
 	// BLACKSMITH
 	"blacksmith:slots-changed": void;
 	"blacksmith:upgrades-changed": void;
+	"blacksmith:changed": void;
 
 	// PLAYER
 	"player:initialized": Player;
