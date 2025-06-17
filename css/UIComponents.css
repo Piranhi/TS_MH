@@ -456,3 +456,85 @@ section + section {
 	/* bring these above the modal’s 1000 */
 	z-index: 1100;
 }
+
+/* ===== Upgrade Selection Components ===== */
+.upgrade-selection-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+}
+
+.upgrade-filters {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+}
+
+.upgrade-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.5rem;
+}
+
+.upgrade-card {
+        background: rgba(0, 0, 0, 0.25);
+        border-radius: 6px;
+        padding: 0.6rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        color: #fff;
+}
+.upgrade-card.purchased {
+        opacity: 0.5;
+}
+.upgrade-card.disabled {
+        opacity: 0.5;
+}
+.upgrade-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+}
+.upgrade-desc {
+        font-size: 0.8rem;
+        color: var(--text-muted, #ccc);
+}
+.upgrade-level {
+        font-size: 0.8rem;
+        opacity: 0.8;
+}
+.upgrade-progress {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+}
+.upgrade-timer {
+        font-size: 0.75rem;
+        opacity: 0.8;
+}
+.upgrade-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        gap: 0.4rem;
+}
+.upgrade-costs {
+        display: flex;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+}
+.upgrade-cost {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        font-size: 0.8rem;
+}
+.upgrade-cost-icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 3px;
+}
+.upgrade-action-btn {
+        min-width: 70px;
+}

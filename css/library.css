@@ -72,19 +72,5 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-}
-.library-upgrade-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-}
-.library-upgrade-card {
-    background: rgba(255, 255, 255, 0.14);
-    padding: 1rem;
-    border-radius: 16px;
-    cursor: pointer;
-}
-.library-upgrade-title {
-    font-size: 0.9rem;
     font-weight: 500;
 }
