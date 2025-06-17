@@ -76,33 +76,6 @@
 	background: rgba(255, 255, 255, 0.1);
 	border-radius: 22px;
 	padding: 1rem;
-}
-.blacksmith-upgrade-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	gap: 1rem;
-	max-height: 220px;
-	overflow-y: auto;
-}
-.blacksmith-upgrade-card {
-	background: rgba(255, 255, 255, 0.14);
-	padding: 0.8rem;
-	border-radius: 12px;
-	cursor: pointer;
-}
-.blacksmith-upgrade-title {
-	font-weight: 500;
-	margin-bottom: 0.25rem;
-}
-.blacksmith-upgrade-cost {
-	font-size: 0.8rem;
-	opacity: 0.8;
-}
-.blacksmith-upgrade-card.disabled {
-	opacity: 0.5;
-	cursor: not-allowed;
-}
-.blacksmith-upgrade-card.purchased {
 	opacity: 0.5;
 }
 /* New styles for expanded recipe selection and slot display */

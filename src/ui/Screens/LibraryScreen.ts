@@ -3,12 +3,14 @@ import Markup from "./library.html?raw";
 import { ProgressBar } from "../components/ProgressBar";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { ResearchUpgrade } from "@/features/settlement/ResearchUpgrade";
+import { UpgradeSelectionContainer, UpgradeSelectionData } from "../components/UpgradeSelectionContainer";
 
 export class LibraryScreen extends BaseScreen {
     readonly screenName = "library";
     private activeList!: HTMLElement;
     private upgradeGrid!: HTMLElement;
     private completedList!: HTMLElement;
+    private upgradeContainer!: UpgradeSelectionContainer;
 
     init() {
         this.addMarkuptoPage(Markup);
@@ -24,7 +26,15 @@ export class LibraryScreen extends BaseScreen {
 
     private build() {
         this.updateActive();
-        this.updateAvailable();
+        if (!this.upgradeContainer) {
+            this.upgradeContainer = new UpgradeSelectionContainer({
+                container: this.upgradeGrid,
+                upgrades: this.getAvailableUpgrades(),
+                onUpgradeClick: (id) => this.context.library.startResearch(id),
+            });
+        } else {
+            this.upgradeContainer.setUpgrades(this.getAvailableUpgrades());
+        }
         this.updateCompleted();
     }
 
@@ -57,19 +67,16 @@ export class LibraryScreen extends BaseScreen {
         });
     }
 
-    private updateAvailable() {
-        const avail = this.context.library.getAvailable();
-        this.upgradeGrid.innerHTML = "";
-        avail.forEach((upg) => {
-            const card = document.createElement("div");
-            card.className = "library-upgrade-card";
-            const name = document.createElement("div");
-            name.className = "library-upgrade-title";
-            name.textContent = upg.name;
-            card.appendChild(name);
-            card.addEventListener("click", () => this.context.library.startResearch(upg.id));
-            this.upgradeGrid.appendChild(card);
-        });
+    private getAvailableUpgrades(): UpgradeSelectionData[] {
+        return this.context.library.getAvailable().map((upg) => ({
+            id: upg.id,
+            title: upg.name,
+            description: upg.description,
+            costs: [],
+            requiredTime: upg.requiredTime,
+            purchased: false,
+            canAfford: true,
+        }));
     }
 
     private updateCompleted() {
