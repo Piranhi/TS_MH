@@ -23,6 +23,7 @@ export class UIButton extends UIBase {
 		super();
 		// 1️⃣ Create and configure the DOM element
 		this.el = document.createElement("button");
+		this.element = this.el;
 		this.el.classList.add("ui-button");
 		if (options.className) {
 			this.el.classList.add(options.className);

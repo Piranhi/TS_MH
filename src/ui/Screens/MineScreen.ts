@@ -23,7 +23,7 @@ export class MineScreen extends BaseScreen {
 	}
 
 	private syncShafts() {
-		const level = this.context.settlement.getBuilding("mine")?.level || 6;
+		const level = this.context.settlement.getBuilding("mine")?.level || 0;
 		while (this.shafts.length < level) {
 			const listEl = this.byId("mineResourceList");
 			const shaft = new MineShaft(this.context.mine, this.shafts.length, listEl, (msg) => this.log(msg));

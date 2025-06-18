@@ -98,8 +98,15 @@ export const GAME_BALANCE = {
 
 	// === BUILDING SCALING ===
 	buildings: {
+		// Buildings max level
+		maxlevel: 6,
 		// Cost multiplier per level (from levelling-types.ts)
 		costMultiplier: 2.25,
+	},
+
+	// === BLACKSMITH SCALING ===
+	blacksmith: {
+		defaultRawOreCraftTime: 10,
 	},
 
 	// === AREA SCALING ===

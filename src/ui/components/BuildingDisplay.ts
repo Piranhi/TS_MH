@@ -2,7 +2,6 @@ import { Tooltip } from "./Tooltip";
 import { Building } from "@/features/settlement/Building";
 import { UIBase } from "./UIBase";
 import { ProgressBar } from "./ProgressBar";
-import { Player } from "@/core/Player";
 
 export class BuildingDisplay extends UIBase {
 	private onUpgradeClick: ((e: Event) => void) | null = null;

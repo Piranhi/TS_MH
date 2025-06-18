@@ -1,7 +1,7 @@
 import { BuildingSnapshot, BuildingSpec, BuildingState, BuildingUnlockStatus } from "@/shared/types";
 import { bus } from "@/core/EventBus";
 import { SpecRegistryBase } from "@/models/SpecRegistryBase";
-import { BalanceCalculators } from "@/balance/GameBalance";
+import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 
 export class Building extends SpecRegistryBase<BuildingSpec> {
 	private constructor(private readonly spec: BuildingSpec, private state: BuildingState) {
@@ -12,6 +12,7 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 	private handleTick(delta: number) {}
 
 	public upgradeBuilding() {
+		if (this.state.level === GAME_BALANCE.buildings.maxlevel) return;
 		this.state.level++;
 		if (this.state.unlockStatus === "construction") this.state.unlockStatus = "unlocked";
 		bus.emit("settlement:changed");

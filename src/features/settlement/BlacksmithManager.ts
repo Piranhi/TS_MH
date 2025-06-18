@@ -2,8 +2,10 @@ import { bus } from "@/core/EventBus";
 import { GameContext } from "@/core/GameContext";
 import { Saveable } from "@/shared/storage-types";
 import { BlacksmithUpgrade } from "./BlacksmithUpgrade";
-import { BlacksmithUpgradeSpec, ResourceRequirement } from "@/shared/types";
+import { BlacksmithUpgradeSpec } from "@/shared/types";
 import { Resource } from "@/features/inventory/Resource";
+import { GAME_BALANCE } from "@/balance/GameBalance";
+import { GameBase } from "@/core/GameBase";
 
 export interface CraftSlot {
 	resourceId: string | null;
@@ -16,13 +18,15 @@ interface BlacksmithSave {
 	upgrades: string[];
 }
 
-export class BlacksmithManager implements Saveable {
+export class BlacksmithManager extends GameBase implements Saveable {
 	private slots: CraftSlot[] = [{ resourceId: null, progress: 0 }];
 	private unlockedSlots = 1;
 	private upgrades = new Map<string, BlacksmithUpgrade>();
 	private speedMultiplier = 1;
+	private rawOreTimer = 0;
 
 	constructor() {
+		super();
 		bus.on("Game:GameTick", (dt) => this.handleTick(dt));
 	}
 
@@ -100,6 +104,7 @@ export class BlacksmithManager implements Saveable {
 	 *   If crafting is complete, awards the resource and XP, and resets progress.
 	 */
 	handleTick(dt: number) {
+		this.addRawOre(dt);
 		for (const slot of this.slots) {
 			if (!slot.resourceId) continue;
 			const spec = Resource.getSpec(slot.resourceId);
@@ -117,6 +122,14 @@ export class BlacksmithManager implements Saveable {
 					slot.progress = 0;
 				}
 			}
+		}
+	}
+
+	addRawOre(dt: number) {
+		this.rawOreTimer += dt;
+		if (this.rawOreTimer >= GAME_BALANCE.blacksmith.defaultRawOreCraftTime) {
+			this.rawOreTimer -= GAME_BALANCE.blacksmith.defaultRawOreCraftTime;
+			GameContext.getInstance().resources.addResource("raw_ore", 1);
 		}
 	}
 

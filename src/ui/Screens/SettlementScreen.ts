@@ -1,9 +1,8 @@
-import { Player } from "@/core/Player";
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./settlement.html?raw";
-import { SettlementManager } from "@/features/settlement/SettlementManager";
 import { BuildingDisplay } from "../components/BuildingDisplay";
 import { bindEvent } from "@/shared/utils/busUtils";
+import { formatTimeFull } from "@/shared/utils/stringUtils";
 
 export class SettlementScreen extends BaseScreen {
 	readonly screenName = "settlement";
@@ -66,7 +65,7 @@ export class SettlementScreen extends BaseScreen {
 		} else {
 			// otherwise, we still have progress toward the next chunk
 			// snapshot.timeToNext is already “ms remaining”
-			this.settlementTimeInfo.textContent = `Next passive reward in: ${this.formatTime(snapshot.timeToNext)}`;
+			this.settlementTimeInfo.textContent = `Next passive reward in: ${formatTimeFull(snapshot.timeToNext)}`;
 
 			// snapshot.progress is a 0→1 fraction toward the next reward
 			const percent = Math.min(Math.max(snapshot.progress, 0), 1);
@@ -76,16 +75,5 @@ export class SettlementScreen extends BaseScreen {
 
 	private pointsChanged(amt: number) {
 		this.settlementBuildPointsEl.textContent = `Build Points: ${amt}`;
-	}
-
-	private formatTime(ms: number): string {
-		let totalSeconds = Math.floor(ms / 1000);
-		const hours = Math.floor(totalSeconds / 3600);
-		totalSeconds %= 3600;
-		const minutes = Math.floor(totalSeconds / 60);
-		const seconds = totalSeconds % 60;
-		// Pad minutes and seconds with leading zero if needed
-		const pad = (n: number) => n.toString().padStart(2, "0");
-		return `${hours}:${pad(minutes)}:${pad(seconds)}`;
 	}
 }

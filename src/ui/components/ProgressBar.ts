@@ -40,6 +40,7 @@ export class ProgressBar extends UIBase {
 		super();
 		// Clone + append the template, capturing its root element
 		this.root = this.cloneTemplate(options.templateId ? options.templateId : "progress-bar-template", options.container);
+		this.element = this.root; // ADD THIS LINE
 
 		// Grab the bar-fill element
 		this.fillEl = this.root.querySelector(".mh-progress__fill")!;
