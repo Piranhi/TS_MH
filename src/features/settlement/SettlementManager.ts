@@ -232,12 +232,18 @@ export class SettlementManager extends GameBase implements Saveable {
 		bus.emit("settlement:changed");
 	}
 
-	spendUnlockPoints(type: BuildingType, amt: number) {
-		const building = this.buildingsMap.get(type);
-		if (!building) return;
-		building.spendPoints(10);
-		bus.emit("settlement:changed");
-	}
+        spendBuildPoints(type: BuildingType, amt: number) {
+                const building = this.buildingsMap.get(type);
+                if (!building) return;
+
+                const spend = Math.min(amt, this.settlementBuildPoints);
+                if (spend <= 0) return;
+
+                this.settlementBuildPoints -= spend;
+                building.spendPoints(spend);
+                bus.emit("settlement:buildPointsChanged", this.settlementBuildPoints);
+                bus.emit("settlement:changed");
+        }
 
 	// GETTERS AND SETTERS
 

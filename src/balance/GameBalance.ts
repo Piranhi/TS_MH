@@ -326,9 +326,11 @@ export const BalanceCalculators = {
 	/**
 	 * Calculate building upgrade cost
 	 */
-	getBuildingCost(baseCost: number, currentLevel: number): number {
-		return Math.floor(baseCost * Math.pow(GAME_BALANCE.buildings.costMultiplier, currentLevel));
-	},
+        getBuildingCost(baseCost: number, currentLevel: number): number {
+                // Each level requires 10x more build points than the base cost
+                // e.g. Level 1 -> 10 * baseCost, Level 2 -> 20 * baseCost
+                return Math.floor(baseCost * currentLevel * 10);
+        },
 
 	// === COMBAT CALCULATIONS ===
 

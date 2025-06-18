@@ -3,6 +3,7 @@ import Markup from "./guildhall.html?raw";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { BalanceCalculators } from "@/balance/GameBalance";
 import { formatTimeFull } from "@/shared/utils/stringUtils";
+import { BuildingStatus } from "../components/BuildingStatus";
 
 interface ChallengeSpec {
 	id: string;
@@ -42,9 +43,12 @@ export class GuildHallScreen extends BaseScreen {
 	private challengeLevels = new Map<string, number>();
 	private activeChallenge: string | null = null;
 
-	init() {
-		const root = this.addMarkuptoPage(Markup);
-		this.runTimeEl = root.querySelector("#gh-run-time") as HTMLElement;
+        init() {
+                const root = this.addMarkuptoPage(Markup);
+                const statusEl = root.querySelector("#gh-building-status") as HTMLElement;
+                const building = this.context.settlement.getBuilding("guild_hall");
+                if (building && statusEl) new BuildingStatus(statusEl, building);
+                this.runTimeEl = root.querySelector("#gh-run-time") as HTMLElement;
 		this.levelEl = root.querySelector("#gh-level") as HTMLElement;
 		this.areaEl = root.querySelector("#gh-area") as HTMLElement;
 		this.killsEl = root.querySelector("#gh-kills") as HTMLElement;

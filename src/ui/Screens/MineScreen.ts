@@ -2,17 +2,21 @@ import { BaseScreen } from "./BaseScreen";
 import Markup from "./mine.html?raw";
 import { bus } from "@/core/EventBus";
 import { MineShaft } from "../components/MineShaft";
+import { BuildingStatus } from "../components/BuildingStatus";
 
 export class MineScreen extends BaseScreen {
 	readonly screenName = "mine";
 	private shafts: MineShaft[] = [];
 	private logEl!: HTMLElement;
 
-	init() {
-		this.addMarkuptoPage(Markup);
-		this.build();
-		bus.on("Game:UITick", () => this.update());
-		bus.on("settlement:changed", () => this.syncShafts());
+        init() {
+                const root = this.addMarkuptoPage(Markup);
+                const statusEl = root.querySelector("#mine-building-status") as HTMLElement;
+                const building = this.context.settlement.getBuilding("mine");
+                if (building && statusEl) new BuildingStatus(statusEl, building);
+                this.build();
+                bus.on("Game:UITick", () => this.update());
+                bus.on("settlement:changed", () => this.syncShafts());
 	}
 
 	show() {}
