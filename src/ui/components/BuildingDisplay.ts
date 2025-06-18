@@ -8,6 +8,7 @@ export class BuildingDisplay extends UIBase {
     private levelEl!: HTMLElement;
     private progress!: ProgressBar;
     private spendContainer!: HTMLElement;
+    private progressText!: HTMLElement;
 
     constructor(private containerEl: HTMLElement, template: HTMLTemplateElement, private building: Building) {
         super();
@@ -26,6 +27,7 @@ export class BuildingDisplay extends UIBase {
         this.levelEl = root.querySelector(".building-level") as HTMLElement;
         this.spendContainer = root.querySelector(".spend-points") as HTMLElement;
         const progressHolder = root.querySelector(".progress-holder") as HTMLElement;
+        this.progressText = progressHolder.querySelector(".progress-text") as HTMLElement;
 
         this.progress = new ProgressBar({ container: progressHolder, templateId: undefined, initialValue: 0, maxValue: 1 });
 
@@ -82,6 +84,7 @@ export class BuildingDisplay extends UIBase {
         this.levelEl.textContent = `Lv ${snap.level}`;
         this.progress.setMax(snap.nextUnlock);
         this.progress.setValue(snap.pointsAllocated);
+        this.progressText.textContent = `${snap.pointsAllocated} / ${snap.nextUnlock}`;
     }
 
     private handleMouseEnter() {
