@@ -7,7 +7,7 @@ import { formatTimeFull } from "@/shared/utils/stringUtils";
 export class SettlementScreen extends BaseScreen {
 	readonly screenName = "settlement";
 	private rootEl!: HTMLElement;
-	private BuildingGridEl!: HTMLElement;
+	private BuildingRowsEl!: HTMLElement;
 	private buildingDisplays: BuildingDisplay[] = [];
 	private buildingTemplate!: HTMLTemplateElement;
 	private settlementBuildPointsEl!: HTMLElement;
@@ -18,7 +18,7 @@ export class SettlementScreen extends BaseScreen {
 
 	init() {
 		this.rootEl = this.addMarkuptoPage(Markup);
-		this.BuildingGridEl = this.rootEl.querySelector(".building-grid") as HTMLElement;
+		this.BuildingRowsEl = this.rootEl.querySelector(".building-grid") as HTMLElement;
 		this.buildingTemplate = this.rootEl.querySelector("#building-card") as HTMLTemplateElement;
 		this.settlementRewardInfo = this.rootEl.querySelector("#settlement-reward-info") as HTMLElement;
 		this.settlementTimeInfo = this.rootEl.querySelector("#settlement-time-info") as HTMLElement;
@@ -42,11 +42,11 @@ export class SettlementScreen extends BaseScreen {
 	}
 
 	private buildGrid() {
-		this.BuildingGridEl.innerHTML = "";
+		this.BuildingRowsEl.innerHTML = "";
 		this.buildingDisplays = [];
 
 		for (const building of this.context.settlement.getAllBuildings()) {
-			const display = new BuildingDisplay(this.BuildingGridEl, this.buildingTemplate, building);
+			const display = new BuildingDisplay(this.BuildingRowsEl, this.buildingTemplate, building);
 			this.buildingDisplays.push(display);
 		}
 	}

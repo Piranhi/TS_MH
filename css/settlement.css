@@ -25,13 +25,13 @@
 	letter-spacing: 0.05em;
 }
 .settlement-name {
-        font-weight: 700;
-        font-size: 1.2rem;
+	font-weight: 700;
+	font-size: 1.2rem;
 }
 #settlement-build-points {
-        font-weight: 700;
-        font-size: 1.2rem;
-        color: #5ff1ac;
+	font-weight: 700;
+	font-size: 1.2rem;
+	color: #5ff1ac;
 }
 
 .settlement-main {
@@ -41,34 +41,34 @@
 }
 
 .building-grid {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 }
 .building-row {
-        background: rgba(73, 116, 98, 0.555);
-        backdrop-filter: blur(7px);
-        border-radius: 8px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        color: #a7e3ff;
+	background: rgba(73, 116, 98, 0.555);
+	backdrop-filter: blur(7px);
+	border-radius: 8px;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
+	display: flex;
+	align-items: center;
+	padding: 10px;
+	color: #d3d3d3;
 }
 .building-icon {
-        width: 48px;
-        height: 48px;
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
+	width: 152px;
+	height: 152px;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 .building-info {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-left: 10px;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-left: 10px;
 }
 
 .plot-card {
@@ -85,34 +85,34 @@
 	color: #a7e3ff;
 }
 .building-row .building-title {
-        font-weight: 700;
-        font-size: 1.08rem;
-        margin: 10px 0 3px 0;
+	font-weight: 700;
+	font-size: 1.08rem;
+	margin: 10px 0 3px 0;
 }
 
 .building-info .building-header {
-        font-weight: 300;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+	font-weight: 300;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .building-row .building-level {
-        font-size: 0.95rem;
-        color: #657799;
+	font-size: 0.95rem;
+	color: #657799;
 }
 .spend-btn {
-        display: flex;
-        margin-right: 6px;
-        padding: 4px 8px;
-        background: #487a5b;
-        border: none;
-        border-radius: 8px;
-        color: #dbe7ff;
+	display: flex;
+	margin-right: 6px;
+	padding: 4px 8px;
+	background: #487a5b;
+	border: none;
+	border-radius: 8px;
+	color: #dbe7ff;
 	font-weight: 600;
 	cursor: pointer;
-        font-size: 0.95rem;
-        transition: background 0.18s;
+	font-size: 0.95rem;
+	transition: background 0.18s;
 }
 .add-plot .building-icon {
 	color: #7cae86;
