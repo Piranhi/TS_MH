@@ -93,13 +93,36 @@
 .building-info .building-header {
         font-weight: 300;
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        gap: 6px;
 }
 
 .building-row .building-level {
-        font-size: 0.95rem;
-        color: #657799;
+        font-size: 0.85rem;
+        color: #e7eaf1;
+        background: #333;
+        padding: 2px 6px;
+        border-radius: 6px;
+}
+
+.progress-holder {
+        position: relative;
+}
+
+.progress-holder .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.75rem;
+        color: #fff;
+        pointer-events: none;
+}
+
+.spend-points {
+        display: flex;
+        gap: 6px;
+        margin-top: 4px;
 }
 .spend-btn {
         display: flex;
