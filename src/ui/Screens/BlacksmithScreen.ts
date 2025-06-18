@@ -6,6 +6,7 @@ import { Resource } from "@/features/inventory/Resource";
 import { Tooltip } from "../components/Tooltip";
 import { BlacksmithSlot } from "../components/BlacksmithSlot";
 import { UpgradeSelectionContainer, UpgradeSelectionData } from "../components/UpgradeSelectionContainer";
+import { BuildingStatus } from "../components/BuildingStatus";
 
 interface ResourceRowData {
 	element: HTMLElement;
@@ -36,11 +37,14 @@ export class BlacksmithScreen extends BaseScreen {
         // Upgrade selection component
         private upgradeContainer!: UpgradeSelectionContainer;
 
-	init() {
-		this.addMarkuptoPage(Markup);
-		this.slotGrid = this.byId("bsSlotGrid");
-		this.resourceList = this.byId("bsResourceList");
-		this.upgradeGrid = this.byId("bsUpgradeGrid");
+        init() {
+                const root = this.addMarkuptoPage(Markup);
+                const statusEl = root.querySelector("#bs-building-status") as HTMLElement;
+                const building = this.context.settlement.getBuilding("blacksmith");
+                if (building && statusEl) new BuildingStatus(statusEl, building);
+                this.slotGrid = this.byId("bsSlotGrid");
+                this.resourceList = this.byId("bsResourceList");
+                this.upgradeGrid = this.byId("bsUpgradeGrid");
 
 		this.buildInitial();
 		this.bindEvents();

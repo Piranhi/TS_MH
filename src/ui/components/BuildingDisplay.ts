@@ -2,92 +2,98 @@ import { Tooltip } from "./Tooltip";
 import { Building } from "@/features/settlement/Building";
 import { UIBase } from "./UIBase";
 import { ProgressBar } from "./ProgressBar";
+import { bus } from "@/core/EventBus";
 
 export class BuildingDisplay extends UIBase {
-	private onUpgradeClick: ((e: Event) => void) | null = null;
-	private onSpendClick: ((e: Event) => void) | null = null;
-	private upgradeBtn: HTMLButtonElement | null = null;
-	private buildingContentsEl!: HTMLElement;
-	//private rootEl!: HTMLElement;
-	constructor(private BuildingGridEl: HTMLElement, private template: HTMLTemplateElement, private building: Building) {
-		super();
+    private levelEl!: HTMLElement;
+    private progress!: ProgressBar;
+    private spendContainer!: HTMLElement;
 
-		//Build Base Card
-		const frag = this.template.content.cloneNode(true) as DocumentFragment;
-		const root = frag.firstElementChild as HTMLElement;
-		if (!root) return;
-		const title = root.querySelector(".building-title") as HTMLElement;
-		title.textContent = building.displayName;
-		this.element = root;
-		this.buildingContentsEl = this.$(".building-contents");
+    constructor(private containerEl: HTMLElement, template: HTMLTemplateElement, private building: Building) {
+        super();
+        const frag = template.content.cloneNode(true) as DocumentFragment;
+        const root = frag.firstElementChild as HTMLElement;
+        this.element = root;
 
-		if (building.buildingStatus === "construction") this.buildConstructionCard();
-		if (building.buildingStatus === "unlocked") this.buildUnlockedCard();
+        const iconEl = root.querySelector(".building-icon") as HTMLElement;
+        if (iconEl && this.building.iconUrl) {
+            iconEl.style.backgroundImage = `url(${this.building.iconUrl})`;
+        }
 
-		this.attachTo(this.BuildingGridEl);
-	}
+        const titleEl = root.querySelector(".building-title") as HTMLElement;
+        titleEl.textContent = building.displayName;
 
-	private buildConstructionCard() {
-		this.buildingContentsEl.innerHTML = "";
-		const title = document.createElement("div");
-		title.classList.add("building-info");
-		title.textContent = "Construction Progress";
-		this.buildingContentsEl.appendChild(title);
-		const unlockCostData = this.building.getUnlockCostData();
-		const constructionProgress = new ProgressBar({
-			container: this.buildingContentsEl,
-			templateId: undefined,
-			initialValue: unlockCostData.spent,
-			maxValue: unlockCostData.cost,
-		});
-		const spendPointsBtn = document.createElement("button");
-		spendPointsBtn.textContent = "+10";
-		spendPointsBtn.classList.add("spend-points-btn");
-		this.buildingContentsEl.appendChild(spendPointsBtn);
-		this.onSpendClick = (e) => this.spendPoints(10);
-		spendPointsBtn.addEventListener("click", this.onSpendClick);
-	}
+        this.levelEl = root.querySelector(".building-level") as HTMLElement;
+        this.spendContainer = root.querySelector(".spend-points") as HTMLElement;
+        const progressHolder = root.querySelector(".progress-holder") as HTMLElement;
 
-	private spendPoints(amt: number) {
-		this.context.settlement.spendUnlockPoints(this.building.id, 10);
-	}
+        this.progress = new ProgressBar({ container: progressHolder, templateId: undefined, initialValue: 0, maxValue: 1 });
 
-	private buildUnlockedCard() {
-		const level = this.element.querySelector(".building-level") as HTMLElement;
-		level.textContent = this.building.level.toString();
-		this.upgradeBtn = this.element.querySelector(".upgrade-btn") as HTMLButtonElement;
-		this.onUpgradeClick = (e) => this.building.upgradeBuilding();
-		this.upgradeBtn?.addEventListener("click", this.onUpgradeClick);
-		this.element = this.element;
+        this.attachTo(this.containerEl);
+        this.bindDomEvent(root, "mouseenter", () => this.handleMouseEnter());
+        this.bindDomEvent(root, "mouseleave", () => this.handleMouseLeave());
 
-		this.bindDomEvent("mouseenter", (e) => this.handleMouseEnter());
-		this.bindDomEvent("mouseleave", (e) => this.handleMouseLeave());
-		this.bindDomEvent("click", (e) => this.handleClick());
-	}
+        this.buildButtons();
+        this.update();
+        bus.on("settlement:changed", () => this.update());
+        bus.on("settlement:buildPointsChanged", () => this.updateButtons());
+    }
 
-	private handleMouseEnter() {
-		if (!this.building) return;
-		Tooltip.instance.show(this.element, {
-			icon: this.building.iconUrl,
-			name: this.building.displayName,
-			type: "Building",
-			description: this.building.description,
-		});
-	}
-	private handleMouseLeave() {
-		Tooltip.instance.hide();
-	}
+    private buildButtons() {
+        this.spendContainer.innerHTML = "";
+        const amounts = [1, 10, 100];
+        amounts.forEach((amt) => {
+            const btn = document.createElement("button");
+            btn.textContent = `+${amt}`;
+            btn.classList.add("spend-btn");
+            btn.addEventListener("click", () => this.spendPoints(amt));
+            this.spendContainer.appendChild(btn);
+        });
+        const halfBtn = document.createElement("button");
+        halfBtn.textContent = "+Half";
+        halfBtn.classList.add("spend-btn");
+        halfBtn.addEventListener("click", () => {
+            const amt = Math.floor(this.context.settlement.totalBuildPoints / 2);
+            this.spendPoints(amt);
+        });
+        this.spendContainer.appendChild(halfBtn);
 
-	destroy() {
-		super.destroy();
-		if (this.onUpgradeClick) {
-			this.upgradeBtn?.removeEventListener("click", this.onUpgradeClick);
-			this.onUpgradeClick = null;
-		}
-	}
+        const maxBtn = document.createElement("button");
+        maxBtn.textContent = "+Max";
+        maxBtn.classList.add("spend-btn");
+        maxBtn.addEventListener("click", () => {
+            const amt = this.context.settlement.totalBuildPoints;
+            this.spendPoints(amt);
+        });
+        this.spendContainer.appendChild(maxBtn);
+    }
 
-	private handleClick() {}
-	private addBuilding() {}
+    private updateButtons() {
+        // no-op for now (placeholder if we want to disable when 0)
+    }
 
-	private onHover() {}
+    private spendPoints(amt: number) {
+        if (amt <= 0) return;
+        this.context.settlement.spendBuildPoints(this.building.id, amt);
+    }
+
+    private update() {
+        const snap = this.building.snapshot;
+        this.levelEl.textContent = `Lv ${snap.level}`;
+        this.progress.setMax(snap.nextUnlock);
+        this.progress.setValue(snap.pointsAllocated);
+    }
+
+    private handleMouseEnter() {
+        Tooltip.instance.show(this.element, {
+            icon: this.building.iconUrl,
+            name: this.building.displayName,
+            type: "Building",
+            description: this.building.description,
+        });
+    }
+
+    private handleMouseLeave() {
+        Tooltip.instance.hide();
+    }
 }

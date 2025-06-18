@@ -538,3 +538,14 @@ section + section {
 .upgrade-action-btn {
         min-width: 70px;
 }
+
+/* Building Status */
+.building-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        margin-bottom: 1rem;
+}

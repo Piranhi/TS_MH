@@ -21,17 +21,21 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 	public spendPoints(amt: number) {
 		this.state.pointsAllocated += amt;
 		// loop in case there's enough for multiple levels
-		while (this.state.pointsAllocated >= this.state.nextUnlock) {
-			this.state.pointsAllocated -= this.state.nextUnlock;
-			this.upgradeBuilding();
-			this.state.nextUnlock = BalanceCalculators.getBuildingCost(this.spec.baseCost, this.level);
-			// TODO - Check this is the best way compared to just multiplying based on the last unlock. This method provides balancing in future updates, but harder to work with.
-		}
-	}
+                while (this.state.pointsAllocated >= this.state.nextUnlock) {
+                        this.state.pointsAllocated -= this.state.nextUnlock;
+                        this.upgradeBuilding();
+                        // Cost for the next level scales with (level + 1)
+                        this.state.nextUnlock = BalanceCalculators.getBuildingCost(
+                                this.spec.baseCost,
+                                this.level + 1
+                        );
+                        // TODO - Check this is the best way compared to just multiplying based on the last unlock. This method provides balancing in future updates, but harder to work with.
+                }
+        }
 
-	public getUnlockCostData() {
-		return { cost: this.spec.baseCost, spent: this.state.pointsAllocated };
-	}
+        public getUnlockCostData() {
+                return { cost: this.state.nextUnlock, spent: this.state.pointsAllocated };
+        }
 
 	get id() {
 		return this.spec.id;
@@ -98,7 +102,7 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 			unlockStatus: "hidden",
 			pointsAllocated: 0,
 			level: 0,
-			nextUnlock: spec.baseCost,
+                        nextUnlock: BalanceCalculators.getBuildingCost(spec.baseCost, 1),
 		};
 		return new Building(spec, defaultState);
 	}
