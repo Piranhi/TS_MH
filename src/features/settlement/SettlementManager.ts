@@ -4,6 +4,8 @@ import { Saveable } from "@/shared/storage-types";
 import { BuildingType, BuildingUnlockStatus } from "@/shared/types";
 import { Outpost } from "../hunt/Outpost";
 import { GameBase } from "@/core/GameBase";
+import { DebugMenu } from "@/ui/components/Debug-Menu";
+import { debugManager } from "@/core/DebugManager";
 
 interface SettlementSaveState {
 	buildings: [BuildingType, Building][];
@@ -232,18 +234,18 @@ export class SettlementManager extends GameBase implements Saveable {
 		bus.emit("settlement:changed");
 	}
 
-        spendBuildPoints(type: BuildingType, amt: number) {
-                const building = this.buildingsMap.get(type);
-                if (!building) return;
+	spendBuildPoints(type: BuildingType, amt: number) {
+		const building = this.buildingsMap.get(type);
+		if (!building) return;
 
-                const spend = Math.min(amt, this.settlementBuildPoints);
-                if (spend <= 0) return;
+		const spend = debugManager.get("building_infinitePoints") ? amt : Math.min(amt, this.settlementBuildPoints);
+		if (spend <= 0) return;
 
-                this.settlementBuildPoints -= spend;
-                building.spendPoints(spend);
-                bus.emit("settlement:buildPointsChanged", this.settlementBuildPoints);
-                bus.emit("settlement:changed");
-        }
+		this.settlementBuildPoints -= spend;
+		building.spendPoints(spend);
+		bus.emit("settlement:buildPointsChanged", this.settlementBuildPoints);
+		bus.emit("settlement:changed");
+	}
 
 	// GETTERS AND SETTERS
 

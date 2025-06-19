@@ -5,16 +5,10 @@ import { ProgressBar } from "./ProgressBar";
 import { bus } from "@/core/EventBus";
 
 export class BuildingDisplay extends UIBase {
-<<<<<<< HEAD
 	private levelEl!: HTMLElement;
 	private progress!: ProgressBar;
 	private spendContainer!: HTMLElement;
-=======
-    private levelEl!: HTMLElement;
-    private progress!: ProgressBar;
-    private spendContainer!: HTMLElement;
-    private progressText!: HTMLElement;
->>>>>>> 453282326f04a6acb0ceb842ba1ed53296bdc7aa
+	private progressText!: HTMLElement;
 
 	constructor(private containerEl: HTMLElement, template: HTMLTemplateElement, private building: Building) {
 		super();
@@ -30,18 +24,12 @@ export class BuildingDisplay extends UIBase {
 		const titleEl = root.querySelector(".building-title") as HTMLElement;
 		titleEl.textContent = building.displayName;
 
-<<<<<<< HEAD
 		this.levelEl = root.querySelector(".building-level") as HTMLElement;
 		this.spendContainer = root.querySelector(".spend-points") as HTMLElement;
 		const progressHolder = root.querySelector(".progress-holder") as HTMLElement;
-=======
-        this.levelEl = root.querySelector(".building-level") as HTMLElement;
-        this.spendContainer = root.querySelector(".spend-points") as HTMLElement;
-        const progressHolder = root.querySelector(".progress-holder") as HTMLElement;
-        this.progressText = progressHolder.querySelector(".progress-text") as HTMLElement;
->>>>>>> 453282326f04a6acb0ceb842ba1ed53296bdc7aa
+		this.progressText = progressHolder.querySelector(".progress-text") as HTMLElement;
 
-		this.progress = new ProgressBar({ container: progressHolder, templateId: undefined, initialValue: 0, maxValue: 1 });
+		this.progress = new ProgressBar({ container: progressHolder, initialValue: 0, maxValue: 1 });
 
 		this.attachTo(this.containerEl);
 		this.bindDomEvent(root, "mouseenter", () => this.handleMouseEnter());
@@ -91,22 +79,13 @@ export class BuildingDisplay extends UIBase {
 		this.context.settlement.spendBuildPoints(this.building.id, amt);
 	}
 
-<<<<<<< HEAD
 	private update() {
 		const snap = this.building.snapshot;
 		this.levelEl.textContent = `Lv ${snap.level}`;
 		this.progress.setMax(snap.nextUnlock);
 		this.progress.setValue(snap.pointsAllocated);
+		this.progressText.textContent = `${snap.pointsAllocated} / ${snap.nextUnlock}`;
 	}
-=======
-    private update() {
-        const snap = this.building.snapshot;
-        this.levelEl.textContent = `Lv ${snap.level}`;
-        this.progress.setMax(snap.nextUnlock);
-        this.progress.setValue(snap.pointsAllocated);
-        this.progressText.textContent = `${snap.pointsAllocated} / ${snap.nextUnlock}`;
-    }
->>>>>>> 453282326f04a6acb0ceb842ba1ed53296bdc7aa
 
 	private handleMouseEnter() {
 		Tooltip.instance.show(this.element, {

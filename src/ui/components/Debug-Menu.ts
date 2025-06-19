@@ -49,6 +49,7 @@ export class DebugMenu {
 			{ key: "enemy_canDie", label: "Enemy Can Die", type: "bool" },
 			{ key: "hunt_allAreasOpen", label: "All Areas Open", type: "bool" },
 			{ key: "hunt_searchSpeed", label: "Search Speed", type: "num", step: 0.1 },
+			{ key: "building_infinitePoints", label: "Inf Build Points", type: "bool" },
 		];
 
 		options.forEach((opt) => {
@@ -126,6 +127,7 @@ export class DebugMenu {
 		this.addButton("Full Balance Check", () => BalanceDebug.runFullBalanceCheck());
 		this.addButton("Test Prestige Scaling", () => BalanceDebug.validatePrestigeBalance());
 		this.addButton("Progression Curves", () => BalanceDebug.logProgressionCurves());
+		this.addButton("Unlock all buildings", () => context.settlement.unlockAllBuildings());
 		this.addButton("Unlock all buildings", () => context.settlement.unlockAllBuildings());
 		//  Player.getInstance().inventory.addItemToInventory);
 		//this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));

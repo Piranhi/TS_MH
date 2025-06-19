@@ -13,7 +13,7 @@
 	padding: 6px;
 	border-radius: 4px;
 	background: rgba(76, 104, 131, 0.25);
-	border-color: #55e0bc;
+	border-color: #074736;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -31,7 +31,7 @@
 #settlement-build-points {
 	font-weight: 700;
 	font-size: 1.2rem;
-	color: #5ff1ac;
+	color: #e9e9e9;
 }
 
 .settlement-main {
@@ -47,18 +47,18 @@
 	gap: 10px;
 }
 .building-row {
-	background: rgba(73, 116, 98, 0.555);
+	background: rgba(57, 65, 73, 0.685);
 	backdrop-filter: blur(7px);
 	border-radius: 8px;
 	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.14);
 	display: flex;
 	align-items: center;
 	padding: 10px;
-	color: #d3d3d3;
+	color: #ebebeb;
 }
 .building-icon {
-	width: 152px;
-	height: 152px;
+	width: 128px;
+	height: 128px;
 	background-size: contain;
 	background-repeat: no-repeat;
 	background-position: center;
@@ -91,56 +91,55 @@
 }
 
 .building-info .building-header {
-<<<<<<< HEAD
 	font-weight: 300;
 	display: flex;
-	justify-content: space-between;
+	flex-direction: column;
 	align-items: center;
+	gap: 6px;
+	justify-content: left;
+
+	margin-right: auto;
 }
 
 .building-row .building-level {
-	font-size: 0.95rem;
-	color: #657799;
-=======
-        font-weight: 300;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-}
-
-.building-row .building-level {
-        font-size: 0.85rem;
-        color: #e7eaf1;
-        background: #333;
-        padding: 2px 6px;
-        border-radius: 6px;
+	font-size: 0.85rem;
+	color: #e7eaf1;
+	background: #333;
+	padding: 4px 15px;
+	border-radius: 6px;
 }
 
 .progress-holder {
-        position: relative;
+	position: relative;
+	height: 50px;
 }
 
 .progress-holder .progress-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 0.75rem;
-        color: #fff;
-        pointer-events: none;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 0.75rem;
+	color: #fff;
+	pointer-events: none;
+}
+
+.sped-container {
+	margin: 20px;
 }
 
 .spend-points {
-        display: flex;
-        gap: 6px;
-        margin-top: 4px;
->>>>>>> 453282326f04a6acb0ceb842ba1ed53296bdc7aa
+	display: flex;
+	gap: 6px;
+	margin: 20px;
+	padding: 5px;
 }
+
 .spend-btn {
 	display: flex;
 	margin-right: 6px;
 	padding: 4px 8px;
-	background: #487a5b;
+	background: #387086;
 	border: none;
 	border-radius: 8px;
 	color: #dbe7ff;
