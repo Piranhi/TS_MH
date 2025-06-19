@@ -42,7 +42,7 @@ export interface TrainedStatState {
 	id: TrainedStatType;
 	level: number;
 	progress: number;
-	//nextThreshold: number;
+	nextThreshold: number;
 	assignedPoints: number;
 	status: TrainedStatStatus;
 }
@@ -51,7 +51,7 @@ export interface TrainedStatSpec {
 	id: TrainedStatType;
 	name: string;
 	baseMultiplier: number;
-	maxAssigned: number;
+	levelUpBase: number;
 	statMod: StatsModifier;
 }
 
@@ -85,5 +85,5 @@ export interface AreaScaling {
 export type Stats = CoreStats & BuildStats;
 export type StatKey = keyof Stats;
 export type StatsModifier = Partial<Stats>;
-export type TrainedStatType = "power" | "guard" | "power2" | "guard2" | "crit";
+export type TrainedStatType = "power" | "guard" | "heal" | "crit";
 export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden";

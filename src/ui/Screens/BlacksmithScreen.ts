@@ -16,7 +16,6 @@ interface ResourceRowData {
 	lastLevel: number;
 }
 
-
 /**
  * Optimized BlacksmithScreen that updates only what changes.
  * Uses component-based architecture to avoid rebuilding the UI.
@@ -34,17 +33,17 @@ export class BlacksmithScreen extends BaseScreen {
 	// Cached resource row elements for efficient updates
 	private resourceRows: Map<string, ResourceRowData> = new Map();
 
-        // Upgrade selection component
-        private upgradeContainer!: UpgradeSelectionContainer;
+	// Upgrade selection component
+	private upgradeContainer!: UpgradeSelectionContainer;
 
-        init() {
-                const root = this.addMarkuptoPage(Markup);
-                const statusEl = root.querySelector("#bs-building-status") as HTMLElement;
-                const building = this.context.settlement.getBuilding("blacksmith");
-                if (building && statusEl) new BuildingStatus(statusEl, building);
-                this.slotGrid = this.byId("bsSlotGrid");
-                this.resourceList = this.byId("bsResourceList");
-                this.upgradeGrid = this.byId("bsUpgradeGrid");
+	init() {
+		const root = this.addMarkuptoPage(Markup);
+		const statusEl = root.querySelector("#bs-building-status") as HTMLElement;
+		const building = this.context.settlement.getBuilding("blacksmith");
+		if (building && statusEl) new BuildingStatus(statusEl, building);
+		this.slotGrid = this.byId("bsSlotGrid");
+		this.resourceList = this.byId("bsResourceList");
+		this.upgradeGrid = this.byId("bsUpgradeGrid");
 
 		this.buildInitial();
 		this.bindEvents();
@@ -65,9 +64,9 @@ export class BlacksmithScreen extends BaseScreen {
 	 * All future updates will modify existing elements.
 	 */
 	private buildInitial() {
-                this.buildSlots();
-                this.buildResourceRows();
-                this.buildUpgradeContainer();
+		this.buildSlots();
+		this.buildResourceRows();
+		this.buildUpgradeContainer();
 	}
 
 	/**
@@ -83,9 +82,9 @@ export class BlacksmithScreen extends BaseScreen {
 		// Full rebuild only when slots change (rare)
 		bindEvent(this.eventBindings, "blacksmith:slots-changed", () => this.rebuildSlots());
 
-                // Update upgrades when they change
-                bindEvent(this.eventBindings, "blacksmith:upgrades-changed", () => this.refreshUpgrades());
-                bindEvent(this.eventBindings, "resources:changed", () => this.refreshUpgrades());
+		// Update upgrades when they change
+		bindEvent(this.eventBindings, "blacksmith:upgrades-changed", () => this.refreshUpgrades());
+		bindEvent(this.eventBindings, "resources:changed", () => this.refreshUpgrades());
 	}
 
 	/**
@@ -243,43 +242,43 @@ export class BlacksmithScreen extends BaseScreen {
 	 * Creates upgrade cards once.
 	 * Updates will modify these elements rather than recreating them.
 	 */
-        private buildUpgradeContainer() {
-                this.upgradeContainer = new UpgradeSelectionContainer({
-                        container: this.upgradeGrid,
-                        upgrades: this.getUpgradeData(),
-                        onUpgradeClick: (id) => this.context.blacksmith.purchaseUpgrade(id),
-                });
-        }
+	private buildUpgradeContainer() {
+		this.upgradeContainer = new UpgradeSelectionContainer({
+			container: this.upgradeGrid,
+			upgrades: this.getUpgradeData(),
+			onUpgradeClick: (id) => this.context.blacksmith.purchaseUpgrade(id),
+		});
+	}
 
-        private refreshUpgrades() {
-                if (this.upgradeContainer) {
-                        this.upgradeContainer.setUpgrades(this.getUpgradeData());
-                }
-        }
+	private refreshUpgrades() {
+		if (this.upgradeContainer) {
+			this.upgradeContainer.setUpgrades(this.getUpgradeData());
+		}
+	}
 
-        private getUpgradeData(): UpgradeSelectionData[] {
-                return this.context.blacksmith.getUpgrades().map((upg) => ({
-                        id: upg.id,
-                        title: upg.name,
-                        description: upg.description,
-                        costs: upg.cost.map((c) => ({
-                                icon: Resource.getSpec(c.resource)?.iconUrl ?? "",
-                                amount: c.quantity,
-                        })),
-                        purchased: upg.isPurchased,
-                        canAfford: this.context.resources.canAfford(upg.cost),
-                }));
-        }
+	private getUpgradeData(): UpgradeSelectionData[] {
+		return this.context.blacksmith.getUpgrades().map((upg) => ({
+			id: upg.id,
+			title: upg.name,
+			description: upg.description,
+			costs: upg.cost.map((c) => ({
+				icon: Resource.getSpec(c.resource)?.iconUrl ?? "",
+				amount: c.quantity,
+			})),
+			purchased: upg.isPurchased,
+			canAfford: this.context.resources.canAfford(upg.cost),
+		}));
+	}
 
 	/**
 	 * Updates all UI elements.
 	 * Called when screen is shown or major changes occur.
 	 */
-        private updateAll() {
-                this.updateSlots();
-                this.updateResourcesDisplay();
-                this.refreshUpgrades();
-        }
+	private updateAll() {
+		this.updateSlots();
+		this.updateResourcesDisplay();
+		this.refreshUpgrades();
+	}
 
 	/**
 	 * Cleanup when screen is destroyed.

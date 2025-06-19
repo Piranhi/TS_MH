@@ -129,15 +129,8 @@ export const GAME_BALANCE = {
 
 	// === TRAINING SCALING ===
 	training: {
-		// Maximum efficiency rate (from TrainedStat.ts)
-		maxBarsPerSecond: 10,
-
-		// Diminishing returns formula constants
-		diminishingReturns: {
-			baseMultiplier: 0.05,
-			levelExponent: 0.5,
-			levelMultiplier: 8,
-		},
+		// Level up cost scaling multiplier for trained stats
+		levelUpCostMultiplier: 1.5,
 	},
 
 	// === PRESTIGE SCALING ===
@@ -213,33 +206,33 @@ export const GAME_BALANCE = {
 	},
 
 	// === HUNT BALANCE ===
-        hunt: {
-                baseSearchTime: 1, // Base time between encounter rolls in seconds
-                baseEncounterChance: 0.5, // Base chance to encounter a monster per search
-                enemiesNeededForBoss: 10, // How many enemies to defeat for a boss encounter
-        },
+	hunt: {
+		baseSearchTime: 1, // Base time between encounter rolls in seconds
+		baseEncounterChance: 0.5, // Base chance to encounter a monster per search
+		enemiesNeededForBoss: 10, // How many enemies to defeat for a boss encounter
+	},
 
-        // === MODIFIER SYSTEM CONFIG ===
-        //
-        // The modifier engine applies bonuses through a fixed sequence of layers.
-        // Each layer is either additive or multiplicative. Every system shares
-        // this order so balance adjustments only need to be done in one place.
-        // Systems may simply not use some layers, leaving them empty.
-        modifiers: {
-                layers: [
-                        { name: "building", op: "mul" },
-                        { name: "equipment", op: "mul" },
-                        { name: "run", op: "mul" },
-                        { name: "permanent", op: "mul" },
-                        { name: "prestige", op: "mul" },
-                        { name: "challenge", op: "mul" },
-                ],
-                systems: {
-                        researchSpeed: { base: 1 },
-                        blacksmithSpeed: { base: 1 },
-                        trainingSpeed: { base: 1 },
-                },
-        },
+	// === MODIFIER SYSTEM CONFIG ===
+	//
+	// The modifier engine applies bonuses through a fixed sequence of layers.
+	// Each layer is either additive or multiplicative. Every system shares
+	// this order so balance adjustments only need to be done in one place.
+	// Systems may simply not use some layers, leaving them empty.
+	modifiers: {
+		layers: [
+			{ name: "building", op: "mul" },
+			{ name: "equipment", op: "mul" },
+			{ name: "run", op: "mul" },
+			{ name: "permanent", op: "mul" },
+			{ name: "prestige", op: "mul" },
+			{ name: "challenge", op: "mul" },
+		],
+		systems: {
+			researchSpeed: { base: 1 },
+			blacksmithSpeed: { base: 1 },
+			trainingSpeed: { base: 1 },
+		},
+	},
 } as const;
 
 // ===================================================
@@ -348,11 +341,11 @@ export const BalanceCalculators = {
 	/**
 	 * Calculate building upgrade cost
 	 */
-        getBuildingCost(baseCost: number, currentLevel: number): number {
-                // Each level requires 10x more build points than the base cost
-                // e.g. Level 1 -> 10 * baseCost, Level 2 -> 20 * baseCost
-                return Math.floor(baseCost * currentLevel * 10);
-        },
+	getBuildingCost(baseCost: number, currentLevel: number): number {
+		// Each level requires 10x more build points than the base cost
+		// e.g. Level 1 -> 10 * baseCost, Level 2 -> 20 * baseCost
+		return Math.floor(baseCost * currentLevel * 10);
+	},
 
 	// === COMBAT CALCULATIONS ===
 
@@ -526,4 +519,3 @@ export const MONSTER_ATTACK_GROWTH = GAME_BALANCE.monsters.attackGrowthPerTier;
 export const MONSTER_DEFENCE_GROWTH = GAME_BALANCE.monsters.defenseGrowthPerTier;
 export const BUILDING_LEVELLING_MULTIPLIER = GAME_BALANCE.buildings.costMultiplier;
 export const RARITY_MULTIPLIERS = GAME_BALANCE.equipment.rarityMultipliers;
-export const MAX_BARS_PER_SECOND = GAME_BALANCE.training.maxBarsPerSecond;

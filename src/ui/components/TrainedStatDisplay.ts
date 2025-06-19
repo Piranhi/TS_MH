@@ -56,11 +56,13 @@ export class TrainedStatDisplay extends UIBase {
 		progressText.className = "progress-text";
 		this.$(".training-bar").appendChild(progressText);
 
-		// Progress bar shows progress toward next level using the level threshold (60)
 		const progressBar = new ProgressBar({
 			container: this.$(".training-bar"),
 			initialValue: this.trainedStat.progress,
-			maxValue: this.trainedStat.getLevelThreshold(), // Level threshold (60), not max allocation (600)
+			maxValue: this.trainedStat.getLevelThreshold(),
+			smooth: true,
+			showLabel: true,
+			label: "XP",
 		});
 
 		this.els = {
@@ -97,13 +99,7 @@ export class TrainedStatDisplay extends UIBase {
 		const levelThreshold = this.trainedStat.getLevelThreshold();
 		progressBar.setValue(this.trainedStat.progress);
 		progressBar.setMax(levelThreshold);
-
-		// Provide allocation values for high-efficiency mode
-		progressBar.setAllocationValues(this.trainedStat.assignedPoints, this.trainedStat.maxAssignedPoints);
-
-		// Always call setEfficiencyRate
-		const barsPerSecond = this.trainedStat.getBarsPerSecond();
-		progressBar.setEfficiencyRate(barsPerSecond);
+		progressBar.setLabel(`${Math.floor(this.trainedStat.progress)}/${levelThreshold}`);
 	}
 
 	private adjustAmount(delta: number) {

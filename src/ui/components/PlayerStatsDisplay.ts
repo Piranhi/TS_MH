@@ -3,7 +3,7 @@ import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { prettify } from "@/shared/utils/stringUtils";
 import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
-import { ProgressBarSimple } from "./ProgressBarSimple";
+import { ProgressBar } from "./ProgressBar";
 
 interface StatData {
 	name: string;
@@ -14,7 +14,7 @@ export class PlayerStatsDisplay extends UIBase {
 	private tableBody!: HTMLTableSectionElement;
 	private levelNumberEl!: HTMLElement;
 	private xpTextEl!: HTMLElement;
-        private xpProgressBar!: ProgressBarSimple;
+        private xpProgressBar!: ProgressBar;
         private traitListEl!: HTMLUListElement;
 
 	private statsData: StatData[] = [
@@ -84,9 +84,8 @@ export class PlayerStatsDisplay extends UIBase {
 
 		// Create XP progress bar
 		const progressContainer = this.element.querySelector("#xp-progress-container")!;
-		this.xpProgressBar = new ProgressBarSimple({
+		this.xpProgressBar = new ProgressBar({
 			container: progressContainer as HTMLElement,
-			templateId: "progress-bar-template",
 			maxValue: 100,
 			initialValue: 0,
 		});

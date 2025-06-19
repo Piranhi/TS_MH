@@ -1,5 +1,4 @@
 import { ProgressBar } from "../components/ProgressBar";
-import { ProgressBarSimple } from "../components/ProgressBarSimple";
 import { Resource } from "@/features/inventory/Resource";
 import { CraftSlot } from "@/features/settlement/BlacksmithManager";
 import { UIBase } from "./UIBase";
@@ -17,7 +16,7 @@ export class BlacksmithSlot extends UIBase {
 	private optionRow!: HTMLElement;
 	private icon!: HTMLImageElement;
 	private levelEl!: HTMLElement;
-	private xpBar!: ProgressBarSimple;
+	private xpBar!: ProgressBar;
 	private xpText!: HTMLElement;
 	private costEl!: HTMLElement;
 	private progressBar!: ProgressBar;
@@ -97,10 +96,11 @@ export class BlacksmithSlot extends UIBase {
 		this.xpText.className = "bs-xp-text";
 		xpContainer.appendChild(this.xpText);
 
-		this.xpBar = new ProgressBarSimple({
+		this.xpBar = new ProgressBar({
 			container: xpContainer,
 			maxValue: 1,
 			initialValue: 0,
+			smooth: true,
 		});
 
 		info.appendChild(iconWrap);

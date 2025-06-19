@@ -13,12 +13,12 @@ export class LibraryScreen extends BaseScreen {
 	private completedList!: HTMLElement;
 	private upgradeContainer!: UpgradeSelectionContainer;
 
-        init() {
-                const root = this.addMarkuptoPage(Markup);
-                const statusEl = root.querySelector("#library-building-status") as HTMLElement;
-                const building = this.context.settlement.getBuilding("library");
-                if (building && statusEl) new BuildingStatus(statusEl, building);
-                this.activeList = this.byId("libraryActiveList");
+	init() {
+		const root = this.addMarkuptoPage(Markup);
+		const statusEl = root.querySelector("#library-building-status") as HTMLElement;
+		const building = this.context.settlement.getBuilding("library");
+		if (building && statusEl) new BuildingStatus(statusEl, building);
+		this.activeList = this.byId("libraryActiveList");
 		this.upgradeGrid = this.byId("libraryUpgradeGrid");
 		this.completedList = this.byId("libraryCompletedList");
 		this.build();

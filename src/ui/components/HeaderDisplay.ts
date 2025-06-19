@@ -2,12 +2,12 @@ import { PrestigeManager } from "@/models/PrestigeManager";
 import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { bus } from "@/core/EventBus";
-import { ProgressBarSimple } from "./ProgressBarSimple";
+import { ProgressBar } from "./ProgressBar";
 
 export class HeaderDisplay extends UIBase {
 	private PlayerStatsEl: HTMLElement;
 	private prestigeButton!: HTMLButtonElement;
-	private staminaProgressBar!: ProgressBarSimple;
+	private staminaProgressBar!: ProgressBar;
 	private levelEl: HTMLElement;
 	constructor(container: HTMLElement) {
 		super();
@@ -40,11 +40,11 @@ export class HeaderDisplay extends UIBase {
 		label.textContent = "Stamina";
 		li.appendChild(label);
 
-		this.staminaProgressBar = new ProgressBarSimple({
+		this.staminaProgressBar = new ProgressBar({
 			container: li,
-			templateId: "progress-bar-template",
 			maxValue: 250,
 			initialValue: 45,
+			smooth: true,
 		});
 		const value = document.createElement("span");
 		value.className = "value";

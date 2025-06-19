@@ -9,14 +9,14 @@ export class MineScreen extends BaseScreen {
 	private shafts: MineShaft[] = [];
 	private logEl!: HTMLElement;
 
-        init() {
-                const root = this.addMarkuptoPage(Markup);
-                const statusEl = root.querySelector("#mine-building-status") as HTMLElement;
-                const building = this.context.settlement.getBuilding("mine");
-                if (building && statusEl) new BuildingStatus(statusEl, building);
-                this.build();
-                bus.on("Game:UITick", () => this.update());
-                bus.on("settlement:changed", () => this.syncShafts());
+	init() {
+		const root = this.addMarkuptoPage(Markup);
+		const statusEl = root.querySelector("#mine-building-status") as HTMLElement;
+		const building = this.context.settlement.getBuilding("mine");
+		if (building && statusEl) new BuildingStatus(statusEl, building);
+		this.build();
+		bus.on("Game:UITick", () => this.update());
+		bus.on("settlement:changed", () => this.syncShafts());
 	}
 
 	show() {}
