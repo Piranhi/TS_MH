@@ -107,10 +107,13 @@ export class DebugMenu {
 			const spec = specs[Math.floor(Math.random() * specs.length)];
 			context.inventory.addLootById(spec.id, 1);
 		});
-		this.addButton("Clear Loot", () => context.inventory.clearSlots());
-		this.addButton("Print Stats", () => {
-			context.character.statsEngine.printStats();
-		});
+                this.addButton("Clear Loot", () => context.inventory.clearSlots());
+                this.addButton("Print Stats", () => {
+                        context.character.statsEngine.printStats();
+                });
+                this.addButton("Print Modifiers", () => {
+                        context.modifiers.printDebug();
+                });
 
 		this.addButton("Test Attack", () => {
 			const array: string[] = [];
