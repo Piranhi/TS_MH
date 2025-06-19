@@ -17,6 +17,7 @@ import { PrestigeState } from "@/shared/stats-types";
 import { OfflineProgressManager } from "@/models/OfflineProgress";
 import { ResourceManager } from "@/features/inventory/ResourceManager";
 import { MineManager } from "@/features/mine/MineManager";
+import { ModifierEngine } from "./ModifierEngine";
 
 export class GameContext {
 	private static _instance: GameContext | null = null;
@@ -111,9 +112,13 @@ export class GameContext {
 		return this.services.saveManager;
 	}
 
-	public get screens(): ScreenManager {
-		return this.services.screenManager;
-	}
+        public get screens(): ScreenManager {
+                return this.services.screenManager;
+        }
+
+        public get modifiers(): ModifierEngine {
+                return this.services.modifierEngine;
+        }
 
 	public get offlineManager(): OfflineProgressManager {
 		return this.services.offlineManager;

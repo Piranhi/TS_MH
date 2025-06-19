@@ -213,11 +213,33 @@ export const GAME_BALANCE = {
 	},
 
 	// === HUNT BALANCE ===
-	hunt: {
-		baseSearchTime: 1, // Base time between encounter rolls in seconds
-		baseEncounterChance: 0.5, // Base chance to encounter a monster per search
-		enemiesNeededForBoss: 10, // How many enemies to defeat for a boss encounter
-	},
+        hunt: {
+                baseSearchTime: 1, // Base time between encounter rolls in seconds
+                baseEncounterChance: 0.5, // Base chance to encounter a monster per search
+                enemiesNeededForBoss: 10, // How many enemies to defeat for a boss encounter
+        },
+
+        // === MODIFIER SYSTEM CONFIG ===
+        //
+        // The modifier engine applies bonuses through a fixed sequence of layers.
+        // Each layer is either additive or multiplicative. Every system shares
+        // this order so balance adjustments only need to be done in one place.
+        // Systems may simply not use some layers, leaving them empty.
+        modifiers: {
+                layers: [
+                        { name: "building", op: "mul" },
+                        { name: "equipment", op: "mul" },
+                        { name: "run", op: "mul" },
+                        { name: "permanent", op: "mul" },
+                        { name: "prestige", op: "mul" },
+                        { name: "challenge", op: "mul" },
+                ],
+                systems: {
+                        researchSpeed: { base: 1 },
+                        blacksmithSpeed: { base: 1 },
+                        trainingSpeed: { base: 1 },
+                },
+        },
 } as const;
 
 // ===================================================

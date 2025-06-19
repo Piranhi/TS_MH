@@ -5,7 +5,7 @@ import rawAbilities from "@/data/abilities.json" assert { type: "json" };
 import rawClassCards from "@/data/classCards.json" assert { type: "json" };
 import rawEquipment from "@/data/equipment.json" assert { type: "json" };
 import rawBuilding from "@/data/buildings.json" assert { type: "json" };
-import rawResearch from "@/data/research.json" assert { type: "json" };
+import rawUpgrades from "@/data/upgrades.json" assert { type: "json" };
 import rawTriggers from "@/data/progression-triggers.json" assert { type: "json" };
 import rawOutposts from "@/data/outposts.json" assert { type: "json" };
 import rawTraits from "@/data/traits.json" assert { type: "json" };
@@ -34,8 +34,10 @@ export const milestoneManager = MilestoneManager.instance;
 export function initGameData() {
 	console.log("📦 Registering game data…");
 
-	Building.registerSpecs(rawBuilding);
-	ResearchUpgrade.registerSpecs(rawResearch as ResearchSpec[]);
+        const { research = [], blacksmith = [] } = rawUpgrades as any;
+
+        Building.registerSpecs(rawBuilding);
+        ResearchUpgrade.registerSpecs(research as ResearchSpec[]);
 	Equipment.registerSpecs(rawEquipment as EquipmentItemSpec[]);
 	ClassCard.registerSpecs(rawClassCards as ClassCardItemSpec[]);
 	Monster.registerSpecs(rawMonsters as MonsterSpec[]);
