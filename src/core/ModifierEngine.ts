@@ -1,4 +1,3 @@
-import { BigNumber } from "@/models/utils/BigNumber";
 import { Saveable } from "@/shared/storage-types";
 
 /** Possible operations a layer can perform */
@@ -28,12 +27,12 @@ export interface ModifierConfig {
 
 /** Serialized representation of a layer */
 interface LayerSave {
-    entries: [string, BigNumber][];
+    entries: [string, number][];
 }
 
 /** Serialized representation of a system */
 interface SystemSave {
-    base: BigNumber;
+    base: number;
     layers: Record<string, LayerSave>;
 }
 
@@ -46,13 +45,12 @@ export interface ModifierEngineSave {
  * either sum or multiply its stored values.
  */
 class ModifierLayer {
-    private values = new Map<string, BigNumber>();
+    private values = new Map<string, number>();
 
     constructor(public readonly op: ModifierOp) {}
 
-    add(key: string, value: number | BigNumber) {
-        const v = value instanceof BigNumber ? value : new BigNumber(value);
-        this.values.set(key, v);
+    add(key: string, value: number) {
+        this.values.set(key, value);
     }
 
     clear() {
@@ -60,14 +58,14 @@ class ModifierLayer {
     }
 
     /** Compute the layer's total according to its op */
-    get total(): BigNumber {
+    get total(): number {
         if (this.op === "add") {
-            let t = new BigNumber(0);
-            for (const v of this.values.values()) t = t.add(v);
+            let t = 0;
+            for (const v of this.values.values()) t += v;
             return t;
         } else {
-            let t = new BigNumber(1);
-            for (const v of this.values.values()) t = t.multiply(v);
+            let t = 1;
+            for (const v of this.values.values()) t *= v;
             return t;
         }
     }
@@ -85,19 +83,19 @@ class ModifierLayer {
 
 /** Represents all layers for a particular system */
 class ModifierSystem {
-    private base: BigNumber;
+    private base: number;
     private layers: Record<string, ModifierLayer> = {};
-    private cached = new BigNumber(0);
+    private cached = 0;
 
     constructor(private layerConfig: ModifierLayerConfig[], settings: ModifierSystemSettings) {
-        this.base = new BigNumber(settings.base);
+        this.base = settings.base;
         for (const l of layerConfig) {
             this.layers[l.name] = new ModifierLayer(l.op);
         }
         this.recalculate();
     }
 
-    add(layer: string, key: string, value: number | BigNumber) {
+    add(layer: string, key: string, value: number) {
         this.layers[layer]?.add(key, value);
         this.recalculate();
     }
@@ -113,12 +111,12 @@ class ModifierSystem {
             if (disabled?.has(cfg.name)) continue;
             const layer = this.layers[cfg.name];
             const total = layer.total;
-            val = cfg.op === "add" ? val.add(total) : val.multiply(total);
+            val = cfg.op === "add" ? val + total : val * total;
         }
         this.cached = val;
     }
 
-    value(disabled?: Set<string>): BigNumber {
+    value(disabled?: Set<string>): number {
         if (disabled && disabled.size > 0) {
             // Recalculate on the fly for disabled layers
             let val = this.base;
@@ -126,15 +124,15 @@ class ModifierSystem {
                 if (disabled.has(cfg.name)) continue;
                 const layer = this.layers[cfg.name];
                 const total = layer.total;
-                val = cfg.op === "add" ? val.add(total) : val.multiply(total);
+                val = cfg.op === "add" ? val + total : val * total;
             }
             return val;
         }
         return this.cached;
     }
 
-    getBreakdown(disabled?: Set<string>): { name: string; after: BigNumber }[] {
-        const result: { name: string; after: BigNumber }[] = [];
+    getBreakdown(disabled?: Set<string>): { name: string; after: number }[] {
+        const result: { name: string; after: number }[] = [];
         let val = this.base;
         for (const cfg of this.layerConfig) {
             if (disabled?.has(cfg.name)) {
@@ -143,7 +141,7 @@ class ModifierSystem {
             }
             const layer = this.layers[cfg.name];
             const total = layer.total;
-            val = cfg.op === "add" ? val.add(total) : val.multiply(total);
+            val = cfg.op === "add" ? val + total : val * total;
             result.push({ name: cfg.name, after: val });
         }
         return result;
@@ -183,7 +181,7 @@ export class ModifierEngine implements Saveable<ModifierEngineSave> {
     }
 
     /** Add a value to a system's layer */
-    addModifier(system: string, layer: string, key: string, value: number | BigNumber) {
+    addModifier(system: string, layer: string, key: string, value: number) {
         this.systems[system]?.add(layer, key, value);
     }
 
@@ -200,8 +198,8 @@ export class ModifierEngine implements Saveable<ModifierEngineSave> {
     }
 
     /** Retrieve the current value for a system */
-    getValue(system: string): BigNumber {
-        return this.systems[system]?.value(this.disabledLayers) ?? new BigNumber(0);
+    getValue(system: string): number {
+        return this.systems[system]?.value(this.disabledLayers) ?? 0;
     }
 
     /** Print a breakdown of all systems and layers to the console */

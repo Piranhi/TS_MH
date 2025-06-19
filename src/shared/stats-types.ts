@@ -1,10 +1,9 @@
-import { BigNumber } from "@/models/utils/BigNumber";
 
 export interface UserStats {
     level: number;
     prestiges: number;
-    renownGained: BigNumber;
-    renownSpent: BigNumber;
+    renownGained: number;
+    renownSpent: number;
 }
 
 export interface AreaStats {
@@ -46,8 +45,8 @@ export interface GameStats {
 export const DEFAULT_USER_STATS: UserStats = {
     level: 1,
     prestiges: 0,
-    renownGained: new BigNumber(0),
-    renownSpent: new BigNumber(0),
+    renownGained: 0,
+    renownSpent: 0,
 };
 
 export const DEFAULT_ENEMY_STATS: EnemyStats = {

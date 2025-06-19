@@ -5,7 +5,6 @@ import { PlayerCharacter } from "../models/PlayerCharacter";
 import { EnemyCharacter } from "../models/EnemyCharacter";
 import { poolChangedPayload } from "../models/value-objects/RegenPool";
 import { InventoryItemSpec } from "../shared/types";
-import { BigNumber } from "@/models/utils/BigNumber";
 import { AreaStats, EnemyStats, GameStats, PrestigeStats, UserStats } from "@/shared/stats-types";
 import { MilestoneEventPayload } from "@/shared/Milestones";
 import { GameRun, RunStats } from "./GameRun";
@@ -25,8 +24,8 @@ export interface GameEvents {
 	"game:systemsResumed": void;
 
 	"ui:screenChanged": string;
-	"renown:changed": BigNumber;
-	"renown:award": BigNumber;
+        "renown:changed": number;
+        "renown:award": number;
 
 	// RESOURCES
 	"resources:changed": Resource;
@@ -53,7 +52,7 @@ export interface GameEvents {
 
 	// PLAYER CHARACTER
 	"char:levelUp": number; // New Level
-	"char:gainedXp": BigNumber; // Amount incoming
+        "char:gainedXp": number; // Amount incoming
 
 	//HUNT
 	"hunt:stateChanged": HuntState;

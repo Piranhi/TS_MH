@@ -1,6 +1,5 @@
 import { StatsModifier, CoreStats, Stats, defaultPlayerStats } from "@/models/Stats";
 import { bus } from "./EventBus";
-import { BigNumber } from "@/models/utils/BigNumber";
 import { mergeStats } from "@/shared/utils/stat-utils";
 
 export type LayerFn = () => StatsModifier;
@@ -29,9 +28,9 @@ export class StatsEngine {
 		this.recalculate();
 	}
 
-	get<K extends keyof Stats>(key: K): Stats[K] {
-		return this.current[key] ?? new BigNumber(0);
-	}
+        get<K extends keyof Stats>(key: K): Stats[K] {
+                return this.current[key] ?? 0;
+        }
 
 	getAll(): Stats {
 		return { ...this.current };

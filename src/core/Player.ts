@@ -3,7 +3,6 @@ import { Saveable } from "@/shared/storage-types";
 import { printLog } from "@/core/DebugManager";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { PrestigeState } from "@/shared/stats-types";
-import { BigNumber } from "@/models/utils/BigNumber";
 import { RegenPool } from "@/models/value-objects/RegenPool";
 import { StatsModifier } from "@/models/Stats";
 import { BalanceCalculators } from "@/balance/GameBalance";
@@ -11,7 +10,7 @@ import { GameBase } from "./GameBase";
 
 interface PlayerSaveState {
     level: number;
-    renown: BigNumber;
+    renown: number;
     stamina: RegenPool;
     experience: number;
     prestigeState: PrestigeState;
@@ -34,7 +33,7 @@ export class Player extends GameBase implements Saveable {
 
     // Persistent player stats
     private level: number = 1;
-    private renown = new BigNumber(0);
+    private renown = 0;
     private experience: number = 0;
     private stamina: RegenPool;
     private prestigeState: PrestigeState;
@@ -145,15 +144,14 @@ export class Player extends GameBase implements Saveable {
 
     // ================ RENOWN MANAGEMENT ================
 
-    public adjustRenown(delta: BigNumber | number): void {
+    public adjustRenown(delta: number): void {
         const oldRenown = this.renown;
-        this.renown = this.renown.add(delta);
+        this.renown += delta;
 
-        printLog(`Renown: ${oldRenown.toString()} → ${this.renown.toString()} (${delta})`, 3, "Player");
+        printLog(`Renown: ${oldRenown} → ${this.renown} (${delta})`, 3, "Player");
         bus.emit("renown:changed", this.renown);
 
-        // Track lifetime renown for achievements/stats
-        if (delta instanceof BigNumber ? delta.gt(0) : delta > 0) {
+        if (delta > 0) {
             bus.emit("stats:renownGained", delta);
         }
     }
@@ -164,7 +162,7 @@ export class Player extends GameBase implements Saveable {
         // Reset run-specific stats
         this.level = 1;
         this.experience = 0;
-        this.renown = new BigNumber(0);
+        this.renown = 0;
 
         // Reset stamina but keep max upgrades?
         const baseStamina = 10 + Math.floor(this.prestigeState.runsCompleted * 2);
@@ -179,7 +177,7 @@ export class Player extends GameBase implements Saveable {
     public get playerLevel(): number {
         return this.level;
     }
-    public get currentRenown(): BigNumber {
+    public get currentRenown(): number {
         return this.renown;
     }
     public get currentExperience(): number {
@@ -239,7 +237,7 @@ export class Player extends GameBase implements Saveable {
     load(state: PlayerSaveState): void {
         this.level = state.level ?? 1;
         this.experience = state.experience ?? 0;
-        this.renown = state.renown ? BigNumber.fromJSON(state.renown) : new BigNumber(0);
+        this.renown = state.renown ?? 0;
         this.stamina = state.stamina ? RegenPool.fromJSON(state.stamina) : new RegenPool(10, 1, false);
         this.prestigeState = state.prestigeState ?? { ...DEFAULT_PRESTIGE_STATE };
 

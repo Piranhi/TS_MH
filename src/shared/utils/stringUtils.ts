@@ -20,6 +20,18 @@ export function formatTimeFull(ms: number): string {
 	totalSeconds %= 3600;
 	const minutes = Math.floor(totalSeconds / 60);
 	const seconds = totalSeconds % 60;
-	const pad = (n: number) => n.toString().padStart(2, "0");
-	return `${hours}:${pad(minutes)}:${pad(seconds)}`;
+        const pad = (n: number) => n.toString().padStart(2, "0");
+        return `${hours}:${pad(minutes)}:${pad(seconds)}`;
+}
+
+export function formatNumberShort(value: number): string {
+        const units = ["", "k", "m", "b", "t"];
+        let unitIndex = 0;
+        while (Math.abs(value) >= 1000 && unitIndex < units.length - 1) {
+                value /= 1000;
+                unitIndex++;
+        }
+        let str = value.toFixed(1);
+        if (str.endsWith(".0")) str = str.slice(0, -2);
+        return str + units[unitIndex];
 }

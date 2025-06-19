@@ -3,7 +3,6 @@ import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { prettify } from "@/shared/utils/stringUtils";
 import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
-import { BigNumber } from "@/models/utils/BigNumber";
 import { ProgressBarSimple } from "./ProgressBarSimple";
 
 interface StatData {
