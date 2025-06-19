@@ -10,14 +10,14 @@
 		"id": "mine",
 		"displayName": "Mine",
 		"description": "Blacksmith todo",
-		"icon": "/images/buildings/building_guild_hall.png",
+		"icon": "/images/buildings/building_mine.png",
 		"baseCost": 100
 	},
 	{
 		"id": "blacksmith",
 		"displayName": "Blacksmith",
 		"description": "Blacksmith todo",
-		"icon": "",
+		"icon": "/images/buildings/building_blacksmith.png",
 		"baseCost": 100
 	},
 	{
@@ -31,7 +31,7 @@
 		"id": "library",
 		"displayName": "Library",
 		"description": "Study tomes to unlock powerful upgrades.",
-		"icon": "icons/library.png",
+		"icon": "/images/buildings/building_library.png",
 		"baseCost": 200
 	}
 ]

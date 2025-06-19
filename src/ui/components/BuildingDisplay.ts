@@ -5,10 +5,12 @@ import { ProgressBar } from "./ProgressBar";
 import { bus } from "@/core/EventBus";
 
 export class BuildingDisplay extends UIBase {
-        private levelEl!: HTMLElement;
-        private progress!: ProgressBar;
-        private spendContainer!: HTMLElement;
-        private progressText!: HTMLElement;
+
+	private levelEl!: HTMLElement;
+	private progress!: ProgressBar;
+	private spendContainer!: HTMLElement;
+	private progressText!: HTMLElement;
+
 
 	constructor(private containerEl: HTMLElement, template: HTMLTemplateElement, private building: Building) {
 		super();
@@ -24,12 +26,14 @@ export class BuildingDisplay extends UIBase {
 		const titleEl = root.querySelector(".building-title") as HTMLElement;
 		titleEl.textContent = building.displayName;
 
+
                 this.levelEl = root.querySelector(".building-level") as HTMLElement;
                 this.spendContainer = root.querySelector(".spend-points") as HTMLElement;
                 const progressHolder = root.querySelector(".progress-holder") as HTMLElement;
                 this.progressText = progressHolder.querySelector(".progress-text") as HTMLElement;
 
                 this.progress = new ProgressBar({ container: progressHolder, templateId: undefined, initialValue: 0, maxValue: 1 });
+
 
                 this.attachTo(this.containerEl);
                 this.bindDomEvent(root, "mouseenter", () => this.handleMouseEnter());
@@ -87,6 +91,7 @@ export class BuildingDisplay extends UIBase {
         this.progressText.textContent = `${snap.pointsAllocated} / ${snap.nextUnlock}`;
     }
         private handleMouseEnter() {
+
 		Tooltip.instance.show(this.element, {
 			icon: this.building.iconUrl,
 			name: this.building.displayName,
