@@ -1,21 +1,20 @@
 // progressBar.ts
-import { BigNumber } from "@/models/utils/BigNumber";
 import { UIBase } from "./UIBase";
 
 export interface ProgressBarOptions {
 	container: HTMLElement;
 	templateId?: string;
 	/** Starting "current" value; defaults to 0 */
-	initialValue?: number | BigNumber;
+        initialValue?: number;
 	/** Starting "max" value; defaults to 100 */
-	maxValue?: number | BigNumber;
+        maxValue?: number;
 }
 
 export class ProgressBarSimple extends UIBase {
 	private root: HTMLElement;
 	private fillEl: HTMLElement;
-	private current: BigNumber;
-	private max: BigNumber;
+        private current: number;
+        private max: number;
 
 	constructor(options: ProgressBarOptions) {
 		super();
@@ -26,18 +25,13 @@ export class ProgressBarSimple extends UIBase {
 		this.fillEl = this.root.querySelector(".mh-progress__fill")!;
 		this.fillEl.classList.add("mh-progress--generic");
 
-		// Convert everything to BigNumber at construction time
-		this.max = this.toBigNumber(options.maxValue ?? 100);
-		this.current = this.toBigNumber(options.initialValue ?? 0);
+                this.max = options.maxValue ?? 100;
+                this.current = options.initialValue ?? 0;
 
 		// Render initial state
 		this.updateFill();
 	}
 
-	/** Helper to convert number | BigNumber to BigNumber */
-	private toBigNumber(value: number | BigNumber): BigNumber {
-		return value instanceof BigNumber ? value : new BigNumber(value);
-	}
 
 	/** Clones the <template> and appends it to the container */
 	private cloneTemplate(templateId: string, container: HTMLElement): HTMLElement {
@@ -48,51 +42,49 @@ export class ProgressBarSimple extends UIBase {
 	}
 
 	/** Set a new "current" value (clamped 0–max) and redraws the fill */
-	public setValue(value: number | BigNumber): void {
-		const bigValue = this.toBigNumber(value);
-		// Clamp between 0 and max using BigNumber methods
-		const zero = new BigNumber(0);
-		this.current = BigNumber.min(BigNumber.max(bigValue, zero), this.max);
-		this.updateFill();
-	}
+        public setValue(value: number): void {
+                const clamped = Math.max(0, Math.min(value, this.max));
+                this.current = clamped;
+                this.updateFill();
+        }
 
 	/** Change the "max" value and re-apply the current fill */
-	public setMax(max: number | BigNumber): void {
-		this.max = this.toBigNumber(max);
-		this.setValue(this.current); // Re-clamp current value against new max
-	}
+        public setMax(max: number): void {
+                this.max = max;
+                this.setValue(this.current); // Re-clamp current value against new max
+        }
 
 	/** Computes percentage and writes it to the fill's width */
 	private updateFill(): void {
 		// Only convert to number at display time for percentage calculation
-		const pct = this.max.eq(0) ? 0 : this.current.div(this.max).toNumber() * 100;
-		this.fillEl.style.width = `${pct}%`;
-	}
+                const pct = this.max === 0 ? 0 : (this.current / this.max) * 100;
+                this.fillEl.style.width = `${pct}%`;
+        }
 
-	/** Get current value as BigNumber */
-	public getValue(): BigNumber {
-		return this.current;
-	}
+        /** Get current value */
+        public getValue(): number {
+                return this.current;
+        }
 
-	/** Get max value as BigNumber */
-	public getMax(): BigNumber {
-		return this.max;
-	}
+        /** Get max value */
+        public getMax(): number {
+                return this.max;
+        }
 
 	/** Get current percentage as number (0-100) */
-	public getPercentage(): number {
-		return this.max.eq(0) ? 0 : this.current.div(this.max).toNumber() * 100;
-	}
+        public getPercentage(): number {
+                return this.max === 0 ? 0 : (this.current / this.max) * 100;
+        }
 
 	/** Check if progress bar is full */
-	public isFull(): boolean {
-		return this.current.gte(this.max);
-	}
+        public isFull(): boolean {
+                return this.current >= this.max;
+        }
 
 	/** Check if progress bar is empty */
-	public isEmpty(): boolean {
-		return this.current.eq(0);
-	}
+        public isEmpty(): boolean {
+                return this.current === 0;
+        }
 
 	/** Clean up the DOM when you no longer need this bar */
 	public destroy(): void {

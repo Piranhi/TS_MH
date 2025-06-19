@@ -4,7 +4,6 @@ import { Stats, StatsModifier } from "@/models/Stats";
 import { MilestoneTag } from "./Milestones";
 import { GameEvents } from "@/core/EventBus";
 import { BaseCharacter } from "@/models/BaseCharacter";
-import { BigNumber } from "@/models/utils/BigNumber";
 
 // --------------------- SETTLEMENT + BUILDINGS ----------------------------
 export const STARTING_BUILDING_UNLOCKS = ["guildHall"];
@@ -134,8 +133,8 @@ export interface EffectInstance {
 	source: BaseCharacter;
 	target: "self" | "enemy";
 	type: EffectType;
-	/** raw amount (damage before mitigation, heal % of maxHp, buff %, etc.) */
-	rawValue: BigNumber;
+        /** raw amount (damage before mitigation, heal % of maxHp, buff %, etc.) */
+        rawValue: number;
 	durationSeconds?: number;
 	statKey?: keyof Stats;
 }
@@ -145,8 +144,8 @@ export interface EffectResult {
 	source: BaseCharacter;
 	target: BaseCharacter;
 	effect: EffectInstance;
-	/** e.g. finalDamage after mitigation, or actualHealAmount */
-	outcomeValue: BigNumber;
+        /** e.g. finalDamage after mitigation, or actualHealAmount */
+        outcomeValue: number;
 }
 
 // -------------------- ITEMS ------------------------------

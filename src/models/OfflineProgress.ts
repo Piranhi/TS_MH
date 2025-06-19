@@ -10,7 +10,6 @@
 
 import { GameContext } from "@/core/GameContext";
 import { OfflineProgressModal } from "@/ui/components/OfflineProgressModal";
-import { BigNumber } from "./utils/BigNumber";
 import { Area } from "./Area";
 import { PlayerCharacter } from "./PlayerCharacter";
 import { printLog } from "@/core/DebugManager";
@@ -52,9 +51,9 @@ export interface OfflineProgressHandler {
  * Only hunt system returns detailed info - everything else returns null
  */
 export interface OfflineProgressInfo {
-	enemiesKilled: number;
-	renownGained: BigNumber;
-	experienceGained: BigNumber;
+        enemiesKilled: number;
+        renownGained: number;
+        experienceGained: number;
 	treasureChests: number;
 	treasureBreakdown: Array<{ interval: string; chestsFromInterval: number }>;
 	nextChestIn: number;
@@ -288,8 +287,8 @@ class HuntOfflineHandler implements OfflineProgressHandler {
 		if (!area) {
 			return {
 				enemiesKilled: 0,
-				renownGained: new BigNumber(0),
-				experienceGained: new BigNumber(0),
+                                renownGained: 0,
+                                experienceGained: 0,
 				treasureChests: 0,
 				treasureBreakdown: [],
 				nextChestIn: 30 * 60,
@@ -305,11 +304,11 @@ class HuntOfflineHandler implements OfflineProgressHandler {
 		const kills = Math.floor((offlineSeconds / avgKillTime) * efficiency);
 
 		// Apply the rewards directly here since we're calculating them
-		const renownGained = new BigNumber(kills * area.tier);
-		const xpGained = new BigNumber(kills).multiply(area.getXpPerKill(false));
+                const renownGained = kills * area.tier;
+                const xpGained = kills * area.getXpPerKill(false);
 
-		context.player.adjustRenown(renownGained);
-		context.character.gainXp(xpGained);
+                context.player.adjustRenown(renownGained);
+                context.character.gainXp(xpGained);
 
 		const chests = this.treasure.calculateTreasureRewards(offlineSeconds);
 		if (chests.chestsEarned > 0) {

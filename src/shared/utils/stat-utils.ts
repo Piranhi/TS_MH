@@ -1,35 +1,7 @@
 import { Stats, StatsModifier } from "@/models/Stats";
-import { BigNumber } from "@/models/utils/BigNumber";
 import { ItemRarity } from "../types";
 import { BaseCharacter } from "@/models/BaseCharacter";
 import { RARITY_MULTIPLIERS } from "@/balance/GameBalance";
-
-// Convert any object of numbers to BigNumbers
-export function toBigNumberStats<T extends Record<string, number>>(raw: T): { [K in keyof T]: BigNumber } {
-	const out = {} as { [K in keyof T]: BigNumber };
-	for (const k in raw) {
-		out[k] = new BigNumber(raw[k]);
-	}
-	return out;
-}
-
-// Accepts mixed types, skips anything already a BigNumber
-export function toBigNumberModifier<T extends Record<string, number | BigNumber | undefined>>(raw: T): { [K in keyof T]: BigNumber } {
-	const out = {} as { [K in keyof T]: BigNumber };
-	for (const k in raw) {
-		const val = raw[k];
-		if (val instanceof BigNumber) {
-			out[k] = val;
-		} else if (typeof val === "number") {
-			out[k] = new BigNumber(val);
-		} else {
-			out[k] = new BigNumber(0); // default for undefined, or skip this line if you want sparse
-		}
-	}
-	return out;
-}
-
-// Assumes every field in a and b is a BigNumber or undefined
 export function mergeStatModifiers(a: StatsModifier, b: StatsModifier): StatsModifier {
 	const out: StatsModifier = { ...a };
 	for (const k in b) {
@@ -79,13 +51,12 @@ export function scaleStatsModifier(mod: StatsModifier, rarity: ItemRarity): Stat
 }
 
 /** Helper: roll crit/variance, apply power multipliers, etc. */
-export function calculateRawBaseDamage(char: BaseCharacter): BigNumber {
+export function calculateRawBaseDamage(char: BaseCharacter): number {
 	// LEVEL * ATTACK * POWER
 	//const level = char.level;
-	const attack = new BigNumber(char.stats.get("attack"));
-	const powerMultiplier = 1 + char.stats.get("power") / 100;
+        const attack = char.stats.get("attack");
+        const powerMultiplier = 1 + char.stats.get("power") / 100;
 
-	// for a damage effect: attack × power × crit × variance × effect.scale
-	const totalMultiplier = powerMultiplier;
-	return attack.multiply(totalMultiplier);
+        const totalMultiplier = powerMultiplier;
+        return attack * totalMultiplier;
 }

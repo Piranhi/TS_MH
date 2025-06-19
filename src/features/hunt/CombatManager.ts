@@ -8,7 +8,6 @@ import { Area } from "@/models/Area";
 import { EffectProcessor } from "./EffectProcessor";
 import { Destroyable } from "@/core/Destroyable";
 import { GameContext } from "@/core/GameContext";
-import { BigNumber } from "@/models/utils/BigNumber";
 
 export class CombatManager extends Destroyable {
     private effectProcessor: EffectProcessor;
@@ -94,7 +93,7 @@ export class CombatManager extends Destroyable {
         this.context.player.adjustRenown(renownReward);
 
         // Award experience
-        this.context.character.gainXp(new BigNumber(this.area.getXpPerKill(false)));
+        this.context.character.gainXp(this.area.getXpPerKill(false));
 
         //this.context.player.gainExperience(expReward);
 

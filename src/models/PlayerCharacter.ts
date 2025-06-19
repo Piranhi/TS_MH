@@ -3,7 +3,6 @@ import { StatsEngine } from "@/core/StatsEngine";
 import { bus } from "@/core/EventBus";
 import { PrestigeState } from "@/shared/stats-types";
 import { bindEvent } from "@/shared/utils/busUtils";
-import { BigNumber } from "./utils/BigNumber";
 import { Saveable } from "@/shared/storage-types";
 import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 import { Trait } from "./Trait";
@@ -19,8 +18,8 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
     private passiveHealTick = 0;
     private classCardAbilityIds: string[] = [];
 
-    private _currentXp: BigNumber = new BigNumber(0);
-    private _nextXpThreshold: BigNumber = new BigNumber(10);
+    private _currentXp = 0;
+    private _nextXpThreshold = 10;
 
     constructor(prestigeStats: PrestigeState, traits: Trait[]) {
         const engine = new StatsEngine();
@@ -54,34 +53,29 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
     private passiveHeal() {
         this.passiveHealTick++;
 
-        this.hp.increase(new BigNumber(GAME_BALANCE.player.healing.passiveHealAmount));
+        this.hp.increase(GAME_BALANCE.player.healing.passiveHealAmount);
     }
 
     healInRecovery() {
-        this.hp.increase(this.maxHp.multiply(GAME_BALANCE.player.healing.recoveryStateHeal)); // Always heal at least 1
+        this.hp.increase(this.maxHp * GAME_BALANCE.player.healing.recoveryStateHeal); // Always heal at least 1
     }
 
     private updateStats() {
-        this.hp.max = new BigNumber(this.stats.get("hp"));
+        this.hp.max = this.stats.get("hp");
     }
 
-    public gainXp(amt: BigNumber) {
-        // BigNumber.add() returns a new instance, so we need to assign it back
-        this._currentXp = this._currentXp.add(amt);
+    public gainXp(amt: number) {
+        this._currentXp += amt;
         let levelledUp = false;
 
-        // Use BigNumber comparison methods instead of >= operator
-        while (this._currentXp.gte(this._nextXpThreshold)) {
+        while (this._currentXp >= this._nextXpThreshold) {
             this.levelUp();
             levelledUp = true;
 
-            // Subtract and assign back
-            this._currentXp = this._currentXp.subtract(this._nextXpThreshold);
+            this._currentXp -= this._nextXpThreshold;
 
-            // For threshold calculation, convert to number, calculate, then back to BigNumber
-            const currentThreshold = this._nextXpThreshold.toNumber();
-            const newThreshold = Math.floor(currentThreshold * GAME_BALANCE.player.xpThresholdMultiplier);
-            this._nextXpThreshold = new BigNumber(newThreshold);
+            const newThreshold = Math.floor(this._nextXpThreshold * GAME_BALANCE.player.xpThresholdMultiplier);
+            this._nextXpThreshold = newThreshold;
         }
 
         if (levelledUp) {
@@ -122,11 +116,11 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
         return this._charLevel;
     }
 
-    get currentXp(): BigNumber {
+    get currentXp(): number {
         return this._currentXp;
     }
 
-    get nextXpThreshold(): BigNumber {
+    get nextXpThreshold(): number {
         return this._nextXpThreshold;
     }
 

@@ -1,13 +1,12 @@
 import { printLog } from "@/core/DebugManager";
 import { BaseCharacter } from "@/models/BaseCharacter";
-import { BigNumber } from "@/models/utils/BigNumber";
 import { EffectInstance, EffectResult } from "@/shared/types";
 
 export class EffectProcessor {
     constructor(private readonly defenceConstant = 100) {}
 
     public apply(effect: EffectInstance, target: BaseCharacter): EffectResult {
-        let outcomeValue: BigNumber = new BigNumber(0);
+        let outcomeValue = 0;
 
         switch (effect.type) {
             case "physical":
@@ -37,15 +36,15 @@ export class EffectProcessor {
         };
     }
 
-    private applyDamage(rawDamage: BigNumber, target: BaseCharacter): BigNumber {
-        if (!target.canTakeDamage) return new BigNumber(0);
+    private applyDamage(rawDamage: number, target: BaseCharacter): number {
+        if (!target.canTakeDamage) return 0;
         const totalDefence = target.stats.get("defence") * (1 + target.stats.get("guard") / 100);
 
         const mitigationFactor = 1 - totalDefence / (totalDefence + this.defenceConstant);
 
-        const finalDamage = rawDamage.multiply(mitigationFactor).clampMinZero();
+        const finalDamage = Math.max(0, rawDamage * mitigationFactor);
         target.hp.decrease(finalDamage);
-        printLog(`${target.name} taking damage. Inc: [RAW]${rawDamage.toString()} - [DEF]${totalDefence}, [MIT]${mitigationFactor - 1}  - [NET]${finalDamage.toString()}`, 3, "EffectProcessor.ts", "combat");
+        printLog(`${target.name} taking damage. Inc: [RAW]${rawDamage} - [DEF]${totalDefence}, [MIT]${mitigationFactor - 1}  - [NET]${finalDamage}`, 3, "EffectProcessor.ts", "combat");
         // Debug invincible
         if (!target.canDie) {
             target.setToMaxHP();
@@ -54,11 +53,11 @@ export class EffectProcessor {
         return finalDamage;
     }
 
-    private applyHeal(rawHealPercent: BigNumber, target: BaseCharacter): BigNumber {
-        const healAmount = target.maxHp.multiply(rawHealPercent.div(100));
-        if (healAmount.lte(new BigNumber(0))) return new BigNumber(0);
+    private applyHeal(rawHealPercent: number, target: BaseCharacter): number {
+        const healAmount = target.maxHp * (rawHealPercent / 100);
+        if (healAmount <= 0) return 0;
         target.hp.increase(healAmount);
-        printLog(`${target.name} healing. Inc: [RAW]${rawHealPercent.toString()}- [NET]${healAmount.toString()}}`, 3, "EffectProcessor.ts", "combat");
+        printLog(`${target.name} healing. Inc: [RAW]${rawHealPercent}- [NET]${healAmount}}`, 3, "EffectProcessor.ts", "combat");
         return healAmount;
     }
 

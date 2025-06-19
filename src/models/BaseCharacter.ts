@@ -1,8 +1,7 @@
 import { debugManager, printLog } from "@/core/DebugManager";
 import { Ability } from "./Ability";
-import { BoundedBig } from "./value-objects/Bounded";
+import { BoundedNumber } from "./value-objects/Bounded";
 import type { StatsProvider } from "@/models/Stats";
-import { BigNumber } from "./utils/BigNumber";
 import { Destroyable } from "../core/Destroyable";
 import { EffectInstance, EffectSpec } from "@/shared/types";
 import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
@@ -15,7 +14,7 @@ export interface CharacterSnapshot {
     imgUrl: string;
     abilities: Ability[];
     rarity?: string;
-    level: { lvl: number; current: BigNumber; next: BigNumber };
+    level: { lvl: number; current: number; next: number };
 }
 
 export interface PowerLevel {
@@ -27,7 +26,7 @@ export abstract class BaseCharacter extends Destroyable {
     /* ──────────────────────── constants ──────────────────────── */
 
     /* ────────────────── public readonly fields ───────────────── */
-    public readonly hp: BoundedBig;
+    public readonly hp: BoundedNumber;
 
     /* ───────────────────── protected fields ──────────────────── */
 
@@ -47,11 +46,11 @@ export abstract class BaseCharacter extends Destroyable {
     constructor(public readonly name: string, public readonly stats: StatsProvider, protected readonly defaultAbilityIds: string[] = []) {
         super();
         this.defaultAbilityIds.push("basic_melee");
-        this.hp = new BoundedBig(this.calcRealHp(this.stats.get("hp")), this.calcRealHp(this.stats.get("hp"))); // TODO - ADD CALCULATIONS TO GET 'REAL' HP FROM MULTIPLIERS
+        this.hp = new BoundedNumber(this.calcRealHp(this.stats.get("hp")), this.calcRealHp(this.stats.get("hp"))); // TODO - ADD CALCULATIONS TO GET 'REAL' HP FROM MULTIPLIERS
     }
 
-    private calcRealHp(base: number): BigNumber {
-        return new BigNumber(base);
+    private calcRealHp(base: number): number {
+        return base;
     }
 
     calculatePowerStats(): number {
@@ -109,14 +108,13 @@ export abstract class BaseCharacter extends Destroyable {
         };
     }
 
-    private calcPower(): BigNumber {
-        const attack = new BigNumber(this.stats.get("attack"));
-        const powerMultiplier = new BigNumber(1).add(this.stats.get("power") / 100);
+    private calcPower(): number {
+        const attack = this.stats.get("attack");
+        const powerMultiplier = 1 + this.stats.get("power") / 100;
         const critChance = this.stats.get("critChance") / 100 + 1;
         const critDamage = this.stats.get("critDamage") / 100 + 1;
 
-        // attack × power × critChance × critDamage
-        return attack.multiply(powerMultiplier).multiply(critChance).multiply(critDamage);
+        return attack * powerMultiplier * critChance * critDamage;
     }
 
     /* ───────────────────── combat lifecycle ──────────────────── */
@@ -163,7 +161,7 @@ export abstract class BaseCharacter extends Destroyable {
             ability.reduceCooldown(dt); // TODO (multiply by speed)
             if (ability.isReady()) {
                 for (const effectSpec of ability.spec.effects) {
-                    const raw: BigNumber = this.calculateRawValue(effectSpec);
+                    const raw: number = this.calculateRawValue(effectSpec);
                     readyEffects.push({
                         source: this,
                         target: effectSpec.target,
@@ -181,10 +179,8 @@ export abstract class BaseCharacter extends Destroyable {
     }
 
     /** Helper: roll crit/variance, apply power multipliers, etc. */
-    private calculateRawValue(effectDef: EffectSpec): BigNumber {
+    private calculateRawValue(effectDef: EffectSpec): number {
         const baseDamage = calculateRawBaseDamage(this);
-        //const attack = new BigNumber(this.stats.get("attack"));
-        //const powerMultiplier = 1 + this.stats.get("power") / 100;
         const critChance = this.stats.get("critChance") / 100;
         const critDamage = this.stats.get("critDamage") / 100;
         const rolledCrit = Math.random() < critChance;
@@ -193,10 +189,7 @@ export abstract class BaseCharacter extends Destroyable {
 
         // for a damage effect: attack × power × crit × variance × effect.scale
         //const totalMultiplier = powerMultiplier * critMultiplier * variance * (effectDef.scale ?? 1);
-        const totalDamage = baseDamage
-            .multiply(critMultiplier)
-            .multiply(variance)
-            .multiply(effectDef.scale ?? 1);
+        const totalDamage = baseDamage * critMultiplier * variance * (effectDef.scale ?? 1);
         return totalDamage;
     }
 
@@ -210,7 +203,7 @@ export abstract class BaseCharacter extends Destroyable {
             abilities: this.getActiveAbilities(),
             imgUrl: this.getAvatarUrl(),
             rarity: "Todo",
-            level: { lvl: this._charLevel, current: new BigNumber(0), next: new BigNumber(0) },
+            level: { lvl: this._charLevel, current: 0, next: 0 },
         };
     }
 }
