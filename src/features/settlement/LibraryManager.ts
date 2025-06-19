@@ -5,6 +5,7 @@ import { Saveable } from "@/shared/storage-types";
 import { GAME_BALANCE } from "@/balance/GameBalance";
 import { OfflineProgressHandler } from "@/models/OfflineProgress";
 import { GameBase } from "@/core/GameBase";
+import { GameContext } from "@/core/GameContext";
 
 interface LibrarySaveState {
 	active: any[];
@@ -47,7 +48,7 @@ export class LibraryManager extends GameBase implements Saveable, OfflineProgres
 
 	public handleTick(dt: number) {
 		for (const upg of this.activeResearch) {
-			upg.tick(dt, GAME_BALANCE.research.baseResearchSpeedMultiplier);
+			upg.tick(dt, GameContext.getInstance().modifiers.getValue("research_speed"));
 			if (upg.unlocked) {
 				this.completedResearch.add(upg.id);
 			}
