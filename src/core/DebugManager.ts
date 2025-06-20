@@ -11,6 +11,10 @@ export type DebugOptions = {
 	hunt_searchSpeed: number;
 	hunt_allAreasOpen: boolean;
 	building_infinitePoints: boolean;
+	upgrades_unlockAll: boolean;
+	upgrades_instantBuild: boolean;
+	reseach_unlockAll: boolean;
+	research_instantResearch: boolean;
 };
 export class DebugManager {
 	public readonly printDebug = false;
@@ -30,6 +34,10 @@ export class DebugManager {
 			hunt_searchSpeed: GAME_BALANCE.hunt.baseSearchTime,
 			hunt_allAreasOpen: false,
 			building_infinitePoints: false,
+			upgrades_unlockAll: false,
+			upgrades_instantBuild: false,
+			reseach_unlockAll: false,
+			research_instantResearch: false,
 		},
 		overrides: Partial<DebugOptions> = {}
 	) {

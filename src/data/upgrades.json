@@ -22,7 +22,7 @@
 			"description": "Research speed increased by 10%.",
 			"icon": "icons/book3.png",
 			"baseTime": 1200,
-			"unlocks": { "type": "additive", "property": "research_speed", "amt": 10 }
+			"unlocks": { "type": "additive", "property": "researchSpeed", "amt": 10 }
 		}
 	],
 	"blacksmith": [

@@ -5,16 +5,21 @@ import { ProgressBar } from "./ProgressBar";
 import { bus } from "@/core/EventBus";
 
 export class BuildingDisplay extends UIBase {
-
 	private levelEl!: HTMLElement;
 	private progress!: ProgressBar;
 	private spendContainer!: HTMLElement;
 	private progressText!: HTMLElement;
 
-
-	constructor(private containerEl: HTMLElement, template: HTMLTemplateElement, private building: Building) {
+	constructor(private readonly containerEl: HTMLElement, private readonly template: HTMLTemplateElement, private readonly building: Building) {
 		super();
-		const frag = template.content.cloneNode(true) as DocumentFragment;
+		this.buildDisplay();
+		this.buildButtons();
+		this.update();
+		this.setupEvents();
+	}
+
+	private buildDisplay() {
+		const frag = this.template.content.cloneNode(true) as DocumentFragment;
 		const root = frag.firstElementChild as HTMLElement;
 		this.element = root;
 
@@ -24,23 +29,21 @@ export class BuildingDisplay extends UIBase {
 		}
 
 		const titleEl = root.querySelector(".building-title") as HTMLElement;
-		titleEl.textContent = building.displayName;
+		titleEl.textContent = this.building.displayName;
 
+		this.levelEl = root.querySelector(".building-level") as HTMLElement;
+		this.spendContainer = root.querySelector(".spend-points") as HTMLElement;
+		const progressHolder = root.querySelector(".progress-holder") as HTMLElement;
+		this.progressText = progressHolder.querySelector(".progress-text") as HTMLElement;
 
-                this.levelEl = root.querySelector(".building-level") as HTMLElement;
-                this.spendContainer = root.querySelector(".spend-points") as HTMLElement;
-                const progressHolder = root.querySelector(".progress-holder") as HTMLElement;
-                this.progressText = progressHolder.querySelector(".progress-text") as HTMLElement;
+		this.progress = new ProgressBar({ container: progressHolder, initialValue: 0, maxValue: 1 });
 
-                this.progress = new ProgressBar({ container: progressHolder, templateId: undefined, initialValue: 0, maxValue: 1 });
+		this.attachTo(this.containerEl);
+	}
 
-
-                this.attachTo(this.containerEl);
-                this.bindDomEvent(root, "mouseenter", () => this.handleMouseEnter());
-		this.bindDomEvent(root, "mouseleave", () => this.handleMouseLeave());
-
-		this.buildButtons();
-		this.update();
+	private setupEvents() {
+		this.bindDomEvent(this.element, "mouseenter", () => this.handleMouseEnter());
+		this.bindDomEvent(this.element, "mouseleave", () => this.handleMouseLeave());
 		bus.on("settlement:changed", () => this.update());
 		bus.on("settlement:buildPointsChanged", () => this.updateButtons());
 	}
@@ -83,15 +86,14 @@ export class BuildingDisplay extends UIBase {
 		this.context.settlement.spendBuildPoints(this.building.id, amt);
 	}
 
-    private update() {
-        const snap = this.building.snapshot;
-        this.levelEl.textContent = `Lv ${snap.level}`;
-        this.progress.setMax(snap.nextUnlock);
-        this.progress.setValue(snap.pointsAllocated);
-        this.progressText.textContent = `${snap.pointsAllocated} / ${snap.nextUnlock}`;
-    }
-        private handleMouseEnter() {
-
+	private update() {
+		const snap = this.building.snapshot;
+		this.levelEl.textContent = `Lv ${snap.level}`;
+		this.progress.setMax(snap.nextUnlock);
+		this.progress.setValue(snap.pointsAllocated);
+		this.progressText.textContent = `${snap.pointsAllocated} / ${snap.nextUnlock}`;
+	}
+	private handleMouseEnter() {
 		Tooltip.instance.show(this.element, {
 			icon: this.building.iconUrl,
 			name: this.building.displayName,

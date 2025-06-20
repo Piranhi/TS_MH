@@ -27,8 +27,8 @@ export class MineManager extends Destroyable implements Saveable<MineSaveState> 
 	}
 
 	private checkForNewShafts() {
-		const ctx = GameContext.getInstance();
-		const building = ctx.settlement.getBuilding("mine");
+		const context = GameContext.getInstance();
+		const building = context.settlement.getBuilding("mine");
 		const level = building ? building.level : 0;
 		while (this.timers.length < level && this.timers.length < this.durations.length) {
 			this.timers.push(0);

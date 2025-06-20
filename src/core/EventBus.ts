@@ -1,4 +1,3 @@
-import { BoundedNumber } from "../models/value-objects/Bounded";
 import { Player } from "./Player";
 import { HuntState } from "../features/hunt/HuntManager";
 import { PlayerCharacter } from "../models/PlayerCharacter";
@@ -9,6 +8,7 @@ import { AreaStats, EnemyStats, GameStats, PrestigeStats, UserStats } from "@/sh
 import { MilestoneEventPayload } from "@/shared/Milestones";
 import { GameRun, RunStats } from "./GameRun";
 import { Resource } from "@/features/inventory/Resource";
+import { ModifierSystem } from "./ModifierEngine";
 
 export interface GameEvents {
 	"Game:UITick": number;
@@ -24,8 +24,12 @@ export interface GameEvents {
 	"game:systemsResumed": void;
 
 	"ui:screenChanged": string;
-        "renown:changed": number;
-        "renown:award": number;
+	"renown:changed": number;
+	"renown:award": number;
+
+	// MODIFIERS
+	"modifier:recalculated": void;
+	"modifier:changed": ModifierSystem | null;
 
 	// RESOURCES
 	"resources:changed": Resource;
@@ -52,7 +56,7 @@ export interface GameEvents {
 
 	// PLAYER CHARACTER
 	"char:levelUp": number; // New Level
-        "char:gainedXp": number; // Amount incoming
+	"char:gainedXp": number; // Amount incoming
 
 	//HUNT
 	"hunt:stateChanged": HuntState;

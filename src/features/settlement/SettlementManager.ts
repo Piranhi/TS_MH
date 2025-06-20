@@ -6,6 +6,7 @@ import { Outpost } from "../hunt/Outpost";
 import { GameBase } from "@/core/GameBase";
 import { DebugMenu } from "@/ui/components/Debug-Menu";
 import { debugManager } from "@/core/DebugManager";
+import { GAME_BALANCE } from "@/balance/GameBalance";
 
 interface SettlementSaveState {
 	buildings: [BuildingType, Building][];
@@ -35,8 +36,6 @@ export class SettlementManager extends GameBase implements Saveable {
 	// ── Other settlement state ────────────────────────────────────────────────
 	private buildingsMap = new Map<BuildingType, Building>();
 	private settlementBuildPoints: number = 0;
-	private buildPointsPerPrestige: number = 100;
-
 	// ── NEW: Outpost management ────────────────────────────────────────────────
 	private outposts = new Map<string, Outpost>();
 	private availableOutposts = new Set<string>();
@@ -203,6 +202,7 @@ export class SettlementManager extends GameBase implements Saveable {
 		}
 	}
 
+
 	/**
 	 * Core passive-reward updater.
 	 * Computes how many full intervals have passed since lastRewardTimestamp,
@@ -270,7 +270,7 @@ export class SettlementManager extends GameBase implements Saveable {
 	}
 
 	getBuildPointsFromPrestige(): number {
-		return Math.floor((this.passiveCurrent / this.passiveMax) * this.buildPointsPerPrestige);
+		return Math.floor((this.passiveCurrent / this.passiveMax) * GAME_BALANCE.settlement.baseBuildPointsPerPrestige);
 	}
 
 	modifyBuildPoints(amt: number): boolean {

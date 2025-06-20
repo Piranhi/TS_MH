@@ -17,6 +17,14 @@
 	font-weight: 600;
 	color: var(--primary-text, #fff);
 }
+.library-section-speed {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: var(--primary-text, #fff);
+	background-color: rgba(0, 0, 0, 0.623);
+	border-radius: 2px;
+	padding: 0.2rem 1rem;
+}
 .library-active-list {
 	display: flex;
 	flex-direction: column;

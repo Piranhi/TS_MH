@@ -3,8 +3,9 @@ import Markup from "./library.html?raw";
 import { ProgressBar } from "../components/ProgressBar";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { ResearchUpgrade } from "@/features/settlement/ResearchUpgrade";
-import { UpgradeSelectionContainer, UpgradeSelectionData } from "../components/UpgradeSelectionContainer";
+import { UpgradeSelectionContainer } from "../components/UpgradeSelectionContainer";
 import { BuildingStatus } from "../components/BuildingStatus";
+import { UpgradeSelectionData } from "../components/UpgradeSelectionComponent";
 
 export class LibraryScreen extends BaseScreen {
 	readonly screenName = "library";
@@ -12,6 +13,7 @@ export class LibraryScreen extends BaseScreen {
 	private upgradeGrid!: HTMLElement;
 	private completedList!: HTMLElement;
 	private upgradeContainer!: UpgradeSelectionContainer;
+	private speedEl!: HTMLElement;
 
 	init() {
 		const root = this.addMarkuptoPage(Markup);
@@ -21,12 +23,23 @@ export class LibraryScreen extends BaseScreen {
 		this.activeList = this.byId("libraryActiveList");
 		this.upgradeGrid = this.byId("libraryUpgradeGrid");
 		this.completedList = this.byId("libraryCompletedList");
+		this.speedEl = this.byId("library-section-speed");
 		this.build();
-		bindEvent(this.eventBindings, "library:changed", () => this.build());
-		bindEvent(this.eventBindings, "Game:UITick", () => this.updateActive());
+		this.setupEvents();
 	}
 	show() {}
 	hide() {}
+
+	private setupEvents() {
+		bindEvent(this.eventBindings, "library:changed", () => this.build());
+		bindEvent(this.eventBindings, "Game:UITick", () => this.updateActive());
+		bindEvent(this.eventBindings, "modifier:changed", () => this.updateSpeed());
+	}
+
+	private updateSpeed() {
+		const speed = this.context.library.getResearchSpeed();
+		this.speedEl.textContent = "Research Speed: " + speed.toString();
+	}
 
 	private build() {
 		this.updateActive();
@@ -40,6 +53,7 @@ export class LibraryScreen extends BaseScreen {
 			this.upgradeContainer.setUpgrades(this.getAvailableUpgrades());
 		}
 		this.updateCompleted();
+		this.updateSpeed();
 	}
 
 	private updateActive() {

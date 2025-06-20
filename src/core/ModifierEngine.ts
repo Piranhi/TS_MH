@@ -1,13 +1,18 @@
 import { Saveable } from "@/shared/storage-types";
+import { bus } from "./EventBus";
 
-/** Possible operations a layer can perform */
 export type ModifierOp = "add" | "mul";
+
+/** Strict types for systems and layers */
+export const ALL_MODIFIER_SYSTEMS = ["researchSpeed", "blacksmithSpeed", "trainingSpeed"] as const;
+export type ModifierSystem = (typeof ALL_MODIFIER_SYSTEMS)[number];
+
+export const ALL_MODIFIER_LAYERS = ["building", "equipment", "run", "permanent", "prestige", "challenge"] as const;
+export type ModifierLayerName = (typeof ALL_MODIFIER_LAYERS)[number];
 
 /** Configuration describing a single layer */
 export interface ModifierLayerConfig {
-	/** Unique name used to reference this layer */
-	name: string;
-	/** Whether values are added or multiplied */
+	name: ModifierLayerName;
 	op: ModifierOp;
 }
 
@@ -25,12 +30,10 @@ export interface ModifierConfig {
 	systems: Record<string, ModifierSystemSettings>;
 }
 
-/** Serialized representation of a layer */
 interface LayerSave {
 	entries: [string, number][];
 }
 
-/** Serialized representation of a system */
 interface SystemSave {
 	base: number;
 	layers: Record<string, LayerSave>;
@@ -82,9 +85,9 @@ class ModifierLayer {
 }
 
 /** Represents all layers for a particular system */
-class ModifierSystem {
+class ModifierSystemClass {
 	private base: number;
-	private layers: Record<string, ModifierLayer> = {};
+	private layers: Record<ModifierLayerName, ModifierLayer> = {} as Record<ModifierLayerName, ModifierLayer>;
 	private cached = 0;
 
 	constructor(private layerConfig: ModifierLayerConfig[], settings: ModifierSystemSettings) {
@@ -95,28 +98,29 @@ class ModifierSystem {
 		this.recalculate();
 	}
 
-	add(layer: string, key: string, value: number) {
+	add(layer: ModifierLayerName, key: string, value: number) {
 		this.layers[layer]?.add(key, value);
 		this.recalculate();
 	}
 
-	clearLayer(layer: string) {
+	clearLayer(layer: ModifierLayerName) {
 		this.layers[layer]?.clear();
 		this.recalculate();
 	}
 
-	recalculate(disabled?: Set<string>) {
+	recalculate(disabled?: Set<ModifierLayerName>) {
 		let val = this.base;
-		for (const cfg of this.layerConfig) {
-			if (disabled?.has(cfg.name)) continue;
-			const layer = this.layers[cfg.name];
+		for (const config of this.layerConfig) {
+			if (disabled?.has(config.name)) continue;
+			const layer = this.layers[config.name];
 			const total = layer.total;
-			val = cfg.op === "add" ? val + total : val * total;
+			val = config.op === "add" ? val + total : val * total;
 		}
 		this.cached = val;
+		bus.emit("modifier:recalculated");
 	}
 
-	value(disabled?: Set<string>): number {
+	value(disabled?: Set<ModifierLayerName>): number {
 		if (disabled && disabled.size > 0) {
 			// Recalculate on the fly for disabled layers
 			let val = this.base;
@@ -131,18 +135,18 @@ class ModifierSystem {
 		return this.cached;
 	}
 
-	getBreakdown(disabled?: Set<string>): { name: string; after: number }[] {
+	getBreakdown(disabled?: Set<ModifierLayerName>): { name: string; after: number }[] {
 		const result: { name: string; after: number }[] = [];
 		let val = this.base;
-		for (const cfg of this.layerConfig) {
-			if (disabled?.has(cfg.name)) {
-				result.push({ name: cfg.name + " (disabled)", after: val });
+		for (const config of this.layerConfig) {
+			if (disabled?.has(config.name)) {
+				result.push({ name: config.name + " (disabled)", after: val });
 				continue;
 			}
-			const layer = this.layers[cfg.name];
+			const layer = this.layers[config.name];
 			const total = layer.total;
-			val = cfg.op === "add" ? val + total : val * total;
-			result.push({ name: cfg.name, after: val });
+			val = config.op === "add" ? val + total : val * total;
+			result.push({ name: config.name, after: val });
 		}
 		return result;
 	}
@@ -171,42 +175,61 @@ class ModifierSystem {
  * and cleared (e.g. upon prestige).
  */
 export class ModifierEngine implements Saveable<ModifierEngineSave> {
-	private systems: Record<string, ModifierSystem> = {};
-	private disabledLayers = new Set<string>();
+	private systems: Record<ModifierSystem, ModifierSystemClass> = {
+		researchSpeed: undefined!,
+		blacksmithSpeed: undefined!,
+		trainingSpeed: undefined!,
+	};
+	private disabledLayers = new Set<ModifierLayerName>();
 
 	constructor(private config: ModifierConfig) {
-		for (const [name, settings] of Object.entries(config.systems)) {
-			this.systems[name] = new ModifierSystem(config.layers, settings);
+		for (const sys of ALL_MODIFIER_SYSTEMS) {
+			const settings = config.systems[sys];
+			if (settings) {
+				this.systems[sys] = new ModifierSystemClass(config.layers, settings);
+			}
 		}
 	}
 
+	private getSystem(sys: ModifierSystem): ModifierSystemClass {
+		return this.systems[sys];
+	}
+
 	/** Add a value to a system's layer */
-	addModifier(system: string, layer: string, key: string, value: number) {
-		this.systems[system]?.add(layer, key, value);
+	addModifier(system: ModifierSystem, layer: ModifierLayerName, key: string, value: number) {
+		this.getSystem(system)?.add(layer, key, value);
+		bus.emit("modifier:changed", system);
 	}
 
 	/** Remove all values from a system's layer */
-	clearLayer(system: string, layer: string) {
-		this.systems[system]?.clearLayer(layer);
+	clearLayer(system: ModifierSystem, layer: ModifierLayerName) {
+		this.getSystem(system)?.clearLayer(layer);
+		bus.emit("modifier:changed", system);
 	}
 
 	/** Enable or disable a layer across all systems */
-	setLayerEnabled(layer: string, enabled: boolean) {
+	setLayerEnabled(layer: ModifierLayerName, enabled: boolean) {
 		if (enabled) this.disabledLayers.delete(layer);
 		else this.disabledLayers.add(layer);
 		// Recalculate cached values
-		for (const sys of Object.values(this.systems)) sys.recalculate(this.disabledLayers);
+		for (const sysName of ALL_MODIFIER_SYSTEMS) {
+			const sys = this.getSystem(sysName);
+			if (sys) sys.recalculate(this.disabledLayers);
+		}
+		bus.emit("modifier:changed", null);
 	}
 
 	/** Retrieve the current value for a system */
-	getValue(system: string): number {
-		return this.systems[system]?.value(this.disabledLayers) ?? 0;
+	getValue(system: ModifierSystem): number {
+		return this.getSystem(system)?.value(this.disabledLayers) ?? 0;
 	}
 
 	/** Print a breakdown of all systems and layers to the console */
 	printDebug() {
-		for (const [name, sys] of Object.entries(this.systems)) {
-			console.log(`--- ${name} ---`);
+		for (const sysName of ALL_MODIFIER_SYSTEMS) {
+			const sys = this.getSystem(sysName);
+			if (!sys) continue;
+			console.log(`--- ${sysName} ---`);
 			const breakdown = sys.getBreakdown(this.disabledLayers);
 			breakdown.forEach((b) => console.log(`${b.name}: ${b.after.toString()}`));
 			console.log(`Total: ${sys.value(this.disabledLayers).toString()}`);
@@ -215,19 +238,20 @@ export class ModifierEngine implements Saveable<ModifierEngineSave> {
 
 	save(): ModifierEngineSave {
 		const systems: Record<string, SystemSave> = {};
-		for (const [name, sys] of Object.entries(this.systems)) {
-			systems[name] = sys.toJSON();
+		for (const sysName of ALL_MODIFIER_SYSTEMS) {
+			const sys = this.getSystem(sysName);
+			if (sys) systems[sysName] = sys.toJSON();
 		}
 		return { systems };
 	}
 
 	load(state: ModifierEngineSave): void {
-		for (const [name, settings] of Object.entries(this.config.systems)) {
-			const slice = state.systems?.[name];
-			const sys = new ModifierSystem(this.config.layers, settings);
+		for (const sysName of ALL_MODIFIER_SYSTEMS) {
+			const settings = this.config.systems[sysName];
+			const slice = state.systems?.[sysName];
+			const sys = new ModifierSystemClass(this.config.layers, settings);
 			if (slice) sys.load(settings, slice);
-			this.systems[name] = sys;
+			this.systems[sysName] = sys;
 		}
 	}
 }
-

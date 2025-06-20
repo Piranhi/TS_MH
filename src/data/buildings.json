@@ -4,34 +4,34 @@
 		"displayName": "Guild Hall",
 		"description": "Track your progress and unlock prestige mechanics.",
 		"icon": "/images/buildings/building_guild_hall.png",
-		"baseCost": 100
+		"baseCost": 10
 	},
 	{
 		"id": "mine",
 		"displayName": "Mine",
 		"description": "Blacksmith todo",
 		"icon": "/images/buildings/building_mine.png",
-		"baseCost": 100
+		"baseCost": 10
 	},
 	{
 		"id": "blacksmith",
 		"displayName": "Blacksmith",
 		"description": "Blacksmith todo",
 		"icon": "/images/buildings/building_blacksmith.png",
-		"baseCost": 100
+		"baseCost": 10
 	},
 	{
 		"id": "market",
 		"displayName": "Market",
 		"description": "Market todo",
 		"icon": "",
-		"baseCost": 200
+		"baseCost": 100
 	},
 	{
 		"id": "library",
 		"displayName": "Library",
 		"description": "Study tomes to unlock powerful upgrades.",
 		"icon": "/images/buildings/building_library.png",
-		"baseCost": 200
+		"baseCost": 50
 	}
 ]

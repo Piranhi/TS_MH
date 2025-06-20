@@ -50,6 +50,10 @@ export class DebugMenu {
 			{ key: "hunt_allAreasOpen", label: "All Areas Open", type: "bool" },
 			{ key: "hunt_searchSpeed", label: "Search Speed", type: "num", step: 0.1 },
 			{ key: "building_infinitePoints", label: "Inf Build Points", type: "bool" },
+			{ key: "upgrades_unlockAll", label: "Unlock All Upgrades", type: "bool" },
+			{ key: "upgrades_instantBuild", label: "Instant Build", type: "bool" },
+			{ key: "reseach_unlockAll", label: "Unlock All Research", type: "bool" },
+			{ key: "research_instantResearch", label: "Instant Research", type: "bool" },
 		];
 
 		options.forEach((opt) => {

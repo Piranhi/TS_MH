@@ -47,14 +47,19 @@ export class LibraryManager extends GameBase implements Saveable, OfflineProgres
 	}
 
 	public handleTick(dt: number) {
-		for (const upg of this.activeResearch) {
-			upg.tick(dt, GameContext.getInstance().modifiers.getValue("research_speed"));
-			if (upg.unlocked) {
-				this.completedResearch.add(upg.id);
+		for (const upgrade of this.activeResearch) {
+			upgrade.tick(dt, GameContext.getInstance().modifiers.getValue("researchSpeed"));
+			if (upgrade.unlocked) {
+				this.handleResearchComplete(upgrade);
 			}
 		}
 		this.activeResearch = this.activeResearch.filter((u) => !u.unlocked);
 		if (this.activeResearch.length > 0) bus.emit("library:changed");
+	}
+
+	private handleResearchComplete(upgrade: ResearchUpgrade) {
+		this.completedResearch.add(upgrade.id);
+		bus.emit("library:changed");
 	}
 
 	private emitChange() {}
@@ -69,6 +74,10 @@ export class LibraryManager extends GameBase implements Saveable, OfflineProgres
 
 	getCompleted() {
 		return [...this.completedResearch];
+	}
+
+	getResearchSpeed() {
+		return GameContext.getInstance().modifiers.getValue("researchSpeed");
 	}
 
 	// ----------------------- SAVE LOAD -------------------------------
