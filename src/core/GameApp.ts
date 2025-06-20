@@ -86,10 +86,11 @@ export class GameApp {
 		saveManager.register("settlement", this.services.settlementManager);
 		saveManager.register("milestonesManager", this.services.milestoneManager);
 		saveManager.register("statsManager", this.services.statsManager);
-                saveManager.register("libraryManager", this.services.libraryManager);
-                saveManager.register("blacksmithManager", this.services.blacksmithManager);
-                saveManager.register("classManager", this.services.classManager);
-        }
+		saveManager.register("libraryManager", this.services.libraryManager);
+		saveManager.register("blacksmithManager", this.services.blacksmithManager);
+		saveManager.register("classManager", this.services.classManager);
+		saveManager.register("modifiers", this.services.modifierEngine);
+	}
 
 	private setupPrestigeHandlers() {
 		bus.on("game:prestigePrep", () => this.handlePrestigePrep());

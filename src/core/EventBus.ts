@@ -57,6 +57,8 @@ export interface GameEvents {
 	// PLAYER CHARACTER
 	"char:levelUp": number; // New Level
 	"char:gainedXp": number; // Amount incoming
+	"classes:pointsChanged": void;
+	"classes:nodesChanged": void;
 
 	//HUNT
 	"hunt:stateChanged": HuntState;
