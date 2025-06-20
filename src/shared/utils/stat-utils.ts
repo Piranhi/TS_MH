@@ -38,14 +38,14 @@ export function rarityAffect(rarity: ItemRarity, stat: number): number {
 	const multi = RARITY_MULTIPLIERS[rarity];
 	return stat * multi;
 }
-
-export function scaleStatsModifier(mod: StatsModifier, rarity: ItemRarity): StatsModifier {
+// Scale equipment stats by rarity and heirloom
+export function scaleStatsModifier(mod: StatsModifier, rarity: ItemRarity, heirloom: number): StatsModifier {
 	const scaled: StatsModifier = {};
 	for (const key in mod) {
 		// `key` is one of the Stats keys (like "strength", "dexterity", etc.)
 		const statKey = key as keyof StatsModifier;
 		const baseValue = mod[statKey] ?? 0;
-		scaled[statKey] = rarityAffect(rarity, baseValue);
+		scaled[statKey] = rarityAffect(rarity, baseValue) + (heirloom ? heirloom : 0); //(1 + heirloom / 100);
 	}
 	return scaled;
 }
@@ -54,9 +54,9 @@ export function scaleStatsModifier(mod: StatsModifier, rarity: ItemRarity): Stat
 export function calculateRawBaseDamage(char: BaseCharacter): number {
 	// LEVEL * ATTACK * POWER
 	//const level = char.level;
-        const attack = char.stats.get("attack");
-        const powerMultiplier = 1 + char.stats.get("power") / 100;
+	const attack = char.stats.get("attack");
+	const powerMultiplier = 1 + char.stats.get("power") / 100;
 
-        const totalMultiplier = powerMultiplier;
-        return attack * totalMultiplier;
+	const totalMultiplier = powerMultiplier;
+	return attack * totalMultiplier;
 }

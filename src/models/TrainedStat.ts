@@ -1,7 +1,6 @@
 import { bus } from "@/core/EventBus";
 import { StatsModifier, TrainedStatSpec, TrainedStatState } from "./Stats";
 import { TrainedStatSpecs } from "./TrainedStatManager";
-import { GameContext } from "@/core/GameContext";
 import { GAME_BALANCE } from "@/balance/GameBalance";
 
 // Remove the old constant - we don't need it anymore

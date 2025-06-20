@@ -31,6 +31,9 @@ export const GAME_BALANCE = {
 
 		// ─ Hunt-to-Renown scaling
 		renownPerKillFactor: 1,
+
+		// Blacksmith calculations
+		blacksmithChunkTime: 600, // 10 minutes
 	},
 
 	// === MONSTER SCALING ===
@@ -106,7 +109,7 @@ export const GAME_BALANCE = {
 
 	// === BLACKSMITH SCALING ===
 	blacksmith: {
-		defaultRawOreCraftTime: 10,
+		defaultRawOreCraftTime: 1,
 	},
 
 	// === AREA SCALING ===

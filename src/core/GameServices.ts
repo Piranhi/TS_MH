@@ -22,33 +22,36 @@ export class GameServices {
 	public readonly saveManager: SaveManager;
 	public readonly screenManager: ScreenManager;
 	public readonly statsManager: StatsManager;
-        public readonly milestoneManager: MilestoneManager;
-        public readonly offlineManager: OfflineProgressManager;
-        public readonly modifierEngine: ModifierEngine;
+	public readonly milestoneManager: MilestoneManager;
+	public readonly offlineManager: OfflineProgressManager;
+	public readonly modifierEngine: ModifierEngine;
 
 	// Persistent managers that survive prestige
 	public readonly inventoryManager: InventoryManager;
-        public readonly settlementManager: SettlementManager;
-        public readonly libraryManager: LibraryManager;
-        public readonly blacksmithManager: BlacksmithManager;
+	public readonly settlementManager: SettlementManager;
+	public readonly libraryManager: LibraryManager;
+	public readonly blacksmithManager: BlacksmithManager;
 
 	private constructor() {
 		this.saveManager = new SaveManager();
 		this.screenManager = new ScreenManager();
 		this.statsManager = StatsManager.instance;
 		this.milestoneManager = MilestoneManager.instance;
-                this.inventoryManager = new InventoryManager();
-                this.settlementManager = new SettlementManager();
-                const { research = [], blacksmith = [] } = rawUpgrades as any;
+		this.inventoryManager = new InventoryManager();
+		this.settlementManager = new SettlementManager();
+		const { research = [], blacksmith = [] } = rawUpgrades as any;
 
-                this.libraryManager = new LibraryManager();
-                this.libraryManager.registerResearch(research as ResearchSpec[]);
-                this.blacksmithManager = new BlacksmithManager();
-                this.blacksmithManager.registerUpgrades(blacksmith as BlacksmithUpgradeSpec[]);
-                this.offlineManager = new OfflineProgressManager();
-                this.modifierEngine = new ModifierEngine(GAME_BALANCE.modifiers);
-                this.saveManager.register("modifiers", this.modifierEngine);
-        }
+		this.libraryManager = new LibraryManager();
+		this.libraryManager.registerResearch(research as ResearchSpec[]);
+		this.blacksmithManager = new BlacksmithManager();
+		this.blacksmithManager.registerUpgrades(blacksmith as BlacksmithUpgradeSpec[]);
+		this.offlineManager = new OfflineProgressManager();
+		this.modifierEngine = new ModifierEngine({
+			...GAME_BALANCE.modifiers,
+			layers: [...GAME_BALANCE.modifiers.layers],
+		});
+		this.saveManager.register("modifiers", this.modifierEngine);
+	}
 
 	static getInstance(): GameServices {
 		if (!GameServices._instance) {

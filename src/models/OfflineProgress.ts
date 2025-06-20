@@ -1,5 +1,4 @@
 /**
- * offlineProgress.ts (Simplified Version)
  *
  * Much cleaner approach:
  * - Systems implement OfflineProgressHandler if they support offline progress
@@ -10,8 +9,6 @@
 
 import { GameContext } from "@/core/GameContext";
 import { OfflineProgressModal } from "@/ui/components/OfflineProgressModal";
-import { Area } from "./Area";
-import { PlayerCharacter } from "./PlayerCharacter";
 import { printLog } from "@/core/DebugManager";
 import { formatTime } from "@/shared/utils/stringUtils";
 import { bus } from "@/core/EventBus";
@@ -51,9 +48,9 @@ export interface OfflineProgressHandler {
  * Only hunt system returns detailed info - everything else returns null
  */
 export interface OfflineProgressInfo {
-        enemiesKilled: number;
-        renownGained: number;
-        experienceGained: number;
+	enemiesKilled: number;
+	renownGained: number;
+	experienceGained: number;
 	treasureChests: number;
 	treasureBreakdown: Array<{ interval: string; chestsFromInterval: number }>;
 	nextChestIn: number;
@@ -185,8 +182,6 @@ export class OfflineProgressManager {
 	private systemsPaused = false;
 	private initialized = false;
 
-
-
 	public initalize() {
 		// Keep typo to match existing GameApp.ts call
 		if (this.initialized) return;
@@ -212,6 +207,10 @@ export class OfflineProgressManager {
 
 		if (context.currentRun?.trainedStats) {
 			this.handlers.set("Training", context.currentRun.trainedStats);
+		}
+
+		if (context.blacksmith) {
+			this.handlers.set("Blacksmith", context.blacksmith);
 		}
 
 		// Add more as systems are implemented:
@@ -287,8 +286,8 @@ class HuntOfflineHandler implements OfflineProgressHandler {
 		if (!area) {
 			return {
 				enemiesKilled: 0,
-                                renownGained: 0,
-                                experienceGained: 0,
+				renownGained: 0,
+				experienceGained: 0,
 				treasureChests: 0,
 				treasureBreakdown: [],
 				nextChestIn: 30 * 60,
@@ -304,11 +303,11 @@ class HuntOfflineHandler implements OfflineProgressHandler {
 		const kills = Math.floor((offlineSeconds / avgKillTime) * efficiency);
 
 		// Apply the rewards directly here since we're calculating them
-                const renownGained = kills * area.tier;
-                const xpGained = kills * area.getXpPerKill(false);
+		const renownGained = kills * area.tier;
+		const xpGained = kills * area.getXpPerKill(false);
 
-                context.player.adjustRenown(renownGained);
-                context.character.gainXp(xpGained);
+		context.player.adjustRenown(renownGained);
+		context.character.gainXp(xpGained);
 
 		const chests = this.treasure.calculateTreasureRewards(offlineSeconds);
 		if (chests.chestsEarned > 0) {
@@ -331,19 +330,6 @@ class HuntOfflineHandler implements OfflineProgressHandler {
 	}
 }
 
-/**
- * For other systems, just implement the interface directly in your system class:
- *
- * export class LibraryManager implements OfflineProgressHandler {
- *     // ... existing code ...
- *
- *     handleOfflineProgress(offlineSeconds: number): null {
- *         this.handleTick(offlineSeconds);
- *         return null;
- *     }
- * }
- */
-
 /* -------------------------------------------------------------------------- */
 /*                            TREASURE CALCULATOR                             */
 /* -------------------------------------------------------------------------- */
@@ -360,7 +346,7 @@ class OfflineTreasureCalculator {
 			time -= intervals[i];
 			earned++;
 			breakdown.push({
-				interval: this.formatTime(intervals[i]),
+				interval: formatTime(intervals[i]),
 				chestsFromInterval: 1,
 			});
 		}
@@ -372,7 +358,7 @@ class OfflineTreasureCalculator {
 			if (extraChests > 0) {
 				earned += extraChests;
 				breakdown.push({
-					interval: `${this.formatTime(finalInterval)} ×${extraChests}`,
+					interval: `${formatTime(finalInterval)} ×${extraChests}`,
 					chestsFromInterval: extraChests,
 				});
 				time -= extraChests * finalInterval;
@@ -388,11 +374,5 @@ class OfflineTreasureCalculator {
 			timeBreakdowns: breakdown,
 			nextChestIn,
 		};
-	}
-
-	private formatTime(seconds: number): string {
-		const hours = Math.floor(seconds / 3600);
-		const minutes = Math.floor((seconds % 3600) / 60);
-		return hours > 0 ? `${hours}h` : `${minutes}m`;
 	}
 }

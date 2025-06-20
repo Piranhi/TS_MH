@@ -25,6 +25,7 @@ export class InventoryRegistry {
 			specId: id,
 			quantity,
 			rarity: BalanceCalculators.getItemRarity(),
+			heirloom: 0,
 		};
 		if (spec.category === "equipment" || spec.category == "classCard") {
 			return {

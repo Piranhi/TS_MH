@@ -6,6 +6,7 @@ import { BlacksmithUpgradeSpec } from "@/shared/types";
 import { Resource } from "@/features/inventory/Resource";
 import { GAME_BALANCE } from "@/balance/GameBalance";
 import { GameBase } from "@/core/GameBase";
+import { OfflineProgressHandler } from "@/models/OfflineProgress";
 
 export interface CraftSlot {
 	resourceId: string | null;
@@ -18,7 +19,7 @@ interface BlacksmithSave {
 	upgrades: string[];
 }
 
-export class BlacksmithManager extends GameBase implements Saveable {
+export class BlacksmithManager extends GameBase implements Saveable, OfflineProgressHandler {
 	private slots: CraftSlot[] = [{ resourceId: null, progress: 0 }];
 	private unlockedSlots = 1;
 	private upgrades = new Map<string, BlacksmithUpgrade>();
@@ -105,6 +106,35 @@ export class BlacksmithManager extends GameBase implements Saveable {
 	 */
 	handleTick(dt: number) {
 		this.addRawOre(dt);
+		this.processSlots(dt);
+	}
+
+	handleOfflineProgress(offlineSeconds: number): null {
+		this.addRawOre(offlineSeconds);
+		let remainingTime = offlineSeconds;
+
+		while (remainingTime > 0) {
+			const chunk = Math.min(remainingTime, GAME_BALANCE.offline.blacksmithChunkTime);
+			this.processSlots(chunk);
+			remainingTime -= chunk;
+		}
+		return null;
+	}
+
+	addRawOre(dt: number) {
+		this.rawOreTimer += dt;
+		const craftTime = GAME_BALANCE.blacksmith.defaultRawOreCraftTime;
+
+		if (this.rawOreTimer >= craftTime) {
+			// Calculate all cycles at once for efficiency.
+			const cyclesCompleted = Math.floor(this.rawOreTimer / craftTime);
+			GameContext.getInstance().resources.addResource("raw_ore", cyclesCompleted);
+			this.rawOreTimer = this.rawOreTimer % craftTime;
+		}
+	}
+
+	// Process each slot - Allows offline chunking too.
+	private processSlots(dt: number) {
 		for (const slot of this.slots) {
 			if (!slot.resourceId) continue;
 			const spec = Resource.getSpec(slot.resourceId);
@@ -122,14 +152,6 @@ export class BlacksmithManager extends GameBase implements Saveable {
 					slot.progress = 0;
 				}
 			}
-		}
-	}
-
-	addRawOre(dt: number) {
-		this.rawOreTimer += dt;
-		if (this.rawOreTimer >= GAME_BALANCE.blacksmith.defaultRawOreCraftTime) {
-			this.rawOreTimer -= GAME_BALANCE.blacksmith.defaultRawOreCraftTime;
-			GameContext.getInstance().resources.addResource("raw_ore", 1);
 		}
 	}
 

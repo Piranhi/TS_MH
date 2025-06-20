@@ -97,7 +97,7 @@ export class DebugMenu {
 		this.addButton("Save", () => context.saves.saveAll());
 		this.addButton("Load", () => window.location.reload()); //saveManager.loadAll());
 		this.addButton("New Game", () => context.saves.startNewGame());
-		this.addButton("Add Renown", () => bus.emit("renown:award", new BigNumber(100000)));
+		this.addButton("Add Renown", () => bus.emit("renown:award", 100000));
 		//this.addButton("Kill Player", () => Player.getInstance().character?.takeDamage(new BigNumber(1000000)));
 		this.addButton("Kill Enemy", () => bus.emit("debug:killEnemy"));
 		this.addButton("Clear Area", () => {
@@ -108,13 +108,13 @@ export class DebugMenu {
 			const spec = specs[Math.floor(Math.random() * specs.length)];
 			context.inventory.addLootById(spec.id, 1);
 		});
-                this.addButton("Clear Loot", () => context.inventory.clearSlots());
-                this.addButton("Print Stats", () => {
-                        context.character.statsEngine.printStats();
-                });
-                this.addButton("Print Modifiers", () => {
-                        context.modifiers.printDebug();
-                });
+		this.addButton("Clear Loot", () => context.inventory.clearSlots());
+		this.addButton("Print Stats", () => {
+			context.character.statsEngine.printStats();
+		});
+		this.addButton("Print Modifiers", () => {
+			context.modifiers.printDebug();
+		});
 
 		this.addButton("Test Attack", () => {
 			const array: string[] = [];

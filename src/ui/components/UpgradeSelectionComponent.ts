@@ -1,5 +1,6 @@
 import { UIBase } from "./UIBase";
 import { ProgressBar } from "./ProgressBar";
+import { formatNumberShort } from "@/shared/utils/stringUtils";
 
 export interface CostDisplay {
 	icon: string;
@@ -38,7 +39,6 @@ export class UpgradeSelectionComponent extends UIBase {
 		const root = document.createElement("div");
 		root.className = "upgrade-card";
 		if (data.purchased) root.classList.add("purchased");
-		if (data.canAfford === false) root.classList.add("disabled");
 
 		const title = document.createElement("div");
 		title.className = "upgrade-title";
@@ -85,7 +85,7 @@ export class UpgradeSelectionComponent extends UIBase {
 			img.className = "upgrade-cost-icon";
 			span.appendChild(img);
 			const amt = document.createElement("span");
-			amt.textContent = String(c.amount);
+			amt.textContent = formatNumberShort(Number(c.amount));
 			span.appendChild(amt);
 			costContainer.appendChild(span);
 		});
@@ -94,11 +94,12 @@ export class UpgradeSelectionComponent extends UIBase {
 		const btn = document.createElement("button");
 		btn.className = "ui-button upgrade-action-btn";
 		btn.textContent = data.purchased ? "Purchased" : data.buttonOverride || "Buy";
-		if (data.purchased) btn.disabled = true;
+		if (data.purchased || data.canAfford === false) btn.disabled = true;
 		if (onClick) {
 			this.bindDomEvent(btn, "click", () => onClick(data.id));
 		}
 		footer.appendChild(btn);
+		//if (data.canAfford === false) btn.classList.add("disabled");
 
 		root.appendChild(footer);
 		parent.appendChild(root);
