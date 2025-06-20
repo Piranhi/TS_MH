@@ -35,6 +35,29 @@ export class ClassManager implements Saveable<ClassSystemState> {
     return this.availablePoints;
   }
 
+  /** Get all registered class specs */
+  getClassSpecs(): ClassSpec[] {
+    return Array.from(this.specs.values());
+  }
+
+  /** Points allocated to a specific node */
+  getNodePoints(classId: string, nodeId: string): number {
+    return this.nodePoints.get(classId)?.get(nodeId) ?? 0;
+  }
+
+  /** Total points spent across all classes */
+  getSpentPoints(): number {
+    let spent = 0;
+    for (const spec of this.specs.values()) {
+      const map = this.nodePoints.get(spec.id)!;
+      spec.nodes.forEach((n) => {
+        const pts = map.get(n.id) || 0;
+        spent += pts * n.cost;
+      });
+    }
+    return spent;
+  }
+
   allocatePoint(classId: string, nodeId: string): boolean {
     const classSpec = this.specs.get(classId);
     if (!classSpec) return false;
