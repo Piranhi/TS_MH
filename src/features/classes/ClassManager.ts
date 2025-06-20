@@ -9,7 +9,7 @@ export class ClassManager implements Saveable<ClassSystemState> {
 	private specs = new Map<string, ClassSpec>();
 	private unlocked = new Set<string>();
 	private nodePoints = new Map<string, Map<string, number>>();
-	private availablePoints = 0;
+	private availablePoints = 5;
 
 	constructor(specs: ClassSpec[] = []) {
 		specs.forEach((s) => {

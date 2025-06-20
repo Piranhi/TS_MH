@@ -1,27 +1,62 @@
 [
-  {
-    "id": "warrior",
-    "name": "Warrior",
-    "nodes": [
-      {
-        "id": "warrior_attack",
-        "name": "Power Training",
-        "row": 0,
-        "col": 0,
-        "cost": 1,
-        "maxPoints": 3,
-        "effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
-      },
-      {
-        "id": "warrior_charge",
-        "name": "Charge",
-        "row": 1,
-        "col": 0,
-        "cost": 1,
-        "maxPoints": 1,
-        "prereq": "warrior_attack",
-        "effects": [{ "kind": "unlockAbility", "abilityId": "warrior_charge" }]
-      }
-    ]
-  }
+	{
+		"id": "warrior",
+		"name": "Warrior",
+		"background": "/images/class-cards/classcard-bg-warrior.png",
+		"nodes": [
+			{
+				"id": "warrior_attack",
+				"name": "Power Training",
+				"description": "todo",
+				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+				"row": 0,
+				"col": 0,
+				"cost": 1,
+				"maxPoints": 3,
+				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+			},
+
+			{
+				"id": "warrior_defence",
+				"name": "Defence Training",
+				"description": "todo",
+				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+				"row": 0,
+				"col": 1,
+				"cost": 1,
+				"maxPoints": 3,
+				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+			},
+			{
+				"id": "warrior_charge",
+				"name": "Charge",
+				"description": "todo",
+				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+				"row": 1,
+				"col": 0,
+				"cost": 1,
+				"maxPoints": 1,
+				"prereq": "warrior_attack",
+				"effects": [{ "kind": "unlockAbility", "abilityId": "warrior_charge" }]
+			}
+		]
+	},
+	{
+		"id": "Rogue",
+		"name": "Rogue",
+		"background": "/images/class-cards/classcard-bg-warrior.png",
+		"nodes": [
+			{
+				"id": "warrior_attack",
+				"name": "Power Training",
+				"description": "todo",
+				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+				"row": 0,
+				"col": 0,
+				"cost": 1,
+				"maxPoints": 3,
+				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+			}
+		]
+	}
 ]

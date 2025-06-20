@@ -5,104 +5,237 @@
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	background: rgba(0, 0, 0, 0.85);
+	overflow: hidden; /* Prevent any overflow from the screen itself */
 }
 
 .class-points {
 	color: #fff;
-	padding: 0.5rem;
+	padding: 1rem;
 	font-weight: 600;
+	background: rgba(255, 255, 255, 0.05);
+	backdrop-filter: blur(10px);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Wrapper handles overflow and panning */
 .class-tree-wrapper {
 	flex: 1;
-	overflow: auto;
 	position: relative;
+	overflow: hidden;
 	cursor: grab;
+	user-select: none;
+	min-height: 400px; /* Ensure minimum height */
 }
+
 .class-tree-wrapper.dragging {
 	cursor: grabbing;
 }
 
+/* The actual tree canvas that gets panned */
 .class-tree {
 	position: relative;
+	display: inline-block; /* Size to content */
+	min-width: 100%; /* At least fill the viewport */
 	min-height: 100%;
-	width: 100%;
-	height: 500px;
-	overflow: auto;
+	padding: 50px; /* Padding around content */
+	background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+	background-size: 30px 30px;
+	background-position: 0 0;
+	transition: transform 0.15s ease-out; /* Smooth zoom/pan */
 }
 
+/* Class columns */
 .class-column {
 	position: absolute;
-	top: 0;
-	min-height: 100%;
-	padding: 1rem 0.5rem;
+	min-height: 500px;
+	width: 250px;
+	padding: 2rem;
+}
+
+/* Class title */
+.class-title {
+	position: absolute;
+	top: -10px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 18px;
+	font-weight: 600;
+	color: #fff;
+	background: rgba(0, 0, 0, 0.8);
+	padding: 8px 20px;
+	border-radius: 8px;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	z-index: 2;
 }
 
 .class-bg {
 	position: absolute;
 	inset: 0;
-	background: rgba(255, 255, 255, 0.03);
-	pointer-events: none;
+	background: rgba(255, 255, 255, 0.02);
+	backdrop-filter: blur(10px);
+	border-radius: 12px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* SVG for connection lines */
 .class-lines {
 	position: absolute;
-	inset: 0;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 	pointer-events: none;
+	z-index: 0;
+	overflow: visible;
 }
 
+/* Node container */
 .class-nodes {
 	position: relative;
+	z-index: 1;
 }
 
+/* Individual nodes */
 .class-node {
 	position: absolute;
-	width: 48px;
-	height: 48px;
-	border: 2px solid rgba(255, 255, 255, 0.3);
-	border-radius: 8px;
-	background: rgba(255, 255, 255, 0.1);
+	width: 60px;
+	height: 60px;
+	border: 3px solid rgba(255, 255, 255, 0.3);
+	border-radius: 12px;
+	background: rgba(255, 255, 255, 0.08);
+	backdrop-filter: blur(5px);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: #fff;
-	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-size: 20px;
+	z-index: 2;
+}
+
+.class-node:hover:not(.locked) {
+	transform: scale(1.1);
+	box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+/* Preserve base styles on hover */
+.class-node:hover:not(.locked):not(.partial):not(.maxed) {
+	background: rgba(255, 255, 255, 0.15);
+	border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Preserve colors on hover */
+.class-node.partial:hover {
+	border-color: #4aa3ff;
+	background: rgba(74, 163, 255, 0.3);
+}
+
+.class-node.maxed:hover {
+	border-color: #30b060;
+	background: rgba(48, 176, 96, 0.4);
+}
+
+.class-node:active:not(.locked) {
+	transform: scale(0.95);
 }
 
 .class-node.locked {
-	filter: grayscale(1) opacity(0.5);
+	opacity: 0.4;
+	cursor: not-allowed;
 }
+
 .class-node.partial {
 	border-color: #4aa3ff;
+	background: rgba(74, 163, 255, 0.2);
 }
+
 .class-node.maxed {
 	border-color: #30b060;
+	background: rgba(48, 176, 96, 0.3);
+	box-shadow: 0 0 15px rgba(48, 176, 96, 0.5);
 }
 
-.node-cost,
+/* Node labels */
+.node-cost {
+	position: absolute;
+	bottom: -22px;
+	left: -8px;
+	font-size: 11px;
+	font-weight: 600;
+	color: #ffa500;
+	background: rgba(0, 0, 0, 0.9);
+	padding: 2px 6px;
+	border-radius: 4px;
+	border: 1px solid rgba(255, 165, 0, 0.3);
+}
+
 .node-level {
 	position: absolute;
-	font-size: 10px;
+	bottom: -22px;
+	right: -8px;
+	font-size: 11px;
 	color: #fff;
-	pointer-events: none;
+	font-weight: 500;
+	background: rgba(0, 0, 0, 0.9);
+	padding: 2px 6px;
+	border-radius: 4px;
+	border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.node-cost {
-	left: -12px;
-	top: 50%;
-	transform: translateY(-50%);
-}
-
-.node-level {
-	right: -4px;
-	top: 50%;
-	transform: translateY(-50%);
-}
-
+/* Connection lines */
 .link-line {
-	stroke: rgba(255, 255, 255, 0.4);
+	stroke: rgba(255, 255, 255, 0.3);
 	stroke-width: 2;
+	fill: none;
+	stroke-dasharray: 5, 10;
+	animation: dash 30s linear infinite;
+	transition: all 0.3s ease;
 }
+
+@keyframes dash {
+	to {
+		stroke-dashoffset: -150;
+	}
+}
+
 .link-line.active {
 	stroke: #30b060;
+	stroke-width: 3;
+	stroke-dasharray: none;
+	animation: none;
+	filter: drop-shadow(0 0 4px rgba(48, 176, 96, 0.6));
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+	.class-node {
+		width: 48px;
+		height: 48px;
+		font-size: 16px;
+	}
+
+	.class-points {
+		padding: 0.75rem;
+		font-size: 14px;
+	}
+}
+
+/* Zoom indicator */
+.zoom-indicator {
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	background: rgba(0, 0, 0, 0.8);
+	color: #fff;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 12px;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.zoom-indicator.active {
+	opacity: 1;
 }
