@@ -9,7 +9,6 @@ import { PrestigeState } from "@/shared/stats-types";
 import { Trait } from "@/models/Trait";
 import { bus } from "./EventBus";
 import { GameContext } from "./GameContext";
-import { ClassCardManager } from "@/features/classcards/ClassCardManager";
 import { EquipmentManager } from "@/models/EquipmentManager";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { ResourceManager } from "@/features/inventory/ResourceManager";
@@ -28,7 +27,6 @@ export class GameRun extends Destroyable {
 	public readonly character: PlayerCharacter;
 	public readonly huntManager: HuntManager;
 	public readonly trainedStats: TrainedStatManager;
-	public readonly classCardManager: ClassCardManager;
 	public readonly equipmentManager: EquipmentManager;
 	public readonly resourceManager: ResourceManager;
 	public readonly mineManager: MineManager;
@@ -50,7 +48,6 @@ export class GameRun extends Destroyable {
 		this.character = new PlayerCharacter(opts.prestigeState, this.traits);
 		this.huntManager = new HuntManager();
 		this.trainedStats = new TrainedStatManager();
-		this.classCardManager = new ClassCardManager();
 		this.equipmentManager = new EquipmentManager();
 		this.resourceManager = new ResourceManager();
 		const mineLevel = this.context.settlement.getBuilding("mine")?.level || 0;
@@ -77,7 +74,10 @@ export class GameRun extends Destroyable {
 		saveManager.updateRegister("huntManager", this.huntManager);
 		saveManager.updateRegister("trainedManager", this.trainedStats);
 		saveManager.updateRegister("resourceManager", this.resourceManager);
-		saveManager.updateRegister("mineManager", this.mineManager);
+                saveManager.updateRegister("mineManager", this.mineManager);
+
+                // Apply class bonuses to the new character
+                this.context.classes.refresh();
 
 		// Emit that run is ready
 		bus.emit("gameRun:initialized", this);
@@ -116,9 +116,8 @@ export class GameRun extends Destroyable {
 		// Clean up all transient systems
 		this.character.destroy();
 		this.huntManager.destroy();
-		this.trainedStats.destroy();
-		this.classCardManager.destroy();
-		this.equipmentManager.destroy();
+                this.trainedStats.destroy();
+                this.equipmentManager.destroy();
 		this.resourceManager.destroy();
 		this.mineManager.destroy();
 
