@@ -34,8 +34,8 @@ export class ClassCardManager extends Destroyable {
         // Apply to character if we have an active run
         if (this.context.currentRun) {
             const character = this.context.character;
-            character.setClassCardAbilities(abilities);
-            character.statsEngine.setLayer("classCards", () => statBonuses);
+            character.setClassAbilities(abilities);
+            character.statsEngine.setLayer("classes", () => statBonuses);
         }
     }
 }

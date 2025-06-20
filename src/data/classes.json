@@ -1,0 +1,27 @@
+[
+  {
+    "id": "warrior",
+    "name": "Warrior",
+    "nodes": [
+      {
+        "id": "warrior_attack",
+        "name": "Power Training",
+        "row": 0,
+        "col": 0,
+        "cost": 1,
+        "maxPoints": 3,
+        "effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+      },
+      {
+        "id": "warrior_charge",
+        "name": "Charge",
+        "row": 1,
+        "col": 0,
+        "cost": 1,
+        "maxPoints": 1,
+        "prereq": "warrior_attack",
+        "effects": [{ "kind": "unlockAbility", "abilityId": "warrior_charge" }]
+      }
+    ]
+  }
+]

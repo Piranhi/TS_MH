@@ -10,6 +10,9 @@ import { MilestoneManager } from "@/models/MilestoneManager";
 import { OfflineProgressManager } from "@/models/OfflineProgress";
 import { LibraryManager } from "@/features/settlement/LibraryManager";
 import { BlacksmithManager } from "@/features/settlement/BlacksmithManager";
+import { ClassManager } from "@/features/classes/ClassManager";
+import { ClassSpec } from "@/features/classes/ClassTypes";
+import rawClasses from "@/data/classes.json" assert { type: "json" };
 import rawUpgrades from "@/data/upgrades.json" assert { type: "json" };
 import { ResearchSpec } from "@/shared/types";
 import { BlacksmithUpgradeSpec } from "@/shared/types";
@@ -29,8 +32,9 @@ export class GameServices {
 	// Persistent managers that survive prestige
 	public readonly inventoryManager: InventoryManager;
 	public readonly settlementManager: SettlementManager;
-	public readonly libraryManager: LibraryManager;
-	public readonly blacksmithManager: BlacksmithManager;
+        public readonly libraryManager: LibraryManager;
+        public readonly blacksmithManager: BlacksmithManager;
+        public readonly classManager: ClassManager;
 
 	private constructor() {
 		this.saveManager = new SaveManager();
@@ -43,14 +47,16 @@ export class GameServices {
 
 		this.libraryManager = new LibraryManager();
 		this.libraryManager.registerResearch(research as ResearchSpec[]);
-		this.blacksmithManager = new BlacksmithManager();
-		this.blacksmithManager.registerUpgrades(blacksmith as BlacksmithUpgradeSpec[]);
-		this.offlineManager = new OfflineProgressManager();
-		this.modifierEngine = new ModifierEngine({
-			...GAME_BALANCE.modifiers,
-			layers: [...GAME_BALANCE.modifiers.layers],
-		});
-		this.saveManager.register("modifiers", this.modifierEngine);
+                this.blacksmithManager = new BlacksmithManager();
+                this.blacksmithManager.registerUpgrades(blacksmith as BlacksmithUpgradeSpec[]);
+                this.offlineManager = new OfflineProgressManager();
+                this.classManager = new ClassManager(rawClasses as ClassSpec[]);
+                this.modifierEngine = new ModifierEngine({
+                        ...GAME_BALANCE.modifiers,
+                        layers: [...GAME_BALANCE.modifiers.layers],
+                });
+                this.saveManager.register("modifiers", this.modifierEngine);
+                this.saveManager.register("classManager", this.classManager);
 	}
 
 	static getInstance(): GameServices {

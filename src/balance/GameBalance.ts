@@ -138,10 +138,15 @@ export const GAME_BALANCE = {
 	},
 
 	// === TRAINING SCALING ===
-	training: {
-		// Level up cost scaling multiplier for trained stats
-		levelUpCostMultiplier: 1.5,
-	},
+        training: {
+                // Level up cost scaling multiplier for trained stats
+                levelUpCostMultiplier: 1.5,
+        },
+
+        // === CLASS SYSTEM ===
+        classes: {
+                pointsPerLevel: 1,
+        },
 
 	// === PRESTIGE SCALING ===
 	prestige: {

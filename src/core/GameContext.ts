@@ -10,6 +10,7 @@ import { InventoryManager } from "@/features/inventory/InventoryManager";
 import { SettlementManager } from "@/features/settlement/SettlementManager";
 import { LibraryManager } from "@/features/settlement/LibraryManager";
 import { BlacksmithManager } from "@/features/settlement/BlacksmithManager";
+import { ClassManager } from "@/features/classes/ClassManager";
 import { bus } from "./EventBus";
 import { SaveManager } from "./SaveManager";
 import { ScreenManager } from "./ScreenManager";
@@ -106,6 +107,10 @@ export class GameContext {
 
         public get blacksmith(): BlacksmithManager {
                 return this.services.blacksmithManager;
+        }
+
+        public get classes(): ClassManager {
+                return this.services.classManager;
         }
 
 	public get saves(): SaveManager {

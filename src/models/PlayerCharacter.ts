@@ -16,7 +16,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
     private traits: Trait[];
 
     private passiveHealTick = 0;
-    private classCardAbilityIds: string[] = [];
+    private classAbilityIds: string[] = [];
 
     private _currentXp = 0;
     private _nextXpThreshold = 10;
@@ -37,7 +37,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
         }));
         this.statsEngine.setLayer("equipment", () => ({}));
         this.statsEngine.setLayer("trainedStats", () => ({}));
-        this.statsEngine.setLayer("classCard", () => ({}));
+        this.statsEngine.setLayer("classes", () => ({}));
         this.statsEngine.setLayer("buffs", () => ({}));
 
         bindEvent(this.eventBindings, "Game:GameTick", () => this.passiveHeal());
@@ -95,8 +95,8 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
         this.statsEngine.setLayer("level", () => bonuses);
     }
 
-    public setClassCardAbilities(abilityIds: string[]) {
-        this.classCardAbilityIds = abilityIds;
+    public setClassAbilities(abilityIds: string[]) {
+        this.classAbilityIds = abilityIds;
         this.recalculateAbilities();
     }
     /** Recalculate full ability set and update map */
@@ -105,7 +105,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
         const mergedIds = Array.from(
             new Set([
                 ...(this.defaultAbilityIds ?? []),
-                ...this.classCardAbilityIds,
+                ...this.classAbilityIds,
                 // ...add more here if needed
             ]),
         );
