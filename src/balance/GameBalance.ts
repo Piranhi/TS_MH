@@ -80,11 +80,17 @@ export const GAME_BALANCE = {
 			critDamage: 1,
 		},
 
-		healing: {
-			passiveHealAmount: 1,
-			recoveryStateHeal: 0.01,
-		},
-	},
+                healing: {
+                        passiveHealAmount: 1,
+                        recoveryStateHeal: 0.01,
+                },
+
+                stamina: {
+                        baseMax: 100,
+                        regenPerSecond: 5,
+                        enemyMax: 100,
+                },
+        },
 
 	// === EQUIPMENT SCALING ===
 	equipment: {

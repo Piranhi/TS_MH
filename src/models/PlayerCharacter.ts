@@ -7,10 +7,12 @@ import { Saveable } from "@/shared/storage-types";
 import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 import { Trait } from "./Trait";
 import { Ability, AbilitySaveState } from "./Ability";
+import { RegenPool } from "./value-objects/RegenPool";
 
 interface playerCharSaveState {
-	charLevel: number;
-	abilityStates: AbilitySaveState[];
+        charLevel: number;
+        abilityStates: AbilitySaveState[];
+        stamina: RegenPool;
 }
 
 export class PlayerCharacter extends BaseCharacter implements Saveable {
@@ -130,29 +132,33 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		return "/images/player/player-avatar-01.png";
 	}
 
-	override snapshot(): CharacterSnapshot {
-		return {
-			name: this.name,
-			realHP: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },
-			attack: this.attack.toString(),
-			defence: this.defence.toString(),
-			abilities: this.getAbilities(),
-			imgUrl: this.getAvatarUrl(),
-			rarity: "Todo",
+        override snapshot(): CharacterSnapshot {
+                return {
+                        name: this.name,
+                        realHP: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },
+                        stamina: { current: this.stamina.current.toFixed(0), max: this.stamina.max.toFixed(0), percent: (this.stamina.current / this.stamina.max).toFixed(2) },
+                        attack: this.attack.toString(),
+                        defence: this.defence.toString(),
+                        abilities: this.getAbilities(),
+                        imgUrl: this.getAvatarUrl(),
+                        rarity: "Todo",
 			level: { lvl: this._charLevel, current: this._currentXp, next: this._nextXpThreshold },
 		};
 	}
 
-	save(): playerCharSaveState {
-		return {
-			charLevel: this._charLevel,
-			abilityStates: this.getAbilities().map((a) => a.save()), // Call save() on each ability
-		};
-	}
+        save(): playerCharSaveState {
+                return {
+                        charLevel: this._charLevel,
+                        abilityStates: this.getAbilities().map((a) => a.save()), // Call save() on each ability
+                        stamina: this.stamina,
+                };
+        }
 
-	load(state: playerCharSaveState): void {
-		this._charLevel = state.charLevel;
-		this.abilityMap.clear();
+        load(state: playerCharSaveState): void {
+                this._charLevel = state.charLevel;
+                this.abilityMap.clear();
+                this.stamina.setMax(state.stamina.max);
+                this.stamina.setCurrent(state.stamina.current);
 
 		for (const abilityState of state.abilityStates) {
 			const ability = Ability.createFromSaveState(abilityState);
