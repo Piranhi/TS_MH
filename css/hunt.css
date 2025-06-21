@@ -312,11 +312,32 @@
 }
 
 .hp-fill {
-	position: absolute;
-	inset: 0;
-	background: var(--hunt-bar-fill, #54836d);
-	width: calc(var(--hunt-hp) * 100%);
-	/* transition: width 0.25s ease; */
+        position: absolute;
+        inset: 0;
+        background: var(--hunt-bar-fill, #54836d);
+        width: calc(var(--hunt-hp) * 100%);
+        /* transition: width 0.25s ease; */
+}
+
+.stamina-bar {
+        position: relative;
+        height: 0.6rem;
+        border-radius: 0.6rem;
+        background: rgba(64, 72, 98, 0.877);
+        overflow: hidden;
+}
+
+.stamina-fill {
+        position: absolute;
+        inset: 0;
+        background: var(--stamina-fill, #67a4d8);
+        width: calc(var(--hunt-stamina, 0) * 100%);
+}
+
+.stamina-label {
+        align-self: flex-end;
+        font-size: 0.7rem;
+        opacity: 0.85;
 }
 
 .hp-label {
@@ -336,11 +357,11 @@
 }
 /* Ability Progress Bar Styling */
 .ability {
-	position: relative;
-	display: grid;
-	grid-template-columns: auto 1fr auto;
-	align-items: center;
-	gap: 0.1rem;
+        position: relative;
+        display: grid;
+        grid-template-columns: auto 1fr auto auto;
+        align-items: center;
+        gap: 0.1rem;
 	padding: 0.1rem 0.6rem;
 	border-radius: 0.5rem;
 	background: rgba(34, 33, 33, 0.568);
@@ -406,8 +427,12 @@
 }
 
 .ability-dmg {
-	font-weight: 600;
-	margin-left: 0.5rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+}
+
+.ability-toggle {
+        margin-left: 0.3rem;
 }
 
 /* 4. Stats Grid */

@@ -1,5 +1,6 @@
 import { BaseCharacter, PowerLevel } from "@/models/BaseCharacter";
 import { UIBase } from "./UIBase";
+import { Tooltip } from "./Tooltip";
 
 // Type to track transition cleanup
 interface TransitionCleanup {
@@ -13,8 +14,10 @@ export class CharacterDisplay extends UIBase {
 	private character!: BaseCharacter;
 	private nameEl!: HTMLElement;
 	private statGridEl!: HTMLElement;
-	private hpBar!: HTMLElement;
-	private hpLabel!: HTMLElement;
+        private hpBar!: HTMLElement;
+        private hpLabel!: HTMLElement;
+        private staminaBar!: HTMLElement;
+        private staminaLabel!: HTMLElement;
 	private avatarImg!: HTMLImageElement;
 	private abilitiesListEl!: HTMLUListElement;
 	private abilitiesListMap = new Map<string, HTMLElement>();
@@ -50,9 +53,11 @@ export class CharacterDisplay extends UIBase {
 	private createDisplay() {
 		// CACHE ELEMENTS
 		this.nameEl = this.$(".char-card__name");
-		this.statGridEl = this.$(".stat-grid");
-		this.hpBar = this.$(".health-bar");
-		this.hpLabel = this.$(".hp-label");
+                this.statGridEl = this.$(".stat-grid");
+                this.hpBar = this.$(".health-bar");
+                this.hpLabel = this.$(".hp-label");
+                this.staminaBar = this.$(".stamina-bar");
+                this.staminaLabel = this.$(".stamina-label");
 
 		this.avatarImg = this.$(".char-card__portrait") as HTMLImageElement;
 		this.element.classList.add(this.isPlayer ? "player" : "enemy");
@@ -67,13 +72,15 @@ export class CharacterDisplay extends UIBase {
 		this.abilitiesListMap.clear();
 		this.abilitiesListEl.innerHTML = "";
 
-		abilities.forEach((ability) => {
-			const li = document.createElement("li");
-			li.className = "ability";
+                abilities.forEach((ability) => {
+                        const li = document.createElement("li");
+                        li.className = "ability";
+                        li.dataset.abilityId = ability.id;
+                        li.setAttribute("draggable", "true");
 
-			// Create the fill element that will show progress
-			const fill = document.createElement("span");
-			fill.className = "ability-fill ability-fill--smooth"; // Add smooth class
+                        // Create the fill element that will show progress
+                        const fill = document.createElement("span");
+                        fill.className = "ability-fill ability-fill--smooth"; // Add smooth class
 
 			const icon = document.createElement("span");
 			icon.className = "ability-icon";
@@ -83,18 +90,51 @@ export class CharacterDisplay extends UIBase {
 			name.className = "ability-name";
 			name.textContent = ability.name;
 
-			const dmg = document.createElement("span");
-			dmg.className = "ability-dmg";
-			dmg.textContent = "21";
+                        const dmg = document.createElement("span");
+                        dmg.className = "ability-dmg";
+                        dmg.textContent = "21";
 
-			li.appendChild(fill);
-			li.appendChild(icon);
-			li.appendChild(name);
-			li.appendChild(dmg);
-			this.abilitiesListEl.appendChild(li);
+                        const toggle = document.createElement("input");
+                        toggle.type = "checkbox";
+                        toggle.checked = ability.enabled;
+                        toggle.className = "ability-toggle";
+                        toggle.addEventListener("change", () => {
+                                ability.enabled = toggle.checked;
+                        });
 
-			this.abilitiesListMap.set(ability.id, li);
-		});
+                        li.addEventListener("dragstart", (e) => {
+                                e.dataTransfer!.setData("text/plain", ability.id);
+                        });
+
+                        li.addEventListener("dragover", (e) => e.preventDefault());
+                        li.addEventListener("drop", (e) => {
+                                e.preventDefault();
+                                const draggedId = e.dataTransfer!.getData("text/plain");
+                                const draggedEl = this.abilitiesListMap.get(draggedId);
+                                if (draggedEl && draggedEl !== li) {
+                                        this.abilitiesListEl.insertBefore(draggedEl, li);
+                                        this.updateAbilityOrder();
+                                }
+                        });
+
+                        li.addEventListener("mouseenter", () => {
+                                Tooltip.instance.show(li, {
+                                        icon: "",
+                                        name: ability.name,
+                                        description: `Cost: ${ability.spec.staminaCost} stamina`,
+                                });
+                        });
+                        li.addEventListener("mouseleave", () => Tooltip.instance.hide());
+
+                        li.appendChild(fill);
+                        li.appendChild(icon);
+                        li.appendChild(name);
+                        li.appendChild(dmg);
+                        li.appendChild(toggle);
+                        this.abilitiesListEl.appendChild(li);
+
+                        this.abilitiesListMap.set(ability.id, li);
+                });
 
 		this.render();
 	}
@@ -109,16 +149,21 @@ export class CharacterDisplay extends UIBase {
 		if (!this.character) return;
 		const snapshot = this.character.snapshot();
 
-		const { name, realHP: hp, abilities, imgUrl } = snapshot;
-		this.nameEl.textContent = name;
-		this.hpBar.style.setProperty("--hunt-hp", hp.percent);
-		this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
+                const { name, realHP: hp, stamina, abilities, imgUrl } = snapshot;
+                this.nameEl.textContent = name;
+                this.hpBar.style.setProperty("--hunt-hp", hp.percent);
+                this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
+                this.staminaBar.style.setProperty("--hunt-stamina", stamina.percent);
+                this.staminaLabel.textContent = `${stamina.current} / ${stamina.max} ST`;
 
-		abilities.forEach((ability) => {
-			const bar = this.abilitiesListMap.get(ability.id);
-			if (!bar) return;
+                abilities.forEach((ability) => {
+                        const bar = this.abilitiesListMap.get(ability.id);
+                        if (!bar) return;
 
-			// Calculate readiness percentage (inverse of cooldown)
+                        const toggle = bar.querySelector(".ability-toggle") as HTMLInputElement;
+                        if (toggle) toggle.checked = ability.enabled;
+
+                        // Calculate readiness percentage (inverse of cooldown)
 			// When currentCooldown is 0, ability is ready (100%)
 			// When currentCooldown equals maxCooldown, ability just used (0%)
 			const readinessRatio = ability.maxCooldown > 0 ? 1 - ability.currentCooldown / ability.maxCooldown : 1; // Default to ready if no cooldown
@@ -178,12 +223,20 @@ export class CharacterDisplay extends UIBase {
 		}
 	}
 
-	private cleanupAllTransitions() {
-		this.activeTransitions.forEach((transition) => {
-			clearTimeout(transition.timeoutId);
-		});
-		this.activeTransitions.clear();
-	}
+        private cleanupAllTransitions() {
+                this.activeTransitions.forEach((transition) => {
+                        clearTimeout(transition.timeoutId);
+                });
+                this.activeTransitions.clear();
+        }
+
+        private updateAbilityOrder() {
+                Array.from(this.abilitiesListEl.children).forEach((c, i) => {
+                        const id = (c as HTMLElement).dataset.abilityId!;
+                        const ability = this.character.getAbility(id);
+                        if (ability) ability.priority = i;
+                });
+        }
 
 	private createStatsGrid() {
 		this.statGridEl.innerHTML = "";
@@ -218,9 +271,11 @@ export class CharacterDisplay extends UIBase {
 		this.character = undefined!;
 		this.nameEl = undefined!;
 		this.statGridEl = undefined!;
-		this.hpBar = undefined!;
-		this.hpLabel = undefined!;
-		this.avatarImg = undefined!;
+                this.hpBar = undefined!;
+                this.hpLabel = undefined!;
+                this.staminaBar = undefined!;
+                this.staminaLabel = undefined!;
+                this.avatarImg = undefined!;
 		this.abilitiesListEl = undefined!;
 		this.element = undefined!;
 		this.abilitiesListMap.clear();

@@ -1,6 +1,7 @@
 import { BaseCharacter } from "./BaseCharacter";
 import { Monster } from "@/models/Monster";
 import { debugManager } from "@/core/DebugManager";
+import { GAME_BALANCE } from "@/balance/GameBalance";
 
 export class EnemyCharacter extends BaseCharacter {
 	public readonly spec: Monster;
@@ -15,8 +16,10 @@ export class EnemyCharacter extends BaseCharacter {
 			this.addNewAbility(abilityId);
 		}
 
-		this.spec = spec;
-		this._type = "ENEMY";
+                this.spec = spec;
+                this._type = "ENEMY";
+                this.stamina.setMax(GAME_BALANCE.player.stamina.enemyMax);
+                this.stamina.setCurrent(GAME_BALANCE.player.stamina.enemyMax);
 
 		// Debug Options
 		this.canAttack = debugManager.get("enemy_canAttack");
