@@ -18,7 +18,7 @@ export class RegenPool {
 	/** Rate at which energy re‑fills (points per second, can be fractional) */
 	private readonly regenRate: number;
 
-	constructor(max: number, regenPerSecond: number, startFull: boolean) {
+	constructor(max: number, regenPerSecond: number, startFull: boolean, private readonly useAllocation: boolean = false) {
 		this._max = max;
 		this.regenRate = regenPerSecond;
 		if (startFull) this._current = max; // start full
@@ -84,7 +84,7 @@ export class RegenPool {
 	/** Regenerate over a frame (dt in **seconds**, may be fractional) */
 	regen(dt: number): void {
 		if (dt <= 0) return;
-		this._current = Math.min(this._current + dt * this.regenRate, this.effective);
+		this._current = Math.min(this._current + dt * this.regenRate, this.useAllocation ? this.effective : this._max);
 	}
 
 	toJSON() {
