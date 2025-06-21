@@ -48,9 +48,24 @@
 /* Class columns */
 .class-column {
 	position: absolute;
-	min-height: 500px;
-	width: 250px;
-	padding: 2rem;
+	min-height: 700px;
+	width: 400px;
+	padding: 3rem;
+	
+}
+
+.class-icon {
+	position: absolute;
+	top: -20px;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 180px;
+	height: 180px;
+	border-radius: 8px;
+	object-fit: cover;
+	object-position: center;
+	overflow: hidden;
+	z-index: 1;
 }
 
 /* Class title */
@@ -62,11 +77,12 @@
 	font-size: 18px;
 	font-weight: 600;
 	color: #fff;
-	background: rgba(0, 0, 0, 0.8);
+	background: rgba(0, 0, 0, 0.459);
 	padding: 8px 20px;
 	border-radius: 8px;
 	border: 1px solid rgba(255, 255, 255, 0.2);
 	z-index: 2;
+	opacity: 0; /* Disable for now */
 }
 
 .class-bg {

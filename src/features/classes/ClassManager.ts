@@ -27,10 +27,10 @@ export class ClassManager implements Saveable<ClassSystemState> {
 
 	gainPoints(amount: number) {
 		this.availablePoints += amount;
-		bus.emit("classes:pointsChanged", this.availablePoints);
+		bus.emit("classes:pointsChanged");
 	}
 
-	getAvailablePoints() {
+	getAvailablePoints(): number {
 		return this.availablePoints;
 	}
 
@@ -73,8 +73,8 @@ export class ClassManager implements Saveable<ClassSystemState> {
 		this.availablePoints -= node.cost;
 		map.set(nodeId, current + 1);
 		this.recalculate();
-		bus.emit("classes:pointsChanged", this.availablePoints);
-		bus.emit("classes:nodesChanged", null);
+		bus.emit("classes:pointsChanged");
+		bus.emit("classes:nodesChanged");
 		return true;
 	}
 
@@ -87,9 +87,14 @@ export class ClassManager implements Saveable<ClassSystemState> {
 				if (!spec) continue;
 				spec.effects.forEach((eff: NodeEffect) => {
 					if (eff.kind === "statModifier") {
-						statMods[eff.stat] = (statMods[eff.stat] || 0) + eff.amount * pts;
+						if (eff.stat && eff.amount !== undefined) {
+							statMods[eff.stat as keyof StatsModifier] =
+								(statMods[eff.stat as keyof StatsModifier] || 0) + eff.amount * pts;
+						}
 					} else if (eff.kind === "unlockAbility" && pts > 0) {
-						abilities.push(eff.abilityId);
+						if (eff.abilityId) {
+							abilities.push(eff.abilityId);
+						}
 					}
 				});
 			}

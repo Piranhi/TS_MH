@@ -2,7 +2,7 @@
 	{
 		"id": "warrior",
 		"name": "Warrior",
-		"background": "/images/class-cards/classcard-bg-warrior.png",
+		"iconUrl": "/images/classicons/class_warrior.png",
 		"nodes": [
 			{
 				"id": "warrior_attack",
@@ -15,14 +15,24 @@
 				"maxPoints": 3,
 				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
 			},
-
+			{
+				"id": "warrior_crit",
+				"name": "Power Training",
+				"description": "todo",
+				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+				"row": 0,
+				"col": 1,
+				"cost": 2,
+				"maxPoints": 3,
+				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+			},
 			{
 				"id": "warrior_defence",
 				"name": "Defence Training",
 				"description": "todo",
 				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
 				"row": 0,
-				"col": 1,
+				"col": 2,
 				"cost": 1,
 				"maxPoints": 3,
 				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
@@ -42,9 +52,27 @@
 		]
 	},
 	{
-		"id": "Rogue",
-		"name": "Rogue",
-		"background": "/images/class-cards/classcard-bg-warrior.png",
+		"id": "mage",
+		"name": "Mage",
+		"iconUrl": "/images/classicons/class_mage.png",
+		"nodes": [
+			{
+				"id": "warrior_attack",
+				"name": "Power Training",
+				"description": "todo",
+				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+				"row": 0,
+				"col": 0,
+				"cost": 1,
+				"maxPoints": 3,
+				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+			}
+		]
+	},
+	{
+		"id": "protector",
+		"name": "Protector",
+		"iconUrl": "/images/classicons/class_protector.png",
 		"nodes": [
 			{
 				"id": "warrior_attack",

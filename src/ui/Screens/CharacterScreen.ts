@@ -73,7 +73,7 @@ export class CharacterScreen extends BaseScreen {
 		const NODE_SIZE = 60;
 		const NODE_SPACING_X = 100;
 		const NODE_SPACING_Y = 120;
-		const COLUMN_WIDTH = 300;
+		const COLUMN_WIDTH = 450; // Increased from 300 to add more space between columns
 		const START_X = 50; // Reduced from 100
 		const START_Y = 50;
 
@@ -84,6 +84,12 @@ export class CharacterScreen extends BaseScreen {
 			column.style.left = `${START_X + specIndex * COLUMN_WIDTH}px`;
 			column.style.top = `${START_Y}px`;
 			column.dataset.classId = spec.id;
+
+			// Class icon
+			const icon = document.createElement("img");
+			icon.src = spec.iconUrl;
+			icon.className = "class-icon";
+			column.appendChild(icon);
 
 			// Class title
 			const title = document.createElement("div");
@@ -136,26 +142,6 @@ export class CharacterScreen extends BaseScreen {
 		return nodeEl.getEl();
 	}
 
-	private getNodeIcon(node: ClassNodeSpec): string {
-		// You can expand this to return different icons based on node effects
-		const effect = node.effects[0];
-		if (effect?.kind === "statModifier") {
-			switch (effect.stat) {
-				case "attack":
-					return "⚔️";
-				case "defence":
-					return "🛡️";
-				case "health":
-					return "❤️";
-				case "speed":
-					return "💨";
-				default:
-					return "✨";
-			}
-		}
-		return "🔮";
-	}
-
 	private createConnectionLines(specs: ClassSpec[]) {
 		specs.forEach((spec) => {
 			const column = this.treeEl.querySelector<HTMLElement>(`.class-column[data-class-id="${spec.id}"]`);
@@ -179,10 +165,10 @@ export class CharacterScreen extends BaseScreen {
 				const y2 = parseInt(toEl.style.top); // Node top
 
 				// Adjust for nodes container padding (2rem = 32px)
-				const offsetX1 = x1 + 32;
-				const offsetY1 = y1 + 32;
-				const offsetX2 = x2 + 32;
-				const offsetY2 = y2 + 32;
+				const offsetX1 = x1 + 48;
+				const offsetY1 = y1 + 48;
+				const offsetX2 = x2 + 48;
+				const offsetY2 = y2 + 48;
 
 				const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
 				line.setAttribute("x1", offsetX1.toString());

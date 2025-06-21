@@ -23,6 +23,7 @@ export interface ClassSpec {
 	id: string;
 	name: string;
 	description: string;
+	iconUrl: string;
 	nodes: ClassNodeSpec[];
 }
 
