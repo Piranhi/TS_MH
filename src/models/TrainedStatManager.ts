@@ -48,14 +48,14 @@ export class TrainedStatManager extends Destroyable implements Saveable, Offline
 		if (delta === 0) return;
 
 		if (delta > 0) {
-			// Spending stamina
-			if (!this.context.player.spendStamina(delta)) return;
+			// Spending energy
+			if (!this.context.player.spendEnergy(delta)) return;
 			stat.adjustAssignedPoints(delta);
 		} else {
-			// Refunding stamina
+			// Refunding energy
 			const pts = Math.abs(delta);
 			if (stat.assignedPoints < pts) return;
-			if (!this.context.player.refundStamina(pts)) return;
+			if (!this.context.player.refundEnergy(pts)) return;
 			stat.adjustAssignedPoints(delta);
 		}
 	}

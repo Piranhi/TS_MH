@@ -7,7 +7,7 @@ import { ProgressBar } from "./ProgressBar";
 export class HeaderDisplay extends UIBase {
 	private PlayerStatsEl: HTMLElement;
 	private prestigeButton!: HTMLButtonElement;
-	private staminaProgressBar!: ProgressBar;
+	private energyProgressBar!: ProgressBar;
 	private levelEl: HTMLElement;
 	constructor(container: HTMLElement) {
 		super();
@@ -27,20 +27,20 @@ export class HeaderDisplay extends UIBase {
 
 	public build() {
 		this.PlayerStatsEl.innerHTML = "";
-		this.createStamina();
+		this.createEnergy();
 		this.createRenown();
 	}
 
-	private createStamina() {
-		// Add Stamina
+	private createEnergy() {
+		// Add Energy
 		const li = document.createElement("li");
 		li.className = "player-stats";
 		const label = document.createElement("span");
 		label.className = "label";
-		label.textContent = "Stamina";
+		label.textContent = "Energy";
 		li.appendChild(label);
 
-		this.staminaProgressBar = new ProgressBar({
+		this.energyProgressBar = new ProgressBar({
 			container: li,
 			maxValue: 250,
 			initialValue: 45,
@@ -52,14 +52,13 @@ export class HeaderDisplay extends UIBase {
 		li.appendChild(value);
 		this.PlayerStatsEl.appendChild(li);
 
-		bus.on("player:stamina-changed", (payload) => {
+		bus.on("player:energy-changed", (payload) => {
 			const curr = Math.floor(payload.current);
 			const mx = Math.floor(payload.max);
 			value.textContent = `${curr} / ${mx}`;
 			//console.log(payload);
-			this.staminaProgressBar.setMax(payload.max);
-			this.staminaProgressBar.setValue(Math.floor(payload.current));
-			//this.staminaProgressBar.
+			this.energyProgressBar.setMax(payload.max);
+			this.energyProgressBar.setValue(Math.floor(payload.current));
 		});
 	}
 	private createRenown() {

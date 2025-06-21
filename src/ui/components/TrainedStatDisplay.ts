@@ -115,14 +115,14 @@ export class TrainedStatDisplay extends UIBase {
 	}
 
 	private setToMax() {
-		// Allocate up to this stat's maximum, limited by available stamina
+		// Allocate up to this stat's maximum, limited by available energy
 		const maxPointsForThisStat = this.trainedStat.maxAssignedPoints;
 		const currentlyAllocated = this.trainedStat.assignedPoints;
 		const pointsNeeded = maxPointsForThisStat - currentlyAllocated;
 
 		if (pointsNeeded > 0) {
-			const availableStamina = this.context.player.staminaPool.current;
-			const pointsToAllocate = Math.min(pointsNeeded, availableStamina);
+			const availableEnergy = this.context.player.energyPool.current;
+			const pointsToAllocate = Math.min(pointsNeeded, availableEnergy);
 			if (pointsToAllocate > 0) {
 				this.adjustAmount(pointsToAllocate);
 			}
@@ -130,15 +130,15 @@ export class TrainedStatDisplay extends UIBase {
 	}
 
 	private setToHalf() {
-		// Try to reach half of this stat's max allocation, limited by available stamina
+		// Try to reach half of this stat's max allocation, limited by available energy
 		const targetPoints = Math.floor(this.trainedStat.maxAssignedPoints / 2);
 		const currentlyAllocated = this.trainedStat.assignedPoints;
 		const neededPoints = targetPoints - currentlyAllocated;
 
 		if (neededPoints > 0) {
 			// Need to allocate more points
-			const availableStamina = this.context.player.staminaPool.current;
-			const pointsToAllocate = Math.min(neededPoints, availableStamina);
+			const availableEnergy = this.context.player.energyPool.current;
+			const pointsToAllocate = Math.min(neededPoints, availableEnergy);
 			if (pointsToAllocate > 0) {
 				this.adjustAmount(pointsToAllocate);
 			}

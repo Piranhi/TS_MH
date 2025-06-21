@@ -128,7 +128,7 @@ export class DebugMenu {
 			console.log(array);
 		});
 		this.addButton("Fake Offline Session", () => this.testOfflineSession());
-		this.addButton("Set Max Stamina", () => context.player.debugStamina());
+		this.addButton("Set Max Energy", () => context.player.debugEnergy());
 		this.addButton("Char Level Up", () => context.character.gainXp(context.character.nextXpThreshold));
 		// In Debug-Menu.ts
 		this.addButton("Full Balance Check", () => BalanceDebug.runFullBalanceCheck());

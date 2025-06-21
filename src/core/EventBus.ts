@@ -48,7 +48,7 @@ export interface GameEvents {
 	// PLAYER
 	"player:initialized": Player;
 	"player:level-up": number;
-	"player:stamina-changed": poolChangedPayload;
+	"player:energy-changed": poolChangedPayload;
 	"player:trainedStatChanged": string;
 	"player:equipmentChanged": InventoryItemSpec[];
 	"player:classCardsChanged": InventoryItemSpec[];

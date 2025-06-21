@@ -15,7 +15,7 @@ export class RegenPool {
 	/** How many whole points are locked in other systems */
 	private _allocated = 0;
 
-	/** Rate at which stamina re‑fills (points per second, can be fractional) */
+	/** Rate at which energy re‑fills (points per second, can be fractional) */
 	private readonly regenRate: number;
 
 	constructor(max: number, regenPerSecond: number, startFull: boolean) {
