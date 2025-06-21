@@ -74,10 +74,7 @@ export class GameRun extends Destroyable {
 		saveManager.updateRegister("huntManager", this.huntManager);
 		saveManager.updateRegister("trainedManager", this.trainedStats);
 		saveManager.updateRegister("resourceManager", this.resourceManager);
-                saveManager.updateRegister("mineManager", this.mineManager);
-
-                // Apply class bonuses to the new character
-                this.context.classes.refresh();
+		saveManager.updateRegister("mineManager", this.mineManager);
 
 		// Emit that run is ready
 		bus.emit("gameRun:initialized", this);
@@ -116,8 +113,8 @@ export class GameRun extends Destroyable {
 		// Clean up all transient systems
 		this.character.destroy();
 		this.huntManager.destroy();
-                this.trainedStats.destroy();
-                this.equipmentManager.destroy();
+		this.trainedStats.destroy();
+		this.equipmentManager.destroy();
 		this.resourceManager.destroy();
 		this.mineManager.destroy();
 

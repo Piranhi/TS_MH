@@ -16,16 +16,17 @@
 				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
 			},
 			{
-				"id": "warrior_crit",
-				"name": "Power Training",
-				"description": "todo",
+				"id": "warrior_charge",
+				"name": "Warrior Charge",
+				"description": "Unlocks Warrior Charge Ability",
 				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
 				"row": 0,
 				"col": 1,
-				"cost": 2,
-				"maxPoints": 3,
-				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+				"cost": 1,
+				"maxPoints": 1,
+				"effects": [{ "kind": "unlockAbility", "abilityId": "warrior_charge" }]
 			},
+
 			{
 				"id": "warrior_defence",
 				"name": "Defence Training",
@@ -38,16 +39,16 @@
 				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
 			},
 			{
-				"id": "warrior_charge",
-				"name": "Charge",
-				"description": "todo",
+				"id": "warrior_charge_power",
+				"name": "Charge Damage",
+				"description": "Increases charge damage by 1",
 				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
 				"row": 1,
-				"col": 0,
+				"col": 1,
 				"cost": 1,
 				"maxPoints": 1,
-				"prereq": "warrior_attack",
-				"effects": [{ "kind": "unlockAbility", "abilityId": "warrior_charge" }]
+				"prereq": "warrior_charge",
+				"effects": [{ "kind": "abilityModifier", "stat": "attack", "amount": 100, "abilityId": "warrior_charge" }]
 			}
 		]
 	},
@@ -75,15 +76,15 @@
 		"iconUrl": "/images/classicons/class_protector.png",
 		"nodes": [
 			{
-				"id": "warrior_attack",
-				"name": "Power Training",
+				"id": "bulwark_defend",
+				"name": "Bulwark Defend",
 				"description": "todo",
 				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
 				"row": 0,
 				"col": 0,
 				"cost": 1,
 				"maxPoints": 3,
-				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+				"effects": [{ "kind": "unlockAbility", "abilityId": "bulwark_defend" }]
 			}
 		]
 	}

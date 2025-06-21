@@ -1,6 +1,6 @@
 import { printLog } from "@/core/DebugManager";
 import { Identifiable } from "@/models/SpecRegistryBase";
-import { Stats, StatsModifier } from "@/models/Stats";
+import { AbilityModifierStats, Stats, StatsModifier } from "@/models/Stats";
 import { MilestoneTag } from "./Milestones";
 import { GameEvents } from "@/core/EventBus";
 import { BaseCharacter } from "@/models/BaseCharacter";
@@ -119,6 +119,13 @@ export const ENEMY_ARCHETYPES = {
 export type EnemyArchetype = keyof typeof ENEMY_ARCHETYPES;
 export type EffectType = "physical" | "magical" | "heal" | "buff" | "debuff";
 
+// Modifiers for abilities
+export interface AbilityModifier {
+	stat: AbilityModifierStats;
+	amount: number;
+	source: string; // e.g., "warrior_class", "buff_potion"
+}
+
 export interface EffectSpec {
 	type: EffectType;
 	target: "self" | "enemy";
@@ -131,6 +138,7 @@ export interface EffectSpec {
 // A “packet” describing exactly what one ability use will do
 export interface EffectInstance {
 	source: BaseCharacter;
+	abilityId: string;
 	target: "self" | "enemy";
 	type: EffectType;
 	/** raw amount (damage before mitigation, heal % of maxHp, buff %, etc.) */

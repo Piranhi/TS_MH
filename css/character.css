@@ -39,8 +39,8 @@
 	min-width: 100%; /* At least fill the viewport */
 	min-height: 100%;
 	padding: 50px; /* Padding around content */
-	background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-	background-size: 30px 30px;
+	background-image: radial-gradient(circle, rgba(255, 255, 255, 0.034) 1px, transparent 1px);
+	background-size: 300px 300px;
 	background-position: 0 0;
 	transition: transform 0.15s ease-out; /* Smooth zoom/pan */
 }
@@ -48,10 +48,9 @@
 /* Class columns */
 .class-column {
 	position: absolute;
-	min-height: 700px;
-	width: 400px;
+	min-height: 900px;
+	width: 360px;
 	padding: 3rem;
-	
 }
 
 .class-icon {

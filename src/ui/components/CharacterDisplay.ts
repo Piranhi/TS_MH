@@ -1,74 +1,56 @@
-import { HuntState } from "@/features/hunt/HuntManager";
 import { BaseCharacter, PowerLevel } from "@/models/BaseCharacter";
 import { UIBase } from "./UIBase";
-import { bindEvent } from "@/shared/utils/busUtils";
 
-export type HolderStatus = "inactive" | "active";
+// Type to track transition cleanup
+interface TransitionCleanup {
+	element: HTMLElement;
+	timeoutId: number;
+}
+
+type HolderStatus = "active" | "inactive";
 
 export class CharacterDisplay extends UIBase {
+	private character!: BaseCharacter;
 	private nameEl!: HTMLElement;
-	//private atkEl!: HTMLElement;
-	//private defEl!: HTMLElement;
-	private charLevelEl: HTMLElement | null = null;
 	private statGridEl!: HTMLElement;
 	private hpBar!: HTMLElement;
 	private hpLabel!: HTMLElement;
 	private avatarImg!: HTMLImageElement;
-	private character!: BaseCharacter;
 	private abilitiesListEl!: HTMLUListElement;
-	private abilitiesListMap = new Map<string, HTMLLIElement>();
+	private abilitiesListMap = new Map<string, HTMLElement>();
 
-	constructor(private isPlayer: boolean, private readonly charCard: HTMLElement) {
+	// Track active transitions for cleanup
+	private activeTransitions = new Map<string, TransitionCleanup>();
+
+	constructor(public readonly isPlayer: boolean, element: HTMLElement) {
 		super();
-
-		this.element = charCard;
+		this.element = element;
 		this.createDisplay();
-		if (isPlayer) this.setCharacter(this.context.character);
-
-		//this.setHolderStatus(holderStatus);
-		this.bindEvents();
 	}
 
-	public setCharacter(char: BaseCharacter) {
+	receiveCharacter(char: BaseCharacter): void {
 		this.character = char;
 		this.setup();
 	}
 
-	private bindEvents() {
-		bindEvent(this.eventBindings, "Game:UITick", (dt) => this.handleTick(dt));
-		bindEvent(this.eventBindings, "hunt:stateChanged", (state) => this.huntStateChanged(state));
-	}
-
-	private handleTick(dt: number) {
-		this.render();
-	}
-
-	private huntStateChanged(state: HuntState) {
-		switch (state) {
-			case HuntState.Recovery:
-				this.setHolderStatus(this.isPlayer ? "inactive" : "inactive");
+	/* 	revive() {
+		switch (this.character.type) {
+			case "PLAYER":
+				bindEvent(this.eventBindings, "player:charDataChanged", () => this.render());
 				break;
-			case HuntState.Search:
-				this.setHolderStatus(this.isPlayer ? "active" : "inactive");
-				break;
-			case HuntState.Combat:
-				this.setHolderStatus(this.isPlayer ? "active" : "active");
-				break;
-			case HuntState.Idle:
-				this.setHolderStatus(this.isPlayer ? "active" : "inactive");
-				break;
-			case HuntState.Boss:
-				this.setHolderStatus(this.isPlayer ? "active" : "active");
+			case "ENEMY":
+				bindEvent(this.eventBindings, "enemy:charDataChanged", () => this.render());
+				bindEvent(this.eventBindings, "enemy:holderStatus", (val: HolderStatus) =>
+					this.setHolderStatus(val === "active" ? "active" : "active")
+				);
 				break;
 		}
-	}
+	} */
 
 	private createDisplay() {
 		// CACHE ELEMENTS
 		this.nameEl = this.$(".char-card__name");
 		this.statGridEl = this.$(".stat-grid");
-		//this.atkEl = this.$(".stat--attack");
-		//this.defEl = this.$(".stat--defence");
 		this.hpBar = this.$(".health-bar");
 		this.hpLabel = this.$(".hp-label");
 
@@ -79,24 +61,28 @@ export class CharacterDisplay extends UIBase {
 
 	setup() {
 		const snapshot = this.character.snapshot();
-		const { abilities, imgUrl } = snapshot;
+		const { abilities, imgUrl, level } = snapshot;
 
 		this.avatarImg.src = imgUrl;
 		this.abilitiesListMap.clear();
 		this.abilitiesListEl.innerHTML = "";
-		//const abilities = this.character.getActiveAbilities();
+
 		abilities.forEach((ability) => {
 			const li = document.createElement("li");
 			li.className = "ability";
-			li.style.setProperty("--hunt-cd", "0.35");
+
+			// Create the fill element that will show progress
 			const fill = document.createElement("span");
-			fill.className = "ability-fill";
+			fill.className = "ability-fill ability-fill--smooth"; // Add smooth class
+
 			const icon = document.createElement("span");
 			icon.className = "ability-icon";
 			icon.textContent = "🔥";
+
 			const name = document.createElement("span");
 			name.className = "ability-name";
 			name.textContent = ability.name;
+
 			const dmg = document.createElement("span");
 			dmg.className = "ability-dmg";
 			dmg.textContent = "21";
@@ -106,7 +92,7 @@ export class CharacterDisplay extends UIBase {
 			li.appendChild(name);
 			li.appendChild(dmg);
 			this.abilitiesListEl.appendChild(li);
-			//li.dataset.name = ability.name;
+
 			this.abilitiesListMap.set(ability.id, li);
 		});
 
@@ -116,6 +102,7 @@ export class CharacterDisplay extends UIBase {
 	async clearCharacter(): Promise<void> {
 		this.character = null!;
 		this.abilitiesListMap.clear();
+		this.cleanupAllTransitions(); // Clean up any active transitions
 	}
 
 	render(): void {
@@ -124,17 +111,78 @@ export class CharacterDisplay extends UIBase {
 
 		const { name, realHP: hp, abilities, imgUrl } = snapshot;
 		this.nameEl.textContent = name;
-		//this.atkEl.textContent = "⚔️ " + snapshot.attack.toString();
-		//this.defEl.textContent = "🛡️ " + snapshot.defence.toString();
 		this.hpBar.style.setProperty("--hunt-hp", hp.percent);
-		this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
+		this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
+
 		abilities.forEach((ability) => {
 			const bar = this.abilitiesListMap.get(ability.id);
 			if (!bar) return;
-			const ratio = ability.currentCooldown / ability.maxCooldown;
-			bar.style.setProperty("--hunt-cd", ratio.toString());
+
+			// Calculate readiness percentage (inverse of cooldown)
+			// When currentCooldown is 0, ability is ready (100%)
+			// When currentCooldown equals maxCooldown, ability just used (0%)
+			const readinessRatio = ability.maxCooldown > 0 ? 1 - ability.currentCooldown / ability.maxCooldown : 1; // Default to ready if no cooldown
+
+			this.updateAbilityProgress(ability.id, bar, readinessRatio);
 		});
+
 		this.createStatsGrid();
+	}
+
+	private updateAbilityProgress(abilityId: string, element: HTMLElement, ratio: number) {
+		// Clean up any existing transition for this ability
+		this.cleanupTransition(abilityId);
+
+		// Set the new progress value
+		element.style.setProperty("--hunt-cd", ratio.toString());
+
+		// If we're in debug/speed mode, skip transitions to prevent memory buildup
+		const isSpeedMode = this.checkIfSpeedMode();
+		if (isSpeedMode) {
+			const fillEl = element.querySelector(".ability-fill");
+			if (fillEl) {
+				fillEl.classList.remove("ability-fill--smooth");
+			}
+			return;
+		}
+
+		// Set up transition cleanup
+		// CSS transition duration should match this timeout
+		const transitionDuration = 300; // milliseconds
+		const fillEl = element.querySelector(".ability-fill") as HTMLElement;
+
+		if (fillEl) {
+			const timeoutId = window.setTimeout(() => {
+				this.activeTransitions.delete(abilityId);
+			}, transitionDuration);
+
+			this.activeTransitions.set(abilityId, {
+				element: fillEl,
+				timeoutId,
+			});
+		}
+	}
+
+	private checkIfSpeedMode(): boolean {
+		// You can implement this based on your game's speed settings
+		// For now, return false to always use smooth transitions
+		// In your actual implementation, check if game speed > 1x
+		return false; // TODO: Implement based on your game speed setting
+	}
+
+	private cleanupTransition(abilityId: string) {
+		const transition = this.activeTransitions.get(abilityId);
+		if (transition) {
+			clearTimeout(transition.timeoutId);
+			this.activeTransitions.delete(abilityId);
+		}
+	}
+
+	private cleanupAllTransitions() {
+		this.activeTransitions.forEach((transition) => {
+			clearTimeout(transition.timeoutId);
+		});
+		this.activeTransitions.clear();
 	}
 
 	private createStatsGrid() {
@@ -142,7 +190,6 @@ export class CharacterDisplay extends UIBase {
 
 		const powerStats: PowerLevel = this.character.getPowerLevel();
 		for (const [key, value] of Object.entries(powerStats)) {
-			//const value = this.character.stats.get(key);
 			const wrapper = document.createElement("div");
 			const dt = document.createElement("dt");
 			dt.textContent = key;
@@ -163,9 +210,11 @@ export class CharacterDisplay extends UIBase {
 	}
 
 	public destroy() {
+		// Clean up all active transitions before destroying
+		this.cleanupAllTransitions();
+
 		super.destroy();
 		// Clear maps/references
-		this.character = undefined!;
 		this.character = undefined!;
 		this.nameEl = undefined!;
 		this.statGridEl = undefined!;

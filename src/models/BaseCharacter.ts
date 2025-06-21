@@ -3,7 +3,7 @@ import { Ability } from "./Ability";
 import { BoundedNumber } from "./value-objects/Bounded";
 import type { StatsProvider } from "@/models/Stats";
 import { Destroyable } from "../core/Destroyable";
-import { EffectInstance, EffectSpec } from "@/shared/types";
+import { AbilityModifier, EffectInstance, EffectSpec } from "@/shared/types";
 import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
 
 export interface CharacterSnapshot {
@@ -31,8 +31,10 @@ export abstract class BaseCharacter extends Destroyable {
 	/* ───────────────────── protected fields ──────────────────── */
 
 	protected abilityMap: Map<string, Ability> = new Map();
+	protected abilityModifiers: Map<string, AbilityModifier[]> = new Map();
 	protected target?: BaseCharacter;
 	protected _charLevel: number = 1;
+	protected _type: "PLAYER" | "ENEMY";
 
 	/* ───────────────────── private fields ────────────────────── */
 	private inCombat = false;
@@ -45,6 +47,7 @@ export abstract class BaseCharacter extends Destroyable {
 	/* ────────────────────── constructor ──────────────────────── */
 	constructor(public readonly name: string, public readonly stats: StatsProvider, protected readonly defaultAbilityIds: string[] = []) {
 		super();
+		this._type = "PLAYER";
 		this.defaultAbilityIds.push("basic_melee");
 		this.hp = new BoundedNumber(0, this.calcRealHp(this.stats.get("hp")), this.calcRealHp(this.stats.get("hp"))); // TODO - ADD CALCULATIONS TO GET 'REAL' HP FROM MULTIPLIERS
 	}
@@ -65,6 +68,9 @@ export abstract class BaseCharacter extends Destroyable {
 
 	/* ───────────────────── getters (read-only) ───────────────── */
 
+	get type(): "PLAYER" | "ENEMY" {
+		return this._type;
+	}
 	get currentHp() {
 		return this.hp.current;
 	}
@@ -117,12 +123,21 @@ export abstract class BaseCharacter extends Destroyable {
 		return Math.floor(attack * powerMultiplier * critChance * critDamage);
 	}
 
+	public addAbilityModifier(abilityId: string, modifier: AbilityModifier) {
+		const existing = this.abilityModifiers.get(abilityId) || [];
+		this.abilityModifiers.set(abilityId, [...existing, modifier]);
+	}
+
+	public getAllAbilityModifiersFromAbility(abilityId: string): AbilityModifier[] {
+		return this.abilityModifiers.get(abilityId) || [];
+	}
+
 	/* ───────────────────── combat lifecycle ──────────────────── */
 
 	public beginCombat() {
 		//this.setToMaxHP();
 		this.inCombat = true;
-		this.getActiveAbilities().forEach((a) => a.init()); // Init abilities
+		this.getAbilities().forEach((a) => a.init()); // Init abilities
 	}
 
 	public endCombat() {
@@ -130,11 +145,11 @@ export abstract class BaseCharacter extends Destroyable {
 		this.target = undefined;
 	}
 
-	public getActiveAbilities(): Ability[] {
+	public getAbilities(): Ability[] {
 		return Array.from(this.abilityMap.values());
 	}
 
-	protected updateAbilities(newAbilityIds: string[]) {
+	/* 	protected updateAbilities(newAbilityIds: string[]) {
 		for (const id of Array.from(this.abilityMap.keys())) {
 			if (!newAbilityIds.includes(id)) {
 				this.abilityMap.delete(id);
@@ -146,6 +161,16 @@ export abstract class BaseCharacter extends Destroyable {
 				this.abilityMap.set(id, Ability.create(id));
 			}
 		}
+	} */
+
+	public addNewAbility(abilityId: string) {
+		if (!this.abilityMap.has(abilityId)) {
+			this.abilityMap.set(abilityId, Ability.createNew(abilityId));
+		}
+	}
+
+	public getAbility(abilityId: string): Ability | undefined {
+		return this.abilityMap.get(abilityId);
 	}
 
 	// Each tick
@@ -157,13 +182,14 @@ export abstract class BaseCharacter extends Destroyable {
 
 		if (!this.inCombat || !this.canAttack) return readyEffects;
 
-		this.getActiveAbilities().forEach((ability) => {
+		this.getAbilities().forEach((ability) => {
 			ability.reduceCooldown(dt); // TODO (multiply by speed)
 			if (ability.isReady()) {
 				for (const effectSpec of ability.spec.effects) {
 					const raw: number = this.calculateRawValue(effectSpec);
 					readyEffects.push({
 						source: this,
+						abilityId: ability.id,
 						target: effectSpec.target,
 						type: effectSpec.type,
 						rawValue: raw,
@@ -200,7 +226,7 @@ export abstract class BaseCharacter extends Destroyable {
 			realHP: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },
 			attack: this.attack.toString(),
 			defence: this.defence.toString(),
-			abilities: this.getActiveAbilities(),
+			abilities: this.getAbilities(),
 			imgUrl: this.getAvatarUrl(),
 			rarity: "Todo",
 			level: { lvl: this._charLevel, current: 0, next: 0 },

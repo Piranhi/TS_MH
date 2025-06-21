@@ -1,9 +1,9 @@
 // Class system type definitions
 export interface NodeEffect {
-	kind: "statModifier" | "unlockAbility";
-	stat?: string; // for statModifier
-	amount?: number; // for statModifier
-	abilityId?: string; // for unlockAbility
+	kind: "statModifier" | "unlockAbility" | "abilityModifier";
+	stat?: string; // for statModifier and abilityModifier
+	amount?: number; // for statModifier and abilityModifier
+	abilityId?: string; // for unlockAbility and abilityModifier
 }
 
 export interface ClassNodeSpec {

@@ -1,7 +1,7 @@
 import { bus } from "@/core/EventBus";
 import { GameContext } from "@/core/GameContext";
 import { Saveable } from "@/shared/storage-types";
-import { StatsModifier } from "@/models/Stats";
+import { AbilityModifierStats, StatsModifier } from "@/models/Stats";
 import { GAME_BALANCE } from "@/balance/GameBalance";
 import { ClassSpec, ClassSystemState, NodeEffect } from "./ClassTypes";
 
@@ -18,7 +18,7 @@ export class ClassManager implements Saveable<ClassSystemState> {
 		});
 		bus.on("player:level-up", () => this.gainPoints(GAME_BALANCE.classes.pointsPerLevel));
 		bus.on("game:prestigePrep", () => this.resetPoints());
-		bus.on("game:gameLoaded", () => this.recalculate());
+		bus.on("gameRun:initialized", () => this.recalculate());
 	}
 
 	unlockClass(id: string) {
@@ -81,28 +81,41 @@ export class ClassManager implements Saveable<ClassSystemState> {
 	private recalculate() {
 		const statMods: StatsModifier = {};
 		let abilities: string[] = [];
+		const context = GameContext.getInstance();
+		if (!context.currentRun) return; // Fail safe - no run
+
 		for (const [classId, nodes] of this.nodePoints) {
 			for (const [nodeId, pts] of nodes) {
 				const spec = this.specs.get(classId)?.nodes.find((n) => n.id === nodeId);
 				if (!spec) continue;
-				spec.effects.forEach((eff: NodeEffect) => {
-					if (eff.kind === "statModifier") {
-						if (eff.stat && eff.amount !== undefined) {
-							statMods[eff.stat as keyof StatsModifier] =
-								(statMods[eff.stat as keyof StatsModifier] || 0) + eff.amount * pts;
+
+				spec.effects.forEach((nodeEffect: NodeEffect) => {
+					if (nodeEffect.kind === "statModifier") {
+						if (nodeEffect.stat && nodeEffect.amount !== undefined) {
+							statMods[nodeEffect.stat as keyof StatsModifier] =
+								(statMods[nodeEffect.stat as keyof StatsModifier] || 0) + nodeEffect.amount * pts;
 						}
-					} else if (eff.kind === "unlockAbility" && pts > 0) {
-						if (eff.abilityId) {
-							abilities.push(eff.abilityId);
+					} else if (nodeEffect.kind === "unlockAbility" && pts > 0) {
+						if (nodeEffect.abilityId) {
+							abilities.push(nodeEffect.abilityId);
+						}
+					} else if (nodeEffect.kind === "abilityModifier") {
+						if (nodeEffect.abilityId && nodeEffect.stat !== undefined && nodeEffect.amount !== undefined) {
+							context.character.addAbilityModifier(nodeEffect.abilityId, {
+								stat: nodeEffect.stat as AbilityModifierStats,
+								amount: nodeEffect.amount,
+								source: classId,
+							});
 						}
 					}
 				});
 			}
 		}
 		abilities = Array.from(new Set(abilities));
-		const context = GameContext.getInstance();
 		if (context.currentRun) {
-			context.character.setClassAbilities(abilities);
+			for (const ability of abilities) {
+				context.character.addNewAbility(ability);
+			}
 			context.character.statsEngine.setLayer("classes", () => statMods);
 		}
 	}
@@ -144,6 +157,6 @@ export class ClassManager implements Saveable<ClassSystemState> {
 				map.set(nid, val);
 			}
 		}
-		this.recalculate();
+		//this.recalculate();
 	}
 }

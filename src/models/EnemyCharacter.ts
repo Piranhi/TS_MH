@@ -3,24 +3,28 @@ import { Monster } from "@/models/Monster";
 import { debugManager } from "@/core/DebugManager";
 
 export class EnemyCharacter extends BaseCharacter {
-    public readonly spec: Monster;
+	public readonly spec: Monster;
 
-    constructor(spec: Monster) {
-        super(spec.displayName, {
-            // Scaled by area
-            get: (statKey) => spec.areaScaledStats[statKey],
-        });
-        const defaultAbilities = spec.abilities ?? ["basic_melee"];
-        this.updateAbilities(defaultAbilities);
-        this.spec = spec;
+	constructor(spec: Monster) {
+		super(spec.displayName, {
+			// Scaled by area
+			get: (statKey) => spec.areaScaledStats[statKey],
+		});
+		// Add default abilities
+		for (const abilityId of spec.abilities) {
+			this.addNewAbility(abilityId);
+		}
 
-        // Debug Options
-        this.canAttack = debugManager.get("enemy_canAttack");
-        this.canTakeDamage = debugManager.get("enemy_canTakeDamage");
-        this.canDie = debugManager.get("enemy_canDie");
-    }
+		this.spec = spec;
+		this._type = "ENEMY";
 
-    override getAvatarUrl(): string {
-        return this.spec.imgUrl;
-    }
+		// Debug Options
+		this.canAttack = debugManager.get("enemy_canAttack");
+		this.canTakeDamage = debugManager.get("enemy_canTakeDamage");
+		this.canDie = debugManager.get("enemy_canDie");
+	}
+
+	override getAvatarUrl(): string {
+		return this.spec.imgUrl;
+	}
 }

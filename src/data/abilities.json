@@ -2,7 +2,7 @@
 	{
 		"id": "basic_melee",
 		"displayName": "Slam",
-		"cooldown": 2,
+		"cooldown": 5,
 		"startReady": false,
 		"effects": [
 			{
@@ -43,7 +43,7 @@
 	{
 		"id": "warrior_charge",
 		"displayName": "Warrior Charge",
-		"cooldown": 4,
+		"cooldown": 8,
 		"startReady": false,
 		"effects": [
 			{
@@ -61,7 +61,7 @@
 		]
 	},
 	{
-		"id": "bulward_defende",
+		"id": "bulwark_defend",
 		"displayName": "Bulwark Defend",
 		"cooldown": 10,
 		"startReady": true,

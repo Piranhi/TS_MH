@@ -16,6 +16,8 @@ export const STAT_KEYS: (keyof Stats)[] = [
 	"encounterChance",
 ];
 
+export type AbilityModifierStats = "addition" | "multiplier" | "duration" | "cooldown" | "cost" | "critChance" | "critDamage";
+
 export interface CoreStats {
 	attack: number;
 	defence: number;

@@ -45,7 +45,10 @@ export class HuntScreen extends BaseScreen {
 
 	hide() {}
 
-	handleTick(dt: number): void {}
+	handleTick(dt: number): void {
+		this.playerCard.render();
+		this.enemyCard?.render();
+	}
 
 	private setupElements() {
 		this.huntUpdateEl = document.getElementById("hunt-update-log") as HTMLElement;
@@ -138,9 +141,10 @@ export class HuntScreen extends BaseScreen {
 
 	private initCharacters(enemy: EnemyCharacter) {
 		this.clearEnemy();
+		this.playerCard.receiveCharacter(this.context.character);
 		this.playerCard.setup();
 		this.clearEnemy();
-		this.enemyCard?.setCharacter(enemy);
+		this.enemyCard?.receiveCharacter(enemy);
 		this.enemyCard?.setup();
 	}
 
