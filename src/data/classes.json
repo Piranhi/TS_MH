@@ -6,9 +6,9 @@
 		"nodes": [
 			{
 				"id": "warrior_attack",
-				"name": "Power Training",
+				"name": "Power Training1",
 				"description": "todo",
-				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+				"iconUrl": "/images/classupgrades/classupgrade-generic-attack.png",
 				"row": 0,
 				"col": 0,
 				"cost": 1,
@@ -19,7 +19,7 @@
 				"id": "warrior_charge",
 				"name": "Warrior Charge",
 				"description": "Unlocks Warrior Charge Ability",
-				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+				"iconUrl": "/images/abilities/ability_warrior_charge.png",
 				"row": 0,
 				"col": 1,
 				"cost": 1,
@@ -29,9 +29,9 @@
 
 			{
 				"id": "warrior_defence",
-				"name": "Defence Training",
+				"name": "Defence Training1",
 				"description": "todo",
-				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+				"iconUrl": "/images/classupgrades/classupgrade-generic-defence.png",
 				"row": 0,
 				"col": 2,
 				"cost": 1,
@@ -39,16 +39,75 @@
 				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
 			},
 			{
-				"id": "warrior_charge_power",
+				"id": "warrior_charge_power1",
 				"name": "Charge Damage",
 				"description": "Increases charge damage by 1",
-				"iconUrl": "/images/class-cards/classcard-bg-warrior.png",
+				"iconUrl": "/images/abilities/ability_warrior_charge.png",
 				"row": 1,
 				"col": 1,
 				"cost": 1,
 				"maxPoints": 1,
 				"prereq": "warrior_charge",
 				"effects": [{ "kind": "abilityModifier", "stat": "attack", "amount": 100, "abilityId": "warrior_charge" }]
+			},
+			{
+				"id": "warrior_attack",
+				"name": "Power Training2",
+				"description": "todo",
+				"iconUrl": "/images/classupgrades/classupgrade-generic-attack.png",
+				"row": 2,
+				"col": 0,
+				"cost": 1,
+				"maxPoints": 3,
+				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+			},
+			{
+				"id": "warrior_charge_power2",
+				"name": "Charge Damage",
+				"description": "Increases charge damage by 1",
+				"iconUrl": "/images/abilities/ability_warrior_charge.png",
+				"row": 2,
+				"col": 1,
+				"cost": 1,
+				"maxPoints": 1,
+				"prereq": "warrior_charge",
+				"effects": [{ "kind": "abilityModifier", "stat": "attack", "amount": 100, "abilityId": "warrior_charge" }]
+			}
+		]
+	},
+	{
+		"id": "priest",
+		"name": "Priest",
+		"iconUrl": "/images/classicons/class-priest.png",
+		"nodes": [
+			{
+				"id": "heal",
+				"name": "Heal",
+				"description": "todo",
+				"iconUrl": "/images/abilities/ability-heal.png",
+				"row": 0,
+				"col": 1,
+				"cost": 1,
+				"maxPoints": 3,
+				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+			}
+		]
+	},
+	{
+		"id": "rogue",
+		"name": "Rogue",
+		"iconUrl": "/images/classicons/class-rogue.png",
+		"nodes": [
+			{
+				"id": "heal",
+				"name": "Heal",
+				"description": "todo",
+				"iconUrl": "/images/abilities/ability-heal.png",
+				"row": 0,
+				"col": 1,
+				"cost": 1,
+				"maxPoints": 3,
+				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
 			}
 		]
 	},

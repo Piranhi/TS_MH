@@ -22,18 +22,16 @@ export class ClassNode extends UIBase {
 		el.className = "class-node";
 		el.dataset.classId = this.spec.id;
 		el.dataset.nodeId = this.node.id;
+		el.style.backgroundImage = `url(${this.node.iconUrl})`;
+		el.style.backgroundSize = "cover";
+		el.style.backgroundPosition = "center";
+		el.style.backgroundRepeat = "no-repeat";
 
 		// Cost label
 		const cost = document.createElement("span");
 		cost.className = "node-cost";
 		cost.textContent = `${this.node.cost}pt`;
 		el.appendChild(cost);
-
-		// Icon (you can customize this based on node type)
-		const icon = document.createElement("div");
-		icon.className = "node-icon";
-		//icon.textContent = this.getNodeIcon(this.node);
-		el.appendChild(icon);
 
 		// Level indicator
 		const level = document.createElement("span");

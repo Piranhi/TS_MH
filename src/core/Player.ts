@@ -98,13 +98,13 @@ export class Player extends GameBase implements Saveable {
 	// ================ ENERGY MANAGEMENT ================
 
 	public spendEnergy(amount: number): boolean {
-		if (!this.energy.spend(amount)) return false;
+		if (!this.energy.spendAllocation(amount)) return false;
 		this.emitEnergyChanged();
 		return true;
 	}
 
 	public refundEnergy(amount: number): boolean {
-		if (!this.energy.refund(amount)) return false;
+		if (!this.energy.refundAllocation(amount)) return false;
 		this.emitEnergyChanged();
 		return true;
 	}

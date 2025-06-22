@@ -1,11 +1,12 @@
 [
 	{
 		"id": "basic_melee",
+		"iconUrl": "/images/abilities/ability_basic_melee.png",
 		"displayName": "Slam",
-                "cooldown": 5,
-                "startReady": false,
-                "staminaCost": 10,
-                "effects": [
+		"cooldown": 5,
+		"startReady": false,
+		"staminaCost": 10,
+		"effects": [
 			{
 				"type": "physical",
 				"scale": 1.0,
@@ -15,11 +16,12 @@
 	},
 	{
 		"id": "basic_heal",
+		"iconUrl": "",
 		"displayName": "Heal",
-                "cooldown": 5,
-                "startReady": false,
-                "staminaCost": 15,
-                "effects": [
+		"cooldown": 5,
+		"startReady": false,
+		"staminaCost": 15,
+		"effects": [
 			{
 				"type": "heal",
 				"scale": 0.1,
@@ -29,11 +31,12 @@
 	},
 	{
 		"id": "root_snare",
+		"iconUrl": "",
 		"displayName": "Root Snare",
-                "cooldown": 4,
-                "startReady": false,
-                "staminaCost": 20,
-                "effects": [
+		"cooldown": 4,
+		"startReady": false,
+		"staminaCost": 20,
+		"effects": [
 			{
 				"type": "debuff",
 				"scale": 1.25,
@@ -45,11 +48,12 @@
 	},
 	{
 		"id": "warrior_charge",
+		"iconUrl": "",
 		"displayName": "Warrior Charge",
-                "cooldown": 8,
-                "startReady": false,
-                "staminaCost": 30,
-                "effects": [
+		"cooldown": 8,
+		"startReady": false,
+		"staminaCost": 30,
+		"effects": [
 			{
 				"type": "physical",
 				"scale": 0.8,
@@ -66,11 +70,12 @@
 	},
 	{
 		"id": "bulwark_defend",
+		"iconUrl": "",
 		"displayName": "Bulwark Defend",
-                "cooldown": 10,
-                "startReady": true,
-                "staminaCost": 25,
-                "effects": [
+		"cooldown": 10,
+		"startReady": true,
+		"staminaCost": 25,
+		"effects": [
 			{
 				"type": "buff",
 				"scale": 20,

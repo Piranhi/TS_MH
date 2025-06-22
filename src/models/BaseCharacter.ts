@@ -1,7 +1,6 @@
 import { debugManager, printLog } from "@/core/DebugManager";
 import { Ability } from "./Ability";
 import { BoundedNumber } from "./value-objects/Bounded";
-import { RegenPool } from "./value-objects/RegenPool";
 import { GAME_BALANCE } from "@/balance/GameBalance";
 import { RegenPool } from "./value-objects/RegenPool";
 import type { StatsProvider } from "@/models/Stats";
@@ -117,7 +116,7 @@ export abstract class BaseCharacter extends Destroyable {
 
 	spendStamina(amount: number): boolean {
 		if (this.stamina.current < amount) return false;
-		this.stamina.spend(amount);
+		this.stamina.spendAllocation(amount);
 		return true;
 	}
 

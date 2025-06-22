@@ -23,7 +23,7 @@ export class CharacterScreen extends BaseScreen {
 	private zoom = 1;
 	private minZoom = 0.5;
 	private maxZoom = 1.5;
-	private maxPanDistance = 500; // Maximum pan distance from origin
+	private maxPanDistance = 1500; // Maximum pan distance from origin
 	private zoomTimeout: number | null = null;
 
 	init() {

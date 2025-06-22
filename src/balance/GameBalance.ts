@@ -52,7 +52,7 @@ export const GAME_BALANCE = {
 		},
 
 		// Base scaling multiplier for area calculations
-		baseScalingMultiplier: 10, // from Area.ts growth() method
+		baseScalingMultiplier: 5, // from Area.ts growth() method
 	},
 
 	// === PLAYER CHARACTER SCALING ===
@@ -80,17 +80,17 @@ export const GAME_BALANCE = {
 			critDamage: 1,
 		},
 
-                healing: {
-                        passiveHealAmount: 1,
-                        recoveryStateHeal: 0.01,
-                },
+		healing: {
+			passiveHealAmount: 1,
+			recoveryStateHeal: 0.01,
+		},
 
-                stamina: {
-                        baseMax: 100,
-                        regenPerSecond: 5,
-                        enemyMax: 100,
-                },
-        },
+		stamina: {
+			baseMax: 100,
+			regenPerSecond: 5,
+			enemyMax: 100,
+		},
+	},
 
 	// === EQUIPMENT SCALING ===
 	equipment: {

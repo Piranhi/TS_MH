@@ -48,17 +48,18 @@ export class RegenPool {
 	/* ─────────────── API ─────────────── */
 
 	/** Try to spend N whole points. Returns true if it succeeded. */
-	spend(points: number): boolean {
+	spendAllocation(points: number): boolean {
 		if (!Number.isInteger(points) || points <= 0) return false;
 		if (this._current < points) return false;
 
 		this._current -= points;
-		this._allocated += points;
+		if (this.useAllocation) this._allocated += points;
+
 		return true;
 	}
 
 	/** Refund N whole points that were previously spent. */
-	refund(points: number): boolean {
+	refundAllocation(points: number): boolean {
 		if (!Number.isInteger(points) || points <= 0) return false;
 		if (this._allocated < points) return false;
 
