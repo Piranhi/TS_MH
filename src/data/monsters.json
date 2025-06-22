@@ -28,6 +28,12 @@
         "displayName": "Treant",
         "rarity": "common",
         "archetype": "boss",
+        "modifiers": [
+            {
+                "type": "weakness",
+                "value": "fire"
+            }
+        ],
         "abilities": ["basic_melee"],
         "imgUrl": "/images/monsters/monster-treant-basic.png"
     },
