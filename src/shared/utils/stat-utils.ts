@@ -1,5 +1,5 @@
 import { Stats, StatsModifier } from "@/models/Stats";
-import { ItemRarity } from "../types";
+import { ItemRarity, Resistances } from "../types";
 import { BaseCharacter } from "@/models/BaseCharacter";
 import { RARITY_MULTIPLIERS } from "@/balance/GameBalance";
 export function mergeStatModifiers(a: StatsModifier, b: StatsModifier): StatsModifier {
@@ -19,6 +19,15 @@ export function mergeStatModifiers(a: StatsModifier, b: StatsModifier): StatsMod
 		out[key] = left + right;
 	}
 	return out;
+}
+export function mergeResistances(a: Resistances, b: Partial<Resistances>): Resistances {
+	return {
+		fire: (a.fire ?? 0) + (b.fire ?? 0),
+		ice: (a.ice ?? 0) + (b.ice ?? 0),
+		poison: (a.poison ?? 0) + (b.poison ?? 0),
+		lightning: (a.lightning ?? 0) + (b.lightning ?? 0),
+		physical: (a.physical ?? 0) + (b.physical ?? 0),
+	};
 }
 
 /*Merge player stats*/

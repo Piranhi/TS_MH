@@ -1,4 +1,4 @@
-import { EquipmentItemSpec, EquipmentType, InventoryItemState, UpgradableItem } from "@/shared/types";
+import { EquipmentItemSpec, EquipmentType, InventoryItemState, Resistances, UpgradableItem } from "@/shared/types";
 import { InventoryItem } from "@/features/inventory/InventoryItem";
 
 export class Equipment extends InventoryItem<EquipmentItemSpec> implements EquipmentItemSpec, UpgradableItem {
@@ -10,6 +10,10 @@ export class Equipment extends InventoryItem<EquipmentItemSpec> implements Equip
 	// Returns: "head" | "back" | "chest" | "legs" | "feet" | "hands" | "finger1" | "finger2" | "neck" | "weapon" | "weapon2";
 	get equipType(): EquipmentType {
 		return this.spec.equipType;
+	}
+
+	public getResistances(): Partial<Resistances> {
+		return this.spec.resistances ?? {};
 	}
 
 	// ─────────────────────────────────────────────────────

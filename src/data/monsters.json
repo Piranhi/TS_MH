@@ -1,544 +1,544 @@
 [
-    {
-        "id": "slime_basic",
-        "displayName": "Green Slime",
-        "rarity": "common",
-        "archetype": "balanced",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-slime-basic.png"
-    },
-    {
-        "id": "wolf_basic",
-        "displayName": "Forest Wolf",
-        "rarity": "common",
-        "archetype": "bruiser",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-wolf-basic.png"
-    },
-    {
-        "id": "large_rat",
-        "displayName": "Large Rat",
-        "rarity": "common",
-        "archetype": "tank",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-large-rat.png"
-    },
-    {
-        "id": "treant",
-        "displayName": "Treant",
-        "rarity": "common",
-        "archetype": "boss",
-        "modifiers": [
-            {
-                "type": "weakness",
-                "value": "fire"
-            }
-        ],
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-treant-basic.png"
-    },
-    {
-        "id": "shadow_wolf",
-        "displayName": "Shadow Wolf",
-        "rarity": "common",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-shadow-wolf.png"
-    },
-    {
-        "id": "thorn_boar",
-        "displayName": "Thorn Boar",
-        "rarity": "common",
-        "archetype": "tank",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-thorn-boar.png"
-    },
-    {
-        "id": "rogue_bandit",
-        "displayName": "Rogue Bandit",
-        "rarity": "uncommon",
-        "archetype": "glass_cannon",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-rogue-bandit.png"
-    },
-    {
-        "id": "dusk_sprite",
-        "displayName": "Dusk Sprite",
-        "rarity": "uncommon",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-dusk-sprite.png"
-    },
-    {
-        "id": "stray_bear_cub",
-        "displayName": "Stray Bear Cub",
-        "rarity": "uncommon",
-        "archetype": "tank",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-stray-bear-cub.png"
-    },
-    {
-        "id": "moonlit_lynx",
-        "displayName": "Moonlit Lynx",
-        "rarity": "rare",
-        "archetype": "rare_elite",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-moonlit-lynx.png"
-    },
-    {
-        "id": "duskwolf_matriarch",
-        "displayName": "Duskwolf Matriarch",
-        "rarity": "common",
-        "archetype": "boss",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-duskwolf-matriarch.png"
-    },
-    {
-        "id": "swamp_leech",
-        "displayName": "Swamp Leech",
-        "rarity": "common",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-swamp-leech.png"
-    },
-    {
-        "id": "bog_lurker",
-        "displayName": "Bog Lurker",
-        "rarity": "common",
-        "archetype": "tank",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-bog-lurker.png"
-    },
-    {
-        "id": "foul_wisp",
-        "displayName": "Foul Wisp",
-        "rarity": "common",
-        "archetype": "glass_cannon",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-foul-wisp.png"
-    },
-    {
-        "id": "lurching_ghast",
-        "displayName": "Lurching Ghast",
-        "rarity": "common",
-        "archetype": "bruiser",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-lurching-ghast.png"
-    },
-    {
-        "id": "reed_serpent",
-        "displayName": "Reed Serpent",
-        "rarity": "uncommon",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-reed-serpent.png"
-    },
-    {
-        "id": "gleamglade_dryad",
-        "displayName": "Gleamglade Dryad",
-        "rarity": "rare",
-        "archetype": "rare_elite",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-gleamglade-dryad.png"
-    },
-    {
-        "id": "mireback_behemoth",
-        "displayName": "Mireback Behemoth",
-        "rarity": "common",
-        "archetype": "boss",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-mireback-behemoth.png"
-    },
-    {
-        "id": "magma_imp",
-        "displayName": "Magma Imp",
-        "rarity": "common",
-        "archetype": "glass_cannon",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-magma-imp.png"
-    },
-    {
-        "id": "scorched_miner_shade",
-        "displayName": "Scorched Miner Shade",
-        "rarity": "common",
-        "archetype": "balanced",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-scorched-miner-shade.png"
-    },
-    {
-        "id": "ash_crawler",
-        "displayName": "Ash Crawler",
-        "rarity": "common",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-ash-crawler.png"
-    },
-    {
-        "id": "ember_bat",
-        "displayName": "Ember Bat",
-        "rarity": "common",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-ember-bat.png"
-    },
-    {
-        "id": "molten_hound",
-        "displayName": "Molten Hound",
-        "rarity": "uncommon",
-        "archetype": "bruiser",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-molten-hound.png"
-    },
-    {
-        "id": "coalheart_phoenixlet",
-        "displayName": "Coalheart Phoenixlet",
-        "rarity": "rare",
-        "archetype": "rare_elite",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-coalheart-phoenixlet.png"
-    },
-    {
-        "id": "igneous_golem",
-        "displayName": "Igneous Golem",
-        "rarity": "common",
-        "archetype": "boss",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-igneous-golem.png"
-    },
-    {
-        "id": "restless_peasant",
-        "displayName": "Restless Peasant",
-        "rarity": "common",
-        "archetype": "balanced",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-restless-peasant.png"
-    },
-    {
-        "id": "barrow_wight",
-        "displayName": "Barrow Wight",
-        "rarity": "common",
-        "archetype": "bruiser",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-barrow-wight.png"
-    },
-    {
-        "id": "mist_raven",
-        "displayName": "Mist Raven",
-        "rarity": "common",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-mist-raven.png"
-    },
-    {
-        "id": "moor_hound",
-        "displayName": "Moor Hound",
-        "rarity": "common",
-        "archetype": "bruiser",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-moor-hound.png"
-    },
-    {
-        "id": "dirge_toad",
-        "displayName": "Dirge Toad",
-        "rarity": "uncommon",
-        "archetype": "tank",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-dirge-toad.png"
-    },
-    {
-        "id": "silver_stag_spirit",
-        "displayName": "Silver Stag Spirit",
-        "rarity": "rare",
-        "archetype": "rare_elite",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-silver-stag-spirit.png"
-    },
-    {
-        "id": "graven_lich",
-        "displayName": "Graven Lich",
-        "rarity": "common",
-        "archetype": "boss",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-graven-lich.png"
-    },
-    {
-        "id": "ice_wolf",
-        "displayName": "Ice Wolf",
-        "rarity": "common",
-        "archetype": "bruiser",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-ice-wolf.png"
-    },
-    {
-        "id": "frost_sprite",
-        "displayName": "Frost Sprite",
-        "rarity": "common",
-        "archetype": "glass_cannon",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-frost-sprite.png"
-    },
-    {
-        "id": "glacial_boar",
-        "displayName": "Glacial Boar",
-        "rarity": "common",
-        "archetype": "tank",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-glacial-boar.png"
-    },
-    {
-        "id": "snow_troll",
-        "displayName": "Snow Troll",
-        "rarity": "uncommon",
-        "archetype": "tank",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-snow-troll.png"
-    },
-    {
-        "id": "shard_viper",
-        "displayName": "Shard Viper",
-        "rarity": "uncommon",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-shard-viper.png"
-    },
-    {
-        "id": "aurora_fox",
-        "displayName": "Aurora Fox",
-        "rarity": "rare",
-        "archetype": "rare_elite",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-aurora-fox.png"
-    },
-    {
-        "id": "rimefang_yeti",
-        "displayName": "Rimefang Yeti",
-        "rarity": "common",
-        "archetype": "boss",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-rimefang-yeti.png"
-    },
-    {
-        "id": "storm_drakelet",
-        "displayName": "Storm Drakelet",
-        "rarity": "common",
-        "archetype": "balanced",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-storm-drakelet.png"
-    },
-    {
-        "id": "rock_raptor",
-        "displayName": "Rock Raptor",
-        "rarity": "common",
-        "archetype": "bruiser",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-rock-raptor.png"
-    },
-    {
-        "id": "thunder_ram",
-        "displayName": "Thunder Ram",
-        "rarity": "common",
-        "archetype": "tank",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-thunder-ram.png"
-    },
-    {
-        "id": "static_sprite",
-        "displayName": "Static Sprite",
-        "rarity": "common",
-        "archetype": "glass_cannon",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-static-sprite.png"
-    },
-    {
-        "id": "wind_bandit",
-        "displayName": "Wind Bandit",
-        "rarity": "uncommon",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-wind-bandit.png"
-    },
-    {
-        "id": "tempest_gryphonet",
-        "displayName": "Tempest Gryphonet",
-        "rarity": "rare",
-        "archetype": "rare_elite",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-tempest-gryphonet.png"
-    },
-    {
-        "id": "skyhammer_titan",
-        "displayName": "Skyhammer Titan",
-        "rarity": "common",
-        "archetype": "boss",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-skyhammer-titan.png"
-    },
-    {
-        "id": "bone_spider",
-        "displayName": "Bone Spider",
-        "rarity": "common",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-bone-spider.png"
-    },
-    {
-        "id": "crypt_bat",
-        "displayName": "Crypt Bat",
-        "rarity": "common",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-crypt-bat.png"
-    },
-    {
-        "id": "skeletal_hound",
-        "displayName": "Skeletal Hound",
-        "rarity": "common",
-        "archetype": "bruiser",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-skeletal-hound.png"
-    },
-    {
-        "id": "plague_rat",
-        "displayName": "Plague Rat",
-        "rarity": "common",
-        "archetype": "balanced",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-plague-rat.png"
-    },
-    {
-        "id": "dust_wraith",
-        "displayName": "Dust Wraith",
-        "rarity": "uncommon",
-        "archetype": "glass_cannon",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-dust-wraith.png"
-    },
-    {
-        "id": "obsidian_scarab",
-        "displayName": "Obsidian Scarab",
-        "rarity": "rare",
-        "archetype": "rare_elite",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-obsidian-scarab.png"
-    },
-    {
-        "id": "deathbone_colossus",
-        "displayName": "Deathbone Colossus",
-        "rarity": "common",
-        "archetype": "boss",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-deathbone-colossus.png"
-    },
-    {
-        "id": "cinder_ghoul",
-        "displayName": "Cinder Ghoul",
-        "rarity": "common",
-        "archetype": "bruiser",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-cinder-ghoul.png"
-    },
-    {
-        "id": "ash_viper",
-        "displayName": "Ash Viper",
-        "rarity": "common",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-ash-viper.png"
-    },
-    {
-        "id": "scorched_scavenger",
-        "displayName": "Scorched Scavenger",
-        "rarity": "common",
-        "archetype": "balanced",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-scorched-scavenger.png"
-    },
-    {
-        "id": "ember_scorpion",
-        "displayName": "Ember Scorpion",
-        "rarity": "common",
-        "archetype": "tank",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-ember-scorpion.png"
-    },
-    {
-        "id": "smog_drake",
-        "displayName": "Smog Drake",
-        "rarity": "uncommon",
-        "archetype": "bruiser",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-smog-drake.png"
-    },
-    {
-        "id": "eclipse_salamander",
-        "displayName": "Eclipse Salamander",
-        "rarity": "rare",
-        "archetype": "rare_elite",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-eclipse-salamander.png"
-    },
-    {
-        "id": "blightfire_dragon",
-        "displayName": "Blightfire Dragon",
-        "rarity": "common",
-        "archetype": "boss",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-blightfire-dragon.png"
-    },
-    {
-        "id": "rune_sentinel",
-        "displayName": "Rune Sentinel",
-        "rarity": "common",
-        "archetype": "tank",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-rune-sentinel.png"
-    },
-    {
-        "id": "arcane_wisp",
-        "displayName": "Arcane Wisp",
-        "rarity": "common",
-        "archetype": "glass_cannon",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-arcane-wisp.png"
-    },
-    {
-        "id": "sky_shade",
-        "displayName": "Sky Shade",
-        "rarity": "common",
-        "archetype": "dodger",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-sky-shade.png"
-    },
-    {
-        "id": "broken_golem",
-        "displayName": "Broken Golem",
-        "rarity": "common",
-        "archetype": "tank",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-broken-golem.png"
-    },
-    {
-        "id": "pale_harrier",
-        "displayName": "Pale Harrier",
-        "rarity": "uncommon",
-        "archetype": "bruiser",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-pale-harrier.png"
-    },
-    {
-        "id": "celestial_moth",
-        "displayName": "Celestial Moth",
-        "rarity": "rare",
-        "archetype": "rare_elite",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-celestial-moth.png"
-    },
-    {
-        "id": "astral_warder",
-        "displayName": "Astral Warder",
-        "rarity": "common",
-        "archetype": "boss",
-        "abilities": ["basic_melee"],
-        "imgUrl": "/images/monsters/monster-astral-warder.png"
-    }
+	{
+		"id": "slime_basic",
+		"displayName": "Green Slime",
+		"rarity": "common",
+		"archetype": "balanced",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-slime-basic.png"
+	},
+	{
+		"id": "wolf_basic",
+		"displayName": "Forest Wolf",
+		"rarity": "common",
+		"archetype": "bruiser",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-wolf-basic.png"
+	},
+	{
+		"id": "large_rat",
+		"displayName": "Large Rat",
+		"rarity": "common",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-large-rat.png"
+	},
+	{
+		"id": "treant",
+		"displayName": "Treant",
+		"rarity": "common",
+		"archetype": "boss",
+		"affinities": [
+			{
+				"type": "weakness",
+				"element": "fire"
+			}
+		],
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-treant-basic.png"
+	},
+	{
+		"id": "shadow_wolf",
+		"displayName": "Shadow Wolf",
+		"rarity": "common",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-shadow-wolf.png"
+	},
+	{
+		"id": "thorn_boar",
+		"displayName": "Thorn Boar",
+		"rarity": "common",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-thorn-boar.png"
+	},
+	{
+		"id": "rogue_bandit",
+		"displayName": "Rogue Bandit",
+		"rarity": "uncommon",
+		"archetype": "glass_cannon",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-rogue-bandit.png"
+	},
+	{
+		"id": "dusk_sprite",
+		"displayName": "Dusk Sprite",
+		"rarity": "uncommon",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-dusk-sprite.png"
+	},
+	{
+		"id": "stray_bear_cub",
+		"displayName": "Stray Bear Cub",
+		"rarity": "uncommon",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-stray-bear-cub.png"
+	},
+	{
+		"id": "moonlit_lynx",
+		"displayName": "Moonlit Lynx",
+		"rarity": "rare",
+		"archetype": "rare_elite",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-moonlit-lynx.png"
+	},
+	{
+		"id": "duskwolf_matriarch",
+		"displayName": "Duskwolf Matriarch",
+		"rarity": "common",
+		"archetype": "boss",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-duskwolf-matriarch.png"
+	},
+	{
+		"id": "swamp_leech",
+		"displayName": "Swamp Leech",
+		"rarity": "common",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-swamp-leech.png"
+	},
+	{
+		"id": "bog_lurker",
+		"displayName": "Bog Lurker",
+		"rarity": "common",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-bog-lurker.png"
+	},
+	{
+		"id": "foul_wisp",
+		"displayName": "Foul Wisp",
+		"rarity": "common",
+		"archetype": "glass_cannon",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-foul-wisp.png"
+	},
+	{
+		"id": "lurching_ghast",
+		"displayName": "Lurching Ghast",
+		"rarity": "common",
+		"archetype": "bruiser",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-lurching-ghast.png"
+	},
+	{
+		"id": "reed_serpent",
+		"displayName": "Reed Serpent",
+		"rarity": "uncommon",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-reed-serpent.png"
+	},
+	{
+		"id": "gleamglade_dryad",
+		"displayName": "Gleamglade Dryad",
+		"rarity": "rare",
+		"archetype": "rare_elite",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-gleamglade-dryad.png"
+	},
+	{
+		"id": "mireback_behemoth",
+		"displayName": "Mireback Behemoth",
+		"rarity": "common",
+		"archetype": "boss",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-mireback-behemoth.png"
+	},
+	{
+		"id": "magma_imp",
+		"displayName": "Magma Imp",
+		"rarity": "common",
+		"archetype": "glass_cannon",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-magma-imp.png"
+	},
+	{
+		"id": "scorched_miner_shade",
+		"displayName": "Scorched Miner Shade",
+		"rarity": "common",
+		"archetype": "balanced",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-scorched-miner-shade.png"
+	},
+	{
+		"id": "ash_crawler",
+		"displayName": "Ash Crawler",
+		"rarity": "common",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-ash-crawler.png"
+	},
+	{
+		"id": "ember_bat",
+		"displayName": "Ember Bat",
+		"rarity": "common",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-ember-bat.png"
+	},
+	{
+		"id": "molten_hound",
+		"displayName": "Molten Hound",
+		"rarity": "uncommon",
+		"archetype": "bruiser",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-molten-hound.png"
+	},
+	{
+		"id": "coalheart_phoenixlet",
+		"displayName": "Coalheart Phoenixlet",
+		"rarity": "rare",
+		"archetype": "rare_elite",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-coalheart-phoenixlet.png"
+	},
+	{
+		"id": "igneous_golem",
+		"displayName": "Igneous Golem",
+		"rarity": "common",
+		"archetype": "boss",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-igneous-golem.png"
+	},
+	{
+		"id": "restless_peasant",
+		"displayName": "Restless Peasant",
+		"rarity": "common",
+		"archetype": "balanced",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-restless-peasant.png"
+	},
+	{
+		"id": "barrow_wight",
+		"displayName": "Barrow Wight",
+		"rarity": "common",
+		"archetype": "bruiser",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-barrow-wight.png"
+	},
+	{
+		"id": "mist_raven",
+		"displayName": "Mist Raven",
+		"rarity": "common",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-mist-raven.png"
+	},
+	{
+		"id": "moor_hound",
+		"displayName": "Moor Hound",
+		"rarity": "common",
+		"archetype": "bruiser",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-moor-hound.png"
+	},
+	{
+		"id": "dirge_toad",
+		"displayName": "Dirge Toad",
+		"rarity": "uncommon",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-dirge-toad.png"
+	},
+	{
+		"id": "silver_stag_spirit",
+		"displayName": "Silver Stag Spirit",
+		"rarity": "rare",
+		"archetype": "rare_elite",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-silver-stag-spirit.png"
+	},
+	{
+		"id": "graven_lich",
+		"displayName": "Graven Lich",
+		"rarity": "common",
+		"archetype": "boss",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-graven-lich.png"
+	},
+	{
+		"id": "ice_wolf",
+		"displayName": "Ice Wolf",
+		"rarity": "common",
+		"archetype": "bruiser",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-ice-wolf.png"
+	},
+	{
+		"id": "frost_sprite",
+		"displayName": "Frost Sprite",
+		"rarity": "common",
+		"archetype": "glass_cannon",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-frost-sprite.png"
+	},
+	{
+		"id": "glacial_boar",
+		"displayName": "Glacial Boar",
+		"rarity": "common",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-glacial-boar.png"
+	},
+	{
+		"id": "snow_troll",
+		"displayName": "Snow Troll",
+		"rarity": "uncommon",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-snow-troll.png"
+	},
+	{
+		"id": "shard_viper",
+		"displayName": "Shard Viper",
+		"rarity": "uncommon",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-shard-viper.png"
+	},
+	{
+		"id": "aurora_fox",
+		"displayName": "Aurora Fox",
+		"rarity": "rare",
+		"archetype": "rare_elite",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-aurora-fox.png"
+	},
+	{
+		"id": "rimefang_yeti",
+		"displayName": "Rimefang Yeti",
+		"rarity": "common",
+		"archetype": "boss",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-rimefang-yeti.png"
+	},
+	{
+		"id": "storm_drakelet",
+		"displayName": "Storm Drakelet",
+		"rarity": "common",
+		"archetype": "balanced",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-storm-drakelet.png"
+	},
+	{
+		"id": "rock_raptor",
+		"displayName": "Rock Raptor",
+		"rarity": "common",
+		"archetype": "bruiser",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-rock-raptor.png"
+	},
+	{
+		"id": "thunder_ram",
+		"displayName": "Thunder Ram",
+		"rarity": "common",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-thunder-ram.png"
+	},
+	{
+		"id": "static_sprite",
+		"displayName": "Static Sprite",
+		"rarity": "common",
+		"archetype": "glass_cannon",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-static-sprite.png"
+	},
+	{
+		"id": "wind_bandit",
+		"displayName": "Wind Bandit",
+		"rarity": "uncommon",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-wind-bandit.png"
+	},
+	{
+		"id": "tempest_gryphonet",
+		"displayName": "Tempest Gryphonet",
+		"rarity": "rare",
+		"archetype": "rare_elite",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-tempest-gryphonet.png"
+	},
+	{
+		"id": "skyhammer_titan",
+		"displayName": "Skyhammer Titan",
+		"rarity": "common",
+		"archetype": "boss",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-skyhammer-titan.png"
+	},
+	{
+		"id": "bone_spider",
+		"displayName": "Bone Spider",
+		"rarity": "common",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-bone-spider.png"
+	},
+	{
+		"id": "crypt_bat",
+		"displayName": "Crypt Bat",
+		"rarity": "common",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-crypt-bat.png"
+	},
+	{
+		"id": "skeletal_hound",
+		"displayName": "Skeletal Hound",
+		"rarity": "common",
+		"archetype": "bruiser",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-skeletal-hound.png"
+	},
+	{
+		"id": "plague_rat",
+		"displayName": "Plague Rat",
+		"rarity": "common",
+		"archetype": "balanced",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-plague-rat.png"
+	},
+	{
+		"id": "dust_wraith",
+		"displayName": "Dust Wraith",
+		"rarity": "uncommon",
+		"archetype": "glass_cannon",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-dust-wraith.png"
+	},
+	{
+		"id": "obsidian_scarab",
+		"displayName": "Obsidian Scarab",
+		"rarity": "rare",
+		"archetype": "rare_elite",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-obsidian-scarab.png"
+	},
+	{
+		"id": "deathbone_colossus",
+		"displayName": "Deathbone Colossus",
+		"rarity": "common",
+		"archetype": "boss",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-deathbone-colossus.png"
+	},
+	{
+		"id": "cinder_ghoul",
+		"displayName": "Cinder Ghoul",
+		"rarity": "common",
+		"archetype": "bruiser",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-cinder-ghoul.png"
+	},
+	{
+		"id": "ash_viper",
+		"displayName": "Ash Viper",
+		"rarity": "common",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-ash-viper.png"
+	},
+	{
+		"id": "scorched_scavenger",
+		"displayName": "Scorched Scavenger",
+		"rarity": "common",
+		"archetype": "balanced",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-scorched-scavenger.png"
+	},
+	{
+		"id": "ember_scorpion",
+		"displayName": "Ember Scorpion",
+		"rarity": "common",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-ember-scorpion.png"
+	},
+	{
+		"id": "smog_drake",
+		"displayName": "Smog Drake",
+		"rarity": "uncommon",
+		"archetype": "bruiser",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-smog-drake.png"
+	},
+	{
+		"id": "eclipse_salamander",
+		"displayName": "Eclipse Salamander",
+		"rarity": "rare",
+		"archetype": "rare_elite",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-eclipse-salamander.png"
+	},
+	{
+		"id": "blightfire_dragon",
+		"displayName": "Blightfire Dragon",
+		"rarity": "common",
+		"archetype": "boss",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-blightfire-dragon.png"
+	},
+	{
+		"id": "rune_sentinel",
+		"displayName": "Rune Sentinel",
+		"rarity": "common",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-rune-sentinel.png"
+	},
+	{
+		"id": "arcane_wisp",
+		"displayName": "Arcane Wisp",
+		"rarity": "common",
+		"archetype": "glass_cannon",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-arcane-wisp.png"
+	},
+	{
+		"id": "sky_shade",
+		"displayName": "Sky Shade",
+		"rarity": "common",
+		"archetype": "dodger",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-sky-shade.png"
+	},
+	{
+		"id": "broken_golem",
+		"displayName": "Broken Golem",
+		"rarity": "common",
+		"archetype": "tank",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-broken-golem.png"
+	},
+	{
+		"id": "pale_harrier",
+		"displayName": "Pale Harrier",
+		"rarity": "uncommon",
+		"archetype": "bruiser",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-pale-harrier.png"
+	},
+	{
+		"id": "celestial_moth",
+		"displayName": "Celestial Moth",
+		"rarity": "rare",
+		"archetype": "rare_elite",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-celestial-moth.png"
+	},
+	{
+		"id": "astral_warder",
+		"displayName": "Astral Warder",
+		"rarity": "common",
+		"archetype": "boss",
+		"abilities": ["basic_melee"],
+		"imgUrl": "/images/monsters/monster-astral-warder.png"
+	}
 ]

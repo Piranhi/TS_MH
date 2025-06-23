@@ -7,6 +7,8 @@
 		"equipType": "chest",
 		"statMod": { "defence": 1 },
 		"iconUrl": "/images/equipment/equipment-t1-chest-wornpaddedchest.png",
+		"resistances": { "fire": 1, "ice": 1, "poison": 1, "lightning": 1, "physical": 1 },
+
 		"tags": ["t1"]
 	},
 	{
@@ -17,6 +19,7 @@
 		"equipType": "head",
 		"statMod": { "defence": 1 },
 		"iconUrl": "",
+		"resistances": { "fire": 1, "ice": 1, "poison": 1, "lightning": 1, "physical": 1 },
 		"tags": ["t1"]
 	},
 	{
@@ -37,6 +40,8 @@
 		"equipType": "legs",
 		"statMod": { "defence": 1 },
 		"iconUrl": "/images/equipment/equipment-t1-legs-rippedtrousers.png",
+		"resistances": { "fire": 1, "ice": 1, "poison": 1, "lightning": 1, "physical": 1 },
+
 		"tags": ["t1"]
 	}
 ]

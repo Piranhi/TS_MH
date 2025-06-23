@@ -38,6 +38,12 @@ export const GAME_BALANCE = {
 
 	// === MONSTER SCALING ===
 	monsters: {
+		affinityAmounts: {
+			immunity: 100,
+			resistance: 50,
+			weakness: -25,
+			armored: 30,
+		},
 		hpGrowthPerTier: 3.0, // Was 1.75
 		attackGrowthPerTier: 2.5, // Was 1.45
 		defenseGrowthPerTier: 2.2, // Was 1.4
@@ -81,7 +87,7 @@ export const GAME_BALANCE = {
 		},
 
 		healing: {
-			passiveHealAmount: 1,
+			passiveHealPercent: 1,
 			recoveryStateHeal: 0.01,
 		},
 

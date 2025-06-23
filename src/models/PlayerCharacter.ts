@@ -1,5 +1,4 @@
 import { BaseCharacter, CharacterSnapshot } from "./BaseCharacter";
-import { StatsEngine } from "@/core/StatsEngine";
 import { bus } from "@/core/EventBus";
 import { PrestigeState } from "@/shared/stats-types";
 import { bindEvent } from "@/shared/utils/busUtils";
@@ -8,105 +7,97 @@ import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 import { Trait } from "./Trait";
 import { Ability, AbilitySaveState } from "./Ability";
 import { RegenPool } from "./value-objects/RegenPool";
-import { StatusModifier } from "@/shared/types";
+import { StatsEngine } from "@/core/StatsEngine";
 
 interface playerCharSaveState {
-    charLevel: number;
-    abilityStates: AbilitySaveState[];
-    stamina: RegenPool;
-    statusModifiers: StatusModifier[];
+	charLevel: number;
+	abilityStates: AbilitySaveState[];
+	stamina: RegenPool;
 }
 
 export class PlayerCharacter extends BaseCharacter implements Saveable {
-    readonly statsEngine: StatsEngine;
-    private traits: Trait[];
+	private traits: Trait[];
+	private statsEngine: StatsEngine;
+	private _currentXp = 0;
+	private _nextXpThreshold = 10;
 
-    private passiveHealTick = 0;
-    //private classAbilityIds: string[] = [];
+	constructor(private prestigeStats: PrestigeState, traits: Trait[]) {
+		const statsEngine = new StatsEngine();
+		super("You", { get: (k) => statsEngine.get(k) });
+		this.statsEngine = statsEngine;
+		this.setupStatsEngine();
+		this.traits = traits;
+		bindEvent(this.eventBindings, "player:statsChanged", () => this.updateStats());
+		bindEvent(this.eventBindings, "Game:GameTick", () => this.passiveHeal());
+	}
 
-    private _currentXp = 0;
-    private _nextXpThreshold = 10;
+	private setupStatsEngine() {
+		this.statsEngine.setLayer("equipment", () => ({}));
+		this.statsEngine.setLayer("trainedStats", () => ({}));
+		this.statsEngine.setLayer("classes", () => ({}));
 
-    constructor(prestigeStats: PrestigeState, traits: Trait[]) {
-        const engine = new StatsEngine();
-        super("You", { get: (k) => engine.get(k) });
-        this.traits = traits;
-        bindEvent(this.eventBindings, "player:statsChanged", () => this.updateStats());
-        this.statsEngine = engine;
+		/* pre‑register empty layers */
+		this.calcLevelBonuses(); // Add stat bonuses for level
+		this.statsEngine.setLayer("prestige", () => ({
+			attack: this.prestigeStats.permanentAttack,
+			defence: this.prestigeStats.permanentDefence,
+			hp: this.prestigeStats.permanentHP,
+		}));
+	}
 
-        /* pre‑register empty layers */
-        this.calcLevelBonuses(); // Add stat bonuses for level
-        this.statsEngine.setLayer("prestige", () => ({
-            attack: prestigeStats.permanentAttack,
-            defence: prestigeStats.permanentDefence,
-            hp: prestigeStats.permanentHP,
-        }));
-        this.statsEngine.setLayer("equipment", () => ({}));
-        this.statsEngine.setLayer("trainedStats", () => ({}));
-        this.statsEngine.setLayer("classes", () => ({}));
-        this.statsEngine.setLayer("buffs", () => ({}));
+	public init() {
+		//this.defaultAbilityIds.push("basic_heal");
+		this.addNewAbility("basic_melee");
+		bus.emit("player:statsChanged");
+	}
 
-        bindEvent(this.eventBindings, "Game:GameTick", () => this.passiveHeal());
+	private passiveHeal() {
+		this.hp.increase(GAME_BALANCE.player.healing.passiveHealPercent);
+	}
 
-        //bindEvent(this.eventBindings, "hunt:XPearned", (amt) => this.gainXp(amt));
-    }
+	healInRecovery() {
+		this.hp.increase(this.maxHp * GAME_BALANCE.player.healing.recoveryStateHeal); // Always heal at least 1
+	}
 
-    public init() {
-        //this.defaultAbilityIds.push("basic_heal");
-        //this.recalculateAbilities();
-        this.addNewAbility("basic_melee");
-        bus.emit("player:statsChanged");
-    }
+	private updateStats() {
+		this.hp.max = this.stats.get("hp");
+	}
 
-    private passiveHeal() {
-        this.passiveHealTick++;
+	public gainXp(amt: number) {
+		this._currentXp += amt;
+		let levelledUp = false;
 
-        this.hp.increase(GAME_BALANCE.player.healing.passiveHealAmount);
-    }
+		while (this._currentXp >= this._nextXpThreshold) {
+			this.levelUp();
+			levelledUp = true;
 
-    healInRecovery() {
-        this.hp.increase(this.maxHp * GAME_BALANCE.player.healing.recoveryStateHeal); // Always heal at least 1
-    }
+			this._currentXp -= this._nextXpThreshold;
 
-    private updateStats() {
-        this.hp.max = this.stats.get("hp");
-    }
+			const newThreshold = Math.floor(this._nextXpThreshold * GAME_BALANCE.player.xpThresholdMultiplier);
+			this._nextXpThreshold = newThreshold;
+		}
 
-    public gainXp(amt: number) {
-        this._currentXp += amt;
-        let levelledUp = false;
+		if (levelledUp) {
+			this.calcLevelBonuses();
+			bus.emit("char:levelUp", this._charLevel);
+		}
+		bus.emit("char:gainedXp", amt);
+	}
 
-        while (this._currentXp >= this._nextXpThreshold) {
-            this.levelUp();
-            levelledUp = true;
+	public levelUp() {
+		this._charLevel++;
+	}
 
-            this._currentXp -= this._nextXpThreshold;
+	private calcLevelBonuses() {
+		// Use centralized calculator
+		const bonuses = BalanceCalculators.getAllPlayerLevelBonuses(this._charLevel);
+		this.statsEngine.setLayer("level", () => bonuses);
+	}
 
-            const newThreshold = Math.floor(this._nextXpThreshold * GAME_BALANCE.player.xpThresholdMultiplier);
-            this._nextXpThreshold = newThreshold;
-        }
+	// ----------------------------- ABILITIES --------------------------------
 
-        if (levelledUp) {
-            this.calcLevelBonuses();
-            bus.emit("char:levelUp", this._charLevel);
-        }
-        bus.emit("char:gainedXp", amt);
-    }
-
-    public levelUp() {
-        this._charLevel++;
-    }
-
-    private calcLevelBonuses() {
-        // Use centralized calculator
-        const bonuses = BalanceCalculators.getAllPlayerLevelBonuses(this._charLevel);
-        this.statsEngine.setLayer("level", () => bonuses);
-    }
-
-    // ----------------------------- ABILITIES --------------------------------
-
-    /** Recalculate full ability set and update map */
-    /* 	private recalculateAbilities() {
+	/** Recalculate full ability set and update map */
+	/* 	private recalculateAbilities() {
 		// Merge all sources (dedupe with Set)
 		const mergedIds = Array.from(
 			new Set([
@@ -118,59 +109,61 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		this.updateAbilities(mergedIds);
 	} */
 
-    get level(): number {
-        return this._charLevel;
-    }
+	get level(): number {
+		return this._charLevel;
+	}
 
-    get currentXp(): number {
-        return this._currentXp;
-    }
+	get currentXp(): number {
+		return this._currentXp;
+	}
 
-    get nextXpThreshold(): number {
-        return this._nextXpThreshold;
-    }
+	get nextXpThreshold(): number {
+		return this._nextXpThreshold;
+	}
 
-    override getAvatarUrl(): string {
-        return "/images/player/player-avatar-01.png";
-    }
+	override getAvatarUrl(): string {
+		return "/images/player/player-avatar-01.png";
+	}
 
-    override snapshot(): CharacterSnapshot {
-        return {
-            name: this.name,
-            realHP: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },
-            stamina: { current: this.stamina.current.toFixed(0), max: this.stamina.max.toFixed(0), percent: (this.stamina.current / this.stamina.max).toFixed(2) },
-            attack: this.attack.toString(),
-            defence: this.defence.toString(),
-            abilities: this.getAbilities(),
-            imgUrl: this.getAvatarUrl(),
-            rarity: "Todo",
-            level: { lvl: this._charLevel, current: this._currentXp, next: this._nextXpThreshold },
-        };
-    }
+	override snapshot(): CharacterSnapshot {
+		return {
+			name: this.name,
+			realHP: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },
+			stamina: {
+				current: this.stamina.current.toFixed(0),
+				max: this.stamina.max.toFixed(0),
+				percent: (this.stamina.current / this.stamina.max).toFixed(2),
+			},
+			attack: this.attack.toString(),
+			defence: this.defence.toString(),
+			abilities: this.getAbilities(),
+			imgUrl: this.getAvatarUrl(),
+			rarity: "Todo",
+			level: { lvl: this._charLevel, current: this._currentXp, next: this._nextXpThreshold },
+		};
+	}
 
-    save(): playerCharSaveState {
-        return {
-            charLevel: this._charLevel,
-            abilityStates: this.getAbilities().map((a) => a.save()), // Call save() on each ability
-            stamina: this.stamina,
-            statusModifiers: this.statusModifiers,
-        };
-    }
+	save(): playerCharSaveState {
+		return {
+			charLevel: this._charLevel,
+			abilityStates: this.getAbilities().map((a) => a.save()), // Call save() on each ability
+			stamina: this.stamina,
+		};
+	}
 
-    load(state: playerCharSaveState): void {
-        this._charLevel = state.charLevel;
-        this.abilityMap.clear();
-        this.stamina.setMax(state.stamina.max);
-        this.stamina.setCurrent(state.stamina.current);
-        this.statusModifiers = state.statusModifiers;
+	load(state: playerCharSaveState): void {
+		this._charLevel = state.charLevel;
+		this.abilityMap.clear();
+		this.stamina.setMax(state.stamina.max);
+		this.stamina.setCurrent(state.stamina.current);
 
-        for (const abilityState of state.abilityStates) {
-            const ability = Ability.createFromSaveState(abilityState);
-            this.abilityMap.set(ability.id, ability);
-        }
-    }
+		for (const abilityState of state.abilityStates) {
+			const ability = Ability.createFromSaveState(abilityState);
+			this.abilityMap.set(ability.id, ability);
+		}
+	}
 
-    public getTraits(): Trait[] {
-        return this.traits;
-    }
+	public getTraits(): Trait[] {
+		return this.traits;
+	}
 }

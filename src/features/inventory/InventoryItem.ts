@@ -1,4 +1,4 @@
-import { InventoryItemState, EquipmentItemSpec, ClassCardItemSpec } from "@/shared/types";
+import { InventoryItemState, EquipmentItemSpec, ClassCardItemSpec, Resistances } from "@/shared/types";
 import { scaleStatsModifier } from "@/shared/utils/stat-utils";
 import { SpecRegistryBase } from "@/models/SpecRegistryBase";
 import { StatsModifier } from "@/models/Stats";

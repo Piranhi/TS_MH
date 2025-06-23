@@ -1,6 +1,7 @@
 import { StatsModifier, CoreStats, Stats, defaultPlayerStats } from "@/models/Stats";
 import { bus } from "./EventBus";
 import { mergeStats } from "@/shared/utils/stat-utils";
+import { BaseCharacter } from "@/models/BaseCharacter";
 
 export type LayerFn = () => StatsModifier;
 
@@ -28,9 +29,9 @@ export class StatsEngine {
 		this.recalculate();
 	}
 
-        get<K extends keyof Stats>(key: K): Stats[K] {
-                return this.current[key] ?? 0;
-        }
+	get<K extends keyof Stats>(key: K): Stats[K] {
+		return this.current[key] ?? 0;
+	}
 
 	getAll(): Stats {
 		return { ...this.current };
