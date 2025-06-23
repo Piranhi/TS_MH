@@ -129,6 +129,13 @@ export interface StatusModifier {
     element?: ElementType; // Optional - armored might not need an element
 }
 
+export interface TemporaryModifier extends StatusModifier {
+    id: string; // Unique identifier for tracking
+    duration: number; // Time remaining in seconds
+    tickDamage?: number; // For DoT effects
+    tickHeal?: number; // For HoT effects
+}
+
 // Modifiers for abilities
 export interface AbilityModifier {
     stat: AbilityModifierStats;
