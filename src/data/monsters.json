@@ -32,6 +32,22 @@
 			{
 				"type": "weakness",
 				"element": "fire"
+			},
+			{
+				"type": "weakness",
+				"element": "ice"
+			},
+			{
+				"type": "weakness",
+				"element": "lightning"
+			},
+			{
+				"type": "weakness",
+				"element": "physical"
+			},
+			{
+				"type": "weakness",
+				"element": "poison"
 			}
 		],
 		"abilities": ["basic_melee"],
