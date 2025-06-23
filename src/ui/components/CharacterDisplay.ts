@@ -1,4 +1,5 @@
 import { BaseCharacter, PowerLevel } from "@/models/BaseCharacter";
+import { EnemyCharacter } from "@/models/EnemyCharacter";
 import { UIBase } from "./UIBase";
 import { Tooltip } from "./Tooltip";
 
@@ -21,6 +22,8 @@ export class CharacterDisplay extends UIBase {
     private avatarImg!: HTMLImageElement;
     private abilitiesListEl!: HTMLUListElement;
     private abilitiesListMap = new Map<string, HTMLElement>();
+    private affinityRowEl?: HTMLElement;
+    private statusRowEl!: HTMLElement;
 
     // Track active transitions for cleanup
     private activeTransitions = new Map<string, TransitionCleanup>();
@@ -58,6 +61,9 @@ export class CharacterDisplay extends UIBase {
         this.hpLabel = this.$(".hp-label");
         this.staminaBar = this.$(".stamina-bar");
         this.staminaLabel = this.$(".stamina-label");
+
+        this.affinityRowEl = this.element.querySelector<HTMLElement>(".affinity-row") || undefined;
+        this.statusRowEl = this.$(".status-effects-row");
 
         this.avatarImg = this.$(".char-card__portrait") as HTMLImageElement;
         this.element.classList.add(this.isPlayer ? "player" : "enemy");
@@ -136,6 +142,10 @@ export class CharacterDisplay extends UIBase {
             this.abilitiesListMap.set(ability.id, li);
         });
 
+        if (!this.isPlayer) {
+            this.renderAffinities();
+        }
+
         this.render();
     }
 
@@ -171,6 +181,7 @@ export class CharacterDisplay extends UIBase {
             this.updateAbilityProgress(ability.id, bar, readinessRatio);
         });
 
+        this.renderStatusEffects();
         this.createStatsGrid();
     }
 
@@ -254,6 +265,55 @@ export class CharacterDisplay extends UIBase {
         }
     }
 
+    private renderAffinities() {
+        if (!this.affinityRowEl) return;
+        this.affinityRowEl.innerHTML = "";
+        if (this.character instanceof EnemyCharacter) {
+            for (const affinity of this.character.spec.affinities ?? []) {
+                const span = document.createElement("span");
+                span.className = "affinity-icon";
+                span.textContent = this.getElementSymbol(affinity.element);
+                span.title = `${affinity.type}${affinity.element ? ` ${affinity.element}` : ""}`;
+                this.affinityRowEl.appendChild(span);
+            }
+        }
+    }
+
+    private renderStatusEffects() {
+        if (!this.statusRowEl) return;
+        this.statusRowEl.innerHTML = "";
+        const effects = this.character.statusEffects.getEffects();
+        for (const effect of effects) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "status-icon";
+            const icon = document.createElement("span");
+            icon.className = "icon";
+            icon.textContent = "🌀";
+            const num = document.createElement("span");
+            num.textContent = effect.remaining.toFixed(0);
+            wrapper.appendChild(icon);
+            wrapper.appendChild(num);
+            this.statusRowEl.appendChild(wrapper);
+        }
+    }
+
+    private getElementSymbol(element?: string): string {
+        switch (element) {
+            case "fire":
+                return "🔥";
+            case "ice":
+                return "❄️";
+            case "poison":
+                return "☠️";
+            case "lightning":
+                return "⚡";
+            case "physical":
+                return "🛡️";
+            default:
+                return "?";
+        }
+    }
+
     private setHolderStatus(newStatus: HolderStatus) {
         if (newStatus === "active") {
             this.element.classList.remove("inactive");
@@ -277,6 +337,8 @@ export class CharacterDisplay extends UIBase {
         this.staminaLabel = undefined!;
         this.avatarImg = undefined!;
         this.abilitiesListEl = undefined!;
+        this.affinityRowEl = undefined;
+        this.statusRowEl = undefined!;
         this.element = undefined!;
         this.abilitiesListMap.clear();
     }

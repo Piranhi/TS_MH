@@ -7,9 +7,13 @@ export class StatusEffectManager {
 		this.effects.push(effect);
 	}
 
-	clear(): void {
-		this.effects = [];
-	}
+        clear(): void {
+                this.effects = [];
+        }
+
+        getEffects(): readonly StatusEffect[] {
+                return this.effects;
+        }
 
 	// Handle tick
 	// Remove finished effects

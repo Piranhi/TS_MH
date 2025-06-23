@@ -1,6 +1,6 @@
 export class StatusEffect {
-	public isFinished = false;
-	constructor(private duration: number) {}
+        public isFinished = false;
+        constructor(private duration: number) {}
 
 	handleTick(dt: number) {
 		this.duration -= dt;
@@ -11,7 +11,11 @@ export class StatusEffect {
 		return true;
 	}
 
-	apply() {}
+        apply() {}
+
+        get remaining(): number {
+                return this.duration;
+        }
 
 	private onFinished() {
 		this.isFinished = true;
