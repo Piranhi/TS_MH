@@ -1,6 +1,6 @@
 import { printLog } from "@/core/DebugManager";
 import { Identifiable } from "@/models/SpecRegistryBase";
-import { AbilityModifierStats, Stats, StatsModifier } from "@/models/Stats";
+import { AbilityModifierStats, StatKey, Stats, StatsModifier } from "@/models/Stats";
 import { MilestoneTag } from "./Milestones";
 import { GameEvents } from "@/core/EventBus";
 import { BaseCharacter } from "@/models/BaseCharacter";
@@ -118,11 +118,11 @@ export const ENEMY_ARCHETYPES = {
 
 // Create a union type from the archetype keys
 export type EnemyArchetype = keyof typeof ENEMY_ARCHETYPES;
-export type EffectType = "physical" | "magical" | "heal" | "buff" | "debuff";
+export type EffectType = "attack" | "heal" | "buff" | "debuff";
 
 // Define what types of modifiers exist
 export type MonsterAffinityType = "resistance" | "weakness" | "immunity" | "armored";
-export type ElementType = "fire" | "ice" | "poison" | "lightning" | "physical";
+export type ElementType = "fire" | "ice" | "poison" | "lightning" | "physical" | "light" | "dark" | "earth";
 export type Resistances = Record<ElementType, number>;
 
 // Define the modifier structure
@@ -140,23 +140,26 @@ export interface AbilityModifier {
 
 export interface EffectSpec {
 	type: EffectType;
+	effectId?: string;
 	target: "self" | "enemy";
 	value: number;
 	scale?: number;
 	durationSeconds?: number;
-	statKey?: keyof Stats;
+	statKey?: StatKey;
 }
 
 // A “packet” describing exactly what one ability use will do
 export interface EffectInstance {
 	source: BaseCharacter;
 	abilityId: string;
+	effectId?: string;
 	target: "self" | "enemy";
+	element: ElementType;
 	type: EffectType;
 	/** raw amount (damage before mitigation, heal % of maxHp, buff %, etc.) */
 	rawValue: number;
 	durationSeconds?: number;
-	statKey?: keyof Stats;
+	statKey?: StatKey;
 }
 
 // A small struct for result data (optional)

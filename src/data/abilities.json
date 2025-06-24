@@ -1,15 +1,40 @@
 [
 	{
+		"id": "test",
+		"iconUrl": "/images/abilities/ability_ice.png",
+		"displayName": "test",
+		"cooldown": 1,
+		"startReady": false,
+		"staminaCost": 10,
+		"element": "ice",
+		"effects": [
+			{
+				"type": "attack",
+				"value": 0.1,
+				"target": "enemy"
+			},
+			{
+				"type": "debuff",
+				"effectId": "chilled",
+				"value": 0.2,
+				"durationSeconds": 3,
+				"statKey": "speed",
+				"target": "enemy"
+			}
+		]
+	},
+	{
 		"id": "basic_melee",
 		"iconUrl": "/images/abilities/ability_basic_melee.png",
 		"displayName": "Slam",
 		"cooldown": 5,
 		"startReady": false,
 		"staminaCost": 10,
+		"element": "physical",
 		"effects": [
 			{
-				"type": "physical",
-				"scale": 1.0,
+				"type": "attack",
+				"value": 1.0,
 				"target": "enemy"
 			}
 		]
@@ -21,10 +46,11 @@
 		"cooldown": 5,
 		"startReady": false,
 		"staminaCost": 15,
+		"element": "light",
 		"effects": [
 			{
 				"type": "heal",
-				"scale": 0.1,
+				"value": 0.1,
 				"target": "self"
 			}
 		]
@@ -36,10 +62,11 @@
 		"cooldown": 4,
 		"startReady": false,
 		"staminaCost": 20,
+		"element": "earth",
 		"effects": [
 			{
 				"type": "debuff",
-				"scale": 1.25,
+				"value": 1.25,
 				"durationSeconds": 3,
 				"statKey": "speed",
 				"target": "enemy"
@@ -53,15 +80,16 @@
 		"cooldown": 8,
 		"startReady": false,
 		"staminaCost": 30,
+		"element": "physical",
 		"effects": [
 			{
 				"type": "physical",
-				"scale": 0.8,
+				"value": 0.8,
 				"target": "enemy"
 			},
 			{
 				"type": "debuff",
-				"scale": 30,
+				"value": 30,
 				"durationSeconds": 5,
 				"statKey": "power",
 				"target": "enemy"
@@ -75,10 +103,11 @@
 		"cooldown": 10,
 		"startReady": true,
 		"staminaCost": 25,
+		"element": "physical",
 		"effects": [
 			{
 				"type": "buff",
-				"scale": 20,
+				"value": 20,
 				"durationSeconds": 3,
 				"statKey": "guard",
 				"target": "enemy"

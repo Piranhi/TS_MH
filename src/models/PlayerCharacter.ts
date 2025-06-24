@@ -48,6 +48,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 	public init() {
 		//this.defaultAbilityIds.push("basic_heal");
 		this.addNewAbility("basic_melee");
+		this.addNewAbility("test");
 		bus.emit("player:statsChanged");
 	}
 

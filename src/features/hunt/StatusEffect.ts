@@ -1,6 +1,30 @@
+import { StatKey } from "@/models/Stats";
+
 export class StatusEffect {
-        public isFinished = false;
-        constructor(private duration: number) {}
+	public isFinished = false;
+	constructor(
+		private readonly _id: string,
+		private _duration: number,
+		private _value: number,
+		private _statKey: StatKey,
+		private _statusEffectType: "buff" | "debuff"
+	) {}
+
+	get id(): string {
+		return this._id;
+	}
+
+	get duration(): number {
+		return this._duration;
+	}
+
+	set duration(value: number) {
+		this._duration = value;
+	}
+
+	get value(): number {
+		return this._value;
+	}
 
 	handleTick(dt: number) {
 		this.duration -= dt;
@@ -11,11 +35,11 @@ export class StatusEffect {
 		return true;
 	}
 
-        apply() {}
+	apply() {}
 
-        get remaining(): number {
-                return this.duration;
-        }
+	get remaining(): number {
+		return this.duration;
+	}
 
 	private onFinished() {
 		this.isFinished = true;

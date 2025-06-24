@@ -1,5 +1,5 @@
 import { SpecRegistryBase } from "./SpecRegistryBase";
-import { AbilityModifier, EffectSpec } from "@/shared/types";
+import { AbilityModifier, EffectSpec, ElementType } from "@/shared/types";
 
 export interface AbilitySpec {
 	id: string;
@@ -8,6 +8,7 @@ export interface AbilitySpec {
 	cooldown: number;
 	startReady: boolean;
 	staminaCost: number;
+	element: ElementType;
 	effects: EffectSpec[];
 }
 

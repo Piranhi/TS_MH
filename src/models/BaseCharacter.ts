@@ -9,6 +9,7 @@ import { AbilityModifier, Affinity, EffectInstance, EffectSpec } from "@/shared/
 import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
 import { CharacterResistances } from "../features/hunt/CharacterResistances";
 import { StatusEffectManager } from "@/features/hunt/StatusEffectManager";
+import { StatusEffect } from "@/features/hunt/StatusEffect";
 
 export interface CharacterSnapshot {
 	name: string;
@@ -165,12 +166,18 @@ export abstract class BaseCharacter extends Destroyable {
 		this.stamina.setCurrent(this.stamina.max);
 		this.getAbilities().forEach((a) => a.init()); // Init abilities
 		this.resistances.clearTemp();
+		this.statusEffects.clear();
 	}
 
 	public endCombat() {
 		this.inCombat = false;
 		this.target = undefined;
 		this.resistances.clearTemp();
+		this.statusEffects.clear();
+	}
+
+	public addStatusEffect(effect: StatusEffect) {
+		this.statusEffects.add(effect);
 	}
 
 	public getAbilities(): Ability[] {
@@ -210,7 +217,9 @@ export abstract class BaseCharacter extends Destroyable {
 					readyEffects.push({
 						source: this,
 						abilityId: ability.id,
+						effectId: effectSpec.effectId,
 						target: effectSpec.target,
+						element: ability.spec.element,
 						type: effectSpec.type,
 						rawValue: raw,
 						durationSeconds: effectSpec.durationSeconds,
@@ -225,7 +234,7 @@ export abstract class BaseCharacter extends Destroyable {
 	}
 
 	/** Helper: roll crit/variance, apply power multipliers, etc. */
-	private calculateRawValue(effectDef: EffectSpec): number {
+	private calculateRawValue(effect: EffectSpec): number {
 		const baseDamage = calculateRawBaseDamage(this);
 		const critChance = this.stats.get("critChance") / 100;
 		const critDamage = this.stats.get("critDamage") / 100;
@@ -235,7 +244,7 @@ export abstract class BaseCharacter extends Destroyable {
 
 		// for a damage effect: attack × power × crit × variance × effect.scale
 		//const totalMultiplier = powerMultiplier * critMultiplier * variance * (effectDef.scale ?? 1);
-		const totalDamage = baseDamage * critMultiplier * variance * (effectDef.scale ?? 1);
+		const totalDamage = baseDamage * critMultiplier * variance * (effect.scale ?? 1);
 		return totalDamage;
 	}
 

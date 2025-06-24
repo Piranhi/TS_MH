@@ -1,6 +1,7 @@
 import { printLog } from "@/core/DebugManager";
 import { BaseCharacter } from "@/models/BaseCharacter";
 import { AbilityModifier, EffectInstance, EffectResult } from "@/shared/types";
+import { StatusEffect } from "./StatusEffect";
 
 export class EffectProcessor {
 	constructor(private readonly defenceConstant = 100) {}
@@ -10,11 +11,8 @@ export class EffectProcessor {
 		const abilityModifiers = effect.source.getAllAbilityModifiersFromAbility(effect.abilityId);
 
 		switch (effect.type) {
-			case "physical":
+			case "attack":
 				outcomeValue = this.applyDamage(effect.rawValue, abilityModifiers, target);
-				break;
-			case "magical":
-				console.log("TODO - ADD MAGICAL DAMAGE");
 				break;
 			case "heal":
 				outcomeValue = this.applyHeal(effect.rawValue, abilityModifiers, target);
@@ -23,7 +21,7 @@ export class EffectProcessor {
 				console.log("TODO - ADD BUFF");
 				break;
 			case "debuff":
-				console.log("TODO - ADD DEBUFF");
+				this.applyDebuff(effect, abilityModifiers, target);
 				break;
 			default:
 				throw new Error(`Unknown effect type ${effect.type}`);
@@ -80,6 +78,14 @@ export class EffectProcessor {
 	private applyBuff(effect: EffectInstance, target: BaseCharacter): number {
 		// e.g. add to a BuffManager that tracks duration & statKey
 		//BuffManager.addTemporaryBuff(target, effect.statKey!, effect.rawValue, effect.durationSeconds!);
+		return 0;
+	}
+
+	private applyDebuff(effect: EffectInstance, abilityModifiers: AbilityModifier[], target: BaseCharacter): number {
+		const statusEffect = new StatusEffect(effect.effectId!, effect.durationSeconds!, effect.rawValue, effect.statKey!, "debuff");
+
+		// e.g. add to a BuffManager that tracks duration & statKey
+		target.addStatusEffect(statusEffect);
 		return 0;
 	}
 }

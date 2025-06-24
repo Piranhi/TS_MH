@@ -39,20 +39,6 @@ export class CharacterDisplay extends UIBase {
 		this.setup();
 	}
 
-	/* 	revive() {
-		switch (this.character.type) {
-			case "PLAYER":
-				bindEvent(this.eventBindings, "player:charDataChanged", () => this.render());
-				break;
-			case "ENEMY":
-				bindEvent(this.eventBindings, "enemy:charDataChanged", () => this.render());
-				bindEvent(this.eventBindings, "enemy:holderStatus", (val: HolderStatus) =>
-					this.setHolderStatus(val === "active" ? "active" : "active")
-				);
-				break;
-		}
-	} */
-
 	private createDisplay() {
 		// CACHE ELEMENTS
 		this.nameEl = this.$(".char-card__name");
@@ -88,9 +74,13 @@ export class CharacterDisplay extends UIBase {
 			const fill = document.createElement("span");
 			fill.className = "ability-fill ability-fill--smooth"; // Add smooth class
 
-			const icon = document.createElement("span");
-			icon.className = "ability-icon";
-			icon.textContent = "🔥";
+			const iconImg = document.createElement("span");
+			iconImg.className = "ability-icon";
+			//iconImg.className = "icon";
+			iconImg.style.backgroundImage = `url(${ability.spec.iconUrl})`;
+			iconImg.style.backgroundSize = "cover";
+			iconImg.style.backgroundPosition = "center";
+			iconImg.style.backgroundRepeat = "no-repeat";
 
 			const name = document.createElement("span");
 			name.className = "ability-name";
@@ -133,7 +123,7 @@ export class CharacterDisplay extends UIBase {
 			li.addEventListener("mouseleave", () => Tooltip.instance.hide());
 
 			li.appendChild(fill);
-			li.appendChild(icon);
+			li.appendChild(iconImg);
 			li.appendChild(name);
 			li.appendChild(dmg);
 			li.appendChild(toggle);
@@ -276,18 +266,7 @@ export class CharacterDisplay extends UIBase {
 				iconImg.style.backgroundSize = "cover";
 				iconImg.style.backgroundPosition = "center";
 				iconImg.style.backgroundRepeat = "no-repeat";
-				//iconImg.title = `${affinity.type}${affinity.element ? ` ${affinity.element}` : ""}`;
 				this.affinityRowEl.appendChild(iconImg);
-				/* 
-				const el = document.createElement("div");
-				this.element = el;
-				el.className = "class-node";
-				el.dataset.classId = this.spec.id;
-				el.dataset.nodeId = this.node.id;
-				el.style.backgroundImage = `url(${this.node.iconUrl})`;
-				el.style.backgroundSize = "cover";
-				el.style.backgroundPosition = "center";
-				el.style.backgroundRepeat = "no-repeat"; */
 			}
 		}
 	}
@@ -299,12 +278,15 @@ export class CharacterDisplay extends UIBase {
 		for (const effect of effects) {
 			const wrapper = document.createElement("div");
 			wrapper.className = "status-icon";
-			const icon = document.createElement("span");
-			icon.className = "icon";
-			icon.textContent = "🌀";
+			const iconImg = document.createElement("span");
+			iconImg.className = "icon";
+			iconImg.style.backgroundImage = `url(${this.getStatusEffectIcon(effect.id)})`;
+			iconImg.style.backgroundSize = "cover";
+			iconImg.style.backgroundPosition = "center";
+			iconImg.style.backgroundRepeat = "no-repeat";
 			const num = document.createElement("span");
-			num.textContent = effect.remaining.toFixed(0);
-			wrapper.appendChild(icon);
+			num.textContent = effect.remaining.toFixed(1);
+			wrapper.appendChild(iconImg);
 			wrapper.appendChild(num);
 			this.statusRowEl.appendChild(wrapper);
 		}
@@ -322,6 +304,16 @@ export class CharacterDisplay extends UIBase {
 				return "/images/general/icon_combat_resistance_lightning.png";
 			case "physical":
 				return "/images/general/icon_combat_resistance_physical.png";
+			default:
+				return "?";
+		}
+	}
+
+	private getStatusEffectIcon(effectId: string): string {
+		switch (effectId) {
+			case "chilled":
+				return "/images/general/icon_status_chilled.png";
+
 			default:
 				return "?";
 		}

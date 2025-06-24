@@ -35,6 +35,10 @@ export class CombatManager extends Destroyable {
 		if (this.combatEndOverride) return;
 		this.elapsed += dt;
 
+		// Handle status effects
+		this.playerCharacter.statusEffects.handleTick(dt);
+		this.enemyCharacter.statusEffects.handleTick(dt);
+
 		// Check for combat end again
 		// Wait for the next tick so that character displays update
 		if (!this.playerCharacter.isAlive() || !this.enemyCharacter.isAlive()) {
