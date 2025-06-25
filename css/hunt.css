@@ -273,11 +273,17 @@
 }
 
 /* 1. Name */
+.char-card__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+}
+
 .char-card__name {
-	font-size: 1.15rem;
-	font-weight: 600;
-	margin: 0;
-	letter-spacing: 0.03em;
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin: 0;
+        letter-spacing: 0.03em;
 }
 
 .affinity-row {
@@ -319,9 +325,12 @@
 
 /* 2. Health + Portrait Row */
 .char-card__row {
-	display: flex;
-	gap: 1rem;
-	align-items: flex-start;
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+}
+.char-card.enemy .char-card__row {
+        flex-direction: row-reverse;
 }
 
 .char-card__portrait {
@@ -385,25 +394,44 @@
 
 /* 3. Ability List */
 .ability-list {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0.4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        background: rgba(34, 33, 33, 0.363);
+        border: 1px solid var(--hunt-card-border);
+        border-radius: 0.5rem;
+        flex: 1;
 }
 /* Ability Progress Bar Styling */
 .ability {
-	position: relative;
-	display: grid;
-	grid-template-columns: auto 1fr auto auto;
-	align-items: center;
-	gap: 0.1rem;
-	padding: 0.1rem 0.6rem;
-	border-radius: 0.5rem;
-	background: rgba(34, 33, 33, 0.568);
-	font-size: 0.65rem;
-	overflow: hidden;
+        position: relative;
+        display: grid;
+        grid-template-columns: auto auto auto 1fr auto auto;
+        align-items: center;
+        gap: 0.1rem;
+        padding: 0.1rem 0.6rem;
+        border-radius: 0.5rem;
+        background: rgba(34, 33, 33, 0.568);
+        font-size: 0.65rem;
+        overflow: hidden;
+}
+.drag-handle {
+        cursor: grab;
+        font-size: 0.8rem;
+        padding-right: 0.3rem;
+        user-select: none;
+        position: relative;
+        z-index: 1;
+}
+.ability-order {
+        width: 1rem;
+        text-align: center;
+        font-weight: 600;
+        position: relative;
+        z-index: 1;
 }
 
 .ability-fill {
