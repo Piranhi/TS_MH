@@ -139,7 +139,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 			abilities: this.getAbilities(),
 			imgUrl: this.getAvatarUrl(),
 			rarity: "Todo",
-			level: { lvl: this._charLevel, current: this._currentXp, next: this._nextXpThreshold },
+			level: { lvl: this._charLevel, current: this._currentXp, next: this.nextXpThreshold },
 		};
 	}
 
