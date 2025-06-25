@@ -9,19 +9,21 @@
         <!-- row 1: player + enemy cards (auto-filled by JS) -->
         <div class="char-holders">
             <div class="char-card player" id="char-card-player">
-                <!-- add .enemy for foes -->
-                <!-- 1. Name -->
-                <h2 class="char-card__name">Player</h2>
-                <!-- 2. HP + Portrait -->
+                <!-- Card header: name & affinities -->
+                <div class="char-card__header">
+                    <h2 class="char-card__name">Player</h2>
+                    <div class="affinity-row"></div>
+                </div>
+                <!-- HP + Portrait -->
                 <div class="char-card__row">
                     <div class="health-stack">
-                        <small class="hp-label">132 / 200 HP</small>
-                        <div class="health-bar" style="--hunt-hp: 0.66">
-                            <span class="hp-fill"></span>
-                        </div>
                         <small class="stamina-label">50 / 100 ST</small>
                         <div class="stamina-bar" style="--hunt-stamina: 1">
                             <span class="stamina-fill"></span>
+                        </div>
+                        <small class="hp-label">132 / 200 HP</small>
+                        <div class="health-bar" style="--hunt-hp: 0.66">
+                            <span class="hp-fill"></span>
                         </div>
                     </div>
 
@@ -63,21 +65,22 @@
                 <!-- 4. Stats -->
             </div>
             <div class="char-card enemy" id="char-card-enemy">
-                <!-- add .enemy for foes -->
-                <!-- 1. Name -->
-                <h2 class="char-card__name">Player</h2>
-                <div class="affinity-row affinity-row"></div>
+                <!-- Card header: name & affinities -->
+                <div class="char-card__header">
+                    <h2 class="char-card__name">Player</h2>
+                    <div class="affinity-row affinity-row"></div>
+                </div>
 
-                <!-- 2. HP + Portrait -->
+                <!-- HP + Portrait -->
                 <div class="char-card__row">
                     <div class="health-stack">
-                        <small class="hp-label">132 / 200 HP</small>
-                        <div class="health-bar" style="--hunt-hp: 0.66">
-                            <span class="hp-fill"></span>
-                        </div>
                         <small class="stamina-label">50 / 100 ST</small>
                         <div class="stamina-bar" style="--hunt-stamina: 1">
                             <span class="stamina-fill"></span>
+                        </div>
+                        <small class="hp-label">132 / 200 HP</small>
+                        <div class="health-bar" style="--hunt-hp: 0.66">
+                            <span class="hp-fill"></span>
                         </div>
                     </div>
 

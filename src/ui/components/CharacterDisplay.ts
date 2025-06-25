@@ -64,18 +64,26 @@ export class CharacterDisplay extends UIBase {
 		this.abilitiesListMap.clear();
 		this.abilitiesListEl.innerHTML = "";
 
-		abilities.forEach((ability) => {
-			const li = document.createElement("li");
-			li.className = "ability";
-			li.dataset.abilityId = ability.id;
-			li.setAttribute("draggable", "true");
+                abilities.forEach((ability, idx) => {
+                        const li = document.createElement("li");
+                        li.className = "ability";
+                        li.dataset.abilityId = ability.id;
+                        li.setAttribute("draggable", "true");
 
-			// Create the fill element that will show progress
-			const fill = document.createElement("span");
-			fill.className = "ability-fill ability-fill--smooth"; // Add smooth class
+                        // Create the fill element that will show progress
+                        const fill = document.createElement("span");
+                        fill.className = "ability-fill ability-fill--smooth"; // Add smooth class
 
-			const iconImg = document.createElement("span");
-			iconImg.className = "ability-icon";
+                        const handle = document.createElement("span");
+                        handle.className = "drag-handle";
+                        handle.innerHTML = "&#9776;";
+
+                        const order = document.createElement("span");
+                        order.className = "ability-order";
+                        order.textContent = String(idx + 1);
+
+                        const iconImg = document.createElement("span");
+                        iconImg.className = "ability-icon";
 			//iconImg.className = "icon";
 			iconImg.style.backgroundImage = `url(${ability.spec.iconUrl})`;
 			iconImg.style.backgroundSize = "cover";
@@ -122,11 +130,13 @@ export class CharacterDisplay extends UIBase {
 			});
 			li.addEventListener("mouseleave", () => Tooltip.instance.hide());
 
-			li.appendChild(fill);
-			li.appendChild(iconImg);
-			li.appendChild(name);
-			li.appendChild(dmg);
-			li.appendChild(toggle);
+                        li.appendChild(fill);
+                        li.appendChild(handle);
+                        li.appendChild(order);
+                        li.appendChild(iconImg);
+                        li.appendChild(name);
+                        li.appendChild(dmg);
+                        li.appendChild(toggle);
 			this.abilitiesListEl.appendChild(li);
 
 			this.abilitiesListMap.set(ability.id, li);
@@ -156,9 +166,9 @@ export class CharacterDisplay extends UIBase {
 		this.staminaBar.style.setProperty("--hunt-stamina", stamina.percent);
 		this.staminaLabel.textContent = `${stamina.current} / ${stamina.max} ST`;
 
-		abilities.forEach((ability) => {
-			const bar = this.abilitiesListMap.get(ability.id);
-			if (!bar) return;
+                abilities.forEach((ability, i) => {
+                        const bar = this.abilitiesListMap.get(ability.id);
+                        if (!bar) return;
 
 			const toggle = bar.querySelector(".ability-toggle") as HTMLInputElement;
 			if (toggle) toggle.checked = ability.enabled;
@@ -168,8 +178,13 @@ export class CharacterDisplay extends UIBase {
 			// When currentCooldown equals maxCooldown, ability just used (0%)
 			const readinessRatio = ability.maxCooldown > 0 ? 1 - ability.currentCooldown / ability.maxCooldown : 1; // Default to ready if no cooldown
 
-			this.updateAbilityProgress(ability.id, bar, readinessRatio);
-		});
+                        const orderEl = bar.querySelector(
+                                ".ability-order"
+                        ) as HTMLElement | null;
+                        if (orderEl) orderEl.textContent = String(i + 1);
+
+                        this.updateAbilityProgress(ability.id, bar, readinessRatio);
+                });
 
 		this.renderStatusEffects();
 		this.createStatsGrid();
@@ -231,13 +246,17 @@ export class CharacterDisplay extends UIBase {
 		this.activeTransitions.clear();
 	}
 
-	private updateAbilityOrder() {
-		Array.from(this.abilitiesListEl.children).forEach((c, i) => {
-			const id = (c as HTMLElement).dataset.abilityId!;
-			const ability = this.character.getAbility(id);
-			if (ability) ability.priority = i;
-		});
-	}
+        private updateAbilityOrder() {
+                Array.from(this.abilitiesListEl.children).forEach((c, i) => {
+                        const id = (c as HTMLElement).dataset.abilityId!;
+                        const ability = this.character.getAbility(id);
+                        if (ability) ability.priority = i;
+                        const orderEl = (c as HTMLElement).querySelector(
+                                ".ability-order"
+                        ) as HTMLElement | null;
+                        if (orderEl) orderEl.textContent = String(i + 1);
+                });
+        }
 
 	private createStatsGrid() {
 		this.statGridEl.innerHTML = "";
