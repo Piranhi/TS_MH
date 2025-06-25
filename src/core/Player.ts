@@ -150,10 +150,6 @@ export class Player extends GameBase implements Saveable {
 
 		printLog(`Renown: ${oldRenown} → ${this.renown} (${delta})`, 3, "Player");
 		bus.emit("renown:changed", this.renown);
-
-		if (delta > 0) {
-			bus.emit("stats:renownGained", delta);
-		}
 	}
 
 	// ================ PRESTIGE ================

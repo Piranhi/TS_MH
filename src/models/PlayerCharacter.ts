@@ -13,13 +13,13 @@ interface playerCharSaveState {
 	charLevel: number;
 	abilityStates: AbilitySaveState[];
 	stamina: RegenPool;
+	currentXp: number;
 }
 
 export class PlayerCharacter extends BaseCharacter implements Saveable {
 	private traits: Trait[];
-	private statsEngine: StatsEngine;
+	public statsEngine: StatsEngine;
 	private _currentXp = 0;
-	private _nextXpThreshold = 10;
 
 	constructor(private prestigeStats: PrestigeState, traits: Trait[]) {
 		const statsEngine = new StatsEngine();
@@ -68,14 +68,13 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		this._currentXp += amt;
 		let levelledUp = false;
 
-		while (this._currentXp >= this._nextXpThreshold) {
+		while (this._currentXp >= this.nextXpThreshold) {
+			this._currentXp -= this.nextXpThreshold;
 			this.levelUp();
 			levelledUp = true;
 
-			this._currentXp -= this._nextXpThreshold;
-
-			const newThreshold = Math.floor(this._nextXpThreshold * GAME_BALANCE.player.xpThresholdMultiplier);
-			this._nextXpThreshold = newThreshold;
+			//const newThreshold = Math.floor(this._nextXpThreshold * GAME_BALANCE.player.xpThresholdMultiplier);
+			//this._nextXpThreshold = newThreshold;
 		}
 
 		if (levelledUp) {
@@ -119,7 +118,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 	}
 
 	get nextXpThreshold(): number {
-		return this._nextXpThreshold;
+		return BalanceCalculators.getXPThreshold(this.level + 0);
 	}
 
 	override getAvatarUrl(): string {
@@ -149,6 +148,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 			charLevel: this._charLevel,
 			abilityStates: this.getAbilities().map((a) => a.save()), // Call save() on each ability
 			stamina: this.stamina,
+			currentXp: this._currentXp,
 		};
 	}
 
@@ -157,6 +157,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		this.abilityMap.clear();
 		this.stamina.setMax(state.stamina.max);
 		this.stamina.setCurrent(state.stamina.current);
+		this._currentXp = state.currentXp;
 
 		for (const abilityState of state.abilityStates) {
 			const ability = Ability.createFromSaveState(abilityState);

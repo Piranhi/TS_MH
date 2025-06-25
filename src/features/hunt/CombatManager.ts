@@ -11,6 +11,7 @@ import { GameContext } from "@/core/GameContext";
 import { BaseCharacter } from "@/models/BaseCharacter";
 import { Ability } from "@/models/Ability";
 import { EffectInstance } from "@/shared/types";
+import { BalanceCalculators } from "@/balance/GameBalance";
 
 export class CombatManager extends Destroyable {
 	private context: GameContext;
@@ -122,7 +123,7 @@ export class CombatManager extends Destroyable {
 
 	private rewardPlayer() {
 		// Award renown
-		const renownReward = 1; // TODO - Update from Game Balance - Use renown scaling.
+		const renownReward = BalanceCalculators.getMonsterRenown(this.area.tier, this.enemyCharacter.spec.rarity);
 		this.context.player.adjustRenown(renownReward);
 
 		// Award experience

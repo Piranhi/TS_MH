@@ -63,8 +63,11 @@ export const GAME_BALANCE = {
 
 	// === PLAYER CHARACTER SCALING ===
 	player: {
+		levelling: {
+			baseXpRequirementPerLevel: 100,
+		},
 		// XP system
-		xpThresholdMultiplier: 1.75, // XP needed increases by 75% per level
+		xpThresholdMultiplier: 1.45, // XP needed increases by 75% per level
 		baseAbilityCD: 1,
 
 		// Level bonus growth rates (exponential)
@@ -289,9 +292,9 @@ export const BalanceCalculators = {
 	 */
 	getMonsterRenown(baseTier: number, rarity: keyof typeof GAME_BALANCE.monsters.renownMultipliers): number {
 		const rarityMultiplier = GAME_BALANCE.monsters.renownMultipliers[rarity];
-		// Renown increases 5x per tier, then scaled by rarity
+		// Renown increases 3x per tier, then scaled by rarity
 		// TODO - Hook in library upgrades.
-		return Math.floor(Math.pow(5, baseTier - 1) * rarityMultiplier);
+		return Math.floor(Math.pow(3, baseTier - 1) * rarityMultiplier);
 	},
 
 	// === PLAYER CALCULATIONS ===
@@ -349,8 +352,10 @@ export const BalanceCalculators = {
 	 * Calculate XP threshold for next level
 	 */
 	getXPThreshold(currentLevel: number): number {
-		const base = 100; // Base XP for level 1->2
-		return Math.floor(base * Math.pow(GAME_BALANCE.player.xpThresholdMultiplier, currentLevel - 1));
+		return Math.floor(
+			GAME_BALANCE.player.levelling.baseXpRequirementPerLevel *
+				Math.pow(GAME_BALANCE.player.xpThresholdMultiplier, currentLevel - 1)
+		);
 	},
 
 	// === EQUIPMENT CALCULATIONS ===

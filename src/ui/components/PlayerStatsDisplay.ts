@@ -1,7 +1,7 @@
 import { Stats } from "@/models/Stats";
 import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
-import { prettify } from "@/shared/utils/stringUtils";
+import { formatNumberShort, prettify } from "@/shared/utils/stringUtils";
 import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
 import { ProgressBar } from "./ProgressBar";
 
@@ -14,8 +14,8 @@ export class PlayerStatsDisplay extends UIBase {
 	private tableBody!: HTMLTableSectionElement;
 	private levelNumberEl!: HTMLElement;
 	private xpTextEl!: HTMLElement;
-        private xpProgressBar!: ProgressBar;
-        private traitListEl!: HTMLUListElement;
+	private xpProgressBar!: ProgressBar;
+	private traitListEl!: HTMLUListElement;
 
 	private statsData: StatData[] = [
 		{ name: "Strength", value: 0 },
@@ -70,12 +70,12 @@ export class PlayerStatsDisplay extends UIBase {
         </div>
     `;
 
-                this.tableBody = this.element.querySelector("tbody")!;
-                this.traitListEl = this.element.querySelector("#trait-list")!;
-                this.setupLevelDisplay();
-                this.renderStats();
-                this.updateTraitDisplay();
-        }
+		this.tableBody = this.element.querySelector("tbody")!;
+		this.traitListEl = this.element.querySelector("#trait-list")!;
+		this.setupLevelDisplay();
+		this.renderStats();
+		this.updateTraitDisplay();
+	}
 
 	private setupLevelDisplay() {
 		// Cache DOM elements
@@ -108,7 +108,7 @@ export class PlayerStatsDisplay extends UIBase {
 		this.xpProgressBar.setValue(currentXP);
 
 		// Update XP text
-		this.xpTextEl.textContent = `${currentXP} / ${xpForNextLevel} XP`;
+		this.xpTextEl.textContent = `${formatNumberShort(currentXP)} / ${formatNumberShort(xpForNextLevel)} XP`;
 	}
 
 	private renderStats() {
@@ -142,21 +142,21 @@ export class PlayerStatsDisplay extends UIBase {
 	}
 
 	// Update multiple stats at once
-        public updateStats(updates: Record<string, string | number>) {
-                Object.entries(updates).forEach(([statName, value]) => {
-                        this.updateStat(statName, value);
-                });
-        }
+	public updateStats(updates: Record<string, string | number>) {
+		Object.entries(updates).forEach(([statName, value]) => {
+			this.updateStat(statName, value);
+		});
+	}
 
-        private updateTraitDisplay() {
-                const traits = this.context.character.getTraits();
-                this.traitListEl.innerHTML = "";
-                traits.forEach((t) => {
-                        const li = document.createElement("li");
-                        li.textContent = `${t.name} (${t.rarity}) - ${t.description}`;
-                        this.traitListEl.appendChild(li);
-                });
-        }
+	private updateTraitDisplay() {
+		const traits = this.context.character.getTraits();
+		this.traitListEl.innerHTML = "";
+		traits.forEach((t) => {
+			const li = document.createElement("li");
+			li.textContent = `${t.name} (${t.rarity}) - ${t.description}`;
+			this.traitListEl.appendChild(li);
+		});
+	}
 
 	// Integration with your game's event system
 	private bindEvents() {
@@ -171,13 +171,13 @@ export class PlayerStatsDisplay extends UIBase {
 		});
 
 		// Listen for any game tick to update XP (in case XP changes without leveling)
-                bindEvent(this.eventBindings, "Game:UITick", () => {
-                        this.updateLevelDisplay();
-                });
-                bindEvent(this.eventBindings, "gameRun:started", () => {
-                        this.updateTraitDisplay();
-                });
-        }
+		bindEvent(this.eventBindings, "Game:UITick", () => {
+			this.updateLevelDisplay();
+		});
+		bindEvent(this.eventBindings, "gameRun:started", () => {
+			this.updateTraitDisplay();
+		});
+	}
 
 	private updateFromPlayerStats() {
 		if (!this.context.currentRun) return;
@@ -186,19 +186,19 @@ export class PlayerStatsDisplay extends UIBase {
 		const stats = character.statsEngine.getAll();
 
 		// Map your game stats to display stats
-                this.updateStats({
-                        Strength: stats.attack.toPrecision(2) || 0,
-                        Power: stats.power.toPrecision(2) || 0,
+		this.updateStats({
+			Strength: stats.attack.toPrecision(2) || 0,
+			Power: stats.power.toPrecision(2) || 0,
 			Defence: stats.defence.toPrecision(2) || 0,
 			Health: character.maxHp.toString() || 0,
 			Guard: stats.guard.toPrecision(2) || 0,
 			Speed: stats.speed.toPrecision(2) || 0,
 			Evasion: stats.evasion.toPrecision(2) || 0,
-                        CritChance: stats.critChance.toPrecision(2) || 0,
-                        CritDamage: stats.critDamage.toPrecision(2) || 0,
-                });
-                this.updateTraitDisplay();
-        }
+			CritChance: stats.critChance.toPrecision(2) || 0,
+			CritDamage: stats.critDamage.toPrecision(2) || 0,
+		});
+		this.updateTraitDisplay();
+	}
 
 	// Clean up when component is destroyed
 	public destroy() {
