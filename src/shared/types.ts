@@ -118,11 +118,13 @@ export const ENEMY_ARCHETYPES = {
 
 // Create a union type from the archetype keys
 export type EnemyArchetype = keyof typeof ENEMY_ARCHETYPES;
-export type EffectType = "attack" | "heal" | "buff" | "debuff";
+export type EffectType = "attack" | "heal" | "status";
 
 // Define what types of modifiers exist
 export type MonsterAffinityType = "resistance" | "weakness" | "immunity" | "armored";
 export type ElementType = "fire" | "ice" | "poison" | "lightning" | "physical" | "light" | "dark" | "earth";
+export type AbilityCondition = "selfNotFullHealth" | "targetNotFullHealth" | "targetLowHealth" | "selfHasStatus";
+
 export type Resistances = Record<ElementType, number>;
 
 // Define the modifier structure

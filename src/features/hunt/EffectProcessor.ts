@@ -4,24 +4,22 @@ import { AbilityModifier, EffectInstance, EffectResult } from "@/shared/types";
 import { StatusEffect } from "./StatusEffect";
 
 export class EffectProcessor {
-	constructor(private readonly defenceConstant = 100) {}
+	private readonly defenceConstant = 100;
+	constructor(private readonly self: BaseCharacter, private readonly target: BaseCharacter) {}
 
-	public apply(effect: EffectInstance, target: BaseCharacter): EffectResult {
+	public apply(effect: EffectInstance): EffectResult {
 		let outcomeValue = 0;
 		const abilityModifiers = effect.source.getAllAbilityModifiersFromAbility(effect.abilityId);
 
 		switch (effect.type) {
 			case "attack":
-				outcomeValue = this.applyDamage(effect.rawValue, abilityModifiers, target);
+				outcomeValue = this.applyDamage(effect.rawValue, abilityModifiers, this.target);
 				break;
 			case "heal":
-				outcomeValue = this.applyHeal(effect.rawValue, abilityModifiers, target);
+				outcomeValue = this.applyHeal(effect.rawValue, abilityModifiers, this.target);
 				break;
-			case "buff":
-				console.log("TODO - ADD BUFF");
-				break;
-			case "debuff":
-				this.applyDebuff(effect, abilityModifiers, target);
+			case "status":
+				this.applyStatus(effect, abilityModifiers);
 				break;
 			default:
 				throw new Error(`Unknown effect type ${effect.type}`);
@@ -29,7 +27,7 @@ export class EffectProcessor {
 
 		return {
 			source: effect.source,
-			target,
+			target: this.target,
 			effect,
 			outcomeValue,
 		};
@@ -75,17 +73,11 @@ export class EffectProcessor {
 		return healAmount;
 	}
 
-	private applyBuff(effect: EffectInstance, target: BaseCharacter): number {
-		// e.g. add to a BuffManager that tracks duration & statKey
-		//BuffManager.addTemporaryBuff(target, effect.statKey!, effect.rawValue, effect.durationSeconds!);
-		return 0;
-	}
-
-	private applyDebuff(effect: EffectInstance, abilityModifiers: AbilityModifier[], target: BaseCharacter): number {
+	private applyStatus(effect: EffectInstance, abilityModifiers: AbilityModifier[]): number {
 		const statusEffect = new StatusEffect(effect.effectId!, effect.durationSeconds!, effect.rawValue, effect.statKey!, "debuff");
 
-		// e.g. add to a BuffManager that tracks duration & statKey
-		target.addStatusEffect(statusEffect);
+		// Apply status effect to target or self
+		effect.target === "enemy" ? this.target.addStatusEffect(statusEffect) : this.self.addStatusEffect(statusEffect);
 		return 0;
 	}
 }

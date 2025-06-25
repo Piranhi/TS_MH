@@ -14,7 +14,7 @@
 				"target": "enemy"
 			},
 			{
-				"type": "debuff",
+				"type": "status",
 				"effectId": "chilled",
 				"value": 0.2,
 				"durationSeconds": 3,
@@ -43,7 +43,7 @@
 		"id": "basic_heal",
 		"iconUrl": "",
 		"displayName": "Heal",
-		"cooldown": 5,
+		"cooldown": 1,
 		"startReady": false,
 		"staminaCost": 15,
 		"element": "light",
@@ -53,7 +53,8 @@
 				"value": 0.1,
 				"target": "self"
 			}
-		]
+		],
+		"conditions": ["selfNotFullHealth"]
 	},
 	{
 		"id": "root_snare",
@@ -65,7 +66,7 @@
 		"element": "earth",
 		"effects": [
 			{
-				"type": "debuff",
+				"type": "status",
 				"value": 1.25,
 				"durationSeconds": 3,
 				"statKey": "speed",
@@ -83,12 +84,12 @@
 		"element": "physical",
 		"effects": [
 			{
-				"type": "physical",
+				"type": "attack",
 				"value": 0.8,
 				"target": "enemy"
 			},
 			{
-				"type": "debuff",
+				"type": "status",
 				"value": 30,
 				"durationSeconds": 5,
 				"statKey": "power",
@@ -106,7 +107,7 @@
 		"element": "physical",
 		"effects": [
 			{
-				"type": "buff",
+				"type": "status",
 				"value": 20,
 				"durationSeconds": 3,
 				"statKey": "guard",

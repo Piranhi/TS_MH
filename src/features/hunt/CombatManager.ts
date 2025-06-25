@@ -8,9 +8,11 @@ import { Area } from "@/models/Area";
 import { EffectProcessor } from "./EffectProcessor";
 import { Destroyable } from "@/core/Destroyable";
 import { GameContext } from "@/core/GameContext";
+import { BaseCharacter } from "@/models/BaseCharacter";
+import { Ability } from "@/models/Ability";
+import { EffectInstance } from "@/shared/types";
 
 export class CombatManager extends Destroyable {
-	private effectProcessor: EffectProcessor;
 	private context: GameContext;
 	public isFinished: boolean = false;
 	public playerWon: boolean = false;
@@ -20,7 +22,6 @@ export class CombatManager extends Destroyable {
 	constructor(private readonly playerCharacter: PlayerCharacter, private readonly enemyCharacter: EnemyCharacter, private readonly area: Area) {
 		super();
 		this.context = GameContext.getInstance();
-		this.effectProcessor = new EffectProcessor();
 
 		playerCharacter.beginCombat();
 		enemyCharacter.beginCombat();
@@ -35,9 +36,9 @@ export class CombatManager extends Destroyable {
 		if (this.combatEndOverride) return;
 		this.elapsed += dt;
 
-		// Handle status effects
-		this.playerCharacter.statusEffects.handleTick(dt);
-		this.enemyCharacter.statusEffects.handleTick(dt);
+		// Handle status effects, stamina, etc
+		this.playerCharacter.handleCombatUpdate(dt);
+		this.enemyCharacter.handleCombatUpdate(dt);
 
 		// Check for combat end again
 		// Wait for the next tick so that character displays update
@@ -47,10 +48,7 @@ export class CombatManager extends Destroyable {
 		}
 
 		// Process player effects
-		const playerEffects = this.playerCharacter.getReadyEffects(dt);
-		for (const effect of playerEffects) {
-			this.effectProcessor.apply(effect, this.enemyCharacter);
-		}
+		this.processCharacterAbilities(this.playerCharacter, this.enemyCharacter, dt);
 
 		// Check for combat end
 		if (!this.playerCharacter.isAlive() || !this.enemyCharacter.isAlive()) {
@@ -58,10 +56,40 @@ export class CombatManager extends Destroyable {
 		}
 
 		// Process enemy effects
-		const enemyEffects = this.enemyCharacter.getReadyEffects(dt);
-		for (const effect of enemyEffects) {
-			this.effectProcessor.apply(effect, this.playerCharacter);
+		this.processCharacterAbilities(this.enemyCharacter, this.playerCharacter, dt);
+	}
+
+	private processCharacterAbilities(self: BaseCharacter, target: BaseCharacter, dt: number) {
+		// Process character to find abilities that are ready to be used.
+		const readyAbilities = self.getReadyAbilities(dt);
+		const validAbilities = readyAbilities.filter((ability) => this.checkAbilityConditions(ability, self, target));
+		if (validAbilities.length === 0) return;
+
+		// Create Effect processor
+		// Cycle through abilities and create effect instances.
+		const effectProcessor = new EffectProcessor(self, target);
+		for (const ability of validAbilities) {
+			// create effects from ability
+			const effects = self.createEffectInstance(ability);
+			effects.forEach((effect) => effectProcessor.apply(effect));
 		}
+	}
+
+	checkAbilityConditions(ability: Ability, self: BaseCharacter, target: BaseCharacter): boolean {
+		if (!ability.spec.conditions) return true;
+		if (ability.spec.conditions.length === 0) return true;
+
+		for (const condition of ability.spec.conditions) {
+			switch (condition) {
+				case "selfNotFullHealth":
+					if (self.currentHp >= self.maxHp) return false;
+					break;
+				default:
+					break;
+			}
+		}
+
+		return true;
 	}
 
 	public endCombatEarly() {

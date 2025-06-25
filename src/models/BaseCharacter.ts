@@ -119,8 +119,12 @@ export abstract class BaseCharacter extends Destroyable {
 		this.hp.setToMax();
 	}
 
+	hasStamina(amount: number): boolean {
+		return this.stamina.current >= amount;
+	}
+
 	spendStamina(amount: number): boolean {
-		if (this.stamina.current < amount) return false;
+		if (!this.hasStamina(amount)) return false;
 		this.stamina.spendAllocation(amount);
 		return true;
 	}
@@ -194,42 +198,41 @@ export abstract class BaseCharacter extends Destroyable {
 		return this.abilityMap.get(abilityId);
 	}
 
-	// Each tick
-	// Loop through abilities, tick time down.
-	// If ready, create instance from Spec and submit it back to Combat Manager for Effect Processing.
-	// Note: Called from Combat Manager - Listened for on tick
-	public getReadyEffects(dt: number): EffectInstance[] {
-		const readyEffects: EffectInstance[] = [];
-
-		if (!this.inCombat || !this.canAttack) return readyEffects;
-
+	public handleCombatUpdate(dt: number) {
+		this.statusEffects.handleTick(dt);
 		this.regenStamina(dt);
+	}
+
+	// Returns a list of abilities that are ready to be used
+	public getReadyAbilities(dt: number): Ability[] {
+		if (!this.inCombat || !this.canAttack) return [];
+
 		const abilities = this.getAbilities()
 			.filter((a) => a.enabled)
 			.sort((a, b) => a.priority - b.priority);
 
 		abilities.forEach((ability) => ability.reduceCooldown(dt));
+		return abilities.filter((ability) => ability.isReady() && this.hasStamina(ability.spec.staminaCost));
+	}
 
-		abilities.forEach((ability) => {
-			if (ability.isReady() && this.spendStamina(ability.spec.staminaCost)) {
-				for (const effectSpec of ability.spec.effects) {
-					const raw: number = this.calculateRawValue(effectSpec);
-					readyEffects.push({
-						source: this,
-						abilityId: ability.id,
-						effectId: effectSpec.effectId,
-						target: effectSpec.target,
-						element: ability.spec.element,
-						type: effectSpec.type,
-						rawValue: raw,
-						durationSeconds: effectSpec.durationSeconds,
-						statKey: effectSpec.statKey,
-					});
-				}
-				ability.resetCooldown();
-				printLog(`${this.name} using ability ${ability.id}`, 3, "BaseCharacter.ts", "combat");
-			}
-		});
+	public createEffectInstance(ability: Ability): EffectInstance[] {
+		const readyEffects: EffectInstance[] = [];
+		for (const effectSpec of ability.spec.effects) {
+			const raw: number = this.calculateRawValue(effectSpec);
+			readyEffects.push({
+				source: this,
+				abilityId: ability.id,
+				effectId: effectSpec.effectId,
+				target: effectSpec.target,
+				element: ability.spec.element,
+				type: effectSpec.type,
+				rawValue: raw,
+				durationSeconds: effectSpec.durationSeconds,
+				statKey: effectSpec.statKey,
+			});
+		}
+		this.spendStamina(ability.spec.staminaCost);
+		ability.resetCooldown();
 		return readyEffects;
 	}
 

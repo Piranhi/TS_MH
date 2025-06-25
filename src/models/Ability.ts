@@ -1,5 +1,5 @@
 import { SpecRegistryBase } from "./SpecRegistryBase";
-import { AbilityModifier, EffectSpec, ElementType } from "@/shared/types";
+import { AbilityCondition, AbilityModifier, EffectSpec, ElementType } from "@/shared/types";
 
 export interface AbilitySpec {
 	id: string;
@@ -10,6 +10,7 @@ export interface AbilitySpec {
 	staminaCost: number;
 	element: ElementType;
 	effects: EffectSpec[];
+	conditions: AbilityCondition[];
 }
 
 export interface AbilityState {
@@ -70,6 +71,10 @@ export class Ability extends SpecRegistryBase<AbilitySpec> {
 
 	isReady() {
 		return this.currentCooldown === 0;
+	}
+
+	getConditions(): string[] {
+		return this.spec.conditions;
 	}
 
 	public addAbilityModifier(abilityId: string, modifier: AbilityModifier) {
