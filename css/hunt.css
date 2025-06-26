@@ -158,42 +158,19 @@
 	letter-spacing: 0.02em;
 }
 
-.fight-boss-btn {
-	display: inline-block;
-	width: 220px;
-	height: 40px;
+.area-progress {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.area-option-btn {
 	padding: 0.85rem 2.2rem;
-	font-size: 1.12rem;
-	font-weight: 600;
-	letter-spacing: 0.03em;
-	border: none;
-	border-radius: 1.5rem;
-	background: var(--glass-bg, rgba(255, 255, 255, 0.15));
-	color: var(--text-default, #fff);
-	box-shadow: 0 4px 18px rgba(0, 0, 0, 0.13);
-	backdrop-filter: blur(12px);
-	transition: background 0.22s, color 0.16s, box-shadow 0.16s, filter 0.18s;
+	font-size: 0.8rem;
+	border-radius: 0.25rem;
 	cursor: pointer;
 	margin-top: 1.5rem;
 	z-index: 1;
-}
-
-.fight-boss-btn:not(:disabled):hover,
-.fight-boss-btn:not(:disabled):focus {
-	background: rgba(251, 191, 36, 0.22); /* warm gold accent on hover */
-	color: #fff;
-	box-shadow: 0 8px 28px rgba(251, 191, 36, 0.1);
-	outline: none;
-}
-
-.fight-boss-btn:disabled,
-.fight-boss-btn[aria-disabled="true"] {
-	background: rgba(220, 220, 220, 0.12);
-	color: rgba(255, 255, 255, 0.45);
-	filter: grayscale(0.24) blur(0.5px);
-	cursor: not-allowed;
-	box-shadow: none;
-	opacity: 0.7;
 }
 
 /* — Responsive — */
@@ -274,16 +251,16 @@
 
 /* 1. Name */
 .char-card__header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .char-card__name {
-        font-size: 1.15rem;
-        font-weight: 600;
-        margin: 0;
-        letter-spacing: 0.03em;
+	font-size: 1.15rem;
+	font-weight: 600;
+	margin: 0;
+	letter-spacing: 0.03em;
 }
 
 .affinity-row {
@@ -325,12 +302,12 @@
 
 /* 2. Health + Portrait Row */
 .char-card__row {
-        display: flex;
-        gap: 1rem;
-        align-items: flex-start;
+	display: flex;
+	gap: 1rem;
+	align-items: flex-start;
 }
 .char-card.enemy .char-card__row {
-        flex-direction: row-reverse;
+	flex-direction: row-reverse;
 }
 
 .char-card__portrait {
@@ -394,44 +371,44 @@
 
 /* 3. Ability List */
 .ability-list {
-        list-style: none;
-        margin: 0;
-        padding: 0.4rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        background: rgba(34, 33, 33, 0.363);
-        border: 1px solid var(--hunt-card-border);
-        border-radius: 0.5rem;
-        flex: 1;
+	list-style: none;
+	margin: 0;
+	padding: 0.4rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	background: rgba(34, 33, 33, 0.363);
+	border: 1px solid var(--hunt-card-border);
+	border-radius: 0.5rem;
+	flex: 1;
 }
 /* Ability Progress Bar Styling */
 .ability {
-        position: relative;
-        display: grid;
-        grid-template-columns: auto auto auto 1fr auto auto;
-        align-items: center;
-        gap: 0.1rem;
-        padding: 0.1rem 0.6rem;
-        border-radius: 0.5rem;
-        background: rgba(34, 33, 33, 0.568);
-        font-size: 0.65rem;
-        overflow: hidden;
+	position: relative;
+	display: grid;
+	grid-template-columns: auto auto auto 1fr auto auto;
+	align-items: center;
+	gap: 0.1rem;
+	padding: 0.1rem 0.6rem;
+	border-radius: 0.5rem;
+	background: rgba(34, 33, 33, 0.568);
+	font-size: 0.65rem;
+	overflow: hidden;
 }
 .drag-handle {
-        cursor: grab;
-        font-size: 0.8rem;
-        padding-right: 0.3rem;
-        user-select: none;
-        position: relative;
-        z-index: 1;
+	cursor: grab;
+	font-size: 0.8rem;
+	padding-right: 0.3rem;
+	user-select: none;
+	position: relative;
+	z-index: 1;
 }
 .ability-order {
-        width: 1rem;
-        text-align: center;
-        font-weight: 600;
-        position: relative;
-        z-index: 1;
+	width: 1rem;
+	text-align: center;
+	font-weight: 600;
+	position: relative;
+	z-index: 1;
 }
 
 .ability-fill {

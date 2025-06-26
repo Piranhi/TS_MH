@@ -77,10 +77,89 @@ body::before {
 }
 h1,
 h2,
-h3 {
-	font-weight: 300;
-	letter-spacing: 0.06em;
+h3,
+h4 {
 	color: var(--text-strong);
+	font-size: 22px;
+	font-weight: 700;
+	line-height: tight; /* You might need to define a specific value for 'tight' if it's not a standard browser keyword or map it to a specific line-height in your design system. */
+	letter-spacing: -0.015em;
+	padding-left: 16px;
+	padding-right: 16px;
+	padding-bottom: 12px;
+	padding-top: 20px;
+}
+
+.basic-title {
+	color: var(--text-strong);
+	font-size: 22px;
+	font-weight: 700;
+	line-height: tight; /* You might need to define a specific value for 'tight' if it's not a standard browser keyword or map it to a specific line-height in your design system. */
+	letter-spacing: -0.015em;
+}
+
+.basic-subtitle {
+	color: white;
+	font-size: 1rem; /* 16px */
+	font-weight: 500;
+	line-height: normal;
+}
+
+.basic-text {
+	color: white;
+	font-size: 1rem; /* 16px */
+	font-weight: 500;
+	line-height: normal;
+}
+.basic-text-strong {
+	color: white;
+	font-size: 0.875rem; /* text-sm */
+	font-weight: 700; /* font-normal */
+	line-height: normal;
+}
+
+.basic-text-light {
+	color: #9cabba;
+	font-size: 0.875rem; /* text-sm */
+	font-weight: 400; /* font-normal */
+	line-height: normal;
+}
+
+.basic-text-footer {
+	display: flex;
+	gap: 1.6em;
+	color: #9debf9;
+	font-size: 0.74rem;
+	margin-top: 2px;
+}
+
+.basic-div-text {
+	display: flex;
+	gap: 24px; /* 6 * 4px = 24px */
+	justify-content: space-between;
+}
+
+.basic-row-entry {
+	grid-column: span 2 / span 2; /* Equivalent to col-span-2 */
+	display: grid;
+	grid-template-columns: subgrid; /* Equivalent to grid-cols-subgrid */
+	border-top: 1px solid #3b4754;
+	padding-top: 4px; /* py-5 = 5 * 4px = 20px */
+	padding-bottom: 4px; /* py-5 = 5 * 4px = 20px */
+}
+
+.basic-row-entry p:first-child {
+	color: #9cabba;
+	font-size: 0.875rem; /* text-sm */
+	font-weight: 400; /* font-normal */
+	line-height: normal;
+}
+
+.basic-row-entry p:last-child {
+	color: white;
+	font-size: 0.875rem; /* text-sm */
+	font-weight: 400; /* font-normal */
+	line-height: normal;
 }
 
 /* --- Glass utility --- */

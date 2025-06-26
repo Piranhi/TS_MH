@@ -74,11 +74,11 @@ export class TrainedStatDisplay extends UIBase {
 			image: this.$(".training-icon img") as HTMLImageElement,
 		};
 
-		this.bindDomEvent(this.$(".control-button.plus"), "click", () => this.adjustAmount(1));
-		this.bindDomEvent(this.$(".control-button.minus"), "click", () => this.adjustAmount(-1));
-		this.bindDomEvent(this.$(".control-button.zero"), "click", () => this.setToZero());
-		this.bindDomEvent(this.$(".control-button.max"), "click", () => this.setToMax());
-		this.bindDomEvent(this.$(".control-button.half"), "click", () => this.setToHalf());
+		this.bindDomEvent(this.$("#training-spend-plus"), "click", () => this.adjustAmount(1));
+		this.bindDomEvent(this.$("#training-spend-minus"), "click", () => this.adjustAmount(-1));
+		this.bindDomEvent(this.$("#training-spend-0"), "click", () => this.setToZero());
+		this.bindDomEvent(this.$("#training-spend-max"), "click", () => this.setToMax());
+		this.bindDomEvent(this.$("#training-spend-half"), "click", () => this.setToHalf());
 
 		this.els.image.alt = this.trainedStat.name;
 

@@ -9,6 +9,16 @@
 	--fs-h3: 1.125rem;
 	--fs-base: 1rem;
 	--fs-sm: 0.875rem;
+
+	--btn-bg: #3d98f4;
+	--btn-bg-selected: #3d98f4;
+	--btn-bg-disabled: #283039;
+	--btn-bg-hover: rgba(255, 255, 255, 0.24);
+	--btn-text: #fff;
+	--btn-border: none;
+	--btn-radius: 8px;
+	--btn-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+	--btn-transition: background 0.15s, transform 0.1s;
 }
 
 .generic-modal-overlay {
@@ -147,30 +157,59 @@ button#genericModalButton:disabled {
 	transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Core button style—use your theme tokens as needed */
-.ui-button {
-	display: inline-flex;
+.btn-spend {
+	display: flex;
+	min-width: 64px;
+	max-width: 480px;
+	cursor: pointer;
 	align-items: center;
 	justify-content: center;
-	padding: 0.6rem 1.2rem;
-	font-size: 1rem;
-	font-weight: 500;
+	overflow: hidden;
+	border-radius: 8px;
+	height: 40px;
+	padding-left: 12px;
+	padding-right: 12px;
+	background-color: #283039;
+	color: white;
+	font-size: 0.875rem; /* text-sm */
+	font-weight: 700; /* font-bold */
+	line-height: normal;
+	letter-spacing: 0.015em;
+	border: none;
+}
+
+/* Core button style—use your theme tokens as needed */
+.ui-button {
 	background: var(--btn-bg, rgba(255, 255, 255, 0.15));
 	color: var(--btn-text, #fff);
-	border: none;
-	border-radius: 8px;
-	backdrop-filter: blur(6px);
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-	cursor: pointer;
 	transition: background 0.15s, transform 0.1s;
+	display: flex;
+	min-width: 64px;
+	max-width: 480px;
+	cursor: pointer;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	border-radius: 8px;
+	height: 40px;
+	padding-left: 16px;
+	padding-right: 16px;
+	font-size: 0.875rem;
+	font-weight: 700;
+	line-height: normal;
+	letter-spacing: 0.015em;
+	width: 100%;
+	border: none;
 }
 
 .ui-button:hover {
 	background: var(--btn-bg-hover, rgba(255, 255, 255, 0.24));
 }
 
-.ui-button:active {
-	transform: scale(0.98);
+.ui-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	background: var(--btn-bg-disabled, rgba(255, 255, 255, 0.15));
 }
 
 /*  ===============  Layout wrapper  =============== */
@@ -460,6 +499,10 @@ section + section {
 }
 .btn:active {
 	transform: scale(0.97);
+}
+.btn:disabled {
+	opacity: 0.1;
+	cursor: not-allowed;
 }
 
 .chest-opening,

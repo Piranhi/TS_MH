@@ -54,13 +54,13 @@ export class BuildingDisplay extends UIBase {
 		amounts.forEach((amt) => {
 			const btn = document.createElement("button");
 			btn.textContent = `+${amt}`;
-			btn.classList.add("spend-btn");
+			btn.classList.add("btn-spend");
 			btn.addEventListener("click", () => this.spendPoints(amt));
 			this.spendContainer.appendChild(btn);
 		});
 		const halfBtn = document.createElement("button");
 		halfBtn.textContent = "+Half";
-		halfBtn.classList.add("spend-btn");
+		halfBtn.classList.add("btn-spend");
 		halfBtn.addEventListener("click", () => {
 			const amt = Math.floor(this.context.settlement.totalBuildPoints / 2);
 			this.spendPoints(amt);

@@ -8,7 +8,10 @@ export interface UIButtonOptions {
 	/** Click callback */
 	onClick?: (ev: MouseEvent) => void;
 	/** Optional CSS class for styling variants */
+	id?: string;
 	className?: string;
+	disabled?: boolean;
+	tooltip?: string;
 }
 
 export class UIButton extends UIBase {
@@ -24,6 +27,7 @@ export class UIButton extends UIBase {
 		// 1️⃣ Create and configure the DOM element
 		this.el = document.createElement("button");
 		this.element = this.el;
+		this.el.id = options.id ?? "";
 		this.el.classList.add("ui-button");
 		if (options.className) {
 			this.el.classList.add(options.className);
@@ -36,6 +40,15 @@ export class UIButton extends UIBase {
 		// 3️⃣ Wire up click via UIBase helper (auto-deregisters on destroy)
 		if (options.onClick) {
 			this.bindDomEvent(this.el, "click", options.onClick as EventListener);
+		}
+		this.setState(options.disabled ? "disabled" : "enabled");
+	}
+
+	public setState(state: "disabled" | "enabled") {
+		if (state === "disabled") {
+			this.el.disabled = true;
+		} else {
+			this.el.disabled = false;
 		}
 	}
 

@@ -19,6 +19,7 @@ import { OfflineProgressManager } from "@/models/OfflineProgress";
 import { ResourceManager } from "@/features/inventory/ResourceManager";
 import { MineManager } from "@/features/mine/MineManager";
 import { ModifierEngine } from "./ModifierEngine";
+import { StatsManager } from "@/models/StatsManager";
 
 export class GameContext {
 	private static _instance: GameContext | null = null;
@@ -83,15 +84,15 @@ export class GameContext {
 		return this.currentRun.huntManager;
 	}
 
-        public get resources(): ResourceManager {
-                if (!this.currentRun) throw new Error("No active run!");
-                return this.currentRun?.resourceManager;
-        }
+	public get resources(): ResourceManager {
+		if (!this.currentRun) throw new Error("No active run!");
+		return this.currentRun?.resourceManager;
+	}
 
-        public get mine(): MineManager {
-                if (!this.currentRun) throw new Error("No active run!");
-                return this.currentRun.mineManager;
-        }
+	public get mine(): MineManager {
+		if (!this.currentRun) throw new Error("No active run!");
+		return this.currentRun.mineManager;
+	}
 
 	public get inventory(): InventoryManager {
 		return this.services.inventoryManager;
@@ -101,29 +102,33 @@ export class GameContext {
 		return this.services.settlementManager;
 	}
 
-        public get library(): LibraryManager {
-                return this.services.libraryManager;
-        }
+	public get library(): LibraryManager {
+		return this.services.libraryManager;
+	}
 
-        public get blacksmith(): BlacksmithManager {
-                return this.services.blacksmithManager;
-        }
+	public get blacksmith(): BlacksmithManager {
+		return this.services.blacksmithManager;
+	}
 
-        public get classes(): ClassManager {
-                return this.services.classManager;
-        }
+	public get classes(): ClassManager {
+		return this.services.classManager;
+	}
 
 	public get saves(): SaveManager {
 		return this.services.saveManager;
 	}
 
-        public get screens(): ScreenManager {
-                return this.services.screenManager;
-        }
+	public get screens(): ScreenManager {
+		return this.services.screenManager;
+	}
 
-        public get modifiers(): ModifierEngine {
-                return this.services.modifierEngine;
-        }
+	public get modifiers(): ModifierEngine {
+		return this.services.modifierEngine;
+	}
+
+	public get stats(): StatsManager {
+		return this.services.statsManager;
+	}
 
 	public get offlineManager(): OfflineProgressManager {
 		return this.services.offlineManager;

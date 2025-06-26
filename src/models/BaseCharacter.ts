@@ -45,6 +45,7 @@ export abstract class BaseCharacter extends Destroyable {
 
 	/* ───────────────────── private fields ────────────────────── */
 	private inCombat = false;
+	private _alive = true;
 	public readonly resistances: CharacterResistances;
 	public readonly statusEffects: StatusEffectManager;
 
@@ -107,6 +108,14 @@ export abstract class BaseCharacter extends Destroyable {
 		return this._charLevel;
 	}
 
+	get alive(): boolean {
+		return this._alive;
+	}
+
+	set alive(alive: boolean) {
+		this._alive = alive;
+	}
+
 	isAlive(): boolean {
 		return !this.hp.isEmpty();
 	}
@@ -167,6 +176,7 @@ export abstract class BaseCharacter extends Destroyable {
 	public beginCombat() {
 		//this.setToMaxHP();
 		this.inCombat = true;
+		this.alive = true;
 		this.stamina.setCurrent(this.stamina.max);
 		this.getAbilities().forEach((a) => a.init()); // Init abilities
 		this.resistances.clearTemp();

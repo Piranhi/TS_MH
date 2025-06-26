@@ -53,6 +53,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 	}
 
 	private passiveHeal() {
+		if (!this.alive) return;
 		this.hp.increase(GAME_BALANCE.player.healing.passiveHealPercent);
 	}
 

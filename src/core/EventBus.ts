@@ -9,6 +9,7 @@ import { MilestoneEventPayload } from "@/shared/Milestones";
 import { GameRun, RunStats } from "./GameRun";
 import { Resource } from "@/features/inventory/Resource";
 import { ModifierSystem } from "./ModifierEngine";
+import { Area } from "@/models/Area";
 
 export interface GameEvents {
 	"Game:UITick": number;
@@ -63,6 +64,7 @@ export interface GameEvents {
 	//HUNT
 	"hunt:stateChanged": HuntState;
 	"hunt:areaSelected": string;
+	"hunt:areaChanged": Area;
 	"hunt:areaKill": { enemyId: string; areaId: string };
 	"hunt:bossKill": { areaId: string };
 	"hunt:areaUnlocked": string;

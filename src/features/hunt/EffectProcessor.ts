@@ -49,6 +49,9 @@ export class EffectProcessor {
 
 		const finalDamage = Math.floor(Math.max(0, rawDamage * mitigationFactor));
 		target.hp.decrease(finalDamage);
+		if (target.hp.current <= 0 && target.canDie) {
+			target.alive = false;
+		}
 		printLog(
 			`${target.name} taking damage. Inc: [RAW]${rawDamage} - [DEF]${totalDefence}, [MIT]${
 				mitigationFactor - 1

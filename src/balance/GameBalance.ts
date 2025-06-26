@@ -239,7 +239,8 @@ export const GAME_BALANCE = {
 	hunt: {
 		baseSearchTime: 1, // Base time between encounter rolls in seconds
 		baseEncounterChance: 0.5, // Base chance to encounter a monster per search
-		enemiesNeededForBoss: 10, // How many enemies to defeat for a boss encounter
+		enemiesNeededForBoss: 100, // How many enemies to defeat for a boss encounter
+		clearsNeededForOutpost: 10, // How many enemies to defeat for a outpost encounter
 	},
 
 	// === MODIFIER SYSTEM CONFIG ===

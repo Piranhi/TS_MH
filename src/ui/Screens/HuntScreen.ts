@@ -6,9 +6,8 @@ import { PlayerCharacter } from "../../models/PlayerCharacter";
 import { EnemyCharacter } from "../../models/EnemyCharacter";
 import { CharacterDisplay } from "../components/CharacterDisplay";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
-import { AreaStats } from "@/shared/stats-types";
-import { Player } from "@/core/Player";
 import { bindEvent } from "@/shared/utils/busUtils";
+import { AreaDisplay } from "../components/AreaDisplay";
 
 export class HuntScreen extends BaseScreen {
 	readonly screenName = "hunt";
@@ -19,12 +18,6 @@ export class HuntScreen extends BaseScreen {
 	private playerCard!: CharacterDisplay;
 	private enemyCard!: CharacterDisplay | null;
 	private areaSelectEl!: HTMLSelectElement;
-	private statTotalKillsEl!: HTMLElement;
-	private statKillsThisRunEl!: HTMLElement;
-	private statBossUnlockedEl!: HTMLElement;
-	private fightBossBtn!: HTMLButtonElement;
-	private bossKilledThisRunEl!: HTMLElement;
-	private bossKillsEl!: HTMLElement;
 
 	constructor() {
 		super();
@@ -35,6 +28,7 @@ export class HuntScreen extends BaseScreen {
 		this.setupElements();
 		this.playerCard = new CharacterDisplay(true, this.byId("char-card-player"));
 		this.enemyCard = new CharacterDisplay(false, this.byId("char-card-enemy"));
+		const areaDisplay = new AreaDisplay(this.byId("area-stats"));
 		this.bindEvents();
 	}
 
@@ -53,20 +47,10 @@ export class HuntScreen extends BaseScreen {
 	private setupElements() {
 		this.huntUpdateEl = document.getElementById("hunt-update-log") as HTMLElement;
 		this.areaSelectEl = this.byId("area-select") as HTMLSelectElement;
-
-		// AREA STATS
-		this.statTotalKillsEl = this.byId("area-total-kills");
-		this.statKillsThisRunEl = this.byId("area-kills-this-run");
-		this.statBossUnlockedEl = this.byId("area-boss-unlocked");
-		this.bossKilledThisRunEl = this.byId("area-boss-killed");
-		this.bossKillsEl = this.byId("area-boss-kills");
-		this.fightBossBtn = this.byId("fight-boss-btn") as HTMLButtonElement;
-		this.fightBossBtn.disabled = true;
 	}
 
 	private bindEvents() {
 		bindEvent(this.eventBindings, "hunt:stateChanged", (state) => this.areaChanged(state));
-		bindEvent(this.eventBindings, "stats:areaStatsChanged", (stats) => this.updateAreaStats(stats));
 		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
 		bindEvent(this.eventBindings, "combat:started", (combat) => this.combatStarted(combat));
 		bindEvent(this.eventBindings, "combat:ended", (result) => this.combatEnded(result));
@@ -75,14 +59,9 @@ export class HuntScreen extends BaseScreen {
 			const names = drops.map((drop) => InventoryRegistry.getItemById(drop).name).join(", ");
 			this.updateOutput(`Dropped: ${names}`);
 		});
-		this.bindDomEvent(this.fightBossBtn, "click", this.onFightBoss);
+
 		this.bindDomEvent(this.areaSelectEl, "change", this.onAreaChanged);
 	}
-
-	private onFightBoss = (e: Event) => {
-		e.preventDefault();
-		this.context.hunt.fightBoss();
-	};
 
 	private onAreaChanged = (e: Event) => {
 		const areaId = (e.target as HTMLSelectElement).value;
@@ -92,7 +71,6 @@ export class HuntScreen extends BaseScreen {
 	private buildAreaSelect() {
 		// Setup Area select based on all Areas from JSON
 		const activeArea = this.context.hunt.getActiveAreaID();
-
 		this.areaSelectEl.innerHTML = "";
 
 		const defaultArea = document.createElement("option");
@@ -122,21 +100,6 @@ export class HuntScreen extends BaseScreen {
 	private combatEnded(result: string) {
 		this.clearEnemy();
 		//this.updateOutput(result);
-	}
-
-	private fightBoss(e: Event) {
-		e.preventDefault();
-		this.context.hunt.fightBoss();
-	}
-
-	// Updated from Hunt Manager when area is selected/Stat updated
-	private updateAreaStats(stats: AreaStats) {
-		this.statKillsThisRunEl.textContent = stats.killsThisRun.toString();
-		this.statTotalKillsEl.textContent = stats.killsTotal.toString();
-		this.statBossUnlockedEl.textContent = stats.bossUnlockedThisRun ? "Yes" : "No";
-		this.bossKilledThisRunEl.textContent = stats.bossKilledThisRun ? "Yes" : "No";
-		this.bossKillsEl.textContent = stats.bossKillsTotal.toString();
-		this.fightBossBtn.disabled = !stats.bossUnlockedThisRun && !stats.bossKilledThisRun;
 	}
 
 	private initCharacters(enemy: EnemyCharacter) {
@@ -174,8 +137,6 @@ export class HuntScreen extends BaseScreen {
 	enterCombat() {}
 
 	enterRecovery() {
-		//this.enemyCard?.clearCharacter();
-		//this.playerCard.clearCharacter();
 		this.updateOutput("In Recovery");
 	}
 

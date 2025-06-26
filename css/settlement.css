@@ -124,30 +124,6 @@
 	pointer-events: none;
 }
 
-.sped-container {
-	margin: 20px;
-}
-
-.spend-points {
-	display: flex;
-	gap: 6px;
-	margin: 20px;
-	padding: 5px;
-}
-
-.spend-btn {
-	display: flex;
-	margin-right: 6px;
-	padding: 4px 8px;
-	background: #387086;
-	border: none;
-	border-radius: 8px;
-	color: #dbe7ff;
-	font-weight: 600;
-	cursor: pointer;
-	font-size: 0.95rem;
-	transition: background 0.18s;
-}
 .add-plot .building-icon {
 	color: #7cae86;
 	font-size: 2.2em;
