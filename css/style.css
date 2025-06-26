@@ -115,10 +115,24 @@ h4 {
 }
 
 .basic-subtitle {
-	color: white;
-	font-size: 1rem; /* 16px */
-	font-weight: 500;
-	line-height: normal;
+        color: white;
+        font-size: 1rem; /* 16px */
+        font-weight: 500;
+        line-height: normal;
+}
+
+.basic-small {
+        color: white;
+        font-size: 0.875rem; /* 14px */
+        font-weight: 500;
+        line-height: normal;
+}
+
+.basic-very-small {
+        color: white;
+        font-size: 0.75rem; /* 12px */
+        font-weight: 500;
+        line-height: normal;
 }
 
 .basic-text {

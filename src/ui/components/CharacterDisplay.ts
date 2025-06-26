@@ -90,9 +90,9 @@ export class CharacterDisplay extends UIBase {
 			iconImg.style.backgroundPosition = "center";
 			iconImg.style.backgroundRepeat = "no-repeat";
 
-			const name = document.createElement("span");
-			name.className = "ability-name";
-			name.textContent = ability.name;
+                        const name = document.createElement("span");
+                        name.className = "ability-name basic-very-small";
+                        name.textContent = ability.name;
 
 			const dmg = document.createElement("span");
 			dmg.className = "ability-dmg";

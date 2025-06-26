@@ -12,11 +12,6 @@
 	flex-direction: column;
 	gap: 1rem;
 }
-.library-section-header {
-	font-size: 1.3rem;
-	font-weight: 600;
-	color: var(--primary-text, #fff);
-}
 .library-section-speed {
 	font-size: 0.8rem;
 	font-weight: 600;
