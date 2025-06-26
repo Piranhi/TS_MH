@@ -357,17 +357,7 @@
 	width: calc(var(--hunt-stamina, 0) * 100%);
 }
 
-.stamina-label {
-	align-self: flex-end;
-	font-size: 0.7rem;
-	opacity: 0.85;
-}
 
-.hp-label {
-	align-self: flex-end;
-	font-size: 0.88rem;
-	opacity: 0.85;
-}
 
 /* 3. Ability List */
 .ability-list {
@@ -443,10 +433,9 @@
 }
 
 .ability-icon,
-.ability-name,
 .ability-dmg {
-	position: relative;
-	z-index: 1;
+        position: relative;
+        z-index: 1;
 }
 
 /* Different colors for player vs enemy abilities */
@@ -473,9 +462,6 @@
 	text-align: center;
 }
 
-.ability-name {
-	font-weight: 500;
-}
 
 .ability-dmg {
 	font-weight: 600;
