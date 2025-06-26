@@ -113,17 +113,18 @@ export class GuildHallScreen extends BaseScreen {
 		CHALLENGES.forEach((ch) => {
 			const level = this.challengeLevels.get(ch.id) || 0;
 			const card = document.createElement("div");
-			card.className = "challenge-card";
+			card.className = "basic-grid-card";
 			if (this.activeChallenge === ch.id) card.classList.add("active");
 			const title = document.createElement("div");
-			title.className = "challenge-title";
+			title.className = "basic-subtitle";
 			title.textContent = `${ch.name} (Lv ${level})`;
 			card.appendChild(title);
 			const desc = document.createElement("div");
+			desc.className = "basic-text-light";
 			desc.textContent = ch.description.replace("{target}", String(ch.targetAreas[level]));
 			card.appendChild(desc);
 			const prog = document.createElement("div");
-			prog.className = "challenge-progress";
+			prog.className = "basic-text-footer";
 			prog.textContent = this.activeChallenge === ch.id ? "In Progress" : "";
 			card.appendChild(prog);
 			card.addEventListener("click", () => {

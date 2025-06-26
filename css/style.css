@@ -90,6 +90,22 @@ h4 {
 	padding-top: 20px;
 }
 
+/* --- NEW BASIC STYLES --- */
+
+.basic-section {
+	background: rgb(35, 54, 66);
+	border-radius: 6px;
+	padding: 8px 12px;
+	border: none;
+}
+
+.basic-section-header {
+	background: rgb(41, 49, 54);
+	border-radius: 0px;
+	padding: 8px 12px;
+	border: none;
+	margin: 0;
+}
 .basic-title {
 	color: var(--text-strong);
 	font-size: 22px;
@@ -133,6 +149,34 @@ h4 {
 	margin-top: 2px;
 }
 
+.basic-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.basic-list li {
+	color: #9cabba;
+	font-size: 0.875rem; /* text-sm */
+	font-weight: 400; /* font-normal */
+	line-height: normal;
+}
+
+.basic-list-boxes {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+	gap: 8px;
+}
+.basic-list-boxes li {
+	background: rgba(128, 128, 128, 0.2);
+	padding: 6px 8px;
+	border-radius: 6px;
+	font-size: 0.9rem;
+}
+
 .basic-div-text {
 	display: flex;
 	gap: 24px; /* 6 * 4px = 24px */
@@ -160,6 +204,61 @@ h4 {
 	font-size: 0.875rem; /* text-sm */
 	font-weight: 400; /* font-normal */
 	line-height: normal;
+}
+
+.basic-table {
+	width: 100%;
+	border-collapse: collapse;
+	background: transparent;
+}
+
+.basic-table thead {
+	background: rgba(64, 64, 64, 0.8);
+}
+
+.basic-table th {
+	padding: 2px 8px;
+	text-align: left;
+	font-size: 16px;
+	font-weight: 500;
+	color: white;
+	border: none;
+}
+
+.basic-table td {
+	padding: 6px;
+	font-size: 13px;
+	border-top: 1px solid #4d4d4d;
+	height: 12px;
+	vertical-align: middle;
+}
+
+.basic-stat-name {
+	color: white;
+	font-weight: normal;
+}
+
+.basic-stat-value {
+	color: #adadad;
+	font-weight: normal;
+}
+
+.basic-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	gap: 10px;
+}
+.basic-grid-card {
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 6px;
+	padding: 10px;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+.basic-grid-card.active {
+	border: 2px solid var(--accent);
 }
 
 /* --- Glass utility --- */
@@ -593,75 +692,6 @@ h4 {
 	overflow: hidden;
 	backdrop-filter: blur(10px);
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-}
-
-.stats-table {
-	width: 100%;
-	border-collapse: collapse;
-	background: transparent;
-}
-
-.stats-table thead {
-	background: rgba(64, 64, 64, 0.8);
-}
-
-.stats-table th {
-	padding: 2px 8px;
-	text-align: left;
-	font-size: 16px;
-	font-weight: 500;
-	color: white;
-	border: none;
-}
-
-.stats-table td {
-	padding: 6px;
-	font-size: 13px;
-	border-top: 1px solid #4d4d4d;
-	height: 12px;
-	vertical-align: middle;
-}
-
-.stat-name {
-	color: white;
-	font-weight: normal;
-}
-
-.stat-value {
-	color: #adadad;
-	font-weight: normal;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-	body {
-		padding: 20px 16px;
-	}
-
-	.stats-title {
-		font-size: 24px;
-	}
-
-	.stats-table th,
-	.stats-table td {
-		padding: 12px;
-	}
-
-	.stats-table td {
-		height: 60px;
-	}
-}
-
-@media (max-width: 480px) {
-	.stats-table th,
-	.stats-table td {
-		padding: 8px;
-		font-size: 13px;
-	}
-
-	.stats-table td {
-		height: 50px;
-	}
 }
 
 .player-level-section {

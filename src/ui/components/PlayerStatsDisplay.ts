@@ -53,7 +53,7 @@ export class PlayerStatsDisplay extends UIBase {
             </div>
             
             <div class="table-wrapper">
-                <table class="stats-table">
+                <table class="basic-table">
                     <thead>
                         <tr>
                             <th>Stat</th>
@@ -64,8 +64,8 @@ export class PlayerStatsDisplay extends UIBase {
                 </table>
             </div>
             <div class="trait-section">
-                <h3>Traits</h3>
-                <ul class="trait-list" id="trait-list"></ul>
+                <h3 class="basic-subtitle">Traits</h3>
+				<ul id="trait-list" class="basic-list"></ul>
             </div>
         </div>
     `;
@@ -119,8 +119,8 @@ export class PlayerStatsDisplay extends UIBase {
 		this.statsData.forEach((stat) => {
 			const row = document.createElement("tr");
 			row.innerHTML = `
-                <td class="stat-name">${stat.name}</td>
-                <td class="stat-value" data-stat="${stat.name}">${stat.value}</td>
+                <td class="basic-stat-name">${stat.name}</td>
+                <td class="basic-stat-value" data-stat="${stat.name}">${stat.value}</td>
             `;
 			this.tableBody.appendChild(row);
 		});
@@ -153,8 +153,9 @@ export class PlayerStatsDisplay extends UIBase {
 		this.traitListEl.innerHTML = "";
 		traits.forEach((t) => {
 			const li = document.createElement("li");
-			li.textContent = `${t.name} (${t.rarity}) - ${t.description}`;
+			li.textContent = `${t.name} (${t.rarity})`;
 			this.traitListEl.appendChild(li);
+			li.classList.add("basic-list-item");
 		});
 	}
 
