@@ -4,7 +4,7 @@ import { UIButton } from "./UIButton";
 import { formatTime } from "@/shared/utils/stringUtils";
 import { MineManager } from "@/features/mine/MineManager";
 
-export class MineShaft extends UIBase {
+export class MineShaftDisplay extends UIBase {
 	private progress!: ProgressBar;
 	private timerEl!: HTMLElement;
 	private openBtn!: UIButton;
@@ -17,7 +17,7 @@ export class MineShaft extends UIBase {
 	) {
 		super();
 		this.element = document.createElement("div");
-		this.element.className = "mine-resource-row";
+		this.element.className = "basic-subsection-row";
 		this.build();
 		this.attachTo(container);
 	}
@@ -33,7 +33,7 @@ export class MineShaft extends UIBase {
 		this.element.appendChild(infoContainer);
 
 		const titleEl = document.createElement("span");
-		titleEl.className = "mine-resource-title";
+		titleEl.className = "basic-subtitle";
 		titleEl.textContent = `Shaft ${this.index + 1}`;
 		infoContainer.appendChild(titleEl);
 
@@ -47,7 +47,7 @@ export class MineShaft extends UIBase {
 		});
 
 		this.timerEl = document.createElement("span");
-		this.timerEl.className = "mine-resource-timer";
+		this.timerEl.className = "basic-text-footer";
 		infoContainer.appendChild(this.timerEl);
 
 		this.openBtn = new UIButton(this.element, {

@@ -13,10 +13,12 @@ import { StatusEffect } from "@/features/hunt/StatusEffect";
 
 export interface CharacterSnapshot {
 	name: string;
-	realHP: { current: string; max: string; percent: string };
-	stamina: { current: string; max: string; percent: string };
-	attack: string;
-	defence: string;
+	hpCurrent: number;
+	hpMax: number;
+	staminaCurrent: number;
+	staminaMax: number;
+	attack: number;
+	defence: number;
 	imgUrl: string;
 	abilities: Ability[];
 	rarity?: string;
@@ -66,6 +68,8 @@ export abstract class BaseCharacter extends Destroyable {
 	private calcRealHp(base: number): number {
 		return base;
 	}
+
+	protected checkDebugOptions() {}
 
 	calculatePowerStats(): number {
 		// 1) Base weights
@@ -209,6 +213,7 @@ export abstract class BaseCharacter extends Destroyable {
 	}
 
 	public handleCombatUpdate(dt: number) {
+		this.checkDebugOptions();
 		this.statusEffects.handleTick(dt);
 		this.regenStamina(dt);
 	}
@@ -265,14 +270,12 @@ export abstract class BaseCharacter extends Destroyable {
 	snapshot(): CharacterSnapshot {
 		return {
 			name: this.name,
-			realHP: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },
-			stamina: {
-				current: this.stamina.current.toFixed(0),
-				max: this.stamina.max.toFixed(0),
-				percent: (this.stamina.current / this.stamina.max).toFixed(2),
-			},
-			attack: this.attack.toString(),
-			defence: this.defence.toString(),
+			hpCurrent: this.currentHp,
+			hpMax: this.maxHp,
+			staminaCurrent: this.stamina.current,
+			staminaMax: this.stamina.max,
+			attack: this.attack,
+			defence: this.defence,
 			abilities: this.getAbilities(),
 			imgUrl: this.getAvatarUrl(),
 			rarity: "Todo",

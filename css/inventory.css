@@ -2,8 +2,8 @@
 .inventory-screen {
 	display: flex;
 	flex-direction: column;
-	padding: 1rem;
-	gap: 1rem;
+	padding: 0.5rem;
+	gap: 0.5rem;
 }
 
 .top-section {
@@ -12,18 +12,14 @@
 }
 
 .panel {
-	background: rgba(255, 255, 255, 0.1);
-	backdrop-filter: blur(10px);
+	background: rgb(48, 55, 63);
 	border-radius: 8px;
-	padding: 1rem;
+	padding: 0.5rem;
 	flex-shrink: 0;
 }
 
 .equipment-panel {
 	width: auto;
-}
-.classcards-panel {
-	flex: 1;
 }
 
 .equipment-grid {
@@ -38,9 +34,33 @@
 	gap: 0.75rem;
 }
 
-.classcards-grid {
+.recycle-panel {
+	width: auto;
+	height: auto;
+	justify-content: flex-end;
+	flex-direction: column;
+	flex: 0;
+	flex-shrink: 1;
+	flex-grow: 0;
 	display: flex;
+	margin: 0%;
+	align-items: flex-end;
+	vertical-align: bottom;
+	margin-top: auto;
+}
+
+.recycle-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
 	gap: 0.75rem;
+	padding-bottom: 0rem;
+}
+
+.info-panel {
+	margin-top: 0%;
+	width: 100%;
+	gap: 0.75rem;
+	flex: 1;
 }
 
 .inventory-panel {
@@ -66,7 +86,7 @@
 	justify-content: center;
 	border: 2px dashed #555;
 	border-radius: 8px;
-	background: rgba(219, 219, 219, 0.555);
+	background: rgb(61, 61, 61);
 	transition: background 0.2s, border-color 0.2s;
 	min-width: 64px;
 	max-width: 64px;
@@ -81,21 +101,10 @@
 
 /* 3) Slot modifiers */
 .slot--equipment,
-.slot--classCard,
+.slot--recycleBin,
 .slot--inventory {
 	width: 64px;
 	height: 64px;
-}
-
-/* choose your layout container to differentiate */
-.slot--inventory {
-	/* nothing extra; container handles grid */
-}
-.slot--classCard {
-	/* container is flex row */
-}
-.slot--equipment {
-	/* container is 3×3 grid */
 }
 
 /* 4) Empty vs Filled */
@@ -234,95 +243,4 @@
 }
 .slot--equipment[data-slot="finger2"].empty {
 	background-image: url("/images/equipment/equipment-bg-finger.png");
-}
-
-/* ─────────────────────────────────────────────── */
-/* Tooltip container                               */
-/* ─────────────────────────────────────────────── */
-.item-tooltip {
-	position: fixed; /* follow the mouse or slot bounds */
-	z-index: 1000; /* above everything in the inventory */
-	width: 260px;
-	max-width: 80vw; /* phone safety */
-	padding: 1rem;
-	border-radius: 12px;
-
-	/* Glassmorphism */
-	background: linear-gradient(to bottom, var(--tooltip-tint, rgba(255, 255, 255, 0.05)), rgba(255, 255, 255, 0.12));
-	backdrop-filter: blur(12px) saturate(160%);
-	border: 1px solid rgba(255, 255, 255, 0.25);
-	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-
-	/* Animation: scale & fade from pointer */
-	opacity: 0;
-	transform: scale(0.9) translateY(4px);
-	transition: opacity 120ms ease, transform 120ms ease;
-	pointer-events: none; /* never block clicks */
-}
-
-/* The “visible” state is toggled via JS */
-.item-tooltip.show {
-	opacity: 1;
-	transform: scale(1) translateY(0);
-}
-
-/* Small arrow ▾ created with a ::after pseudo‑element */
-.item-tooltip::after {
-	content: "";
-	position: absolute;
-	inset: -6px auto auto 1rem; /* top by default; tweak in JS for sides */
-	width: 12px;
-	height: 12px;
-	background: inherit;
-	border: inherit;
-	border-right: none;
-	border-bottom: none;
-	transform: rotate(45deg);
-	filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
-}
-
-/* ─────────────────────────────────────────────── */
-/* Layout inside the tooltip                       */
-/* ─────────────────────────────────────────────── */
-.tooltip-header {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	margin-bottom: 0.25rem;
-}
-
-.tooltip-icon {
-	width: 60px;
-	height: 60px;
-	object-fit: contain;
-	flex-shrink: 0;
-}
-
-.tooltip-name {
-	font-size: 1.1rem;
-	line-height: 1;
-	margin: 0;
-}
-
-.tooltip-type {
-	font-size: 0.8rem;
-	opacity: 0.8;
-	margin: 0 0 0.5rem;
-}
-
-.tooltip-stats {
-	list-style: none;
-	padding: 0;
-	margin: 0 0 0.5rem;
-	font-size: 0.85rem;
-}
-
-.tooltip-stats li + li {
-	margin-top: 0.25rem;
-}
-
-.tooltip-description {
-	font-size: 0.8rem;
-	opacity: 0.9;
-	margin: 0;
 }

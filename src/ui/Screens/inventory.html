@@ -1,66 +1,49 @@
 <section class="game inventory-screen">
-  <div id="item-tooltip" class="item-tooltip" hidden>
-    <header class="tooltip-header">
-      <img class="tooltip-icon" src="" alt="" />
-      <h3 class="tooltip-name">Item Name</h3>
-    </header>
-
-    <p class="tooltip-type">Type • Rarity</p>
-
-    <ul class="tooltip-stats">
-      <!-- <li>+12 Strength</li> ... -->
-    </ul>
-
-    <p class="tooltip-description">
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-    </p>
-  </div>
   <div class="inventory-screen" id="inventory-section">
-    <!-- TOP ROW: Equipment + Class Cards -->
+    <!-- TOP ROW: Equipment -->
     <div class="top-section">
       <!-- Equipment Panel -->
       <section class="panel equipment-panel">
         <h2>Equipment</h2>
         <div class="equipment-grid">
+        </div>
+      </section>
+      <section class="panel recycle-panel">
+        <div class="recycle-grid">
+        </div>
+      </section>
+      <section class="panel info-panel">
+        <h2>Bonuses</h2>
+        <div class="info-grid">
+          <div class="basic-table-wrapper"></div>
+          <table class="basic-table">
 
-
+            <thead>
+              <tr>
+                <th>Stat</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Strength</td>
+                <td>10</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <!-- Class Cards Panel -->
-      <section class="panel classcards-panel">
-        <h2>Class Cards</h2>
-        <div class="classcards-grid">
+      <!-- BOTTOM ROW: Inventory (scrollable) -->
+
+    </div>
+    <div class="bottom-section">
+      <section class="panel inventory-panel">
+        <h2>Inventory</h2>
+        <div class="inventory-grid">
         </div>
       </section>
     </div>
-
-    <!-- BOTTOM ROW: Inventory (scrollable) -->
-    <section class="panel inventory-panel">
-      <h2>Inventory</h2>
-      <div class="inventory-grid">
-        <!-- generate these dynamically -->
-        <div class="slot slot--inventory filled rarity-rare" data-slot-type="inventory" data-slot-index="0"
-          draggable="true">
-          <div class="item-icon">
-            <img src="assets/potion.png" alt="Potion" />
-          </div>
-          <div class="item-count">12</div>
-        </div>
-
-        <div class="slot slot--inventory filled rarity-rare" data-slot-type="inventory" data-slot-index="0"
-          draggable="true">
-          <div class="item-icon">
-            <img src="assets/potion.png" alt="Potion" />
-          </div>
-          <div class="item-count">12</div>
-        </div>
-
-        <div class="slot slot--inventory empty" data-slot-type="inventory" data-slot-index="1"></div>
-        <!-- …more item‐slots… -->
-      </div>
-    </section>
-  </div>
 
 
 </section>

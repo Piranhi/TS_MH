@@ -142,6 +142,22 @@ button#genericModalButton:disabled {
 	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
 }
 
+.mh-progress__fill.mh-progress--red {
+	background: #d86d6d;
+}
+.mh-progress__fill.mh-progress--green {
+	background: #55bb77;
+}
+.mh-progress__fill.mh-progress--blue {
+	background: #6a96c9;
+}
+.mh-progress__fill.mh-progress--yellow {
+	background: #facc15;
+}
+.mh-progress__fill.mh-progress--purple {
+	background: #a855f7;
+}
+
 /* Pulse animation for normal speed bars */
 @keyframes pulse {
 	0% {
@@ -200,6 +216,17 @@ button#genericModalButton:disabled {
 	letter-spacing: 0.015em;
 	width: 100%;
 	border: none;
+}
+.ui-button-small {
+	height: 20px;
+	width: 20px;
+	font-size: 0.7rem;
+}
+.ui-button-medium {
+	height: 32px;
+}
+.ui-button-large {
+	height: 40px;
 }
 
 .ui-button:hover {
@@ -630,4 +657,95 @@ section + section {
 	border-radius: 8px;
 	background-color: #2c2c2ccb;
 	white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────── */
+/* Tooltip container                               */
+/* ─────────────────────────────────────────────── */
+.item-tooltip {
+	position: fixed; /* follow the mouse or slot bounds */
+	z-index: 1000; /* above everything in the inventory */
+	width: 260px;
+	max-width: 80vw; /* phone safety */
+	padding: 1rem;
+	border-radius: 12px;
+
+	/* Glassmorphism */
+	background: linear-gradient(to bottom, var(--tooltip-tint, rgba(255, 255, 255, 0.05)), rgba(255, 255, 255, 0.12));
+	backdrop-filter: blur(12px) saturate(160%);
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+
+	/* Animation: scale & fade from pointer */
+	opacity: 0;
+	transform: scale(0.9) translateY(4px);
+	transition: opacity 120ms ease, transform 120ms ease;
+	pointer-events: none; /* never block clicks */
+}
+
+/* The “visible” state is toggled via JS */
+.item-tooltip.show {
+	opacity: 1;
+	transform: scale(1) translateY(0);
+}
+
+/* Small arrow ▾ created with a ::after pseudo‑element */
+.item-tooltip::after {
+	content: "";
+	position: absolute;
+	inset: -6px auto auto 1rem; /* top by default; tweak in JS for sides */
+	width: 12px;
+	height: 12px;
+	background: inherit;
+	border: inherit;
+	border-right: none;
+	border-bottom: none;
+	transform: rotate(45deg);
+	filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* ─────────────────────────────────────────────── */
+/* Layout inside the tooltip                       */
+/* ─────────────────────────────────────────────── */
+.tooltip-header {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.25rem;
+}
+
+.tooltip-icon {
+	width: 60px;
+	height: 60px;
+	object-fit: contain;
+	flex-shrink: 0;
+}
+
+.tooltip-name {
+	font-size: 1.1rem;
+	line-height: 1;
+	margin: 0;
+}
+
+.tooltip-type {
+	font-size: 0.8rem;
+	opacity: 0.8;
+	margin: 0 0 0.5rem;
+}
+
+.tooltip-stats {
+	list-style: none;
+	padding: 0;
+	margin: 0 0 0.5rem;
+	font-size: 0.85rem;
+}
+
+.tooltip-stats li + li {
+	margin-top: 0.25rem;
+}
+
+.tooltip-description {
+	font-size: 0.8rem;
+	opacity: 0.9;
+	margin: 0;
 }

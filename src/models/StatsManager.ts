@@ -114,6 +114,7 @@ export class StatsManager implements Saveable {
 	// --------------- STAT MODIFICATION METHODS -----------------------
 
 	private prestigeInit() {
+		if (this.areaStats.size === 0) return;
 		for (const [areaId, stats] of this.areaStats) {
 			// Do something with areaId and stats
 			stats.bossKilledThisRun = false;

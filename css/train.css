@@ -29,14 +29,11 @@
 	display: flex;
 	align-items: center;
 	width: 100%;
-	background: var(--card-bg);
-	border: 1px solid var(--card-border);
-	-webkit-backdrop-filter: blur(20px);
-	backdrop-filter: blur(20px);
-	border-radius: 8px;
-	padding: 0.75rem 1rem;
+	background-color: rgb(43, 60, 70);
+	border-radius: 4px;
+	padding: 0.45rem 1rem;
 	overflow: hidden;
-	height: 80px;
+	height: 120px;
 }
 
 /* LOCKED STATE */
@@ -91,14 +88,6 @@
 	font-size: 1rem;
 }
 
-/* PROGRESS BAR */
-.training-bar {
-	width: 100%;
-	border-radius: 4px;
-	overflow: hidden;
-	padding: 5px;
-	background-color: #1b201e3b;
-}
 .progress-text {
 	width: 100%;
 	height: 100%;
@@ -112,47 +101,9 @@
 
 /* CONTROLS */
 .controls {
-	flex: none;
+	flex: 1;
 	display: flex;
 	gap: 0.5rem;
 	margin-left: 1rem;
-}
-.control-button {
-	min-width: 32px;
-	height: 32px;
-	padding: 5px;
-	border: none;
-	border-radius: 30%;
-	background: var(--card-bg);
-	color: #fff;
-	font-size: 0.7rem;
-	display: flex;
-	align-items: center;
 	justify-content: center;
-	cursor: pointer;
-	transition: background 0.2s;
-}
-.control-button:hover {
-	background: var(--card-border);
-}
-
-/* UNLOCKED VARIANT (optional color tweak) */
-.training-item.unlocked .control-button.minus {
-	background: var(--accent-red);
-}
-.training-item.unlocked .control-button.zero {
-	background: var(--accent-red);
-}
-.training-item.unlocked .control-button.plus {
-	background: var(--accent-green);
-}
-
-.training-item.unlocked .control-button.max {
-	background: var(--accent-green);
-}
-.training-item.unlocked .control-button.half {
-	background: var(--accent-green);
-}
-.training-item.unlocked .control-button.plus:hover {
-	background: #2f855a;
 }

@@ -222,10 +222,9 @@ export interface TraitSpec extends Identifiable {
 }
 
 export type ItemRarity = (typeof ITEM_RARITIES)[number];
-export type ItemCategory = "equipment" | "classCard" | "consumable" | "resource";
+export type ItemCategory = "equipment" | "consumable" | "resource";
 export const ItemCategoryDisplay: Record<ItemCategory, string> = {
 	equipment: "Equipment",
-	classCard: "Class Card",
 	consumable: "Consumable",
 	resource: "Resource",
 };
@@ -247,13 +246,6 @@ export interface EquipmentItemSpec extends InventoryItemSpec {
 	equipType: EquipmentType;
 	statMod: StatsModifier;
 	resistances?: Partial<Resistances>;
-}
-
-export interface ClassCardItemSpec extends InventoryItemSpec {
-	category: "classCard";
-	statMod: StatsModifier;
-	baseGainRate: number;
-	abilities?: string[];
 }
 
 export interface ResourceItemSpec extends InventoryItemSpec {

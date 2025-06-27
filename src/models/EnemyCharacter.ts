@@ -23,8 +23,9 @@ export class EnemyCharacter extends BaseCharacter {
 		this._type = "ENEMY";
 		this.stamina.setMax(GAME_BALANCE.player.stamina.enemyMax);
 		this.stamina.setCurrent(GAME_BALANCE.player.stamina.enemyMax);
+	}
 
-		// Debug Options
+	protected override checkDebugOptions() {
 		this.canAttack = debugManager.get("enemy_canAttack");
 		this.canTakeDamage = debugManager.get("enemy_canTakeDamage");
 		this.canDie = debugManager.get("enemy_canDie");

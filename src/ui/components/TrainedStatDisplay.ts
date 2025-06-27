@@ -4,6 +4,7 @@ import { TrainedStatManager } from "@/models/TrainedStatManager";
 import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { ProgressBar } from "./ProgressBar";
+import { UIButton } from "./UIButton";
 
 interface UnlockedEls {
 	progressBar: ProgressBar;
@@ -69,16 +70,36 @@ export class TrainedStatDisplay extends UIBase {
 			progressBar: progressBar,
 			progressText: progressText,
 			assigned: this.$(".training-assigned"),
-			level: this.$(".training-level"),
-			name: this.$(".training-name"),
+			level: this.byId("training-level"),
+			name: this.byId("training-name"),
 			image: this.$(".training-icon img") as HTMLImageElement,
 		};
-
-		this.bindDomEvent(this.$("#training-spend-plus"), "click", () => this.adjustAmount(1));
-		this.bindDomEvent(this.$("#training-spend-minus"), "click", () => this.adjustAmount(-1));
-		this.bindDomEvent(this.$("#training-spend-0"), "click", () => this.setToZero());
-		this.bindDomEvent(this.$("#training-spend-max"), "click", () => this.setToMax());
-		this.bindDomEvent(this.$("#training-spend-half"), "click", () => this.setToHalf());
+		const controlsContainer = this.$(".controls");
+		new UIButton(controlsContainer, {
+			text: "-1",
+			onClick: () => this.adjustAmount(-1),
+			size: "small",
+		});
+		new UIButton(controlsContainer, {
+			text: "0",
+			onClick: () => this.setToZero(),
+			size: "small",
+		});
+		new UIButton(controlsContainer, {
+			text: "+1",
+			onClick: () => this.adjustAmount(1),
+			size: "small",
+		});
+		new UIButton(controlsContainer, {
+			text: "Half",
+			onClick: () => this.setToHalf(),
+			size: "small",
+		});
+		new UIButton(controlsContainer, {
+			text: "Max",
+			onClick: () => this.setToMax(),
+			size: "small",
+		});
 
 		this.els.image.alt = this.trainedStat.name;
 

@@ -78,6 +78,7 @@ export interface GameEvents {
 	"slot:drop": { fromId: string; toId: string };
 	"slot:drag-start": { slotId: string };
 	"slot:click": string;
+	"slot:ctrlclick": string;
 	"slot:dblclick": string;
 
 	"settlement:changed": void;

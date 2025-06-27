@@ -4,6 +4,7 @@ import { bindEvent } from "@/shared/utils/busUtils";
 import { BalanceCalculators } from "@/balance/GameBalance";
 import { formatTimeFull } from "@/shared/utils/stringUtils";
 import { BuildingStatus } from "../components/BuildingStatus";
+import { UIButton } from "../components/UIButton";
 
 interface ChallengeSpec {
 	id: string;
@@ -34,9 +35,6 @@ export class GuildHallScreen extends BaseScreen {
 	private levelEl!: HTMLElement;
 	private areaEl!: HTMLElement;
 	private killsEl!: HTMLElement;
-	private prestigeListEl!: HTMLElement;
-	private prestigeBtn!: HTMLButtonElement;
-	private prestigeLockedEl!: HTMLElement;
 	private challengeGrid!: HTMLElement;
 	private activeChallengeEl!: HTMLElement;
 
@@ -52,18 +50,15 @@ export class GuildHallScreen extends BaseScreen {
 		this.levelEl = root.querySelector("#gh-level") as HTMLElement;
 		this.areaEl = root.querySelector("#gh-area") as HTMLElement;
 		this.killsEl = root.querySelector("#gh-kills") as HTMLElement;
-		this.prestigeListEl = root.querySelector("#gh-prestige-list") as HTMLElement;
-		this.prestigeBtn = root.querySelector("#gh-prestige-btn") as HTMLButtonElement;
-		this.prestigeLockedEl = root.querySelector("#gh-prestige-locked") as HTMLElement;
 		this.challengeGrid = root.querySelector("#gh-challenge-grid") as HTMLElement;
 		this.activeChallengeEl = root.querySelector("#gh-active-challenge") as HTMLElement;
 
 		CHALLENGES.forEach((c) => this.challengeLevels.set(c.id, 0));
 		this.buildChallenges();
-		this.updatePrestigeInfo();
+		this.buildPrestigeInfo();
 
 		bindEvent(this.eventBindings, "Game:UITick", () => this.update());
-		bindEvent(this.eventBindings, "settlement:changed", () => this.updatePrestigeInfo());
+		bindEvent(this.eventBindings, "settlement:changed", () => this.buildPrestigeInfo());
 	}
 
 	show() {
@@ -85,12 +80,32 @@ export class GuildHallScreen extends BaseScreen {
 		}
 	}
 
-	private updatePrestigeInfo() {
+	private buildPrestigeInfo() {
+		const prestigeContainer = this.byId("gh-prestige-info");
+		prestigeContainer.innerHTML = "";
+
+		const title = document.createElement("h2");
+		title.textContent = "Prestige Rewards";
+
+		const prestigeRewardList = document.createElement("ul");
+		prestigeRewardList.className = "basic-list";
+
+		//<ul id="gh-prestige-list" class="basic-list"></ul>;
+
+		prestigeContainer.appendChild(title);
+		prestigeContainer.appendChild(prestigeRewardList);
+
+		this.updatePrestigeInfo(prestigeRewardList);
+
 		const building = this.context.settlement.getBuilding("guild_hall");
 		const unlocked = building?.buildingStatus === "unlocked";
-		this.prestigeBtn.disabled = !unlocked;
-		this.prestigeLockedEl.hidden = unlocked;
+		const prestigeBtn = new UIButton(prestigeContainer, {
+			text: "Prestige Now",
+			disabled: !unlocked,
+		});
+	}
 
+	private updatePrestigeInfo(prestigeRewardList: HTMLUListElement) {
 		const char = this.context.character;
 		const stats = char.statsEngine.getAll();
 		const bonuses = BalanceCalculators.calculatePrestigeBonuses({
@@ -100,12 +115,12 @@ export class GuildHallScreen extends BaseScreen {
 		});
 		const buildPoints = this.context.settlement.getBuildPointsFromPrestige();
 		const meta = BalanceCalculators.getMetaPointsFromRun(char.level);
-		this.prestigeListEl.innerHTML = `
-            <li>+${bonuses.permanentAttack} permanent Attack</li>
-            <li>+${bonuses.permanentDefence} permanent Defence</li>
-            <li>+${bonuses.permanentHP} permanent HP</li>
-            <li>+${buildPoints} build points</li>
-            <li>+${meta} meta points</li>`;
+		prestigeRewardList.innerHTML = `
+            <li class="basic-text-light">+${bonuses.permanentAttack} permanent Attack</li>
+            <li class="basic-text-light">+${bonuses.permanentDefence} permanent Defence</li>
+            <li class="basic-text-light">+${bonuses.permanentHP} permanent HP</li>
+            <li class="basic-text-light">+${buildPoints} build points</li>
+            <li class="basic-text-light">+${meta} meta points</li>`;
 	}
 
 	private buildChallenges() {

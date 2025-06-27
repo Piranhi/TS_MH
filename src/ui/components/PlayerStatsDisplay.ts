@@ -52,7 +52,7 @@ export class PlayerStatsDisplay extends UIBase {
                 <div class="xp-text" id="xp-text">0 / 100 XP</div>
             </div>
             
-            <div class="table-wrapper">
+            <div class="basic-table-wrapper">
                 <table class="basic-table">
                     <thead>
                         <tr>

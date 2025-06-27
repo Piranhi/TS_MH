@@ -123,9 +123,10 @@ export class AreaDisplay extends UIBase {
 
 	private updateAreaStats(stats: AreaStats) {
 		if (!stats) return;
-		this.fightBossBtn.setState(stats.bossUnlockedThisRun ? "enabled" : "disabled");
-		this.buildOutpostBtn.setState(stats.outpostAvailable ? "enabled" : "disabled");
 		try {
+			this.fightBossBtn.setState(stats.bossUnlockedThisRun ? "enabled" : "disabled");
+			this.buildOutpostBtn.setState(stats.outpostAvailable ? "enabled" : "disabled");
+
 			const container = this.$(`#${AreaDisplay.DOM_IDS.STATS_ROWS}`) as HTMLDivElement;
 			container.innerHTML = "";
 			// Create stat rows using our helper method

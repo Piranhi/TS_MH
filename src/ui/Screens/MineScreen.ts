@@ -1,12 +1,12 @@
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./mine.html?raw";
 import { bus } from "@/core/EventBus";
-import { MineShaft } from "../components/MineShaft";
+import { MineShaftDisplay } from "../components/MineShaftDisplay";
 import { BuildingStatus } from "../components/BuildingStatus";
 
 export class MineScreen extends BaseScreen {
 	readonly screenName = "mine";
-	private shafts: MineShaft[] = [];
+	private shafts: MineShaftDisplay[] = [];
 	private logEl!: HTMLElement;
 
 	init() {
@@ -30,7 +30,7 @@ export class MineScreen extends BaseScreen {
 		const level = this.context.settlement.getBuilding("mine")?.level || 0;
 		while (this.shafts.length < level) {
 			const listEl = this.byId("mineResourceList");
-			const shaft = new MineShaft(this.context.mine, this.shafts.length, listEl, (msg) => this.log(msg));
+			const shaft = new MineShaftDisplay(this.context.mine, this.shafts.length, listEl, (msg) => this.log(msg));
 			this.shafts.push(shaft);
 		}
 	}

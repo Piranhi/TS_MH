@@ -12,6 +12,7 @@ export interface UIButtonOptions {
 	className?: string;
 	disabled?: boolean;
 	tooltip?: string;
+	size?: "small" | "medium" | "large";
 }
 
 export class UIButton extends UIBase {
@@ -28,10 +29,23 @@ export class UIButton extends UIBase {
 		this.el = document.createElement("button");
 		this.element = this.el;
 		this.el.id = options.id ?? "";
-		this.el.classList.add("ui-button");
-		if (options.className) {
-			this.el.classList.add(options.className);
+		switch (options.size) {
+			case "small":
+				this.el.classList.add("ui-button-small");
+				break;
+			case "medium":
+				this.el.classList.add("ui-button-medium");
+				break;
+			case "large":
+				this.el.classList.add("ui-button-large");
+				break;
+			default:
+				this.el.classList.add("ui-button");
+				break;
 		}
+		this.el.classList.add(!options.className ? "ui-button" : options.className);
+		//this.el.classList.add("ui-button");
+
 		this.el.textContent = options.text ?? "Button";
 
 		// 2️⃣ Append to the container

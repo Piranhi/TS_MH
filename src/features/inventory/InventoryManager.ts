@@ -1,13 +1,11 @@
 import { bus } from "@/core/EventBus";
-import { isClassCardItemSpec, isEquipmentItemSpec } from "@/shared/type-guards";
+import { isEquipmentItemSpec } from "@/shared/type-guards";
 import type { EquipmentType, InventoryItemState, ItemCategory } from "@/shared/types";
-import { ClassCard } from "../classcards/ClassCard";
 import { InventoryRegistry } from "./InventoryRegistry";
 import { Equipment } from "@/models/Equipment";
 import { Saveable } from "@/shared/storage-types";
 import { printLog } from "@/core/DebugManager";
-import { Resource } from "./Resource";
-export type SlotType = "inventory" | "equipment" | "classCard" | "resource";
+export type SlotType = "inventory" | "equipment" | "resource" | "recycleBin";
 
 interface Slot {
 	id: string;
@@ -24,7 +22,6 @@ export interface InventorySaveState {
 
 export class InventoryManager implements Saveable {
 	private maxInventorySlots: number = 20;
-	private maxCardSlots: number = 1;
 	private unlockedEquipmentSlots: EquipmentType[] = [
 		"chest",
 		"legs",
@@ -40,12 +37,13 @@ export class InventoryManager implements Saveable {
 	];
 	private slots: Slot[];
 	private slotMap = new Map<string, Slot>();
+	//private recycleBinSlot: Slot;
 
 	private ACCEPT_MAP: Record<SlotType, ItemCategory[]> = {
-		inventory: ["equipment", "classCard", "consumable"],
+		inventory: ["equipment", "consumable"],
 		equipment: ["equipment"],
-		classCard: ["classCard"],
 		resource: ["resource"],
+		recycleBin: ["equipment", "consumable", "resource"],
 	};
 
 	constructor() {
@@ -55,13 +53,13 @@ export class InventoryManager implements Saveable {
 				.fill(0)
 				.map((_, i) => this.makeSlot("inventory", i)),
 			...this.unlockedEquipmentSlots.map((name) => this.makeSlot("equipment", name)),
-			...Array(this.maxCardSlots)
-				.fill(0)
-				.map((_, i) => this.makeSlot("classCard", i)),
 			...Array(2) // or however many you want
 				.fill(0)
 				.map((_, i) => this.makeSlot("resource", i)),
+			this.makeSlot("recycleBin", "recycleBin"),
 		];
+		//this.recycleBinSlot = this.makeSlot("recycleBin", "recycleBin");
+		//this.slots.push(this.recycleBinSlot);
 		this.updateSlotMap();
 	}
 
@@ -84,9 +82,6 @@ export class InventoryManager implements Saveable {
 				.fill(0)
 				.map((_, i) => this.makeSlot("inventory", i)),
 			...this.unlockedEquipmentSlots.map((name) => this.makeSlot("equipment", name)),
-			...Array(this.maxCardSlots)
-				.fill(0)
-				.map((_, i) => this.makeSlot("classCard", i)),
 			...Array(2) // or however many you want
 				.fill(0)
 				.map((_, i) => this.makeSlot("resource", i)),
@@ -113,6 +108,9 @@ export class InventoryManager implements Saveable {
 		// Get Items, check if Valid
 		const from = this.getSlot(fromId);
 		const to = this.getSlot(toId);
+		if (to?.key === "recycleBin") {
+			return this.moveToRecycleBin(fromId);
+		}
 		if (!from?.itemState || !to) return false;
 		const spec = InventoryRegistry.getItemById(from.itemState.specId);
 		if (!to.accepts.includes(spec.category)) return false;
@@ -125,25 +123,15 @@ export class InventoryManager implements Saveable {
 		// Merge if dropping onto duplicate upgradable item
 		if (to.itemState) {
 			const toSpec = InventoryRegistry.getItemById(to.itemState.specId);
-			if (
-				spec.id === toSpec.id &&
-				from.itemState.rarity === to.itemState.rarity &&
-				(spec.category === "equipment" || spec.category === "classCard")
-			) {
+			if (spec.id === toSpec.id && from.itemState.rarity === to.itemState.rarity && spec.category === "equipment") {
 				if (spec.category === "equipment") {
 					const target = Equipment.createFromState(to.itemState);
-					target.addLevels(from.itemState.level ?? 0);
-				} else if (spec.category === "classCard") {
-					const target = ClassCard.createFromState(to.itemState);
 					target.addLevels(from.itemState.level ?? 0);
 				}
 				from.itemState = null;
 				this.emitChange();
 				if (from.type === "equipment" || to.type === "equipment") {
 					bus.emit("player:equipmentChanged", this.getEquippedEquipment());
-				}
-				if (from.type === "classCard" || to.type === "classCard") {
-					bus.emit("player:classCardsChanged", this.getEquippedCards());
 				}
 				return true;
 			}
@@ -155,9 +143,6 @@ export class InventoryManager implements Saveable {
 		// Emit smaller bus changes.
 		if (from.type === "equipment" || to.type === "equipment") {
 			bus.emit("player:equipmentChanged", this.getEquippedEquipment());
-		}
-		if (from.type === "classCard" || to.type === "classCard") {
-			bus.emit("player:classCardsChanged", this.getEquippedCards());
 		}
 
 		return true;
@@ -177,12 +162,24 @@ export class InventoryManager implements Saveable {
 			if (!target) return false;
 			return this.moveItem(fromId, target.id);
 		}
-		if (spec.category === "classCard") {
-			const cardSlot = this.getSlotsByType("classCard")[0];
-			if (!cardSlot) return false;
-			return this.moveItem(fromId, cardSlot.id);
-		}
 		return false;
+	}
+
+	// Moves an item to the recycle bin, usually from crl+click on it
+	// If the recycle bin is full, it will destroy the current item
+	public moveToRecycleBin(fromId: string): boolean {
+		const from = this.getSlot(fromId);
+		if (!from || !from.itemState) return false;
+
+		this.getSlotsByType("recycleBin")[0].itemState = from.itemState;
+		//this.recycleBinSlot.itemState = from.itemState;
+
+		// Clear the source slot
+		from.itemState = null;
+
+		this.updateSlotMap();
+		this.emitChange();
+		return true;
 	}
 
 	public expandInventorySize(by: number, type: SlotType) {
@@ -206,10 +203,6 @@ export class InventoryManager implements Saveable {
 		slot.itemState = itemState;
 		this.emitChange();
 		return true;
-	}
-
-	private findResourceSlot(resourceId: string): Slot | undefined {
-		return this.slots.find((slot) => slot.type === "inventory" && slot.itemState?.specId === resourceId);
 	}
 
 	public removeItemFromInventory(itemState: InventoryItemState): boolean {
@@ -245,15 +238,6 @@ export class InventoryManager implements Saveable {
 					return Equipment.createFromState(state);
 				})
 		);
-	}
-
-	public getEquippedCards(): ClassCard[] {
-		return this.slots
-			.filter((slot) => slot.type === "classCard" && slot.itemState !== null)
-			.map((slot) => {
-				const state = slot.itemState!;
-				return ClassCard.createFromState(state);
-			});
 	}
 
 	private emitChange() {

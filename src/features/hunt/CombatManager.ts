@@ -10,7 +10,6 @@ import { Destroyable } from "@/core/Destroyable";
 import { GameContext } from "@/core/GameContext";
 import { BaseCharacter } from "@/models/BaseCharacter";
 import { Ability } from "@/models/Ability";
-import { EffectInstance } from "@/shared/types";
 import { BalanceCalculators } from "@/balance/GameBalance";
 
 export class CombatManager extends Destroyable {

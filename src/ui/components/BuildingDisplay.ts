@@ -3,6 +3,7 @@ import { Building } from "@/features/settlement/Building";
 import { UIBase } from "./UIBase";
 import { ProgressBar } from "./ProgressBar";
 import { bus } from "@/core/EventBus";
+import { UIButton } from "./UIButton";
 
 export class BuildingDisplay extends UIBase {
 	private levelEl!: HTMLElement;
@@ -32,7 +33,7 @@ export class BuildingDisplay extends UIBase {
 		titleEl.textContent = this.building.displayName;
 
 		this.levelEl = root.querySelector(".building-level") as HTMLElement;
-		this.spendContainer = root.querySelector(".spend-points") as HTMLElement;
+		this.spendContainer = this.byId("building-spend-points") as HTMLElement;
 		const progressHolder = root.querySelector(".progress-holder") as HTMLElement;
 		this.progressText = progressHolder.querySelector(".progress-text") as HTMLElement;
 
@@ -50,31 +51,31 @@ export class BuildingDisplay extends UIBase {
 
 	private buildButtons() {
 		this.spendContainer.innerHTML = "";
-		const amounts = [1, 10, 100];
-		amounts.forEach((amt) => {
-			const btn = document.createElement("button");
-			btn.textContent = `+${amt}`;
-			btn.classList.add("btn-spend");
-			btn.addEventListener("click", () => this.spendPoints(amt));
-			this.spendContainer.appendChild(btn);
+		new UIButton(this.spendContainer, {
+			text: "+1",
+			onClick: () => this.spendPoints(1),
+			size: "small",
 		});
-		const halfBtn = document.createElement("button");
-		halfBtn.textContent = "+Half";
-		halfBtn.classList.add("btn-spend");
-		halfBtn.addEventListener("click", () => {
-			const amt = Math.floor(this.context.settlement.totalBuildPoints / 2);
-			this.spendPoints(amt);
+		new UIButton(this.spendContainer, {
+			text: "+10",
+			onClick: () => this.spendPoints(10),
+			size: "small",
 		});
-		this.spendContainer.appendChild(halfBtn);
-
-		const maxBtn = document.createElement("button");
-		maxBtn.textContent = "+Max";
-		maxBtn.classList.add("spend-btn");
-		maxBtn.addEventListener("click", () => {
-			const amt = this.context.settlement.totalBuildPoints;
-			this.spendPoints(amt);
+		new UIButton(this.spendContainer, {
+			text: "+100",
+			onClick: () => this.spendPoints(100),
+			size: "small",
 		});
-		this.spendContainer.appendChild(maxBtn);
+		new UIButton(this.spendContainer, {
+			text: "+Half",
+			onClick: () => this.spendPoints(Math.floor(this.context.settlement.totalBuildPoints / 2)),
+			size: "small",
+		});
+		new UIButton(this.spendContainer, {
+			text: "+Max",
+			onClick: () => this.spendPoints(this.context.settlement.totalBuildPoints),
+			size: "small",
+		});
 	}
 
 	private updateButtons() {

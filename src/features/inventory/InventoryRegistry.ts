@@ -1,6 +1,5 @@
 import { Equipment } from "@/models/Equipment";
 import { InventoryItemSpec, InventoryItemState } from "@/shared/types";
-import { ClassCard } from "../classcards/ClassCard";
 import { BalanceCalculators } from "@/balance/GameBalance";
 
 export class InventoryRegistry {
@@ -11,9 +10,10 @@ export class InventoryRegistry {
 		for (const spec of Equipment.getAllSpecs()) {
 			this.specMap.set(spec.id, spec);
 		}
-		for (const spec of ClassCard.getAllSpecs()) {
+		// No longer using class cards
+		/* 		for (const spec of ClassCard.getAllSpecs()) {
 			this.specMap.set(spec.id, spec);
-		}
+		} */
 	}
 
 	public static createItemState(id: string, quantity: number = 1): InventoryItemState {
@@ -27,7 +27,7 @@ export class InventoryRegistry {
 			rarity: BalanceCalculators.getItemRarity(),
 			heirloom: 0,
 		};
-		if (spec.category === "equipment" || spec.category == "classCard") {
+		if (spec.category === "equipment") {
 			return {
 				...baseState,
 				status: "Unequipped",

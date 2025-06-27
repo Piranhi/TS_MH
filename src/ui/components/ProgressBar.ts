@@ -22,6 +22,8 @@ export interface ProgressBarOptions {
 
 	/** Enable smooth fill transition */
 	smooth?: boolean;
+
+	color?: "red" | "green" | "blue" | "yellow" | "purple";
 }
 
 export class ProgressBar extends UIBase {
@@ -50,6 +52,25 @@ export class ProgressBar extends UIBase {
 		if (options.smooth) {
 			this.fillEl.classList.add("mh-progress--smooth");
 		}
+		switch (options.color) {
+			case "red":
+				this.fillEl.classList.add("mh-progress--red");
+				break;
+			case "green":
+				this.fillEl.classList.add("mh-progress--green");
+				break;
+			case "blue":
+				this.fillEl.classList.add("mh-progress--blue");
+				break;
+			case "yellow":
+				this.fillEl.classList.add("mh-progress--yellow");
+				break;
+			case "purple":
+				this.fillEl.classList.add("mh-progress--purple");
+				break;
+			default:
+				this.fillEl.classList.add("mh-progress--generic");
+		}
 		bar.appendChild(this.fillEl);
 
 		// Optionally add label (as a child of bar, after fill)
@@ -70,6 +91,7 @@ export class ProgressBar extends UIBase {
 
 		// Append to container
 		options.container.appendChild(this.root);
+		this.element = this.root;
 	}
 
 	/** Set a new label (if label is enabled) */

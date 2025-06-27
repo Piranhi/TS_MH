@@ -2,6 +2,8 @@ import { BaseCharacter, PowerLevel } from "@/models/BaseCharacter";
 import { EnemyCharacter } from "@/models/EnemyCharacter";
 import { UIBase } from "./UIBase";
 import { Tooltip } from "./Tooltip";
+import { ProgressBar } from "./ProgressBar";
+import { formatNumberShort } from "@/shared/utils/stringUtils";
 
 // Type to track transition cleanup
 interface TransitionCleanup {
@@ -15,9 +17,9 @@ export class CharacterDisplay extends UIBase {
 	private character!: BaseCharacter;
 	private nameEl!: HTMLElement;
 	private statGridEl!: HTMLElement;
-	private hpBar!: HTMLElement;
+	private hpBar!: ProgressBar;
 	private hpLabel!: HTMLElement;
-	private staminaBar!: HTMLElement;
+	private staminaBar!: ProgressBar;
 	private staminaLabel!: HTMLElement;
 	private avatarImg!: HTMLImageElement;
 	private abilitiesListEl!: HTMLUListElement;
@@ -43,10 +45,7 @@ export class CharacterDisplay extends UIBase {
 		// CACHE ELEMENTS
 		this.nameEl = this.$(".char-card__name");
 		this.statGridEl = this.$(".stat-grid");
-		this.hpBar = this.$(".health-bar");
-		this.hpLabel = this.$(".hp-label");
-		this.staminaBar = this.$(".stamina-bar");
-		this.staminaLabel = this.$(".stamina-label");
+		this.buildHealthStack();
 
 		this.affinityRowEl = this.element.querySelector<HTMLElement>(".affinity-row") || undefined;
 		this.statusRowEl = this.$(".status-effects-row");
@@ -54,6 +53,41 @@ export class CharacterDisplay extends UIBase {
 		this.avatarImg = this.$(".char-card__portrait") as HTMLImageElement;
 		this.element.classList.add(this.isPlayer ? "player" : "enemy");
 		this.abilitiesListEl = this.$(".ability-list") as HTMLUListElement;
+	}
+
+	private buildHealthStack() {
+		const healthStackEl = this.$(".health-stack");
+		healthStackEl.innerHTML = "";
+
+		this.staminaLabel = document.createElement("small");
+		this.staminaLabel.className = "stamina-label basic-small";
+		this.staminaLabel.textContent = `0/0 ST`;
+		healthStackEl.appendChild(this.staminaLabel);
+
+		this.staminaBar = new ProgressBar({
+			container: healthStackEl,
+			label: "ST",
+			showLabel: false,
+			initialValue: 0,
+			maxValue: 1,
+			color: "blue",
+			smooth: true,
+		});
+
+		this.hpLabel = document.createElement("small");
+		this.hpLabel.className = "hp-label basic-small";
+		this.hpLabel.textContent = `0/0 HP`;
+		healthStackEl.appendChild(this.hpLabel);
+
+		this.hpBar = new ProgressBar({
+			container: healthStackEl,
+			label: "HP",
+			showLabel: false,
+			initialValue: 0,
+			maxValue: 1,
+			color: "green",
+			smooth: true, //this.isPlayer ? "green" : "red",
+		});
 	}
 
 	setup() {
@@ -90,9 +124,9 @@ export class CharacterDisplay extends UIBase {
 			iconImg.style.backgroundPosition = "center";
 			iconImg.style.backgroundRepeat = "no-repeat";
 
-                        const name = document.createElement("span");
-                        name.className = "ability-name basic-very-small";
-                        name.textContent = ability.name;
+			const name = document.createElement("span");
+			name.className = "ability-name basic-very-small";
+			name.textContent = ability.name;
 
 			const dmg = document.createElement("span");
 			dmg.className = "ability-dmg";
@@ -159,12 +193,15 @@ export class CharacterDisplay extends UIBase {
 		if (!this.character) return;
 		const snapshot = this.character.snapshot();
 
-		const { name, realHP: hp, stamina, abilities, imgUrl } = snapshot;
+		const { name, hpCurrent, hpMax, staminaCurrent, staminaMax, abilities } = snapshot;
 		this.nameEl.textContent = name;
-		this.hpBar.style.setProperty("--hunt-hp", hp.percent);
-		this.hpLabel.textContent = `${hp.current} / ${hp.max} HP`;
-		this.staminaBar.style.setProperty("--hunt-stamina", stamina.percent);
-		this.staminaLabel.textContent = `${stamina.current} / ${stamina.max} ST`;
+		this.hpBar.setValue(hpCurrent);
+		this.hpBar.setMax(hpMax);
+
+		this.hpLabel.textContent = `${formatNumberShort(hpCurrent, 0)} / ${formatNumberShort(hpMax, 0)} HP`;
+		this.staminaBar.setValue(staminaCurrent);
+		this.staminaBar.setMax(staminaMax);
+		this.staminaLabel.textContent = `${formatNumberShort(staminaCurrent, 0)} / ${formatNumberShort(staminaMax, 0)} ST`;
 
 		abilities.forEach((ability, i) => {
 			const bar = this.abilitiesListMap.get(ability.id);
@@ -172,10 +209,6 @@ export class CharacterDisplay extends UIBase {
 
 			const toggle = bar.querySelector(".ability-toggle") as HTMLInputElement;
 			if (toggle) toggle.checked = ability.enabled;
-
-			// Calculate readiness percentage (inverse of cooldown)
-			// When currentCooldown is 0, ability is ready (100%)
-			// When currentCooldown equals maxCooldown, ability just used (0%)
 			const readinessRatio = ability.maxCooldown > 0 ? 1 - ability.currentCooldown / ability.maxCooldown : 1; // Default to ready if no cooldown
 
 			const orderEl = bar.querySelector(".ability-order") as HTMLElement | null;

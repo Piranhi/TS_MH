@@ -129,14 +129,12 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 	override snapshot(): CharacterSnapshot {
 		return {
 			name: this.name,
-			realHP: { current: this.currentHp.toString(), max: this.maxHp.toString(), percent: this.hp.percent.toString() },
-			stamina: {
-				current: this.stamina.current.toFixed(0),
-				max: this.stamina.max.toFixed(0),
-				percent: (this.stamina.current / this.stamina.max).toFixed(2),
-			},
-			attack: this.attack.toString(),
-			defence: this.defence.toString(),
+			hpCurrent: this.currentHp,
+			hpMax: this.maxHp,
+			staminaCurrent: this.stamina.current,
+			staminaMax: this.stamina.max,
+			attack: this.attack,
+			defence: this.defence,
 			abilities: this.getAbilities(),
 			imgUrl: this.getAvatarUrl(),
 			rarity: "Todo",
