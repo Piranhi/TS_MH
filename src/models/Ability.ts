@@ -6,7 +6,6 @@ export interface AbilitySpec {
 	iconUrl: string;
 	displayName: string;
 	cooldown: number;
-	startReady: boolean;
 	staminaCost: number;
 	element: ElementType;
 	effects: EffectSpec[];
@@ -34,7 +33,7 @@ export class Ability extends SpecRegistryBase<AbilitySpec> {
 	public maxCooldown: number = 0;
 	private constructor(public readonly spec: AbilitySpec, readonly state: AbilityState) {
 		super();
-		this.spec.startReady ? (this.currentCooldown = 0) : (this.currentCooldown = spec.cooldown);
+		this.currentCooldown = 0; // spec.cooldown;
 		this.maxCooldown = spec.cooldown;
 	}
 

@@ -35,6 +35,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		this.statsEngine.setLayer("equipment", () => ({}));
 		this.statsEngine.setLayer("trainedStats", () => ({}));
 		this.statsEngine.setLayer("classes", () => ({}));
+		this.statsEngine.setLayer("statusEffects", () => ({}));
 
 		/* pre‑register empty layers */
 		this.calcLevelBonuses(); // Add stat bonuses for level

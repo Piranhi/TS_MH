@@ -182,16 +182,12 @@ export abstract class BaseCharacter extends Destroyable {
 		this.inCombat = true;
 		this.alive = true;
 		this.stamina.setCurrent(this.stamina.max);
-		this.getAbilities().forEach((a) => a.init()); // Init abilities
-		this.resistances.clearTemp();
-		this.statusEffects.clear();
+		//this.getAbilities().forEach((a) => a.init()); // Init abilities
 	}
 
 	public endCombat() {
 		this.inCombat = false;
 		this.target = undefined;
-		this.resistances.clearTemp();
-		this.statusEffects.clear();
 	}
 
 	public addStatusEffect(effect: StatusEffect) {

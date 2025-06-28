@@ -3,8 +3,28 @@
 		"id": "test",
 		"iconUrl": "/images/abilities/ability_ice.png",
 		"displayName": "test",
-		"cooldown": 2,
-		"startReady": false,
+		"cooldown": 20,
+		"staminaCost": 10,
+		"element": "ice",
+		"effects": [
+			{
+				"type": "attack",
+				"value": 0.1,
+				"target": "enemy"
+			},
+			{
+				"type": "status",
+				"target": "enemy",
+				"effectId": "slow",
+				"durationSeconds": 3
+			}
+		]
+	},
+	{
+		"id": "test",
+		"iconUrl": "/images/abilities/ability_ice.png",
+		"displayName": "test",
+		"cooldown": 20,
 		"staminaCost": 10,
 		"element": "ice",
 		"effects": [
@@ -26,7 +46,6 @@
 		"iconUrl": "/images/abilities/ability_basic_melee.png",
 		"displayName": "Slam",
 		"cooldown": 5,
-		"startReady": false,
 		"staminaCost": 10,
 		"element": "physical",
 		"effects": [
@@ -42,7 +61,6 @@
 		"iconUrl": "",
 		"displayName": "Heal",
 		"cooldown": 1,
-		"startReady": false,
 		"staminaCost": 15,
 		"element": "light",
 		"effects": [
@@ -59,7 +77,6 @@
 		"iconUrl": "",
 		"displayName": "Root Snare",
 		"cooldown": 4,
-		"startReady": false,
 		"staminaCost": 20,
 		"element": "earth",
 		"effects": [
@@ -77,7 +94,6 @@
 		"iconUrl": "",
 		"displayName": "Warrior Charge",
 		"cooldown": 8,
-		"startReady": false,
 		"staminaCost": 30,
 		"element": "physical",
 		"effects": [
@@ -100,7 +116,6 @@
 		"iconUrl": "",
 		"displayName": "Bulwark Defend",
 		"cooldown": 10,
-		"startReady": true,
 		"staminaCost": 25,
 		"element": "physical",
 		"effects": [
