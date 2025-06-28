@@ -359,7 +359,7 @@ export class CharacterDisplay extends UIBase {
 
 	private getStatusEffectIcon(effectId: string): string {
 		switch (effectId) {
-			case "chilled":
+			case "slow":
 				return "/images/general/icon_status_chilled.png";
 
 			default:

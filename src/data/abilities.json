@@ -3,7 +3,7 @@
 		"id": "test",
 		"iconUrl": "/images/abilities/ability_ice.png",
 		"displayName": "test",
-		"cooldown": 1,
+		"cooldown": 2,
 		"startReady": false,
 		"staminaCost": 10,
 		"element": "ice",
@@ -15,11 +15,9 @@
 			},
 			{
 				"type": "status",
-				"effectId": "chilled",
-				"value": 0.2,
-				"durationSeconds": 3,
-				"statKey": "speed",
-				"target": "enemy"
+				"target": "enemy",
+				"effectId": "slow",
+				"durationSeconds": 3
 			}
 		]
 	},
@@ -67,10 +65,10 @@
 		"effects": [
 			{
 				"type": "status",
-				"value": 1.25,
-				"durationSeconds": 3,
-				"statKey": "speed",
-				"target": "enemy"
+				"target": "enemy",
+				"effectId": "slow",
+				"value": 0.3,
+				"durationSeconds": 3
 			}
 		]
 	},

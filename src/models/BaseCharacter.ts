@@ -226,7 +226,16 @@ export abstract class BaseCharacter extends Destroyable {
 			.filter((a) => a.enabled)
 			.sort((a, b) => a.priority - b.priority);
 
-		abilities.forEach((ability) => ability.reduceCooldown(dt));
+		// Apply status effects to cooldown
+		let cooldownWithStatusEffects = dt;
+		if (this.statusEffects.hasEffect("slow")) {
+			// 40% slow
+			cooldownWithStatusEffects = dt * 0.6;
+		} else if (this.statusEffects.hasEffect("frozen")) {
+			cooldownWithStatusEffects = 0;
+		}
+
+		abilities.forEach((ability) => ability.reduceCooldown(cooldownWithStatusEffects));
 		return abilities.filter((ability) => ability.isReady() && this.hasStamina(ability.spec.staminaCost));
 	}
 
@@ -253,6 +262,9 @@ export abstract class BaseCharacter extends Destroyable {
 
 	/** Helper: roll crit/variance, apply power multipliers, etc. */
 	private calculateRawValue(effect: EffectSpec): number {
+		// If a status, return the default value
+		if (effect.type === "status") return effect.value;
+
 		const baseDamage = calculateRawBaseDamage(this);
 		const critChance = this.stats.get("critChance") / 100;
 		const critDamage = this.stats.get("critDamage") / 100;

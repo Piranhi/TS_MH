@@ -4,14 +4,6 @@ export class StatusEffectManager {
 	private effects = new Map<string, StatusEffect>();
 
 	add(effect: StatusEffect): void {
-		// Reset duration
-		if (this.effects.has(effect.id)) {
-			const existingEffect = this.effects.get(effect.id)!;
-			if (effect.duration > existingEffect.duration) {
-				existingEffect.duration = effect.duration;
-			}
-			return;
-		}
 		this.effects.set(effect.id, effect);
 	}
 
@@ -21,6 +13,18 @@ export class StatusEffectManager {
 
 	getEffects(): readonly StatusEffect[] {
 		return Array.from(this.effects.values());
+	}
+
+	hasEffect(effectId: string): boolean {
+		return this.effects.has(effectId);
+	}
+
+	getTotalEffectValue(effectId: string): number {
+		const effect = this.effects.get(effectId);
+		if (!effect) {
+			return 0;
+		}
+		return effect.value;
 	}
 
 	// Handle tick

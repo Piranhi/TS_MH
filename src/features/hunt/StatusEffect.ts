@@ -26,6 +26,10 @@ export class StatusEffect {
 		return this._value;
 	}
 
+	set value(value: number) {
+		this._value = value;
+	}
+
 	handleTick(dt: number) {
 		this.duration -= dt;
 		if (this.duration <= 0) {
