@@ -46,7 +46,18 @@ export class StatsEngine {
 		bus.emit("player:statsChanged");
 	}
 
-	public printStats(): void {
-		console.table(this.getAll());
-	}
+        public printStats(): void {
+                console.table(this.getAll());
+        }
+
+        public getBreakdown(): { base: Stats; layers: Record<string, StatsModifier>; total: Stats } {
+                const layers: Record<string, StatsModifier> = {};
+                let agg: Stats = { ...this.base };
+                for (const [name, fn] of Object.entries(this.layers)) {
+                        const layerStats = fn();
+                        layers[name] = { ...layerStats };
+                        agg = mergeStats(agg, layerStats) as Stats;
+                }
+                return { base: { ...this.base }, layers, total: agg };
+        }
 }
