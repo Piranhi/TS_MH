@@ -7,7 +7,6 @@ import type { StatsProvider } from "@/models/Stats";
 import { Destroyable } from "../core/Destroyable";
 import { CharacterResistances } from "../features/hunt/CharacterResistances";
 import { StatusEffectManager } from "@/features/hunt/StatusEffectManager";
-import { CombatCalculator } from "@/features/hunt/CombatCalculator";
 import { bus } from "@/core/EventBus";
 import { AbilityModifier, Affinity, ElementType } from "@/shared/types";
 
@@ -256,41 +255,6 @@ export abstract class BaseCharacter extends Destroyable {
 		return this.abilityMap.get(abilityId);
 	}
 
-	public handleCombatUpdate(dt: number) {
-		this.checkDebugOptions();
-
-		// Process periodic effects (DoT/HoT)
-		const periodicEffects = this.statusEffects.processPeriodicEffects(dt);
-		for (const effect of periodicEffects) {
-			if (effect.type === "damage") {
-				const finalDamage = CombatCalculator.calculatePeriodicDamage(effect.amount, effect.element, this);
-				this.takeDamage(finalDamage, effect.element);
-			} else if (effect.type === "heal") {
-				this.heal(effect.amount);
-			}
-		}
-
-		this.regenStamina(dt);
-	}
-
-	// Returns a list of abilities that are ready to be used
-	/**
-	 * Update ability cooldowns with speed modifier
-	 */
-	public getReadyAbilities(dt: number): Ability[] {
-		if (!this.inCombat || !this.canAttack) return [];
-
-		const abilities = this.getAbilities()
-			.filter((a) => a.enabled)
-			.sort((a, b) => a.priority - b.priority);
-
-		// Apply speed modifier from status effects
-		const speedMultiplier = this.statusEffects.getSpeedModifier();
-		const effectiveDt = dt * speedMultiplier;
-
-		abilities.forEach((ability) => ability.reduceCooldown(effectiveDt));
-		return abilities.filter((ability) => ability.isReady() && this.hasStamina(ability.spec.staminaCost));
-	}
 
 	// HELPER CLASSES
 	snapshot(): CharacterSnapshot {

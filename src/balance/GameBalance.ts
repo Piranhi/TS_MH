@@ -141,9 +141,9 @@ export const GAME_BALANCE = {
 	},
 
 	// === COMBAT SCALING ===
-	combat: {
-		// Defense mitigation constant (from EffectProcessor.ts)
-		defenseConstant: 100,
+        combat: {
+                // Defense mitigation constant (used in CombatCalculator)
+                defenseConstant: 100,
 
 		// Damage variance range
 		damageVariance: {
