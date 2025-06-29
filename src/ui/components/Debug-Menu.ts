@@ -8,42 +8,42 @@ import { OfflineSession } from "@/models/OfflineProgress";
 import { BalanceDebug } from "@/balance/GameBalance";
 
 export class DebugMenu {
-        private rootEl!: HTMLElement;
-        private toggleBtn!: HTMLButtonElement;
-        private optionsEl!: HTMLElement;
-        private playerStatsEl!: HTMLElement;
-        private enemyStatsEl!: HTMLElement;
-        constructor() {}
+	private rootEl!: HTMLElement;
+	private toggleBtn!: HTMLButtonElement;
+	private optionsEl!: HTMLElement;
+	private playerStatsEl!: HTMLElement;
+	private enemyStatsEl!: HTMLElement;
+	constructor() {}
 
-        build() {
-                this.rootEl = document.getElementById("debug-menu")!;
-                this.rootEl.innerHTML = "";
-                this.rootEl.classList.add("debug-panel");
-                this.rootEl.style.display = "none";
+	build() {
+		this.rootEl = document.getElementById("debug-menu")!;
+		this.rootEl.innerHTML = "";
+		this.rootEl.classList.add("debug-panel");
+		this.rootEl.style.display = "flex";
 
-                this.optionsEl = document.createElement("div");
-                this.optionsEl.className = "debug-column options";
-                this.playerStatsEl = document.createElement("pre");
-                this.playerStatsEl.className = "debug-column player-stats";
-                this.enemyStatsEl = document.createElement("pre");
-                this.enemyStatsEl.className = "debug-column enemy-stats";
+		this.optionsEl = document.createElement("div");
+		this.optionsEl.className = "debug-column options";
+		this.playerStatsEl = document.createElement("div");
+		this.playerStatsEl.className = "debug-column player-stats";
+		this.enemyStatsEl = document.createElement("div");
+		this.enemyStatsEl.className = "debug-column enemy-stats";
 
-                this.rootEl.appendChild(this.optionsEl);
-                this.rootEl.appendChild(this.playerStatsEl);
-                this.rootEl.appendChild(this.enemyStatsEl);
+		this.rootEl.appendChild(this.optionsEl);
+		this.rootEl.appendChild(this.playerStatsEl);
+		this.rootEl.appendChild(this.enemyStatsEl);
 
-                bus.on("debug:statsUpdate", (payload) => {
-                        if (payload.isPlayer) {
-                                this.playerStatsEl.textContent = payload.data;
-                        } else {
-                                this.enemyStatsEl.textContent = payload.data;
-                        }
-                });
+		bus.on("debug:statsUpdate", (payload) => {
+			if (payload.isPlayer) {
+				this.playerStatsEl.textContent = payload.data;
+			} else {
+				this.enemyStatsEl.textContent = payload.data;
+			}
+		});
 
-                this.buildToggleButton();
-                this.buildControls();
-                this.addActions();
-        }
+		this.buildToggleButton();
+		this.buildControls();
+		this.addActions();
+	}
 
 	private buildToggleButton() {
 		this.toggleBtn = document.createElement("button");
@@ -61,7 +61,7 @@ export class DebugMenu {
 
 	private toggle() {
 		const visible = this.rootEl.style.display === "none";
-		this.rootEl.style.display = visible ? "block" : "none";
+		this.rootEl.style.display = visible ? "flex" : "none";
 	}
 
 	private buildControls() {
@@ -69,15 +69,17 @@ export class DebugMenu {
 			{ key: "enemy_canAttack", label: "Enemy Can Attack", type: "bool" },
 			{ key: "enemy_canTakeDamage", label: "Enemy Takes Damage", type: "bool" },
 			{ key: "enemy_canDie", label: "Enemy Can Die", type: "bool" },
+			{ key: "player_canDie", label: "Player Can Die", type: "bool" },
+			{ key: "player_canTakeDamage", label: "Player Can Take Damage", type: "bool" },
 			{ key: "hunt_allAreasOpen", label: "All Areas Open", type: "bool" },
 			{ key: "hunt_searchSpeed", label: "Search Speed", type: "num", step: 0.1 },
 			{ key: "building_infinitePoints", label: "Inf Build Points", type: "bool" },
 			{ key: "upgrades_unlockAll", label: "Unlock All Upgrades", type: "bool" },
 			{ key: "upgrades_instantBuild", label: "Instant Build", type: "bool" },
 			{ key: "reseach_unlockAll", label: "Unlock All Research", type: "bool" },
-                        { key: "research_instantResearch", label: "Instant Research", type: "bool" },
-                        { key: "showcombatstats", label: "Show Combat Stats", type: "bool" },
-                ];
+			{ key: "research_instantResearch", label: "Instant Research", type: "bool" },
+			{ key: "showcombatstats", label: "Show Combat Stats", type: "bool" },
+		];
 
 		options.forEach((opt) => {
 			if (opt.type === "bool") {
@@ -99,7 +101,7 @@ export class DebugMenu {
 		});
 		wrap.appendChild(input);
 		wrap.appendChild(document.createTextNode(label));
-                this.optionsEl.appendChild(wrap);
+		this.optionsEl.appendChild(wrap);
 	}
 
 	private addNumber(label: string, key: keyof DebugOptions, step: number) {
@@ -116,7 +118,7 @@ export class DebugMenu {
 		});
 		wrap.appendChild(span);
 		wrap.appendChild(input);
-                this.optionsEl.appendChild(wrap);
+		this.optionsEl.appendChild(wrap);
 	}
 
 	private addActions() {
@@ -127,7 +129,7 @@ export class DebugMenu {
 		this.addButton("Add Renown", () => bus.emit("renown:award", 100000));
 		//this.addButton("Kill Player", () => Player.getInstance().character?.takeDamage(new BigNumber(1000000)));
 		this.addButton("Kill Enemy", () => bus.emit("debug:killEnemy"));
-		this.addButton("Test Enemy", () => context.hunt.debugForceEnemy("treant", 1));
+		this.addButton("Test Enemy", () => context.hunt.debugForceEnemy("test_enemy", 6));
 		this.addButton("Unlock Boss", () => {
 			context.stats.debugUnlockBoss(context.hunt.getActiveAreaID());
 		});
@@ -196,11 +198,11 @@ export class DebugMenu {
 		printLog(`Attack ${rolledCrit ? "[CRIT]" : ""} : ${final} `, 1, "Debug-Menu.ts");
 	}
 
-        private addButton(name: string, onClick: () => void) {
-                const btn = document.createElement("button");
-                btn.classList.add("button");
-                btn.textContent = name;
-                this.optionsEl.appendChild(btn);
-                btn.addEventListener("click", onClick);
-        }
+	private addButton(name: string, onClick: () => void) {
+		const btn = document.createElement("button");
+		btn.classList.add("button");
+		btn.textContent = name;
+		this.optionsEl.appendChild(btn);
+		btn.addEventListener("click", onClick);
+	}
 }

@@ -236,10 +236,11 @@ export class HuntManager extends Destroyable implements Saveable {
 
 	// ---------------- DEBUG ------------------
 
-	public debugForceEnemy(id: string, tier: number) {
+	public debugForceEnemy(id: string, tier: number): EnemyCharacter {
 		const spec = Monster.getSpec(id);
 		if (!spec) throw new Error(`Unknown monster "${id}"`);
 		const enemy = new EnemyCharacter(Monster.create(spec, tier));
 		this.startCombat(enemy);
+		return enemy;
 	}
 }

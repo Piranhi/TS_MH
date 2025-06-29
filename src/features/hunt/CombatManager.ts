@@ -64,7 +64,7 @@ export class CombatManager extends Destroyable {
 		for (const effect of periodicEffects) {
 			if (effect.type === "damage") {
 				const dmg = CombatCalculator.calculatePeriodicDamage(effect.amount, effect.element, character);
-				character.takeDamage(dmg, effect.element);
+				character.takeDamage(dmg);
 			} else if (effect.type === "heal") {
 				character.heal(effect.amount);
 			}

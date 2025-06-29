@@ -8,6 +8,7 @@ import { Trait } from "./Trait";
 import { Ability, AbilitySaveState } from "./Ability";
 import { RegenPool } from "./value-objects/RegenPool";
 import { StatsEngine } from "@/core/StatsEngine";
+import { debugManager } from "@/core/DebugManager";
 
 interface playerCharSaveState {
 	charLevel: number;
@@ -51,6 +52,11 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		this.addNewAbility("test");
 		this.addNewAbility("basic_heal");
 		bus.emit("player:statsChanged");
+	}
+
+	override checkDebugOptions() {
+		this.canTakeDamage = debugManager.get("player_canTakeDamage");
+		this.canDie = debugManager.get("player_canDie");
 	}
 
 	private passiveHeal() {

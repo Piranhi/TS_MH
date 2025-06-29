@@ -25,7 +25,7 @@ export function formatTimeFull(ms: number): string {
 }
 
 export function formatNumberShort(value: number, fixed?: number): string {
-	const units = ["", "k", "m", "b", "t"];
+	const units = ["", "K", "M", "B", "T", "Q"];
 	let unitIndex = 0;
 	while (Math.abs(value) >= 1000 && unitIndex < units.length - 1) {
 		value /= 1000;

@@ -17,6 +17,24 @@
 				"target": "enemy",
 				"effectId": "slow",
 				"durationSeconds": 3
+			},
+			{
+				"type": "status",
+				"target": "enemy",
+				"effectId": "burn",
+				"durationSeconds": 3
+			},
+			{
+				"type": "status",
+				"target": "enemy",
+				"effectId": "weaken",
+				"durationSeconds": 3
+			},
+			{
+				"type": "status",
+				"target": "self",
+				"effectId": "strengthen",
+				"durationSeconds": 10
 			}
 		]
 	},

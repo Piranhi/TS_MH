@@ -14,6 +14,12 @@ export const STAT_KEYS: (keyof Stats)[] = [
 	"evasion",
 	"lifesteal",
 	"encounterChance",
+	"fireBonus",
+	"iceBonus",
+	"poisonBonus",
+	"lightningBonus",
+	"lightBonus",
+	"physicalBonus",
 ];
 
 export type AbilityModifierStats = "addition" | "multiplier" | "duration" | "cooldown" | "cost" | "critChance" | "critDamage";
@@ -38,6 +44,12 @@ export interface BuildStats {
 	evasion: number;
 	lifesteal: number;
 	encounterChance: number;
+	fireBonus: number;
+	iceBonus: number;
+	poisonBonus: number;
+	lightningBonus: number;
+	lightBonus: number;
+	physicalBonus: number;
 }
 
 export interface TrainedStatState {
@@ -73,6 +85,12 @@ export const defaultPlayerStats: Stats = {
 	evasion: 0,
 	lifesteal: 0,
 	encounterChance: 1,
+	fireBonus: 0,
+	iceBonus: 0,
+	poisonBonus: 0,
+	lightningBonus: 0,
+	lightBonus: 0,
+	physicalBonus: 0,
 };
 
 export interface AreaScaling {

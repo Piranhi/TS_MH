@@ -165,13 +165,13 @@ export const TrainedStatSpecs: Record<TrainedStatType, TrainedStatSpec> = {
 		name: "Healing",
 		baseMultiplier: 0.125,
 		levelUpBase: 6000,
-		statMod: { guard: 1 },
+		statMod: {},
 	},
 	crit: {
 		id: "crit",
 		name: "Critical",
 		baseMultiplier: 0.125,
 		levelUpBase: 6000,
-		statMod: { guard: 1 },
+		statMod: {},
 	},
 };

@@ -8,6 +8,7 @@ import { Tooltip } from "./Tooltip";
 import { ProgressBar } from "./ProgressBar";
 import { formatNumberShort } from "@/shared/utils/stringUtils";
 import { bus } from "@/core/EventBus";
+import { STATUSES } from "@/features/hunt/satus-definition";
 
 // Type to track transition cleanup
 interface TransitionCleanup {
@@ -59,12 +60,12 @@ export class CharacterDisplay extends UIBase {
 		this.element.classList.add(this.isPlayer ? "player" : "enemy");
 		this.abilitiesListEl = this.$(".ability-list") as HTMLUListElement;
 
-                if (debugManager.get("showcombatstats")) {
-                        this.debugStatsEl = document.createElement("pre");
-                        this.debugStatsEl.className = "debug-stats";
-                        // Moved to DebugMenu; element kept for compatibility but not appended here
-                }
-        }
+		if (debugManager.get("showcombatstats")) {
+			this.debugStatsEl = document.createElement("pre");
+			this.debugStatsEl.className = "debug-stats";
+			// Moved to DebugMenu; element kept for compatibility but not appended here
+		}
+	}
 
 	private buildHealthStack() {
 		const healthStackEl = this.$(".health-stack");
@@ -228,14 +229,14 @@ export class CharacterDisplay extends UIBase {
 			this.updateAbilityProgress(ability.id, bar, readinessRatio);
 		});
 
-                this.renderStatusEffects();
-                this.createStatsGrid();
-                const stats = this.getDebugStatsString();
-                bus.emit("debug:statsUpdate", { isPlayer: this.isPlayer, data: stats });
-                if (this.debugStatsEl) {
-                        this.debugStatsEl.textContent = stats;
-                }
-        }
+		this.renderStatusEffects();
+		this.createStatsGrid();
+		const stats = this.getDebugStatsString();
+		bus.emit("debug:statsUpdate", { isPlayer: this.isPlayer, data: stats });
+		if (this.debugStatsEl) {
+			this.debugStatsEl.textContent = stats;
+		}
+	}
 
 	private updateAbilityProgress(abilityId: string, element: HTMLElement, ratio: number) {
 		// Clean up any existing transition for this ability
@@ -303,8 +304,8 @@ export class CharacterDisplay extends UIBase {
 		});
 	}
 
-        private createStatsGrid() {
-                this.statGridEl.innerHTML = "";
+	private createStatsGrid() {
+		this.statGridEl.innerHTML = "";
 
 		const powerStats: PowerLevel = this.character.getPowerLevel();
 		for (const [key, value] of Object.entries(powerStats)) {
@@ -316,44 +317,44 @@ export class CharacterDisplay extends UIBase {
 			wrapper.appendChild(dt);
 			wrapper.appendChild(dd);
 			this.statGridEl.appendChild(wrapper);
-                }
-        }
+		}
+	}
 
-        public getDebugStatsString(): string {
-                let output = "";
+	public getDebugStatsString(): string {
+		let output = "";
 
-                if (this.character instanceof PlayerCharacter) {
-                        const breakdown = this.character.statsEngine.getBreakdown();
-                        output += "Total Stats:\n" + JSON.stringify(breakdown.total, null, 2) + "\n";
-                        output += "Base:\n" + JSON.stringify(breakdown.base, null, 2) + "\n";
-                        for (const [name, stats] of Object.entries(breakdown.layers)) {
-                                output += `Layer ${name}:\n` + JSON.stringify(stats, null, 2) + "\n";
-                        }
-                } else {
-                        const stats: Record<string, number> = {};
-                        for (const key of STAT_KEYS) {
-                                // @ts-ignore
-                                stats[key] = this.character.stats.get(key as any) ?? 0;
-                        }
-                        output += "Total Stats:\n" + JSON.stringify(stats, null, 2) + "\n";
-                }
+		if (this.character instanceof PlayerCharacter) {
+			const breakdown = this.character.statsEngine.getBreakdown();
+			output += "Total Stats:\n" + JSON.stringify(breakdown.total, null, 2) + "\n";
+			output += "Base:\n" + JSON.stringify(breakdown.base, null, 2) + "\n";
+			for (const [name, stats] of Object.entries(breakdown.layers)) {
+				output += `Layer ${name}:\n` + JSON.stringify(stats, null, 2) + "\n";
+			}
+		} else {
+			const stats: Record<string, number> = {};
+			for (const key of STAT_KEYS) {
+				// @ts-ignore
+				stats[key] = this.character.stats.get(key as any) ?? 0;
+			}
+			output += "Total Stats:\n" + JSON.stringify(stats, null, 2) + "\n";
+		}
 
-                // Resistances
-                output += "Resistances:\n" + JSON.stringify(this.character.resistances.getAll(), null, 2) + "\n";
+		// Resistances
+		output += "Resistances:\n" + JSON.stringify(this.character.resistances.getAll(), null, 2) + "\n";
 
-                // Status effects modifiers
-                output += "Status Modifiers:\n";
-                output += "  attack%: " + this.character.statusEffects.getAttackModifier() + "\n";
-                output += "  defence%: " + this.character.statusEffects.getDefenseModifier() + "\n";
-                output += "  speed%: " + this.character.statusEffects.getSpeedModifier() + "\n";
+		// Status effects modifiers
+		output += "Status Modifiers:\n";
+		output += "  attack%: " + this.character.statusEffects.getAttackModifier() + "\n";
+		output += "  defence%: " + this.character.statusEffects.getDefenseModifier() + "\n";
+		output += "  speed%: " + this.character.statusEffects.getSpeedModifier() + "\n";
 
-                return output;
-        }
+		return output;
+	}
 
-        private renderDebugStats() {
-                if (!this.debugStatsEl) return;
-                this.debugStatsEl.textContent = this.getDebugStatsString();
-        }
+	private renderDebugStats() {
+		if (!this.debugStatsEl) return;
+		this.debugStatsEl.textContent = this.getDebugStatsString();
+	}
 
 	private renderAffinities() {
 		if (!this.affinityRowEl) return;
@@ -371,6 +372,8 @@ export class CharacterDisplay extends UIBase {
 		}
 	}
 
+	// Render icons to show status effects on character.
+
 	private renderStatusEffects() {
 		if (!this.statusRowEl) return;
 		this.statusRowEl.innerHTML = "";
@@ -378,18 +381,49 @@ export class CharacterDisplay extends UIBase {
 		for (const effect of effects) {
 			const wrapper = document.createElement("div");
 			wrapper.className = "status-icon";
-			const iconImg = document.createElement("span");
-			iconImg.className = "icon";
-			iconImg.style.backgroundImage = `url(${this.getStatusEffectIcon(effect.id)})`;
-			iconImg.style.backgroundSize = "cover";
-			iconImg.style.backgroundPosition = "center";
-			iconImg.style.backgroundRepeat = "no-repeat";
+
+			const iconUrl = this.getStatusEffectIcon(effect.id);
+			if (iconUrl && iconUrl !== "?") {
+				// Show icon if available
+				const iconImg = document.createElement("span");
+				iconImg.className = "icon";
+				iconImg.style.backgroundImage = `url(${iconUrl})`;
+				iconImg.style.backgroundSize = "cover";
+				iconImg.style.backgroundPosition = "center";
+				iconImg.style.backgroundRepeat = "no-repeat";
+				wrapper.appendChild(iconImg);
+			} else {
+				// Show text fallback if no icon
+				const textEl = document.createElement("span");
+				textEl.className = "status-text";
+				textEl.textContent = this.getStatusEffectName(effect.id);
+				wrapper.appendChild(textEl);
+			}
+
 			const num = document.createElement("span");
 			num.textContent = effect.remaining.toFixed(1);
-			wrapper.appendChild(iconImg);
 			wrapper.appendChild(num);
 			this.statusRowEl.appendChild(wrapper);
 		}
+	}
+
+	private getStatusEffectIcon(effectId: string): string | null {
+		switch (effectId) {
+			case "slow":
+				return "/images/general/icon_status_chilled.png";
+			default:
+				return null; // Return null instead of "?" to indicate no icon
+		}
+	}
+
+	private getStatusEffectName(effectId: string): string {
+		// Get the status definition to show the proper name
+		const statusDef = STATUSES[effectId];
+		if (statusDef) {
+			return statusDef.name;
+		}
+		// Fallback to a formatted version of the ID
+		return effectId.charAt(0).toUpperCase() + effectId.slice(1);
 	}
 
 	private getElementSymbol(element?: string): string {
@@ -404,16 +438,6 @@ export class CharacterDisplay extends UIBase {
 				return "/images/general/icon_combat_resistance_lightning.png";
 			case "physical":
 				return "/images/general/icon_combat_resistance_physical.png";
-			default:
-				return "?";
-		}
-	}
-
-	private getStatusEffectIcon(effectId: string): string {
-		switch (effectId) {
-			case "slow":
-				return "/images/general/icon_status_chilled.png";
-
 			default:
 				return "?";
 		}

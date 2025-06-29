@@ -757,24 +757,22 @@ h4 {
 }
 
 #debug-menu.debug-panel {
-        position: fixed;
-        bottom: 3.5rem;
-        right: 1rem;
-        z-index: 10000;
-        background: rgba(40, 40, 40, 0.9);
-        padding: 0.5rem 0.75rem;
-        color: #fff;
-        border-radius: 8px;
-        display: flex;
-        gap: 0.5rem;
-        max-width: 800px;
-        align-items: flex-start;
+	position: fixed;
+	bottom: 3.5rem;
+	right: 1rem;
+	z-index: 10000;
+	background: rgba(40, 40, 40, 0.9);
+	padding: 0.5rem 0.75rem;
+	color: #fff;
+	border-radius: 8px;
+	gap: 0.5rem;
+	max-width: 800px;
 }
 
 #debug-menu .debug-column {
-        max-height: 300px;
-        overflow-y: auto;
-        width: 240px;
+	max-height: 750px;
+	overflow-y: auto;
+	width: 240px;
 }
 
 #debug-menu .debug-option {
@@ -789,4 +787,11 @@ h4 {
 #debug-menu button {
 	font-size: 0.8rem;
 	padding: 0.25rem 0.5rem;
+}
+
+#debug-menu .debug-column.player-stats,
+#debug-menu .debug-column.enemy-stats {
+	white-space: pre-wrap; /* Maintain pre formatting but allow wrapping */
+	margin: 0; /* Remove default pre margins */
+	font-family: monospace; /* Keep monospace font */
 }

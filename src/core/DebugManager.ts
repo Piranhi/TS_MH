@@ -5,6 +5,8 @@ export type DebugType = "combat" | "settlement" | "player" | "offline";
 // Define all possible debug options and their types
 export type DebugOptions = {
 	player_overrideAbilityCD: boolean;
+	player_canDie: boolean;
+	player_canTakeDamage: boolean;
 	enemy_canAttack: boolean;
 	enemy_canTakeDamage: boolean;
 	enemy_canDie: boolean;
@@ -14,8 +16,8 @@ export type DebugOptions = {
 	upgrades_unlockAll: boolean;
 	upgrades_instantBuild: boolean;
 	reseach_unlockAll: boolean;
-        research_instantResearch: boolean;
-        showcombatstats: boolean;
+	research_instantResearch: boolean;
+	showcombatstats: boolean;
 };
 export class DebugManager {
 	public readonly printDebug = false;
@@ -29,6 +31,8 @@ export class DebugManager {
 	constructor(
 		defaults: DebugOptions = {
 			player_overrideAbilityCD: false, // TODO - Setup the player to have instant or fast CD's when this is true;
+			player_canDie: true,
+			player_canTakeDamage: true,
 			enemy_canAttack: true,
 			enemy_canTakeDamage: true,
 			enemy_canDie: true,
@@ -36,11 +40,11 @@ export class DebugManager {
 			hunt_allAreasOpen: false,
 			building_infinitePoints: false,
 			upgrades_unlockAll: false,
-                        upgrades_instantBuild: false,
-                        reseach_unlockAll: false,
-                        research_instantResearch: false,
-                        showcombatstats: false,
-                },
+			upgrades_instantBuild: false,
+			reseach_unlockAll: false,
+			research_instantResearch: false,
+			showcombatstats: false,
+		},
 		overrides: Partial<DebugOptions> = {}
 	) {
 		this.defaults = defaults;
