@@ -8,20 +8,42 @@ import { OfflineSession } from "@/models/OfflineProgress";
 import { BalanceDebug } from "@/balance/GameBalance";
 
 export class DebugMenu {
-	private rootEl!: HTMLElement;
-	private toggleBtn!: HTMLButtonElement;
-	constructor() {}
+        private rootEl!: HTMLElement;
+        private toggleBtn!: HTMLButtonElement;
+        private optionsEl!: HTMLElement;
+        private playerStatsEl!: HTMLElement;
+        private enemyStatsEl!: HTMLElement;
+        constructor() {}
 
-	build() {
-		this.rootEl = document.getElementById("debug-menu")!;
-		this.rootEl.innerHTML = "";
-		this.rootEl.classList.add("debug-panel");
-		this.rootEl.style.display = "none";
+        build() {
+                this.rootEl = document.getElementById("debug-menu")!;
+                this.rootEl.innerHTML = "";
+                this.rootEl.classList.add("debug-panel");
+                this.rootEl.style.display = "none";
 
-		this.buildToggleButton();
-		this.buildControls();
-		this.addActions();
-	}
+                this.optionsEl = document.createElement("div");
+                this.optionsEl.className = "debug-column options";
+                this.playerStatsEl = document.createElement("pre");
+                this.playerStatsEl.className = "debug-column player-stats";
+                this.enemyStatsEl = document.createElement("pre");
+                this.enemyStatsEl.className = "debug-column enemy-stats";
+
+                this.rootEl.appendChild(this.optionsEl);
+                this.rootEl.appendChild(this.playerStatsEl);
+                this.rootEl.appendChild(this.enemyStatsEl);
+
+                bus.on("debug:statsUpdate", (payload) => {
+                        if (payload.isPlayer) {
+                                this.playerStatsEl.textContent = payload.data;
+                        } else {
+                                this.enemyStatsEl.textContent = payload.data;
+                        }
+                });
+
+                this.buildToggleButton();
+                this.buildControls();
+                this.addActions();
+        }
 
 	private buildToggleButton() {
 		this.toggleBtn = document.createElement("button");
@@ -77,7 +99,7 @@ export class DebugMenu {
 		});
 		wrap.appendChild(input);
 		wrap.appendChild(document.createTextNode(label));
-		this.rootEl.appendChild(wrap);
+                this.optionsEl.appendChild(wrap);
 	}
 
 	private addNumber(label: string, key: keyof DebugOptions, step: number) {
@@ -94,7 +116,7 @@ export class DebugMenu {
 		});
 		wrap.appendChild(span);
 		wrap.appendChild(input);
-		this.rootEl.appendChild(wrap);
+                this.optionsEl.appendChild(wrap);
 	}
 
 	private addActions() {
@@ -174,11 +196,11 @@ export class DebugMenu {
 		printLog(`Attack ${rolledCrit ? "[CRIT]" : ""} : ${final} `, 1, "Debug-Menu.ts");
 	}
 
-	private addButton(name: string, onClick: () => void) {
-		const btn = document.createElement("button");
-		btn.classList.add("button");
-		btn.textContent = name;
-		this.rootEl.appendChild(btn);
-		btn.addEventListener("click", onClick);
-	}
+        private addButton(name: string, onClick: () => void) {
+                const btn = document.createElement("button");
+                btn.classList.add("button");
+                btn.textContent = name;
+                this.optionsEl.appendChild(btn);
+                btn.addEventListener("click", onClick);
+        }
 }

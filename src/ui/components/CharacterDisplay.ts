@@ -7,6 +7,7 @@ import { UIBase } from "./UIBase";
 import { Tooltip } from "./Tooltip";
 import { ProgressBar } from "./ProgressBar";
 import { formatNumberShort } from "@/shared/utils/stringUtils";
+import { bus } from "@/core/EventBus";
 
 // Type to track transition cleanup
 interface TransitionCleanup {
@@ -58,12 +59,12 @@ export class CharacterDisplay extends UIBase {
 		this.element.classList.add(this.isPlayer ? "player" : "enemy");
 		this.abilitiesListEl = this.$(".ability-list") as HTMLUListElement;
 
-		if (debugManager.get("showcombatstats")) {
-			this.debugStatsEl = document.createElement("pre");
-			this.debugStatsEl.className = "debug-stats";
-			this.element.appendChild(this.debugStatsEl);
-		}
-	}
+                if (debugManager.get("showcombatstats")) {
+                        this.debugStatsEl = document.createElement("pre");
+                        this.debugStatsEl.className = "debug-stats";
+                        // Moved to DebugMenu; element kept for compatibility but not appended here
+                }
+        }
 
 	private buildHealthStack() {
 		const healthStackEl = this.$(".health-stack");
@@ -227,12 +228,14 @@ export class CharacterDisplay extends UIBase {
 			this.updateAbilityProgress(ability.id, bar, readinessRatio);
 		});
 
-		this.renderStatusEffects();
-		this.createStatsGrid();
-		if (this.debugStatsEl) {
-			this.renderDebugStats();
-		}
-	}
+                this.renderStatusEffects();
+                this.createStatsGrid();
+                const stats = this.getDebugStatsString();
+                bus.emit("debug:statsUpdate", { isPlayer: this.isPlayer, data: stats });
+                if (this.debugStatsEl) {
+                        this.debugStatsEl.textContent = stats;
+                }
+        }
 
 	private updateAbilityProgress(abilityId: string, element: HTMLElement, ratio: number) {
 		// Clean up any existing transition for this ability
@@ -300,8 +303,8 @@ export class CharacterDisplay extends UIBase {
 		});
 	}
 
-	private createStatsGrid() {
-		this.statGridEl.innerHTML = "";
+        private createStatsGrid() {
+                this.statGridEl.innerHTML = "";
 
 		const powerStats: PowerLevel = this.character.getPowerLevel();
 		for (const [key, value] of Object.entries(powerStats)) {
@@ -313,41 +316,44 @@ export class CharacterDisplay extends UIBase {
 			wrapper.appendChild(dt);
 			wrapper.appendChild(dd);
 			this.statGridEl.appendChild(wrapper);
-		}
-	}
+                }
+        }
 
-	private renderDebugStats() {
-		if (!this.debugStatsEl) return;
+        public getDebugStatsString(): string {
+                let output = "";
 
-		let output = "";
+                if (this.character instanceof PlayerCharacter) {
+                        const breakdown = this.character.statsEngine.getBreakdown();
+                        output += "Total Stats:\n" + JSON.stringify(breakdown.total, null, 2) + "\n";
+                        output += "Base:\n" + JSON.stringify(breakdown.base, null, 2) + "\n";
+                        for (const [name, stats] of Object.entries(breakdown.layers)) {
+                                output += `Layer ${name}:\n` + JSON.stringify(stats, null, 2) + "\n";
+                        }
+                } else {
+                        const stats: Record<string, number> = {};
+                        for (const key of STAT_KEYS) {
+                                // @ts-ignore
+                                stats[key] = this.character.stats.get(key as any) ?? 0;
+                        }
+                        output += "Total Stats:\n" + JSON.stringify(stats, null, 2) + "\n";
+                }
 
-		if (this.character instanceof PlayerCharacter) {
-			const breakdown = this.character.statsEngine.getBreakdown();
-			output += "Total Stats:\n" + JSON.stringify(breakdown.total, null, 2) + "\n";
-			output += "Base:\n" + JSON.stringify(breakdown.base, null, 2) + "\n";
-			for (const [name, stats] of Object.entries(breakdown.layers)) {
-				output += `Layer ${name}:\n` + JSON.stringify(stats, null, 2) + "\n";
-			}
-		} else {
-			const stats: Record<string, number> = {};
-			for (const key of STAT_KEYS) {
-				// @ts-ignore
-				stats[key] = this.character.stats.get(key as any) ?? 0;
-			}
-			output += "Total Stats:\n" + JSON.stringify(stats, null, 2) + "\n";
-		}
+                // Resistances
+                output += "Resistances:\n" + JSON.stringify(this.character.resistances.getAll(), null, 2) + "\n";
 
-		// Resistances
-		output += "Resistances:\n" + JSON.stringify(this.character.resistances.getAll(), null, 2) + "\n";
+                // Status effects modifiers
+                output += "Status Modifiers:\n";
+                output += "  attack%: " + this.character.statusEffects.getAttackModifier() + "\n";
+                output += "  defence%: " + this.character.statusEffects.getDefenseModifier() + "\n";
+                output += "  speed%: " + this.character.statusEffects.getSpeedModifier() + "\n";
 
-		// Status effects modifiers
-		output += "Status Modifiers:\n";
-		output += "  attack%: " + this.character.statusEffects.getAttackModifier() + "\n";
-		output += "  defence%: " + this.character.statusEffects.getDefenseModifier() + "\n";
-		output += "  speed%: " + this.character.statusEffects.getSpeedModifier() + "\n";
+                return output;
+        }
 
-		this.debugStatsEl.textContent = output;
-	}
+        private renderDebugStats() {
+                if (!this.debugStatsEl) return;
+                this.debugStatsEl.textContent = this.getDebugStatsString();
+        }
 
 	private renderAffinities() {
 		if (!this.affinityRowEl) return;
