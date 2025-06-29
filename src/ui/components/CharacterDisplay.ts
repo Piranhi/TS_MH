@@ -8,6 +8,7 @@ import { Tooltip } from "./Tooltip";
 import { ProgressBar } from "./ProgressBar";
 import { formatNumberShort } from "@/shared/utils/stringUtils";
 import { bus } from "@/core/EventBus";
+import { bindEvent } from "@/shared/utils/busUtils";
 import { STATUSES } from "@/features/hunt/satus-definition";
 
 // Type to track transition cleanup
@@ -23,7 +24,8 @@ export class CharacterDisplay extends UIBase {
 	private nameEl!: HTMLElement;
 	private statGridEl!: HTMLElement;
 	private hpBar!: ProgressBar;
-	private hpLabel!: HTMLElement;
+        private hpLabel!: HTMLElement;
+        private hpChangeEl!: HTMLElement;
 	private staminaBar!: ProgressBar;
 	private staminaLabel!: HTMLElement;
 	private avatarImg!: HTMLImageElement;
@@ -36,11 +38,16 @@ export class CharacterDisplay extends UIBase {
 	// Track active transitions for cleanup
 	private activeTransitions = new Map<string, TransitionCleanup>();
 
-	constructor(public readonly isPlayer: boolean, element: HTMLElement) {
-		super();
-		this.element = element;
-		this.createDisplay();
-	}
+        constructor(public readonly isPlayer: boolean, element: HTMLElement) {
+                super();
+                this.element = element;
+                this.createDisplay();
+                bindEvent(this.eventBindings, "char:hpChanged", (payload) => {
+                        if (!this.character) return;
+                        if (payload.char !== this.character) return;
+                        this.showHpChange(payload.amount, payload.isCrit ?? false);
+                });
+        }
 
 	receiveCharacter(char: BaseCharacter): void {
 		this.character = char;
@@ -88,8 +95,15 @@ export class CharacterDisplay extends UIBase {
 
 		this.hpLabel = document.createElement("small");
 		this.hpLabel.className = "hp-label basic-small";
-		this.hpLabel.textContent = `0/0 HP`;
-		healthStackEl.appendChild(this.hpLabel);
+                this.hpLabel.textContent = `0/0 HP`;
+                healthStackEl.appendChild(this.hpLabel);
+
+                this.hpChangeEl = document.createElement("div");
+                this.hpChangeEl.className = "hp-change basic-small";
+                this.hpChangeEl.addEventListener("animationend", () => {
+                        this.hpChangeEl.classList.remove("show");
+                });
+                healthStackEl.appendChild(this.hpChangeEl);
 
 		this.hpBar = new ProgressBar({
 			container: healthStackEl,
@@ -426,10 +440,10 @@ export class CharacterDisplay extends UIBase {
 		return effectId.charAt(0).toUpperCase() + effectId.slice(1);
 	}
 
-	private getElementSymbol(element?: string): string {
-		switch (element) {
-			case "fire":
-				return "/images/general/icon_combat_resistance_fire.png";
+        private getElementSymbol(element?: string): string {
+                switch (element) {
+                        case "fire":
+                                return "/images/general/icon_combat_resistance_fire.png";
 			case "ice":
 				return "/images/general/icon_combat_resistance_ice.png";
 			case "poison":
@@ -440,8 +454,19 @@ export class CharacterDisplay extends UIBase {
 				return "/images/general/icon_combat_resistance_physical.png";
 			default:
 				return "?";
-		}
-	}
+                }
+        }
+
+        private showHpChange(amount: number, isCrit: boolean) {
+                const cls = amount < 0 ? "damage" : "heal";
+                this.hpChangeEl.textContent = Math.abs(amount).toString();
+                this.hpChangeEl.classList.remove("damage", "heal", "crit", "show");
+                this.hpChangeEl.classList.add(cls);
+                if (isCrit) this.hpChangeEl.classList.add("crit");
+                // Restart animation
+                void this.hpChangeEl.offsetWidth;
+                this.hpChangeEl.classList.add("show");
+        }
 
 	private setHolderStatus(newStatus: HolderStatus) {
 		if (newStatus === "active") {
@@ -460,8 +485,9 @@ export class CharacterDisplay extends UIBase {
 		this.character = undefined!;
 		this.nameEl = undefined!;
 		this.statGridEl = undefined!;
-		this.hpBar = undefined!;
-		this.hpLabel = undefined!;
+                this.hpBar = undefined!;
+                this.hpLabel = undefined!;
+                this.hpChangeEl = undefined!;
 		this.staminaBar = undefined!;
 		this.staminaLabel = undefined!;
 		this.avatarImg = undefined!;

@@ -269,10 +269,54 @@
 
 /* health stack */
 .health-stack {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	gap: 0.85rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+        position: relative;
+}
+
+.hp-change {
+        position: absolute;
+        left: 50%;
+        top: -0.2rem;
+        transform: translateX(-50%);
+        pointer-events: none;
+        opacity: 0;
+}
+
+.hp-change.damage {
+        color: #f87171;
+}
+
+.hp-change.heal {
+        color: #4ade80;
+}
+
+.hp-change.crit {
+        font-weight: 700;
+}
+
+.hp-change.show {
+        animation: hp-bounce 1s ease-out forwards;
+}
+
+@keyframes hp-bounce {
+        0% {
+                transform: translate(-50%, 0) scale(0.8);
+                opacity: 0;
+        }
+        20% {
+                transform: translate(-50%, -4px) scale(1.1);
+                opacity: 1;
+        }
+        40% {
+                transform: translate(-50%, -8px) scale(1);
+        }
+        100% {
+                transform: translate(-50%, -20px) scale(1);
+                opacity: 0;
+        }
 }
 
 /* 3. Ability List */

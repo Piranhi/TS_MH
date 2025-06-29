@@ -60,15 +60,21 @@ export class CombatManager extends Destroyable {
 		// Run any debug updates defined on the character
 		character.checkDebugOptions();
 
-		const periodicEffects = character.statusEffects.processPeriodicEffects(dt);
-		for (const effect of periodicEffects) {
-			if (effect.type === "damage") {
-				const dmg = CombatCalculator.calculatePeriodicDamage(effect.amount, effect.element, character);
-				character.takeDamage(dmg);
-			} else if (effect.type === "heal") {
-				character.heal(effect.amount);
-			}
-		}
+                const periodicEffects = character.statusEffects.processPeriodicEffects(dt);
+                for (const effect of periodicEffects) {
+                        if (effect.type === "damage") {
+                                const dmg = CombatCalculator.calculatePeriodicDamage(
+                                        effect.amount,
+                                        effect.element,
+                                        character
+                                );
+                                const actual = character.takeDamage(dmg);
+                                bus.emit("char:hpChanged", { char: character, amount: -actual });
+                        } else if (effect.type === "heal") {
+                                const actual = character.heal(effect.amount);
+                                bus.emit("char:hpChanged", { char: character, amount: actual });
+                        }
+                }
 
 		character.regenStamina(dt);
 	}
@@ -95,7 +101,12 @@ export class CombatManager extends Destroyable {
 		return abilities.filter((a) => a.isReady() && character.hasStamina(a.spec.staminaCost));
 	}
 
-	private calculateDamage(source: BaseCharacter, target: BaseCharacter, baseMultiplier: number, ability: Ability): number {
+        private calculateDamage(
+                source: BaseCharacter,
+                target: BaseCharacter,
+                baseMultiplier: number,
+                ability: Ability
+        ): { damage: number; isCrit: boolean } {
 		let multiplier = baseMultiplier;
 		const mods = source.getAllAbilityModifiersFromAbility(ability.id);
 		for (const mod of mods) {
@@ -106,8 +117,13 @@ export class CombatManager extends Destroyable {
 			}
 		}
 
-		return CombatCalculator.calculateDamage(source, target, multiplier, ability.spec.element);
-	}
+                return CombatCalculator.calculateDamage(
+                        source,
+                        target,
+                        multiplier,
+                        ability.spec.element
+                );
+        }
 
 	private processCharacterAbilities(source: BaseCharacter, target: BaseCharacter, dt: number) {
 		if (!source.alive || !target.alive) return;
@@ -121,12 +137,22 @@ export class CombatManager extends Destroyable {
 
 			// Process each effect of the ability
 			for (const effectSpec of ability.spec.effects) {
-				if (effectSpec.type === "attack") {
-					// Calculate damage with ability modifiers
-					const damage = this.calculateDamage(source, target, effectSpec.value || 1, ability);
+                                if (effectSpec.type === "attack") {
+                                        // Calculate damage with ability modifiers
+                                        const { damage, isCrit } = this.calculateDamage(
+                                                source,
+                                                target,
+                                                effectSpec.value || 1,
+                                                ability
+                                        );
 
-					// Apply damage
-					target.takeDamage(damage);
+                                        // Apply damage
+                                        const actual = target.takeDamage(damage);
+                                        bus.emit("char:hpChanged", {
+                                                char: target,
+                                                amount: -actual,
+                                                isCrit,
+                                        });
 				} else if (effectSpec.type === "status") {
 					// Apply status effect based on target
 					const actualTarget = effectSpec.target === "enemy" ? target : source;
@@ -134,12 +160,16 @@ export class CombatManager extends Destroyable {
 						effectSpec.effectId!,
 						source.stats.get("attack") // For DoT scaling
 					);
-				} else if (effectSpec.type === "heal") {
-					// Apply heal based on target
-					const actualTarget = effectSpec.target === "self" ? source : target;
-					const healing = CombatCalculator.calculateHealing(source, effectSpec.value || 1);
-					actualTarget.heal(healing);
-				}
+                                } else if (effectSpec.type === "heal") {
+                                        // Apply heal based on target
+                                        const actualTarget = effectSpec.target === "self" ? source : target;
+                                        const healing = CombatCalculator.calculateHealing(
+                                                source,
+                                                effectSpec.value || 1
+                                        );
+                                        const actual = actualTarget.heal(healing);
+                                        bus.emit("char:hpChanged", { char: actualTarget, amount: actual });
+                                }
 			}
 
 			// Consume resources and reset cooldown
