@@ -757,18 +757,24 @@ h4 {
 }
 
 #debug-menu.debug-panel {
-	position: fixed;
-	bottom: 3.5rem;
-	right: 1rem;
-	z-index: 10000;
-	background: rgba(40, 40, 40, 0.9);
-	padding: 0.5rem 0.75rem;
-	color: #fff;
-	border-radius: 8px;
-	display: flex;
-	flex-direction: column;
-	gap: 0.3rem;
-	max-width: 260px;
+        position: fixed;
+        bottom: 3.5rem;
+        right: 1rem;
+        z-index: 10000;
+        background: rgba(40, 40, 40, 0.9);
+        padding: 0.5rem 0.75rem;
+        color: #fff;
+        border-radius: 8px;
+        display: flex;
+        gap: 0.5rem;
+        max-width: 800px;
+        align-items: flex-start;
+}
+
+#debug-menu .debug-column {
+        max-height: 300px;
+        overflow-y: auto;
+        width: 240px;
 }
 
 #debug-menu .debug-option {

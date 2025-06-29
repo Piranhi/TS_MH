@@ -89,10 +89,11 @@ export interface GameEvents {
 	"stats:areaStatsChanged": AreaStats;
 	"stats:gameStatsChanged": GameStats;
 	"stats:prestigeStatsChanged": PrestigeStats;
-	"milestone:achieved": MilestoneEventPayload;
-	//------------------ DEBUG ---------------------
-	"debug:killEnemy": void;
-	// ------------------ GAME RUN ------------------------
+        "milestone:achieved": MilestoneEventPayload;
+        //------------------ DEBUG ---------------------
+        "debug:killEnemy": void;
+        "debug:statsUpdate": { isPlayer: boolean; data: string };
+        // ------------------ GAME RUN ------------------------
 	"gameRun:started": GameRun;
 	"gameRun:initialized": GameRun;
 	"gameRun:ended": RunStats;
