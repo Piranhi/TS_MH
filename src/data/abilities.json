@@ -39,7 +39,7 @@
 		"id": "basic_heal",
 		"iconUrl": "",
 		"displayName": "Heal",
-		"cooldown": 1,
+		"cooldown": 30,
 		"staminaCost": 15,
 		"element": "light",
 		"effects": [

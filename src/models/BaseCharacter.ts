@@ -40,7 +40,6 @@ export abstract class BaseCharacter extends Destroyable {
 
 	protected abilityMap: Map<string, Ability> = new Map();
 	protected abilityModifiers: Map<string, AbilityModifier[]> = new Map();
-	protected target?: BaseCharacter;
 	protected _charLevel: number = 1;
 	protected _type: "PLAYER" | "ENEMY" = "PLAYER";
 
@@ -68,7 +67,7 @@ export abstract class BaseCharacter extends Destroyable {
 		return base;
 	}
 
-	protected checkDebugOptions() {}
+	public checkDebugOptions() {}
 
 	calculatePowerStats(): number {
 		// 1) Base weights
@@ -159,31 +158,17 @@ export abstract class BaseCharacter extends Destroyable {
 	/**
 	 * Take damage and return the actual amount taken
 	 */
-	public takeDamage(amount: number, element?: ElementType): number {
+	public takeDamage(amount: number): number {
 		if (!this.canTakeDamage) return 0;
 
 		const beforeHp = this.hp.current;
 		this.hp.decrease(amount);
-		const actualDamage = beforeHp - this.hp.current;
-
-		// Emit damage event with element info for visual effects
-		if (actualDamage > 0) {
-			bus.emit("Combat:DamageTaken", {
-				target: this.name,
-				damage: actualDamage,
-				element: element || "physical",
-				currentHp: this.hp.current,
-				maxHp: this.hp.max,
-			});
-		}
-
-		// Check death
 		if (this.hp.current <= 0 && this.canDie) {
 			this.alive = false;
-			bus.emit("Combat:CharacterDefeated", {
-				character: this.name,
-			});
+		} else if (this.hp.current <= 0 && !this.canDie) {
+			this.hp.setToMax();
 		}
+		const actualDamage = beforeHp - this.hp.current;
 
 		return actualDamage;
 	}
@@ -195,15 +180,6 @@ export abstract class BaseCharacter extends Destroyable {
 		const beforeHp = this.hp.current;
 		this.hp.increase(amount);
 		const actualHealing = this.hp.current - beforeHp;
-
-		if (actualHealing > 0) {
-			bus.emit("Combat:HealingReceived", {
-				target: this.name,
-				healing: actualHealing,
-				currentHp: this.hp.current,
-				maxHp: this.hp.max,
-			});
-		}
 
 		return actualHealing;
 	}
@@ -229,16 +205,13 @@ export abstract class BaseCharacter extends Destroyable {
 	/* ───────────────────── combat lifecycle ──────────────────── */
 
 	public beginCombat() {
-		//this.setToMaxHP();
 		this.inCombat = true;
 		this.alive = true;
 		this.stamina.setCurrent(this.stamina.max);
-		//this.getAbilities().forEach((a) => a.init()); // Init abilities
 	}
 
 	public endCombat() {
 		this.inCombat = false;
-		this.target = undefined;
 	}
 
 	public getAbilities(): Ability[] {
@@ -254,7 +227,6 @@ export abstract class BaseCharacter extends Destroyable {
 	public getAbility(abilityId: string): Ability | undefined {
 		return this.abilityMap.get(abilityId);
 	}
-
 
 	// HELPER CLASSES
 	snapshot(): CharacterSnapshot {

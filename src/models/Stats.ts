@@ -64,7 +64,7 @@ export interface StatsProvider {
 export const defaultPlayerStats: Stats = {
 	attack: 10,
 	defence: 10,
-	speed: 2,
+	speed: 1,
 	hp: 100,
 	power: 0,
 	guard: 0,

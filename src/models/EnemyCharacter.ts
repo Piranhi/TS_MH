@@ -42,7 +42,7 @@ export class EnemyCharacter extends BaseCharacter {
 		this.stamina.setCurrent(GAME_BALANCE.player.stamina.enemyMax);
 	}
 
-	protected override checkDebugOptions() {
+	override checkDebugOptions() {
 		this.canAttack = debugManager.get("enemy_canAttack");
 		this.canTakeDamage = debugManager.get("enemy_canTakeDamage");
 		this.canDie = debugManager.get("enemy_canDie");
