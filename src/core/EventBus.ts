@@ -10,6 +10,7 @@ import { GameRun, RunStats } from "./GameRun";
 import { Resource } from "@/features/inventory/Resource";
 import { ModifierSystem } from "./ModifierEngine";
 import { Area } from "@/models/Area";
+import { BaseCharacter } from "@/models/BaseCharacter";
 
 export interface GameEvents {
 	"Game:UITick": number;
@@ -56,9 +57,10 @@ export interface GameEvents {
 	"player:statsChanged": PlayerCharacter;
 
 	// PLAYER CHARACTER
-	"char:levelUp": number; // New Level
-	"char:gainedXp": number; // Amount incoming
-	"classes:pointsChanged": void;
+        "char:levelUp": number; // New Level
+        "char:gainedXp": number; // Amount incoming
+        "char:hpChanged": { char: BaseCharacter; amount: number; isCrit?: boolean };
+        "classes:pointsChanged": void;
 	"classes:nodesChanged": void;
 
 	//HUNT

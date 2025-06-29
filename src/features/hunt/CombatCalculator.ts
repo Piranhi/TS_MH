@@ -6,12 +6,12 @@ export class CombatCalculator {
 	 * Calculate damage for any attack
 	 * Single source of truth for all damage calculations
 	 */
-	static calculateDamage(
-		attacker: BaseCharacter,
-		defender: BaseCharacter,
-		baseDamageMultiplier: number,
-		element: ElementType = "physical"
-	): number {
+        static calculateDamage(
+                attacker: BaseCharacter,
+                defender: BaseCharacter,
+                baseDamageMultiplier: number,
+                element: ElementType = "physical"
+        ): { damage: number; isCrit: boolean } {
 		// Step 1: Get attacker's base attack
 		const baseAttack = attacker.stats.get("attack");
 
@@ -49,8 +49,8 @@ export class CombatCalculator {
 		// Resistance as percentage: positive reduces damage, negative increases
 		const finalDamage = afterDefense * (1 - totalResistance / 100);
 
-		// Always deal at least 1 damage
-		return Math.max(1, Math.floor(finalDamage));
+                // Always deal at least 1 damage
+                return { damage: Math.max(1, Math.floor(finalDamage)), isCrit };
 	}
 
 	/**
