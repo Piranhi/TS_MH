@@ -21,27 +21,6 @@
 		]
 	},
 	{
-		"id": "test",
-		"iconUrl": "/images/abilities/ability_ice.png",
-		"displayName": "test",
-		"cooldown": 20,
-		"staminaCost": 10,
-		"element": "ice",
-		"effects": [
-			{
-				"type": "attack",
-				"value": 0.1,
-				"target": "enemy"
-			},
-			{
-				"type": "status",
-				"target": "enemy",
-				"effectId": "slow",
-				"durationSeconds": 3
-			}
-		]
-	},
-	{
 		"id": "basic_melee",
 		"iconUrl": "/images/abilities/ability_basic_melee.png",
 		"displayName": "Slam",

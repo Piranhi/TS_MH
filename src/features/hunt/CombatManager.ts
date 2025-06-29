@@ -36,20 +36,23 @@ export class CombatManager extends Destroyable {
 		// Update both characters (handles status effects, stamina regen, etc.)
 		this.playerCharacter.handleCombatUpdate(dt);
 		this.enemyCharacter.handleCombatUpdate(dt);
+		if (this.checkCombatEnd()) return; // Characters may have died from status effects
 
 		// Process abilities for both characters
 		this.processCharacterAbilities(this.playerCharacter, this.enemyCharacter, dt);
-		this.processCharacterAbilities(this.enemyCharacter, this.playerCharacter, dt);
+		if (this.checkCombatEnd()) return;
 
-		// Check for combat end
-		if (!this.playerCharacter.alive) {
-			this.endCombat();
-		} else if (!this.enemyCharacter.alive) {
-			this.endCombat();
-		}
+		this.processCharacterAbilities(this.enemyCharacter, this.playerCharacter, dt);
+		if (this.checkCombatEnd()) return;
 	}
 
-	// src/features/hunt/CombatManager.ts
+	private checkCombatEnd(): boolean {
+		if (!this.playerCharacter.isAlive() || !this.enemyCharacter.isAlive()) {
+			this.endCombat();
+			return true;
+		}
+		return false;
+	}
 
 	private processCharacterAbilities(source: BaseCharacter, target: BaseCharacter, dt: number) {
 		if (!source.alive || !target.alive) return;
