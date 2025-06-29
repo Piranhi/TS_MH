@@ -1,5 +1,8 @@
 import { BaseCharacter, PowerLevel } from "@/models/BaseCharacter";
 import { EnemyCharacter } from "@/models/EnemyCharacter";
+import { PlayerCharacter } from "@/models/PlayerCharacter";
+import { debugManager } from "@/core/DebugManager";
+import { STAT_KEYS } from "@/models/Stats";
 import { UIBase } from "./UIBase";
 import { Tooltip } from "./Tooltip";
 import { ProgressBar } from "./ProgressBar";
@@ -22,10 +25,11 @@ export class CharacterDisplay extends UIBase {
 	private staminaBar!: ProgressBar;
 	private staminaLabel!: HTMLElement;
 	private avatarImg!: HTMLImageElement;
-	private abilitiesListEl!: HTMLUListElement;
-	private abilitiesListMap = new Map<string, HTMLElement>();
-	private affinityRowEl?: HTMLElement;
-	private statusRowEl!: HTMLElement;
+        private abilitiesListEl!: HTMLUListElement;
+        private abilitiesListMap = new Map<string, HTMLElement>();
+        private affinityRowEl?: HTMLElement;
+        private statusRowEl!: HTMLElement;
+        private debugStatsEl?: HTMLElement;
 
 	// Track active transitions for cleanup
 	private activeTransitions = new Map<string, TransitionCleanup>();
@@ -51,9 +55,15 @@ export class CharacterDisplay extends UIBase {
 		this.statusRowEl = this.$(".status-effects-row");
 
 		this.avatarImg = this.$(".char-card__portrait") as HTMLImageElement;
-		this.element.classList.add(this.isPlayer ? "player" : "enemy");
-		this.abilitiesListEl = this.$(".ability-list") as HTMLUListElement;
-	}
+                this.element.classList.add(this.isPlayer ? "player" : "enemy");
+                this.abilitiesListEl = this.$(".ability-list") as HTMLUListElement;
+
+                if (debugManager.get("showcombatstats")) {
+                        this.debugStatsEl = document.createElement("pre");
+                        this.debugStatsEl.className = "debug-stats";
+                        this.element.appendChild(this.debugStatsEl);
+                }
+        }
 
 	private buildHealthStack() {
 		const healthStackEl = this.$(".health-stack");
@@ -217,9 +227,12 @@ export class CharacterDisplay extends UIBase {
 			this.updateAbilityProgress(ability.id, bar, readinessRatio);
 		});
 
-		this.renderStatusEffects();
-		this.createStatsGrid();
-	}
+                this.renderStatusEffects();
+                this.createStatsGrid();
+                if (this.debugStatsEl) {
+                        this.renderDebugStats();
+                }
+        }
 
 	private updateAbilityProgress(abilityId: string, element: HTMLElement, ratio: number) {
 		// Clean up any existing transition for this ability
@@ -287,21 +300,54 @@ export class CharacterDisplay extends UIBase {
 		});
 	}
 
-	private createStatsGrid() {
-		this.statGridEl.innerHTML = "";
+        private createStatsGrid() {
+                this.statGridEl.innerHTML = "";
 
 		const powerStats: PowerLevel = this.character.getPowerLevel();
-		for (const [key, value] of Object.entries(powerStats)) {
-			const wrapper = document.createElement("div");
-			const dt = document.createElement("dt");
-			dt.textContent = key;
-			const dd = document.createElement("dd");
-			dd.textContent = value;
-			wrapper.appendChild(dt);
-			wrapper.appendChild(dd);
-			this.statGridEl.appendChild(wrapper);
-		}
-	}
+                for (const [key, value] of Object.entries(powerStats)) {
+                        const wrapper = document.createElement("div");
+                        const dt = document.createElement("dt");
+                        dt.textContent = key;
+                        const dd = document.createElement("dd");
+                        dd.textContent = value;
+                        wrapper.appendChild(dt);
+                        wrapper.appendChild(dd);
+                        this.statGridEl.appendChild(wrapper);
+                }
+        }
+
+        private renderDebugStats() {
+                if (!this.debugStatsEl) return;
+
+                let output = "";
+
+                if (this.character instanceof PlayerCharacter) {
+                        const breakdown = this.character.statsEngine.getBreakdown();
+                        output += "Total Stats:\n" + JSON.stringify(breakdown.total, null, 2) + "\n";
+                        output += "Base:\n" + JSON.stringify(breakdown.base, null, 2) + "\n";
+                        for (const [name, stats] of Object.entries(breakdown.layers)) {
+                                output += `Layer ${name}:\n` + JSON.stringify(stats, null, 2) + "\n";
+                        }
+                } else {
+                        const stats: Record<string, number> = {};
+                        for (const key of STAT_KEYS) {
+                                // @ts-ignore
+                                stats[key] = this.character.stats.get(key as any) ?? 0;
+                        }
+                        output += "Total Stats:\n" + JSON.stringify(stats, null, 2) + "\n";
+                }
+
+                // Resistances
+                output += "Resistances:\n" + JSON.stringify(this.character.resistances.getAll(), null, 2) + "\n";
+
+                // Status effects modifiers
+                output += "Status Modifiers:\n";
+                output += "  attack%: " + this.character.statusEffects.getAttackModifier() + "\n";
+                output += "  defence%: " + this.character.statusEffects.getDefenseModifier() + "\n";
+                output += "  speed%: " + this.character.statusEffects.getSpeedModifier() + "\n";
+
+                this.debugStatsEl.textContent = output;
+        }
 
 	private renderAffinities() {
 		if (!this.affinityRowEl) return;
@@ -391,8 +437,9 @@ export class CharacterDisplay extends UIBase {
 		this.avatarImg = undefined!;
 		this.abilitiesListEl = undefined!;
 		this.affinityRowEl = undefined;
-		this.statusRowEl = undefined!;
-		this.element = undefined!;
-		this.abilitiesListMap.clear();
-	}
+                this.statusRowEl = undefined!;
+                this.element = undefined!;
+                this.abilitiesListMap.clear();
+                this.debugStatsEl = undefined;
+        }
 }

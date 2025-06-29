@@ -53,8 +53,9 @@ export class DebugMenu {
 			{ key: "upgrades_unlockAll", label: "Unlock All Upgrades", type: "bool" },
 			{ key: "upgrades_instantBuild", label: "Instant Build", type: "bool" },
 			{ key: "reseach_unlockAll", label: "Unlock All Research", type: "bool" },
-			{ key: "research_instantResearch", label: "Instant Research", type: "bool" },
-		];
+                        { key: "research_instantResearch", label: "Instant Research", type: "bool" },
+                        { key: "showcombatstats", label: "Show Combat Stats", type: "bool" },
+                ];
 
 		options.forEach((opt) => {
 			if (opt.type === "bool") {
