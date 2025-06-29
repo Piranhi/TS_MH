@@ -122,7 +122,7 @@ export type EffectType = "attack" | "heal" | "status";
 
 // Define what types of modifiers exist
 export type MonsterAffinityType = "resistance" | "weakness" | "immunity" | "armored";
-export type ElementType = "fire" | "ice" | "poison" | "lightning" | "physical" | "light" | "dark" | "earth";
+export type ElementType = "fire" | "ice" | "poison" | "lightning" | "physical";
 export type AbilityCondition = "selfNotFullHealth" | "targetNotFullHealth" | "targetLowHealth" | "selfHasStatus";
 
 export type Resistances = Record<ElementType, number>;

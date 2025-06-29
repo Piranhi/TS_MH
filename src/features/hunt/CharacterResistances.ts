@@ -1,54 +1,44 @@
 import { ElementType, Resistances } from "@/shared/types";
 
-// CharacterResistances.ts
 export class CharacterResistances {
 	private base: Resistances;
-	private gear: Resistances;
-	private temp: Resistances;
 
 	constructor() {
-		this.base = this.createEmpty();
-		this.gear = this.createEmpty();
-		this.temp = this.createEmpty();
+		this.base = {
+			physical: 0,
+			fire: 0,
+			ice: 0,
+			poison: 0,
+			lightning: 0,
+		};
 	}
 
-	private createEmpty(): Resistances {
-		return { fire: 0, ice: 0, poison: 0, lightning: 0, physical: 0 };
+	/**
+	 * Get base resistance for an element
+	 */
+	getBase(element: ElementType): number {
+		return this.base[element];
 	}
 
-	get(element: ElementType): number {
-		return this.base[element] + this.gear[element] + this.temp[element];
-	}
-
+	/**
+	 * Set base resistance (used for enemy setup or class bonuses)
+	 */
 	setBase(element: ElementType, value: number): void {
 		this.base[element] = value;
 	}
 
-	setEquipment(resistances: Partial<Resistances>): void {
-		this.gear = { ...this.createEmpty(), ...resistances };
+	/**
+	 * Set all base resistances at once
+	 */
+	setAllBase(resistances: Partial<Resistances>): void {
+		this.base = { ...this.base, ...resistances };
 	}
 
-	addTemp(element: ElementType, value: number): void {
-		this.temp[element] += value;
-	}
-
-	clearTemp(): void {
-		this.temp = this.createEmpty();
-	}
-
-	// Debug helper
-	getAll(): { base: Resistances; gear: Resistances; temp: Resistances; total: Resistances } {
-		return {
-			base: { ...this.base },
-			gear: { ...this.gear },
-			temp: { ...this.temp },
-			total: {
-				fire: this.get("fire"),
-				ice: this.get("ice"),
-				poison: this.get("poison"),
-				lightning: this.get("lightning"),
-				physical: this.get("physical"),
-			},
-		};
+	/**
+	 * Get total resistance including status effects
+	 * (Status effects are handled by StatusEffectManager)
+	 */
+	getAll(): Resistances {
+		return { ...this.base };
 	}
 }

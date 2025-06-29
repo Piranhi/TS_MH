@@ -149,7 +149,7 @@ export class HuntManager extends Destroyable implements Saveable {
 				combatManager = new CombatManager(this.context.character, enemy, this.area);
 			},
 			onTick: (dt: number) => {
-				combatManager.onTick(dt);
+				combatManager.update(dt);
 				if (combatManager.isFinished) {
 					// Combat finished - Either goto search again or recovery.
 					// Increase stats here

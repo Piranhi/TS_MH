@@ -31,7 +31,7 @@ export class DebugManager {
 			enemy_canAttack: true,
 			enemy_canTakeDamage: true,
 			enemy_canDie: true,
-			hunt_searchSpeed: GAME_BALANCE.hunt.baseSearchTime,
+			hunt_searchSpeed: 1,
 			hunt_allAreasOpen: false,
 			building_infinitePoints: false,
 			upgrades_unlockAll: false,

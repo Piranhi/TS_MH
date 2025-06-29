@@ -5,11 +5,11 @@ import { GAME_BALANCE } from "@/balance/GameBalance";
 import { RegenPool } from "./value-objects/RegenPool";
 import type { StatsProvider } from "@/models/Stats";
 import { Destroyable } from "../core/Destroyable";
-import { AbilityModifier, Affinity, EffectInstance, EffectSpec } from "@/shared/types";
-import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
 import { CharacterResistances } from "../features/hunt/CharacterResistances";
 import { StatusEffectManager } from "@/features/hunt/StatusEffectManager";
-import { StatusEffect } from "@/features/hunt/StatusEffect";
+import { CombatCalculator } from "@/features/hunt/CombatCalculator";
+import { bus } from "@/core/EventBus";
+import { AbilityModifier, Affinity, ElementType } from "@/shared/types";
 
 export interface CharacterSnapshot {
 	name: string;
@@ -34,8 +34,8 @@ export abstract class BaseCharacter extends Destroyable {
 	/* ──────────────────────── constants ──────────────────────── */
 
 	/* ────────────────── public readonly fields ───────────────── */
-	public readonly hp: BoundedNumber;
-	public readonly stamina: RegenPool;
+	public hp: BoundedNumber;
+	public stamina: RegenPool;
 
 	/* ───────────────────── protected fields ──────────────────── */
 
@@ -157,6 +157,58 @@ export abstract class BaseCharacter extends Destroyable {
 		};
 	}
 
+	/**
+	 * Take damage and return the actual amount taken
+	 */
+	public takeDamage(amount: number, element?: ElementType): number {
+		if (!this.canTakeDamage) return 0;
+
+		const beforeHp = this.hp.current;
+		this.hp.decrease(amount);
+		const actualDamage = beforeHp - this.hp.current;
+
+		// Emit damage event with element info for visual effects
+		if (actualDamage > 0) {
+			bus.emit("Combat:DamageTaken", {
+				target: this.name,
+				damage: actualDamage,
+				element: element || "physical",
+				currentHp: this.hp.current,
+				maxHp: this.hp.max,
+			});
+		}
+
+		// Check death
+		if (this.hp.current <= 0 && this.canDie) {
+			this.alive = false;
+			bus.emit("Combat:CharacterDefeated", {
+				character: this.name,
+			});
+		}
+
+		return actualDamage;
+	}
+
+	/**
+	 * Heal and return the actual amount healed
+	 */
+	public heal(amount: number): number {
+		const beforeHp = this.hp.current;
+		this.hp.increase(amount);
+		const actualHealing = this.hp.current - beforeHp;
+
+		if (actualHealing > 0) {
+			bus.emit("Combat:HealingReceived", {
+				target: this.name,
+				healing: actualHealing,
+				currentHp: this.hp.current,
+				maxHp: this.hp.max,
+			});
+		}
+
+		return actualHealing;
+	}
+
 	private calcPower(): number {
 		const attack = this.stats.get("attack");
 		const powerMultiplier = 1 + this.stats.get("power") / 100;
@@ -190,10 +242,6 @@ export abstract class BaseCharacter extends Destroyable {
 		this.target = undefined;
 	}
 
-	public addStatusEffect(effect: StatusEffect) {
-		this.statusEffects.add(effect);
-	}
-
 	public getAbilities(): Ability[] {
 		return Array.from(this.abilityMap.values());
 	}
@@ -210,11 +258,25 @@ export abstract class BaseCharacter extends Destroyable {
 
 	public handleCombatUpdate(dt: number) {
 		this.checkDebugOptions();
-		this.statusEffects.handleTick(dt);
+
+		// Process periodic effects (DoT/HoT)
+		const periodicEffects = this.statusEffects.processPeriodicEffects(dt);
+		for (const effect of periodicEffects) {
+			if (effect.type === "damage") {
+				const finalDamage = CombatCalculator.calculatePeriodicDamage(effect.amount, effect.element, this);
+				this.takeDamage(finalDamage, effect.element);
+			} else if (effect.type === "heal") {
+				this.heal(effect.amount);
+			}
+		}
+
 		this.regenStamina(dt);
 	}
 
 	// Returns a list of abilities that are ready to be used
+	/**
+	 * Update ability cooldowns with speed modifier
+	 */
 	public getReadyAbilities(dt: number): Ability[] {
 		if (!this.inCombat || !this.canAttack) return [];
 
@@ -222,56 +284,12 @@ export abstract class BaseCharacter extends Destroyable {
 			.filter((a) => a.enabled)
 			.sort((a, b) => a.priority - b.priority);
 
-		// Apply status effects to cooldown
-		let cooldownWithStatusEffects = dt;
-		if (this.statusEffects.hasEffect("slow")) {
-			// 40% slow
-			cooldownWithStatusEffects = dt * 0.6;
-		} else if (this.statusEffects.hasEffect("frozen")) {
-			cooldownWithStatusEffects = 0;
-		}
+		// Apply speed modifier from status effects
+		const speedMultiplier = this.statusEffects.getSpeedModifier();
+		const effectiveDt = dt * speedMultiplier;
 
-		abilities.forEach((ability) => ability.reduceCooldown(cooldownWithStatusEffects));
+		abilities.forEach((ability) => ability.reduceCooldown(effectiveDt));
 		return abilities.filter((ability) => ability.isReady() && this.hasStamina(ability.spec.staminaCost));
-	}
-
-	public createEffectInstance(ability: Ability): EffectInstance[] {
-		const readyEffects: EffectInstance[] = [];
-		for (const effectSpec of ability.spec.effects) {
-			const raw: number = this.calculateRawValue(effectSpec);
-			readyEffects.push({
-				source: this,
-				abilityId: ability.id,
-				effectId: effectSpec.effectId,
-				target: effectSpec.target,
-				element: ability.spec.element,
-				type: effectSpec.type,
-				rawValue: raw,
-				durationSeconds: effectSpec.durationSeconds,
-				statKey: effectSpec.statKey,
-			});
-		}
-		this.spendStamina(ability.spec.staminaCost);
-		ability.resetCooldown();
-		return readyEffects;
-	}
-
-	/** Helper: roll crit/variance, apply power multipliers, etc. */
-	private calculateRawValue(effect: EffectSpec): number {
-		// If a status, return the default value
-		if (effect.type === "status") return effect.value;
-
-		const baseDamage = calculateRawBaseDamage(this);
-		const critChance = this.stats.get("critChance") / 100;
-		const critDamage = this.stats.get("critDamage") / 100;
-		const rolledCrit = Math.random() < critChance;
-		const critMultiplier = rolledCrit ? 1 + critDamage : 1;
-		const variance = 0.9 + Math.random() * 0.2;
-
-		// for a damage effect: attack × power × crit × variance × effect.scale
-		//const totalMultiplier = powerMultiplier * critMultiplier * variance * (effectDef.scale ?? 1);
-		const totalDamage = baseDamage * critMultiplier * variance * (effect.scale ?? 1);
-		return totalDamage;
 	}
 
 	// HELPER CLASSES

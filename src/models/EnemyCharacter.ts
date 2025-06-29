@@ -1,3 +1,4 @@
+// src/models/EnemyCharacter.ts
 import { BaseCharacter } from "./BaseCharacter";
 import { Monster } from "@/models/Monster";
 import { debugManager } from "@/core/DebugManager";
@@ -8,19 +9,35 @@ export class EnemyCharacter extends BaseCharacter {
 	public readonly spec: Monster;
 
 	constructor(spec: Monster) {
+		// Call parent with enemy stats provider
 		super(
 			spec.displayName,
 			{
-				// Scaled by area
-				get: (statKey) => spec.areaScaledStats[statKey],
+				// Area-scaled stats
+				get: (statKey) => spec.areaScaledStats[statKey] || 0,
 			},
 			spec.affinities
 		);
+
 		this.spec = spec;
+		this._type = "ENEMY";
+
+		// Setup enemy specifics
 		this.setupAbilities();
 		this.setupAffinities();
+		this.setupStamina();
 
-		this._type = "ENEMY";
+		// Initialize HP after everything is setup
+		this.initializeHP();
+	}
+
+	private initializeHP() {
+		const maxHp = this.stats.get("hp");
+		this.hp.setMax(maxHp);
+		this.hp.setCurrent(maxHp);
+	}
+
+	private setupStamina() {
 		this.stamina.setMax(GAME_BALANCE.player.stamina.enemyMax);
 		this.stamina.setCurrent(GAME_BALANCE.player.stamina.enemyMax);
 	}
@@ -32,19 +49,16 @@ export class EnemyCharacter extends BaseCharacter {
 	}
 
 	private setupAffinities() {
-		//const resistanceStats: Partial<Resistances> = {};
-
+		// Set base resistances based on affinities
 		for (const affinity of this.affinities) {
 			const resistanceKey = affinity.element as ElementType;
 			const resistanceValue = this.getResistance(affinity.type);
 			this.resistances.setBase(resistanceKey, resistanceValue);
-			//resistanceStats[resistanceKey] = resistanceValue;
 		}
-		//this.resistances.setBase(resistanceStats);
 	}
 
 	private setupAbilities() {
-		// Add default abilities
+		// Add abilities from spec
 		for (const abilityId of this.spec.abilities) {
 			this.addNewAbility(abilityId);
 		}
@@ -67,5 +81,14 @@ export class EnemyCharacter extends BaseCharacter {
 
 	override getAvatarUrl(): string {
 		return this.spec.imgUrl;
+	}
+
+	// Override to prevent NaN issues with missing stats
+	override get maxHp(): number {
+		return this.hp.max || 100; // Fallback value
+	}
+
+	override get currentHp(): number {
+		return this.hp.current || 0;
 	}
 }

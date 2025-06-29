@@ -322,7 +322,7 @@ export class CharacterDisplay extends UIBase {
 	private renderStatusEffects() {
 		if (!this.statusRowEl) return;
 		this.statusRowEl.innerHTML = "";
-		const effects = this.character.statusEffects.getEffects();
+		const effects = this.character.statusEffects.getActiveEffects();
 		for (const effect of effects) {
 			const wrapper = document.createElement("div");
 			wrapper.className = "status-icon";

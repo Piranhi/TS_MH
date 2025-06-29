@@ -56,9 +56,7 @@ export class Ability extends SpecRegistryBase<AbilitySpec> {
 		this.state.priority = v;
 	}
 
-	init() {
-		this.spec.startReady ? (this.currentCooldown = 0) : (this.currentCooldown = this.spec.cooldown);
-	}
+	init() {}
 
 	resetCooldown() {
 		this.currentCooldown = this.maxCooldown;
