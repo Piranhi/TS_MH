@@ -32,11 +32,11 @@ export class CombatManager extends Destroyable {
 		});
 	}
 
-	public update(dt: number) {
-		// Update both characters (handles status effects, stamina regen, etc.)
-		this.playerCharacter.handleCombatUpdate(dt);
-		this.enemyCharacter.handleCombatUpdate(dt);
-		if (this.checkCombatEnd()) return; // Characters may have died from status effects
+        public update(dt: number) {
+                // Update both characters (handles status effects, stamina regen, etc.)
+                this.handleCombatUpdate(this.playerCharacter, dt);
+                this.handleCombatUpdate(this.enemyCharacter, dt);
+                if (this.checkCombatEnd()) return; // Characters may have died from status effects
 
 		// Process abilities for both characters
 		this.processCharacterAbilities(this.playerCharacter, this.enemyCharacter, dt);
@@ -46,19 +46,65 @@ export class CombatManager extends Destroyable {
 		if (this.checkCombatEnd()) return;
 	}
 
-	private checkCombatEnd(): boolean {
-		if (!this.playerCharacter.isAlive() || !this.enemyCharacter.isAlive()) {
-			this.endCombat();
-			return true;
-		}
-		return false;
-	}
+        private checkCombatEnd(): boolean {
+                if (!this.playerCharacter.isAlive() || !this.enemyCharacter.isAlive()) {
+                        this.endCombat();
+                        return true;
+                }
+                return false;
+        }
+
+        private handleCombatUpdate(character: BaseCharacter, dt: number) {
+                // Run any debug updates defined on the character
+                (character as any).checkDebugOptions?.();
+
+                const periodicEffects = character.statusEffects.processPeriodicEffects(dt);
+                for (const effect of periodicEffects) {
+                        if (effect.type === "damage") {
+                                const dmg = CombatCalculator.calculatePeriodicDamage(effect.amount, effect.element, character);
+                                character.takeDamage(dmg, effect.element);
+                        } else if (effect.type === "heal") {
+                                character.heal(effect.amount);
+                        }
+                }
+
+                character.regenStamina(dt);
+        }
+
+        private getReadyAbilities(character: BaseCharacter, dt: number): Ability[] {
+                if (!character.alive || !character.canAttack) return [];
+
+                const abilities = character
+                        .getAbilities()
+                        .filter((a) => a.enabled)
+                        .sort((a, b) => a.priority - b.priority);
+
+                const speedMultiplier = character.statusEffects.getSpeedModifier();
+                const effectiveDt = dt * speedMultiplier;
+
+                abilities.forEach((a) => a.reduceCooldown(effectiveDt));
+                return abilities.filter((a) => a.isReady() && character.hasStamina(a.spec.staminaCost));
+        }
+
+        private calculateDamage(source: BaseCharacter, target: BaseCharacter, baseMultiplier: number, ability: Ability): number {
+                let multiplier = baseMultiplier;
+                const mods = source.getAllAbilityModifiersFromAbility(ability.id);
+                for (const mod of mods) {
+                        if (mod.stat === "multiplier") {
+                                multiplier *= 1 + mod.amount / 100;
+                        } else if (mod.stat === "addition") {
+                                multiplier += mod.amount;
+                        }
+                }
+
+                return CombatCalculator.calculateDamage(source, target, multiplier, ability.spec.element);
+        }
 
 	private processCharacterAbilities(source: BaseCharacter, target: BaseCharacter, dt: number) {
 		if (!source.alive || !target.alive) return;
 
 		// Get abilities that are ready to use
-		const readyAbilities = source.getReadyAbilities(dt);
+                const readyAbilities = this.getReadyAbilities(source, dt);
 
 		for (const ability of readyAbilities) {
 			if (!target.alive) break;
@@ -66,9 +112,9 @@ export class CombatManager extends Destroyable {
 
 			// Process each effect of the ability
 			for (const effectSpec of ability.spec.effects) {
-				if (effectSpec.type === "attack") {
-					// Calculate damage
-					const damage = CombatCalculator.calculateDamage(source, target, effectSpec.value || 1, ability.spec.element);
+                                if (effectSpec.type === "attack") {
+                                        // Calculate damage with ability modifiers
+                                        const damage = this.calculateDamage(source, target, effectSpec.value || 1, ability);
 
 					// Apply damage
 					target.takeDamage(damage, ability.spec.element);
