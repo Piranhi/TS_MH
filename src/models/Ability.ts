@@ -116,9 +116,6 @@ export class Ability extends SpecRegistryBase<AbilitySpec> {
 		const spec = this.specById.get(saveState.id);
 		if (!spec) throw new Error(`Unknown ability "${saveState.id}"`);
 
-		// Debug log to see what we're getting
-		console.log("Loading ability save state:", saveState);
-
 		const state: AbilityState = {
 			id: saveState.id,
 			// Defensive check - ensure we have a valid array

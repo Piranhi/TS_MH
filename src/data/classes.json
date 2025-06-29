@@ -51,7 +51,7 @@
 				"effects": [{ "kind": "abilityModifier", "stat": "attack", "amount": 100, "abilityId": "warrior_charge" }]
 			},
 			{
-				"id": "warrior_attack",
+				"id": "warrior_attack2",
 				"name": "Power Training2",
 				"description": "todo",
 				"iconUrl": "/images/classupgrades/classupgrade-generic-attack.png",
