@@ -17,20 +17,31 @@ export class HuntScreen extends BaseScreen {
 	private huntUpdateEl!: HTMLElement;
 	private playerCard!: CharacterDisplay;
 	private enemyCard!: CharacterDisplay | null;
-	private areaSelectEl!: HTMLSelectElement;
+        private areaSelectEl!: HTMLSelectElement;
+        private areaDisplay!: AreaDisplay;
+        private autoAdvanceCb!: HTMLInputElement;
 
 	constructor() {
 		super();
 		this.addMarkuptoPage(Markup);
 	}
 
-	init() {
-		this.setupElements();
-		this.playerCard = new CharacterDisplay(true, this.byId("char-card-player"));
-		this.enemyCard = new CharacterDisplay(false, this.byId("char-card-enemy"));
-		const areaDisplay = new AreaDisplay(this.byId("area-stats"));
-		this.bindEvents();
-	}
+        init() {
+                this.setupElements();
+                this.playerCard = new CharacterDisplay(true, this.byId("char-card-player"));
+                this.enemyCard = new CharacterDisplay(false, this.byId("char-card-enemy"));
+                this.areaDisplay = new AreaDisplay(this.byId("area-stats"));
+
+                // Create auto advance checkbox in the area options section
+                const label = document.createElement("label");
+                label.textContent = "Auto advance";
+                this.autoAdvanceCb = document.createElement("input");
+                this.autoAdvanceCb.type = "checkbox";
+                label.prepend(this.autoAdvanceCb);
+                this.areaDisplay.addOptionElement(label);
+
+                this.bindEvents();
+        }
 
 	show() {
 		this.context.hunt.areaManager.refresh();
@@ -55,18 +66,28 @@ export class HuntScreen extends BaseScreen {
 		bindEvent(this.eventBindings, "combat:started", (combat) => this.combatStarted(combat));
 		bindEvent(this.eventBindings, "combat:ended", (result) => this.combatEnded(result));
 		bindEvent(this.eventBindings, "hunt:areaUnlocked", () => this.buildAreaSelect());
-		bindEvent(this.eventBindings, "inventory:dropped", (drops) => {
-			const names = drops.map((drop) => InventoryRegistry.getItemById(drop).name).join(", ");
-			this.updateOutput(`Dropped: ${names}`);
-		});
+                bindEvent(this.eventBindings, "inventory:dropped", (drops) => {
+                        const names = drops.map((drop) => InventoryRegistry.getItemById(drop).name).join(", ");
+                        this.updateOutput(`Dropped: ${names}`);
+                });
 
-		this.bindDomEvent(this.areaSelectEl, "change", this.onAreaChanged);
-	}
+                bindEvent(this.eventBindings, "hunt:autoAdvanceDisabled", () => {
+                        this.autoAdvanceCb.checked = false;
+                });
 
-	private onAreaChanged = (e: Event) => {
-		const areaId = (e.target as HTMLSelectElement).value;
-		bus.emit("hunt:areaSelected", areaId);
-	};
+                this.bindDomEvent(this.areaSelectEl, "change", this.onAreaChanged);
+                this.bindDomEvent(this.autoAdvanceCb, "change", this.onAutoAdvanceChange);
+        }
+
+        private onAreaChanged = (e: Event) => {
+                const areaId = (e.target as HTMLSelectElement).value;
+                bus.emit("hunt:areaSelected", areaId);
+        };
+
+        private onAutoAdvanceChange = (e: Event) => {
+                const enabled = (e.target as HTMLInputElement).checked;
+                this.context.hunt.setAutoAdvance(enabled);
+        };
 
 	private buildAreaSelect() {
 		// Setup Area select based on all Areas from JSON

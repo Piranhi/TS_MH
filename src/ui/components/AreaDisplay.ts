@@ -14,17 +14,19 @@ export class AreaDisplay extends UIBase {
 		FIGHT_BOSS_BTN: "fight-boss-btn",
 	} as const;
 
-	private static readonly DOM_IDS = {
-		STATS_ROWS: "stats-rows",
-		AREA_PROGRESS: "area-progress",
-		FIGHT_BOSS_BTN: "fight-boss-btn",
-		BUILD_OUTPOST_BTN: "build-outpost-btn",
-	} as const;
+        private static readonly DOM_IDS = {
+                STATS_ROWS: "stats-rows",
+                AREA_PROGRESS: "area-progress",
+                FIGHT_BOSS_BTN: "fight-boss-btn",
+                BUILD_OUTPOST_BTN: "build-outpost-btn",
+                OPTIONS: "area-options",
+        } as const;
 
-	private killsNeededForBossEl!: ProgressBar;
-	private clearsNeededForOutpostEl!: ProgressBar;
-	private fightBossBtn!: UIButton;
-	private buildOutpostBtn!: UIButton;
+        private killsNeededForBossEl!: ProgressBar;
+        private clearsNeededForOutpostEl!: ProgressBar;
+        private fightBossBtn!: UIButton;
+        private buildOutpostBtn!: UIButton;
+        private optionsContainer!: HTMLDivElement;
 
 	constructor(parentElement: HTMLElement) {
 		super();
@@ -46,7 +48,7 @@ export class AreaDisplay extends UIBase {
 	 * @param stats - Initial configuration for the stats display
 	 * @returns The created section element for potential further manipulation
 	 */
-	public createAreaStatsSection(area: Area): HTMLElement {
+        public createAreaStatsSection(area: Area): HTMLElement {
 		this.element.innerHTML = "";
 		// Create the main section container
 		const section = this.createElement("section", {});
@@ -61,10 +63,16 @@ export class AreaDisplay extends UIBase {
 		const statsDiv = this.createElement("div", {
 			id: AreaDisplay.DOM_IDS.STATS_ROWS,
 		});
-		const progressDiv = this.createElement("div", {
-			id: "AreaDisplay.DOM_IDS.AREA_PROGRESS",
-			className: "area-progress",
-		});
+                const progressDiv = this.createElement("div", {
+                        id: "AreaDisplay.DOM_IDS.AREA_PROGRESS",
+                        className: "area-progress",
+                });
+
+                // Container for extra options like auto progression
+                this.optionsContainer = this.createElement("div", {
+                        id: AreaDisplay.DOM_IDS.OPTIONS,
+                        className: "area-options",
+                });
 
 		const killsNeeded = this.createElement("span", {
 			textContent: "Kills Needed",
@@ -104,17 +112,26 @@ export class AreaDisplay extends UIBase {
 			onClick: this.onFightBoss,
 		});
 
-		// Assemble the section
-		section.appendChild(title);
-		section.appendChild(progressDiv);
-
-		section.appendChild(statsDiv);
+                // Assemble the section
+                section.appendChild(title);
+                section.appendChild(progressDiv);
+                section.appendChild(this.optionsContainer);
+                section.appendChild(statsDiv);
 
 		// Add to the container
-		this.element.appendChild(section);
+                this.element.appendChild(section);
 
-		return section;
-	}
+                return section;
+        }
+
+        /**
+         * Allows other components to add option elements to the area display
+         */
+        public addOptionElement(el: HTMLElement) {
+                if (this.optionsContainer) {
+                        this.optionsContainer.appendChild(el);
+                }
+        }
 
 	private onFightBoss = (e: Event) => {
 		e.preventDefault();
