@@ -4,8 +4,10 @@ import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { PlayerCharacter } from "@/models/PlayerCharacter";
 import { BigNumber } from "@/models/utils/BigNumber";
 import { GameContext } from "@/core/GameContext";
-import { OfflineSession } from "@/models/OfflineProgress";
+import { OfflineSession, OfflineReason } from "@/models/OfflineProgress";
 import { BalanceDebug } from "@/balance/GameBalance";
+import { Area } from "@/models/Area";
+import { Monster } from "@/models/Monster";
 
 export class DebugMenu {
 	private rootEl!: HTMLElement;
@@ -13,6 +15,7 @@ export class DebugMenu {
 	private optionsEl!: HTMLElement;
 	private playerStatsEl!: HTMLElement;
 	private enemyStatsEl!: HTMLElement;
+	private areaInfoEl!: HTMLElement;
 	constructor() {}
 
 	build() {
@@ -27,10 +30,13 @@ export class DebugMenu {
 		this.playerStatsEl.className = "debug-column player-stats";
 		this.enemyStatsEl = document.createElement("div");
 		this.enemyStatsEl.className = "debug-column enemy-stats";
+		this.areaInfoEl = document.createElement("div");
+		this.areaInfoEl.className = "debug-column area-info";
 
 		this.rootEl.appendChild(this.optionsEl);
 		this.rootEl.appendChild(this.playerStatsEl);
 		this.rootEl.appendChild(this.enemyStatsEl);
+		this.rootEl.appendChild(this.areaInfoEl);
 
 		bus.on("debug:statsUpdate", (payload) => {
 			if (payload.isPlayer) {
@@ -40,9 +46,12 @@ export class DebugMenu {
 			}
 		});
 
+		bus.on("hunt:areaChanged", (area) => this.updateAreaInfo(area));
+
 		this.buildToggleButton();
 		this.buildControls();
 		this.addActions();
+		this.updateAreaInfo();
 	}
 
 	private buildToggleButton() {
@@ -175,7 +184,7 @@ export class DebugMenu {
 				startTime: Date.now() - 8 * 60 * 60 * 1000, // 8 hours ago
 				endTime: Date.now(),
 				duration: 8 * 60 * 60 * 1000,
-				reason: "startup",
+				reason: OfflineReason.Startup,
 			};
 			GameContext.getInstance().offlineManager.processOfflineSession(fakeSession);
 		}
@@ -204,5 +213,113 @@ export class DebugMenu {
 		btn.textContent = name;
 		this.optionsEl.appendChild(btn);
 		btn.addEventListener("click", onClick);
+	}
+
+	private updateAreaInfo(area?: Area) {
+		const context = GameContext.getInstance();
+		const currentArea = area || context.hunt.getActiveArea();
+		
+		if (!currentArea) {
+			this.areaInfoEl.innerHTML = "<h3>Area Info</h3><p>No area selected</p>";
+			return;
+		}
+
+		const areaStats = context.stats.getAreaStats(currentArea.id);
+		
+		// Get enemy pool information
+		const enemyPool = currentArea.spawns.map(spawn => {
+			const monsterSpec = Monster.getSpec(spawn.monsterId);
+			return {
+				name: monsterSpec?.displayName || spawn.monsterId,
+				weight: spawn.weight,
+				dropTags: spawn.drops.tags,
+				dropChance: spawn.drops.baseDropChance
+			};
+		});
+
+		// Get boss information
+		const bossSpec = Monster.getSpec(currentArea.boss.monsterId);
+		const bossInfo = {
+			name: bossSpec?.displayName || currentArea.boss.monsterId,
+			weight: currentArea.boss.weight,
+			dropTags: currentArea.boss.drops.tags,
+			dropChance: currentArea.boss.drops.baseDropChance
+		};
+
+		// Get loot pool information
+		const lootTags = [...new Set(enemyPool.flatMap(enemy => enemy.dropTags))];
+		const lootPool = lootTags.flatMap(tag => 
+			InventoryRegistry.getSpecsByTags([tag]).map(spec => ({
+				name: spec.name || spec.id,
+				id: spec.id,
+				tags: spec.tags
+			}))
+		);
+
+		// Get progression requirements
+		const requirements = currentArea.requires;
+		
+		// Get progression unlocks (what this area unlocks) - simplified approach
+		const unlocks: string[] = [];
+		// Note: We could implement a proper progression system lookup here if needed
+
+		this.areaInfoEl.innerHTML = `
+			<h3>Area Info: ${currentArea.displayName}</h3>
+			<div class="area-info-section">
+				<h4>Basic Info</h4>
+				<p><strong>ID:</strong> ${currentArea.id}</p>
+				<p><strong>Tier:</strong> ${currentArea.tier}</p>
+				<p><strong>XP per Kill:</strong> ${currentArea.getXpPerKill(false)}</p>
+				<p><strong>XP per Boss:</strong> ${currentArea.getXpPerKill(true)}</p>
+			</div>
+
+			<div class="area-info-section">
+				<h4>Area Stats</h4>
+				<p><strong>Boss Unlocked:</strong> ${areaStats.bossUnlockedThisRun ? "Yes" : "No"}</p>
+				<p><strong>Boss Killed This Run:</strong> ${areaStats.bossKilledThisRun ? "Yes" : "No"}</p>
+				<p><strong>Total Boss Kills:</strong> ${areaStats.bossKillsTotal}</p>
+				<p><strong>Total Kills:</strong> ${areaStats.killsTotal}</p>
+				<p><strong>Kills This Run:</strong> ${areaStats.killsThisRun}</p>
+			</div>
+
+			<div class="area-info-section">
+				<h4>Progression</h4>
+				<p><strong>Requirements:</strong> ${requirements.length > 0 ? requirements.join(", ") : "None"}</p>
+				<p><strong>Unlocks:</strong> ${unlocks.length > 0 ? unlocks.join(", ") : "None"}</p>
+			</div>
+
+			<div class="area-info-section">
+				<h4>Enemy Pool (${enemyPool.length} enemies)</h4>
+				${enemyPool.map(enemy => `
+					<div class="enemy-entry">
+						<strong>${enemy.name}</strong> (Weight: ${enemy.weight})<br>
+						<small>Drop chance: ${(enemy.dropChance * 100).toFixed(3)}% | Tags: ${enemy.dropTags.join(", ")}</small>
+					</div>
+				`).join("")}
+			</div>
+
+			<div class="area-info-section">
+				<h4>Boss</h4>
+				<div class="enemy-entry">
+					<strong>${bossInfo.name}</strong><br>
+					<small>Drop chance: ${(bossInfo.dropChance * 100).toFixed(1)}% | Tags: ${bossInfo.dropTags.join(", ")}</small>
+				</div>
+			</div>
+
+			<div class="area-info-section">
+				<h4>Loot Pool (${lootPool.length} unique items)</h4>
+				<div class="loot-tags">
+					<strong>Available Tags:</strong> ${lootTags.join(", ")}
+				</div>
+				<div class="loot-items">
+					${lootPool.slice(0, 10).map(item => `
+						<div class="loot-entry">
+							<small>${item.name} (${item.id})</small>
+						</div>
+					`).join("")}
+					${lootPool.length > 10 ? `<small>... and ${lootPool.length - 10} more items</small>` : ""}
+				</div>
+			</div>
+		`;
 	}
 }
