@@ -3,6 +3,8 @@ import { bus } from "../../core/EventBus";
 import { Saveable } from "@/shared/storage-types";
 import { ResourceData, ResourceRequirement, ResourceUpgradeEffect } from "@/shared/types";
 import { RESOURCE_UPGRADES } from "@/balance/GameBalance";
+import { Resource } from "./Resource";
+import { GameContext } from "@/core/GameContext";
 
 interface ResourceManagerSaveState {
 	resourceData: ResourceData[];
@@ -133,15 +135,48 @@ export class ResourceManager extends Destroyable implements Saveable {
 	}
 
 	// Renamed and fixed craft speed calculation
-	public getCraftSpeedMultiplier(resourceId: string): number {
-		const totalSpeedBonus = this.getActiveUpgrades(resourceId).reduce(
-			(total, upgrade) => total + (upgrade.effects.craftSpeedReduction || 0),
-			0
-		);
+        public getCraftSpeedMultiplier(resourceId: string): number {
+                const totalSpeedBonus = this.getActiveUpgrades(resourceId).reduce(
+                        (total, upgrade) => total + (upgrade.effects.craftSpeedReduction || 0),
+                        0
+                );
 
 		// Convert percentage to multiplier (13% faster = 1.13 multiplier)
-		return 1 + totalSpeedBonus / 100;
-	}
+                return 1 + totalSpeedBonus / 100;
+        }
+
+        /**
+         * Calculate the real crafting time and resource costs for a resource.
+         * This factors in resource upgrades, blacksmith upgrades, and settlement bonuses.
+         */
+        public getCraftingData(resourceId: string): { time: number; costs: ResourceRequirement[] } {
+                const spec = Resource.getSpec(resourceId);
+                if (!spec) return { time: 0, costs: [] };
+
+                const baseTime = spec.craftTime;
+                const baseCosts = spec.requires;
+
+                // Upgrades from resource level
+                const resourceSpeed = this.getCraftSpeedMultiplier(resourceId);
+                const resourceCost = this.getResourceCostReduction(resourceId);
+
+                // Upgrades from the blacksmith
+                const blacksmithSpeed = GameContext.getInstance().blacksmith.getSpeedMultiplier();
+
+                // Settlement/building modifiers - placeholder for future expansion
+                let settlementSpeed = 1;
+                let settlementCost = 1;
+
+                const totalSpeed = resourceSpeed * blacksmithSpeed * settlementSpeed;
+                const totalCostMult = resourceCost * settlementCost;
+
+                const costs = baseCosts.map((c) => ({
+                        resource: c.resource,
+                        quantity: Math.ceil(c.quantity * totalCostMult),
+                }));
+
+                return { time: baseTime / totalSpeed, costs };
+        }
 
 	// For UI display - show what's coming next
 	public getNextUpgrade(resourceId: string): ResourceUpgradeEffect | null {
