@@ -755,3 +755,13 @@ section + section {
 	opacity: 0.9;
 	margin: 0;
 }
+
+.tooltip-list .upgrade-locked {
+	opacity: 0.4;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.tooltip-list .upgrade-unlocked {
+	opacity: 1;
+	color: rgba(255, 255, 255, 0.9);
+}
