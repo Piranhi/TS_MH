@@ -4,6 +4,8 @@ import { CraftSlot } from "@/features/settlement/BlacksmithManager";
 import { UIBase } from "./UIBase";
 import { ResourceSpec } from "@/shared/types";
 import { Tooltip, TooltipListItem } from "./Tooltip";
+import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
+import { formatNumberShort } from "@/shared/utils/stringUtils";
 
 /**
  * Component representing a single blacksmith crafting slot.
@@ -60,19 +62,19 @@ export class BlacksmithSlot extends UIBase {
 
 		this.bindDomEvent(slotEl, "mouseenter", () => {
 			if (!this.currentResourceId) return;
-			
+
 			const upgradeArray = this.context.resources.getAllUpgrades(this.currentResourceId);
 			const resourceData = this.context.resources.getResourceData(this.currentResourceId);
 			const currentLevel = resourceData?.level || 1;
-			
+
 			const upgradeList: TooltipListItem[] = upgradeArray.map((upgrade) => {
 				const isUnlocked = currentLevel >= upgrade.level;
 				return {
 					text: `Lvl ${upgrade.level}: ${upgrade.displayText}`,
-					className: isUnlocked ? "upgrade-unlocked" : "upgrade-locked"
+					className: isUnlocked ? "upgrade-unlocked" : "upgrade-locked",
 				};
 			});
-			
+
 			Tooltip.instance.show(slotEl, {
 				icon: this.icon.src,
 				type: "Resource upgrade",
@@ -159,8 +161,6 @@ export class BlacksmithSlot extends UIBase {
 			initialValue: 0,
 		});
 	}
-
-	private createUpgradeInfo() {}
 
 	/**
 	 * Builds the resource selection options.
@@ -360,6 +360,7 @@ export class BlacksmithSlot extends UIBase {
 	 */
 	private updateResourceData(resourceId: string): void {
 		const data = this.context.resources.getResourceData(resourceId);
+		const tier = Resource.getSpec(resourceId)?.tier ?? 1;
 		if (!data) return;
 
 		// Update level if changed
@@ -368,7 +369,7 @@ export class BlacksmithSlot extends UIBase {
 			this.levelEl.textContent = `Lv ${data.level}`;
 
 			// Update XP bar max value
-			const xpNeeded = data.level * 10;
+			const xpNeeded = BalanceCalculators.getResourceXPThreshold(data.level, tier);
 			this.xpBar.setMax(xpNeeded);
 		}
 
@@ -402,7 +403,7 @@ export class BlacksmithSlot extends UIBase {
 			item.appendChild(icon);
 
 			const text = document.createElement("span");
-			text.textContent = `${have}/${req.quantity}`;
+			text.textContent = `${formatNumberShort(req.quantity)} / ${formatNumberShort(have)}`;
 			if (have < req.quantity) text.classList.add("insufficient");
 			item.appendChild(text);
 

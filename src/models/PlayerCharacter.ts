@@ -99,7 +99,6 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		this.statsEngine.setLayer("level", () => bonuses);
 	}
 
-
 	get level(): number {
 		return this._charLevel;
 	}
@@ -109,7 +108,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 	}
 
 	get nextXpThreshold(): number {
-		return BalanceCalculators.getXPThreshold(this.level + 0);
+		return BalanceCalculators.getPlayerXPThreshold(this.level + 0);
 	}
 
 	override getAvatarUrl(): string {

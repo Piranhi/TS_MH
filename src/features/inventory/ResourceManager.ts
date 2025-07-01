@@ -23,8 +23,11 @@ export class ResourceManager extends Destroyable implements Saveable {
 	addResource(id: string, qty: number) {
 		const existing = this.resources.get(id);
 
+		if (existing && existing.infinite) return;
+
 		if (existing) {
 			existing.quantity += qty;
+			existing.quantity = Math.ceil(existing.quantity);
 		} else {
 			this.resources.set(id, {
 				quantity: qty,
@@ -41,8 +44,9 @@ export class ResourceManager extends Destroyable implements Saveable {
 		this.setResourceUnlocked("raw_ore");
 		this.setResourceUnlocked("iron_ingot");
 		this.setResourceUnlocked("charstone");
-		this.setResourceUnlocked("copper_bar");
+		this.setResourceUnlocked("iron_bar");
 		this.setResourceUnlocked("clear_quartz");
+		this.setResourceUnlocked("forge_flux");
 	}
 
 	private setResourceUnlocked(id: string) {
@@ -117,9 +121,26 @@ export class ResourceManager extends Destroyable implements Saveable {
 		return RESOURCE_UPGRADES.filter((upgrade) => resourceData.level >= upgrade.level);
 	}
 
-	// Calculate total craft speed reduction
-	public getCraftSpeedReduction(resourceId: string): number {
-		return this.getActiveUpgrades(resourceId).reduce((total, upgrade) => total + (upgrade.effects.craftSpeedReduction || 0), 0);
+	// Fixed resource cost calculation
+	public getResourceCostReduction(resourceId: string): number {
+		const totalReduction = this.getActiveUpgrades(resourceId).reduce(
+			(total, upgrade) => total + (upgrade.effects.resourceCostReduction || 0),
+			0
+		);
+
+		// Convert percentage to multiplier (21% reduction = 0.79 multiplier)
+		return 1 - totalReduction / 100;
+	}
+
+	// Renamed and fixed craft speed calculation
+	public getCraftSpeedMultiplier(resourceId: string): number {
+		const totalSpeedBonus = this.getActiveUpgrades(resourceId).reduce(
+			(total, upgrade) => total + (upgrade.effects.craftSpeedReduction || 0),
+			0
+		);
+
+		// Convert percentage to multiplier (13% faster = 1.13 multiplier)
+		return 1 + totalSpeedBonus / 100;
 	}
 
 	// For UI display - show what's coming next

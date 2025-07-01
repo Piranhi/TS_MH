@@ -267,6 +267,13 @@ export const GAME_BALANCE = {
 			trainingSpeed: { base: 1 },
 		},
 	},
+
+	// === RESOURCES SCALING ===
+	resources: {
+		baseXpRequirementPerLevel: 10, // Base XP needed per level
+		levelXPMultiplier: 2, // Each level needs 2x more XP than the last
+		tierXPMultiplier: 5, // Each tier is 5x harder than the previous
+	},
 } as const;
 
 // Configuration for all resource upgrades
@@ -448,7 +455,7 @@ export const BalanceCalculators = {
 	/**
 	 * Calculate XP threshold for next level
 	 */
-	getXPThreshold(currentLevel: number): number {
+	getPlayerXPThreshold(currentLevel: number): number {
 		return Math.floor(
 			GAME_BALANCE.player.levelling.baseXpRequirementPerLevel *
 				Math.pow(GAME_BALANCE.player.xpThresholdMultiplier, currentLevel - 1)
@@ -522,6 +529,14 @@ export const BalanceCalculators = {
 	 */
 	getMetaPointsFromRun(finalLevel: number): number {
 		return finalLevel * GAME_BALANCE.prestige.metaPointsPerLevel;
+	},
+
+	getResourceXPThreshold(currentLevel: number, tier: number): number {
+		const baseXP = GAME_BALANCE.resources.baseXpRequirementPerLevel;
+		const levelMultiplier = Math.pow(GAME_BALANCE.resources.levelXPMultiplier, currentLevel - 1);
+		const tierMultiplier = Math.pow(GAME_BALANCE.resources.tierXPMultiplier, tier - 1);
+
+		return Math.floor(baseXP * levelMultiplier * tierMultiplier);
 	},
 } as const;
 

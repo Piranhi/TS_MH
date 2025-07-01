@@ -128,7 +128,8 @@ export class BlacksmithManager extends GameBase implements Saveable, OfflineProg
 		if (this.rawOreTimer >= craftTime) {
 			// Calculate all cycles at once for efficiency.
 			const cyclesCompleted = Math.floor(this.rawOreTimer / craftTime);
-			GameContext.getInstance().resources.addResource("raw_ore", cyclesCompleted);
+			const earnedOre = cyclesCompleted * 10; //* (GameContext.getInstance().settlement.getBuilding("blacksmith")?.level ?? 1);
+			this.resources.addResource("raw_ore", earnedOre);
 			this.rawOreTimer = this.rawOreTimer % craftTime;
 		}
 	}
@@ -139,13 +140,26 @@ export class BlacksmithManager extends GameBase implements Saveable, OfflineProg
 			if (!slot.resourceId) continue;
 			const spec = Resource.getSpec(slot.resourceId);
 			if (!spec) continue;
+
 			if (slot.progress <= 0) {
 				if (!this.resources.canAfford(spec.requires)) continue;
-				spec.requires.forEach((r) => this.resources.consumeResource(r.resource, r.quantity));
+
+				// Apply cost reduction properly
+				const costMultiplier = this.resources.getResourceCostReduction(slot.resourceId);
+				spec.requires.forEach((r) =>
+					this.resources.consumeResource(
+						r.resource,
+						Math.ceil(r.quantity * costMultiplier) // Round up to avoid zero costs
+					)
+				);
 				slot.progress = spec.craftTime;
 			}
+
 			if (slot.progress > 0) {
-				slot.progress -= dt * this.speedMultiplier;
+				// Apply speed multiplier properly
+				const speedMultiplier = this.resources.getCraftSpeedMultiplier(slot.resourceId);
+				slot.progress -= dt * this.speedMultiplier * speedMultiplier;
+
 				if (slot.progress <= 0) {
 					this.resources.addResource(spec.id, 1);
 					this.resources.addResourceXP(spec.id, 1);

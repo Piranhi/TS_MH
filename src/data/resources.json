@@ -1,7 +1,7 @@
 [
 	{
 		"id": "raw_ore",
-		"tier": 1,
+		"tier": 0,
 		"name": "Raw Ore",
 		"description": "Unsorted chunks of rock threaded with metallic veins the seed of every other smithing material.",
 		"iconUrl": "/images/resources/resource_raw_ore.png",
@@ -15,7 +15,7 @@
 		"name": "Iron Ingot",
 		"description": "Reliable, weighty bars forged from smelted Raw Ore; cornerstone of entry-level arms.",
 		"iconUrl": "/images/resources/resource_iron_ingot.png",
-		"requires": [{ "resource": "raw_ore", "quantity": 2 }],
+		"requires": [{ "resource": "raw_ore", "quantity": 10 }],
 		"craftTime": 10,
 		"unlock": ["charstone"]
 	},
@@ -25,17 +25,20 @@
 		"name": "Charstone",
 		"description": "Dense, jet-black bricks that burn hot and clean, perfect for small apprentice forges.",
 		"iconUrl": "/images/resources/resource_charstone.png",
-		"requires": [{ "resource": "raw_ore", "quantity": 2 }],
+		"requires": [{ "resource": "raw_ore", "quantity": 15 }],
 		"craftTime": 10,
 		"unlock": ["copper_bar"]
 	},
 	{
-		"id": "copper_bar",
+		"id": "iron_bar",
 		"tier": 1,
-		"name": "Copper Bar",
+		"name": "Iron Bar",
 		"description": "Reddish, conductive metal used for basic talismans and corrosion-resistant fittings.",
 		"iconUrl": "/images/resources/resource_copper_bar.png",
-		"requires": [{ "resource": "raw_ore", "quantity": 4 }],
+		"requires": [
+			{ "resource": "raw_ore", "quantity": 20 },
+			{ "resource": "iron_ingot", "quantity": 20 }
+		],
 		"craftTime": 20,
 		"unlock": ["clear_quartz"]
 	},
@@ -45,7 +48,10 @@
 		"name": "Clear Quartz",
 		"description": "Unblemished crystal shards that focus simple runes or serve as glass-grade filler.",
 		"iconUrl": "/images/resources/resource_clear_quartz.png",
-		"requires": [{ "resource": "raw_ore", "quantity": 10 }],
+		"requires": [
+			{ "resource": "raw_ore", "quantity": 20 },
+			{ "resource": "iron_ingot", "quantity": 20 }
+		],
 		"craftTime": 25,
 		"unlock": ["forge_flux"]
 	},
@@ -55,7 +61,10 @@
 		"name": "Forge Flux",
 		"description": "Pulverised limestone; purges slag and lets molten metal flow smoothly in the crucible.",
 		"iconUrl": "/images/resources/resource_forge_flux.png",
-		"requires": [{}],
+		"requires": [
+			{ "resource": "iron_bar", "quantity": 50 },
+			{ "resource": "clear_quartz", "quantity": 50 }
+		],
 		"craftTime": 0
 	},
 	{
