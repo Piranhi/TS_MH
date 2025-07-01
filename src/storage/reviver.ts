@@ -23,10 +23,10 @@ export function reviveGame(_key: string, value: any): any {
 				return TrainedStat.fromJSON(value);
 			case "BoundedNumber":
 				return BoundedNumber.fromJSON(value);
-                        case "RegenPool":
-                                return RegenPool.fromJSON(value);
-                        case "Building":
-                                return Building.fromJSON(value);
+			case "RegenPool":
+				return RegenPool.fromJSON(value);
+			case "Building":
+				return Building.fromJSON(value);
 
 			// …add cases for any other types…
 		}

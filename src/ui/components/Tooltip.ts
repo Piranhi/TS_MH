@@ -7,6 +7,7 @@ export interface TooltipData {
 	heirloom?: number;
 	description?: string;
 	tintColour?: string;
+	list?: string[];
 }
 
 export class Tooltip {
@@ -31,7 +32,8 @@ export class Tooltip {
 			<p class="tooltip-type"></p>
 			<p class="tooltip-heirloom"></p>
 			<ul class="tooltip-stats"></ul>
-			<p class="tooltip-description"></p>
+			<p class='tooltip-description'></p>
+			<ul class='tooltip-list'></ul>
 		`;
 		document.body.appendChild(this.root);
 
@@ -51,6 +53,7 @@ export class Tooltip {
 		this.fillStats(data.stats ?? []);
 		this.$(".tooltip-heirloom").textContent = data.heirloom ? `Heirloom: ${data.heirloom}` : "";
 		this.$(".tooltip-description").textContent = data.description ?? "";
+		this.$(".tooltip-list").innerHTML = data.list?.map((line) => `<li>${line}</li>`).join("") ?? "";
 
 		// Optional tint
 		if (data.tintColour) {

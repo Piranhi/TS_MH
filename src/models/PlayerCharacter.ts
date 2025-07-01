@@ -80,9 +80,6 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 			this._currentXp -= this.nextXpThreshold;
 			this.levelUp();
 			levelledUp = true;
-
-			//const newThreshold = Math.floor(this._nextXpThreshold * GAME_BALANCE.player.xpThresholdMultiplier);
-			//this._nextXpThreshold = newThreshold;
 		}
 
 		if (levelledUp) {
@@ -102,20 +99,6 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		this.statsEngine.setLayer("level", () => bonuses);
 	}
 
-	// ----------------------------- ABILITIES --------------------------------
-
-	/** Recalculate full ability set and update map */
-	/* 	private recalculateAbilities() {
-		// Merge all sources (dedupe with Set)
-		const mergedIds = Array.from(
-			new Set([
-				...(this.defaultAbilityIds ?? []),
-				...this.classAbilityIds,
-				// ...add more here if needed
-			])
-		);
-		this.updateAbilities(mergedIds);
-	} */
 
 	get level(): number {
 		return this._charLevel;

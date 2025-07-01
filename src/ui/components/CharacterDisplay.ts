@@ -24,8 +24,8 @@ export class CharacterDisplay extends UIBase {
 	private nameEl!: HTMLElement;
 	private statGridEl!: HTMLElement;
 	private hpBar!: ProgressBar;
-        private hpLabel!: HTMLElement;
-        private hpChangeEl!: HTMLElement;
+	private hpLabel!: HTMLElement;
+	private hpChangeEl!: HTMLElement;
 	private staminaBar!: ProgressBar;
 	private staminaLabel!: HTMLElement;
 	private avatarImg!: HTMLImageElement;
@@ -38,16 +38,16 @@ export class CharacterDisplay extends UIBase {
 	// Track active transitions for cleanup
 	private activeTransitions = new Map<string, TransitionCleanup>();
 
-        constructor(public readonly isPlayer: boolean, element: HTMLElement) {
-                super();
-                this.element = element;
-                this.createDisplay();
-                bindEvent(this.eventBindings, "char:hpChanged", (payload) => {
-                        if (!this.character) return;
-                        if (payload.char !== this.character) return;
-                        this.showHpChange(payload.amount, payload.isCrit ?? false);
-                });
-        }
+	constructor(public readonly isPlayer: boolean, element: HTMLElement) {
+		super();
+		this.element = element;
+		this.createDisplay();
+		bindEvent(this.eventBindings, "char:hpChanged", (payload) => {
+			if (!this.character) return;
+			if (payload.char !== this.character) return;
+			this.showHpChange(payload.amount, payload.isCrit ?? false);
+		});
+	}
 
 	receiveCharacter(char: BaseCharacter): void {
 		this.character = char;
@@ -95,15 +95,15 @@ export class CharacterDisplay extends UIBase {
 
 		this.hpLabel = document.createElement("small");
 		this.hpLabel.className = "hp-label basic-small";
-                this.hpLabel.textContent = `0/0 HP`;
-                healthStackEl.appendChild(this.hpLabel);
+		this.hpLabel.textContent = `0/0 HP`;
+		healthStackEl.appendChild(this.hpLabel);
 
-                this.hpChangeEl = document.createElement("div");
-                this.hpChangeEl.className = "hp-change basic-small";
-                this.hpChangeEl.addEventListener("animationend", () => {
-                        this.hpChangeEl.classList.remove("show");
-                });
-                healthStackEl.appendChild(this.hpChangeEl);
+		this.hpChangeEl = document.createElement("div");
+		this.hpChangeEl.className = "hp-change basic-small";
+		this.hpChangeEl.addEventListener("animationend", () => {
+			this.hpChangeEl.classList.remove("show");
+		});
+		healthStackEl.appendChild(this.hpChangeEl);
 
 		this.hpBar = new ProgressBar({
 			container: healthStackEl,
@@ -118,7 +118,7 @@ export class CharacterDisplay extends UIBase {
 
 	setup() {
 		const snapshot = this.character.snapshot();
-		const { abilities, imgUrl, level } = snapshot;
+		const { abilities, imgUrl } = snapshot;
 
 		this.avatarImg.src = imgUrl;
 		this.abilitiesListMap.clear();
@@ -154,51 +154,55 @@ export class CharacterDisplay extends UIBase {
 			name.className = "ability-name basic-very-small";
 			name.textContent = ability.name;
 
-			const dmg = document.createElement("span");
-			dmg.className = "ability-dmg";
-			dmg.textContent = "21";
-
-			const toggle = document.createElement("input");
-			toggle.type = "checkbox";
-			toggle.checked = ability.enabled;
-			toggle.className = "ability-toggle";
-			toggle.addEventListener("change", () => {
-				ability.enabled = toggle.checked;
-			});
-
-			li.addEventListener("dragstart", (e) => {
-				e.dataTransfer!.setData("text/plain", ability.id);
-			});
-
-			li.addEventListener("dragover", (e) => e.preventDefault());
-			li.addEventListener("drop", (e) => {
-				e.preventDefault();
-				const draggedId = e.dataTransfer!.getData("text/plain");
-				const draggedEl = this.abilitiesListMap.get(draggedId);
-				if (draggedEl && draggedEl !== li) {
-					this.abilitiesListEl.insertBefore(draggedEl, li);
-					this.updateAbilityOrder();
-				}
-			});
-
-			li.addEventListener("mouseenter", () => {
-				Tooltip.instance.show(li, {
-					icon: ability.spec.iconUrl,
-					name: ability.name,
-					description: `Cost: ${ability.spec.staminaCost} stamina`,
+			// Create ability bars
+			// Player abilities have a toggle, order, and draggable handle
+			// Enemy abilities have a fill and icon
+			if (this.isPlayer) {
+				const toggle = document.createElement("input");
+				toggle.type = "checkbox";
+				toggle.checked = ability.enabled;
+				toggle.className = "ability-toggle";
+				toggle.addEventListener("change", () => {
+					ability.enabled = toggle.checked;
 				});
-			});
-			li.addEventListener("mouseleave", () => Tooltip.instance.hide());
 
-			li.appendChild(fill);
-			li.appendChild(handle);
-			li.appendChild(order);
-			li.appendChild(iconImg);
-			li.appendChild(name);
-			li.appendChild(dmg);
-			li.appendChild(toggle);
+				li.addEventListener("dragstart", (e) => {
+					e.dataTransfer!.setData("text/plain", ability.id);
+				});
+
+				li.addEventListener("dragover", (e) => e.preventDefault());
+				li.addEventListener("drop", (e) => {
+					e.preventDefault();
+					const draggedId = e.dataTransfer!.getData("text/plain");
+					const draggedEl = this.abilitiesListMap.get(draggedId);
+					if (draggedEl && draggedEl !== li) {
+						this.abilitiesListEl.insertBefore(draggedEl, li);
+						this.updateAbilityOrder();
+					}
+				});
+
+				li.addEventListener("mouseenter", () => {
+					Tooltip.instance.show(li, {
+						icon: ability.spec.iconUrl,
+						name: ability.name,
+						description: `Cost: ${ability.spec.staminaCost} stamina`,
+					});
+				});
+				li.addEventListener("mouseleave", () => Tooltip.instance.hide());
+
+				li.appendChild(fill);
+				li.appendChild(handle);
+				li.appendChild(order);
+				li.appendChild(iconImg);
+				li.appendChild(name);
+				li.appendChild(toggle);
+			} else {
+				li.appendChild(fill);
+				li.appendChild(iconImg);
+				li.appendChild(name);
+			}
+
 			this.abilitiesListEl.appendChild(li);
-
 			this.abilitiesListMap.set(ability.id, li);
 		});
 
@@ -440,10 +444,10 @@ export class CharacterDisplay extends UIBase {
 		return effectId.charAt(0).toUpperCase() + effectId.slice(1);
 	}
 
-        private getElementSymbol(element?: string): string {
-                switch (element) {
-                        case "fire":
-                                return "/images/general/icon_combat_resistance_fire.png";
+	private getElementSymbol(element?: string): string {
+		switch (element) {
+			case "fire":
+				return "/images/general/icon_combat_resistance_fire.png";
 			case "ice":
 				return "/images/general/icon_combat_resistance_ice.png";
 			case "poison":
@@ -454,19 +458,19 @@ export class CharacterDisplay extends UIBase {
 				return "/images/general/icon_combat_resistance_physical.png";
 			default:
 				return "?";
-                }
-        }
+		}
+	}
 
-        private showHpChange(amount: number, isCrit: boolean) {
-                const cls = amount < 0 ? "damage" : "heal";
-                this.hpChangeEl.textContent = Math.abs(amount).toString();
-                this.hpChangeEl.classList.remove("damage", "heal", "crit", "show");
-                this.hpChangeEl.classList.add(cls);
-                if (isCrit) this.hpChangeEl.classList.add("crit");
-                // Restart animation
-                void this.hpChangeEl.offsetWidth;
-                this.hpChangeEl.classList.add("show");
-        }
+	private showHpChange(amount: number, isCrit: boolean) {
+		const cls = amount < 0 ? "damage" : "heal";
+		this.hpChangeEl.textContent = Math.abs(amount).toString();
+		this.hpChangeEl.classList.remove("damage", "heal", "crit", "show");
+		this.hpChangeEl.classList.add(cls);
+		if (isCrit) this.hpChangeEl.classList.add("crit");
+		// Restart animation
+		void this.hpChangeEl.offsetWidth;
+		this.hpChangeEl.classList.add("show");
+	}
 
 	private setHolderStatus(newStatus: HolderStatus) {
 		if (newStatus === "active") {
@@ -485,9 +489,9 @@ export class CharacterDisplay extends UIBase {
 		this.character = undefined!;
 		this.nameEl = undefined!;
 		this.statGridEl = undefined!;
-                this.hpBar = undefined!;
-                this.hpLabel = undefined!;
-                this.hpChangeEl = undefined!;
+		this.hpBar = undefined!;
+		this.hpLabel = undefined!;
+		this.hpChangeEl = undefined!;
 		this.staminaBar = undefined!;
 		this.staminaLabel = undefined!;
 		this.avatarImg = undefined!;

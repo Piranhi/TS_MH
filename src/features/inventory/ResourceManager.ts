@@ -1,7 +1,8 @@
 import { Destroyable } from "@/core/Destroyable";
 import { bus } from "../../core/EventBus";
 import { Saveable } from "@/shared/storage-types";
-import { ResourceData, ResourceRequirement } from "@/shared/types";
+import { ResourceData, ResourceRequirement, ResourceUpgradeEffect } from "@/shared/types";
+import { RESOURCE_UPGRADES } from "@/balance/GameBalance";
 
 interface ResourceManagerSaveState {
 	resourceData: ResourceData[];
@@ -103,6 +104,30 @@ export class ResourceManager extends Destroyable implements Saveable {
 
 	public getAllResources(): Map<string, ResourceData> {
 		return new Map(Array.from(this.resources.entries()).map(([key, value]) => [key, { ...value }]));
+	}
+
+	public getAllUpgrades(resourceId: string): ResourceUpgradeEffect[] {
+		return RESOURCE_UPGRADES;
+	}
+
+	public getActiveUpgrades(resourceId: string): ResourceUpgradeEffect[] {
+		const resourceData = this.getResourceData(resourceId);
+		if (!resourceData) return [];
+
+		return RESOURCE_UPGRADES.filter((upgrade) => resourceData.level >= upgrade.level);
+	}
+
+	// Calculate total craft speed reduction
+	public getCraftSpeedReduction(resourceId: string): number {
+		return this.getActiveUpgrades(resourceId).reduce((total, upgrade) => total + (upgrade.effects.craftSpeedReduction || 0), 0);
+	}
+
+	// For UI display - show what's coming next
+	public getNextUpgrade(resourceId: string): ResourceUpgradeEffect | null {
+		const resourceData = this.getResourceData(resourceId);
+		if (!resourceData) return null;
+
+		return RESOURCE_UPGRADES.find((upgrade) => upgrade.level > resourceData.level) || null;
 	}
 
 	// SAVE + LOAD

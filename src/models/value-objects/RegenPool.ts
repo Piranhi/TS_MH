@@ -18,7 +18,7 @@ export class RegenPool {
 	/** Rate at which energy re‑fills (points per second, can be fractional) */
 	private readonly regenRate: number;
 
-	constructor(max: number, regenPerSecond: number, startFull: boolean, private readonly useAllocation: boolean = false) {
+	constructor(max: number, regenPerSecond: number, startFull: boolean, private useAllocation: boolean = false) {
 		this._max = max;
 		this.regenRate = regenPerSecond;
 		if (startFull) this._current = max; // start full
@@ -95,6 +95,7 @@ export class RegenPool {
 			regenRate: this.regenRate,
 			current: this.current,
 			allocated: this._allocated,
+			useAllocation: this.useAllocation,
 		};
 	}
 
@@ -103,6 +104,7 @@ export class RegenPool {
 		const p = new RegenPool(raw.max, raw.regenRate, false);
 		p._current = raw.current;
 		p._allocated = raw.allocated;
+		p.useAllocation = raw.useAllocation;
 		return p;
 	}
 }

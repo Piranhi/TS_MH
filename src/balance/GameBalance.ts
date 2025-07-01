@@ -5,7 +5,7 @@
 // ===================================================
 
 import { printLog } from "@/core/DebugManager";
-import { ITEM_RARITIES, ItemRarity, TraitRarity } from "@/shared/types";
+import { ITEM_RARITIES, ItemRarity, ResourceUpgradeEffect, TraitRarity } from "@/shared/types";
 
 export const GAME_BALANCE = {
 	// === OFFLINE SCALING ===
@@ -141,9 +141,12 @@ export const GAME_BALANCE = {
 	},
 
 	// === COMBAT SCALING ===
-        combat: {
-                // Defense mitigation constant (used in CombatCalculator)
-                defenseConstant: 100,
+	combat: {
+		// Defense mitigation constant (used in CombatCalculator)
+		defenseConstant: 100,
+
+		// Periodic tick rate for status effects
+		periodicTick: 0.25,
 
 		// Damage variance range
 		damageVariance: {
@@ -266,6 +269,100 @@ export const GAME_BALANCE = {
 	},
 } as const;
 
+// Configuration for all resource upgrades
+export const RESOURCE_UPGRADES: ResourceUpgradeEffect[] = [
+	{
+		level: 2,
+		effects: { resourceCostReduction: 5 },
+		displayText: "5% less resources needed",
+	},
+	{
+		level: 3,
+		effects: { craftSpeedReduction: 5 },
+		displayText: "Crafting 5% faster",
+	},
+	{
+		level: 5,
+		effects: { resourceCostReduction: 8 },
+		displayText: "8% less resources needed",
+	},
+	{
+		level: 8,
+		effects: { craftSpeedReduction: 8 },
+		displayText: "Crafting 8% faster",
+	},
+	{
+		level: 10,
+		effects: { resourceCostReduction: 8 },
+		displayText: "8% less resources needed",
+	},
+	{
+		level: 13,
+		effects: { craftSpeedReduction: 8 },
+		displayText: "Crafting 8% faster",
+	},
+	{
+		level: 17,
+		effects: { resourceCostReduction: 8 },
+		displayText: "8% less resources needed",
+	},
+	{
+		level: 20,
+		effects: { prestigeStartAmount: 50 },
+		displayText: "Start with 50 on prestige",
+	},
+	{
+		level: 25,
+		effects: { unlocksResource: "mythril_ore" },
+		displayText: "Unlocks Mythril Ore",
+	},
+	{
+		level: 28,
+		effects: { resourceCostReduction: 10 },
+		displayText: "10% less resources needed",
+	},
+	{
+		level: 30,
+		effects: { prestigeStartAmount: 150 },
+		displayText: "Start with 150 on prestige",
+	},
+	{
+		level: 32,
+		effects: { craftSpeedReduction: 10 },
+		displayText: "Crafting 10% faster",
+	},
+	{
+		level: 35,
+		effects: { resourceCostReduction: 8 },
+		displayText: "8% less resources needed",
+	},
+	{
+		level: 40,
+		effects: { prestigeStartAmount: 500 },
+		displayText: "Start with 500 on prestige",
+	},
+	{
+		level: 42,
+		effects: { resourceCostReduction: 15 },
+		displayText: "15% less resources needed",
+	},
+	{
+		level: 45,
+		effects: { craftSpeedReduction: 15 },
+		displayText: "Crafting 15% faster",
+	},
+	{
+		level: 48,
+		effects: { prestigeStartAmount: 1000 },
+		displayText: "Start with 1000 on prestige",
+	},
+	{
+		level: 50,
+		effects: { infinite: true },
+		displayText: "Unlock infinite resources",
+	},
+] as const;
+
 // ===================================================
 // Balance Calculator Functions
 // Complex formulas that use the balance constants
@@ -297,7 +394,6 @@ export const BalanceCalculators = {
 		// TODO - Hook in library upgrades.
 		return Math.floor(Math.pow(3, baseTier - 1) * rarityMultiplier);
 	},
-
 	// === PLAYER CALCULATIONS ===
 
 	/**

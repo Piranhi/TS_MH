@@ -9,7 +9,7 @@ import { Destroyable } from "@/core/Destroyable";
 import { GameContext } from "@/core/GameContext";
 import { BaseCharacter } from "@/models/BaseCharacter";
 import { Ability } from "@/models/Ability";
-import { BalanceCalculators } from "@/balance/GameBalance";
+import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 import { CombatCalculator } from "./CombatCalculator";
 
 export class CombatManager extends Destroyable {
@@ -18,6 +18,7 @@ export class CombatManager extends Destroyable {
 	public playerWon: boolean = false;
 	private elapsed: number = 0;
 	private combatEndOverride = false;
+	private periodicTick = 0;
 
 	constructor(private readonly playerCharacter: PlayerCharacter, private readonly enemyCharacter: EnemyCharacter, private readonly area: Area) {
 		super();
@@ -59,22 +60,22 @@ export class CombatManager extends Destroyable {
 	private handleCombatUpdate(character: BaseCharacter, dt: number) {
 		// Run any debug updates defined on the character
 		character.checkDebugOptions();
+		const periodicEffects = character.statusEffects.processPeriodicEffects(dt);
 
-                const periodicEffects = character.statusEffects.processPeriodicEffects(dt);
-                for (const effect of periodicEffects) {
-                        if (effect.type === "damage") {
-                                const dmg = CombatCalculator.calculatePeriodicDamage(
-                                        effect.amount,
-                                        effect.element,
-                                        character
-                                );
-                                const actual = character.takeDamage(dmg);
-                                bus.emit("char:hpChanged", { char: character, amount: -actual });
-                        } else if (effect.type === "heal") {
-                                const actual = character.heal(effect.amount);
-                                bus.emit("char:hpChanged", { char: character, amount: actual });
-                        }
-                }
+		this.periodicTick += dt;
+		if (this.periodicTick >= GAME_BALANCE.combat.periodicTick) {
+			this.periodicTick -= GAME_BALANCE.combat.periodicTick;
+			for (const effect of periodicEffects) {
+				if (effect.type === "damage") {
+					const dmg = CombatCalculator.calculatePeriodicDamage(effect.amount, effect.element, character);
+					const actual = character.takeDamage(dmg);
+					bus.emit("char:hpChanged", { char: character, amount: -actual });
+				} else if (effect.type === "heal") {
+					const actual = character.heal(effect.amount);
+					bus.emit("char:hpChanged", { char: character, amount: actual });
+				}
+			}
+		}
 
 		character.regenStamina(dt);
 	}
@@ -101,12 +102,12 @@ export class CombatManager extends Destroyable {
 		return abilities.filter((a) => a.isReady() && character.hasStamina(a.spec.staminaCost));
 	}
 
-        private calculateDamage(
-                source: BaseCharacter,
-                target: BaseCharacter,
-                baseMultiplier: number,
-                ability: Ability
-        ): { damage: number; isCrit: boolean } {
+	private calculateDamage(
+		source: BaseCharacter,
+		target: BaseCharacter,
+		baseMultiplier: number,
+		ability: Ability
+	): { damage: number; isCrit: boolean } {
 		let multiplier = baseMultiplier;
 		const mods = source.getAllAbilityModifiersFromAbility(ability.id);
 		for (const mod of mods) {
@@ -117,13 +118,8 @@ export class CombatManager extends Destroyable {
 			}
 		}
 
-                return CombatCalculator.calculateDamage(
-                        source,
-                        target,
-                        multiplier,
-                        ability.spec.element
-                );
-        }
+		return CombatCalculator.calculateDamage(source, target, multiplier, ability.spec.element);
+	}
 
 	private processCharacterAbilities(source: BaseCharacter, target: BaseCharacter, dt: number) {
 		if (!source.alive || !target.alive) return;
@@ -137,22 +133,17 @@ export class CombatManager extends Destroyable {
 
 			// Process each effect of the ability
 			for (const effectSpec of ability.spec.effects) {
-                                if (effectSpec.type === "attack") {
-                                        // Calculate damage with ability modifiers
-                                        const { damage, isCrit } = this.calculateDamage(
-                                                source,
-                                                target,
-                                                effectSpec.value || 1,
-                                                ability
-                                        );
+				if (effectSpec.type === "attack") {
+					// Calculate damage with ability modifiers
+					const { damage, isCrit } = this.calculateDamage(source, target, effectSpec.value || 1, ability);
 
-                                        // Apply damage
-                                        const actual = target.takeDamage(damage);
-                                        bus.emit("char:hpChanged", {
-                                                char: target,
-                                                amount: -actual,
-                                                isCrit,
-                                        });
+					// Apply damage
+					const actual = target.takeDamage(damage);
+					bus.emit("char:hpChanged", {
+						char: target,
+						amount: -actual,
+						isCrit,
+					});
 				} else if (effectSpec.type === "status") {
 					// Apply status effect based on target
 					const actualTarget = effectSpec.target === "enemy" ? target : source;
@@ -160,16 +151,13 @@ export class CombatManager extends Destroyable {
 						effectSpec.effectId!,
 						source.stats.get("attack") // For DoT scaling
 					);
-                                } else if (effectSpec.type === "heal") {
-                                        // Apply heal based on target
-                                        const actualTarget = effectSpec.target === "self" ? source : target;
-                                        const healing = CombatCalculator.calculateHealing(
-                                                source,
-                                                effectSpec.value || 1
-                                        );
-                                        const actual = actualTarget.heal(healing);
-                                        bus.emit("char:hpChanged", { char: actualTarget, amount: actual });
-                                }
+				} else if (effectSpec.type === "heal") {
+					// Apply heal based on target
+					const actualTarget = effectSpec.target === "self" ? source : target;
+					const healing = CombatCalculator.calculateHealing(source, effectSpec.value || 1);
+					const actual = actualTarget.heal(healing);
+					bus.emit("char:hpChanged", { char: actualTarget, amount: actual });
+				}
 			}
 
 			// Consume resources and reset cooldown

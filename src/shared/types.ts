@@ -197,11 +197,13 @@ export interface ResourceData {
 
 export interface ResourceSpec {
 	id: string;
+	tier: number;
 	name: string;
 	description: string;
 	iconUrl: string;
 	requires: ResourceRequirement[];
 	craftTime: number; // seconds
+	unlock: string[];
 }
 
 export interface ResourceRequirement {
@@ -209,6 +211,20 @@ export interface ResourceRequirement {
 	quantity: number;
 }
 [];
+
+// Define the interface for upgrade effects
+export interface ResourceUpgradeEffect {
+	level: number;
+	effects: {
+		craftSpeedReduction?: number; // Reduce craft time by X seconds
+		resourceCostReduction?: number; // Reduce resource costs by X%
+		prestigeStartAmount?: number; // Start with X resources on prestige
+		unlocksResource?: string; // Unlock new resource ID
+		infinite?: boolean; // Infinite resource
+		// Add more effect types as needed
+	};
+	displayText: string; // What to show the player
+}
 
 // -------------------- TRAITS ------------------------------
 export const TRAIT_RARITIES = ["common", "uncommon", "rare", "epic"] as const;

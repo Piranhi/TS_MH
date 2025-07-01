@@ -749,3 +749,9 @@ section + section {
 	opacity: 0.9;
 	margin: 0;
 }
+
+.tooltip-list {
+	font-size: 0.8rem;
+	opacity: 0.9;
+	margin: 0;
+}

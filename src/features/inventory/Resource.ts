@@ -26,6 +26,12 @@ export class Resource extends SpecRegistryBase<ResourceSpec> {
 	get craftTime() {
 		return this.spec.craftTime;
 	}
+	get tier() {
+		return this.spec.tier;
+	}
+	get unlock() {
+		return this.spec.unlock;
+	}
 
 	// ─────────────────────────────────────────────────────
 

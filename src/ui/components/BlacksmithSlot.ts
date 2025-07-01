@@ -3,6 +3,7 @@ import { Resource } from "@/features/inventory/Resource";
 import { CraftSlot } from "@/features/settlement/BlacksmithManager";
 import { UIBase } from "./UIBase";
 import { ResourceSpec } from "@/shared/types";
+import { Tooltip } from "./Tooltip";
 
 /**
  * Component representing a single blacksmith crafting slot.
@@ -56,6 +57,24 @@ export class BlacksmithSlot extends UIBase {
 		const slotEl = document.createElement("div");
 		slotEl.className = "blacksmith-slot";
 		this.element.appendChild(slotEl);
+
+		this.bindDomEvent(slotEl, "mouseenter", () => {
+			let upgradeString = "";
+			const upgradeArray = this.context.resources.getAllUpgrades(this.currentResourceId!);
+			for (const upgrade of upgradeArray) {
+				upgradeString += `Level ${upgrade.level}: ${upgrade.displayText}\n`;
+			}
+			Tooltip.instance.show(slotEl, {
+				icon: this.icon.src,
+				type: "Resource upgrade",
+				name: this.selectBtn.textContent ?? "",
+				list: upgradeArray.map((upgrade) => `Lvl ${upgrade.level}: ${upgrade.displayText}`),
+			});
+		});
+
+		this.bindDomEvent(slotEl, "mouseleave", () => {
+			Tooltip.instance.hide();
+		});
 
 		// Create select button
 		this.selectBtn = document.createElement("button");
@@ -131,6 +150,8 @@ export class BlacksmithSlot extends UIBase {
 			initialValue: 0,
 		});
 	}
+
+	private createUpgradeInfo() {}
 
 	/**
 	 * Builds the resource selection options.

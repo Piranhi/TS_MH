@@ -40,7 +40,7 @@ export class Player extends GameBase implements Saveable {
 
 	private constructor() {
 		super();
-		this.energy = new RegenPool(10, 1, false, true);
+		this.energy = new RegenPool(5, 1, false, true);
 		this.prestigeState = { ...DEFAULT_PRESTIGE_STATE };
 
 		this.setupEventBindings();
