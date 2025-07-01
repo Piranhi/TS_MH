@@ -195,4 +195,21 @@ export class BlacksmithManager extends GameBase implements Saveable, OfflineProg
 			if (id === "better_tools") this.speedMultiplier = 1.2;
 		});
 	}
+
+	// -- UI Helper Methods --
+	/**
+	 * Returns the current progress of the implicit Raw Ore crafting loop so that UI
+	 * elements can render a progress bar and the amount of ore that will be granted
+	 * once a cycle completes.
+	 */
+	public getRawOreStatus() {
+		const craftTime = GAME_BALANCE.blacksmith.defaultRawOreCraftTime;
+		const buildingLevel = GameContext.getInstance().settlement.getBuilding("blacksmith")?.level ?? 1;
+		return {
+			progress: this.rawOreTimer, // seconds elapsed in current cycle
+			craftTime, // total seconds required for a cycle
+			orePerCycle: 10 * buildingLevel, // amount awarded at the end of a cycle
+			ratio: this.rawOreTimer / craftTime,
+		};
+	}
 }
