@@ -1,3 +1,8 @@
+export interface TooltipListItem {
+	text: string;
+	className?: string;
+}
+
 export interface TooltipData {
 	icon: string;
 	name: string;
@@ -7,7 +12,7 @@ export interface TooltipData {
 	heirloom?: number;
 	description?: string;
 	tintColour?: string;
-	list?: string[];
+	list?: (string | TooltipListItem)[];
 }
 
 export class Tooltip {
@@ -53,7 +58,7 @@ export class Tooltip {
 		this.fillStats(data.stats ?? []);
 		this.$(".tooltip-heirloom").textContent = data.heirloom ? `Heirloom: ${data.heirloom}` : "";
 		this.$(".tooltip-description").textContent = data.description ?? "";
-		this.$(".tooltip-list").innerHTML = data.list?.map((line) => `<li>${line}</li>`).join("") ?? "";
+		this.fillList(data.list ?? []);
 
 		// Optional tint
 		if (data.tintColour) {
@@ -87,6 +92,18 @@ export class Tooltip {
 	private fillStats(lines: string[]) {
 		const ul = this.$(".tooltip-stats");
 		ul.innerHTML = lines.map((line) => `<li>${line}</li>`).join("");
+	}
+
+	private fillList(items: (string | TooltipListItem)[]) {
+		const ul = this.$(".tooltip-list");
+		ul.innerHTML = items.map((item) => {
+			if (typeof item === "string") {
+				return `<li>${item}</li>`;
+			} else {
+				const className = item.className ? ` class="${item.className}"` : "";
+				return `<li${className}>${item.text}</li>`;
+			}
+		}).join("");
 	}
 
 	private $(sel: string) {

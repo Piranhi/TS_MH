@@ -3,7 +3,7 @@ import { Resource } from "@/features/inventory/Resource";
 import { CraftSlot } from "@/features/settlement/BlacksmithManager";
 import { UIBase } from "./UIBase";
 import { ResourceSpec } from "@/shared/types";
-import { Tooltip } from "./Tooltip";
+import { Tooltip, TooltipListItem } from "./Tooltip";
 
 /**
  * Component representing a single blacksmith crafting slot.
@@ -59,16 +59,25 @@ export class BlacksmithSlot extends UIBase {
 		this.element.appendChild(slotEl);
 
 		this.bindDomEvent(slotEl, "mouseenter", () => {
-			let upgradeString = "";
-			const upgradeArray = this.context.resources.getAllUpgrades(this.currentResourceId!);
-			for (const upgrade of upgradeArray) {
-				upgradeString += `Level ${upgrade.level}: ${upgrade.displayText}\n`;
-			}
+			if (!this.currentResourceId) return;
+			
+			const upgradeArray = this.context.resources.getAllUpgrades(this.currentResourceId);
+			const resourceData = this.context.resources.getResourceData(this.currentResourceId);
+			const currentLevel = resourceData?.level || 1;
+			
+			const upgradeList: TooltipListItem[] = upgradeArray.map((upgrade) => {
+				const isUnlocked = currentLevel >= upgrade.level;
+				return {
+					text: `Lvl ${upgrade.level}: ${upgrade.displayText}`,
+					className: isUnlocked ? "upgrade-unlocked" : "upgrade-locked"
+				};
+			});
+			
 			Tooltip.instance.show(slotEl, {
 				icon: this.icon.src,
 				type: "Resource upgrade",
 				name: this.selectBtn.textContent ?? "",
-				list: upgradeArray.map((upgrade) => `Lvl ${upgrade.level}: ${upgrade.displayText}`),
+				list: upgradeList,
 			});
 		});
 
