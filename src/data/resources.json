@@ -16,7 +16,7 @@
 		"description": "Reliable, weighty bars forged from smelted Raw Ore; cornerstone of entry-level arms.",
 		"iconUrl": "/images/resources/resource_iron_ingot.png",
 		"requires": [{ "resource": "raw_ore", "quantity": 10 }],
-		"craftTime": 10,
+		"craftTime": 5,
 		"unlock": ["charstone"]
 	},
 	{
@@ -26,7 +26,7 @@
 		"description": "Dense, jet-black bricks that burn hot and clean, perfect for small apprentice forges.",
 		"iconUrl": "/images/resources/resource_charstone.png",
 		"requires": [{ "resource": "raw_ore", "quantity": 15 }],
-		"craftTime": 10,
+		"craftTime": 7,
 		"unlock": ["copper_bar"]
 	},
 	{
@@ -39,7 +39,7 @@
 			{ "resource": "raw_ore", "quantity": 20 },
 			{ "resource": "iron_ingot", "quantity": 20 }
 		],
-		"craftTime": 20,
+		"craftTime": 9,
 		"unlock": ["clear_quartz"]
 	},
 	{
@@ -52,7 +52,7 @@
 			{ "resource": "raw_ore", "quantity": 20 },
 			{ "resource": "iron_ingot", "quantity": 20 }
 		],
-		"craftTime": 25,
+		"craftTime": 12,
 		"unlock": ["forge_flux"]
 	},
 	{
@@ -65,7 +65,7 @@
 			{ "resource": "iron_bar", "quantity": 50 },
 			{ "resource": "clear_quartz", "quantity": 50 }
 		],
-		"craftTime": 0
+		"craftTime": 20
 	},
 	{
 		"id": "tin_ingot",

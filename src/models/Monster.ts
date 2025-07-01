@@ -39,6 +39,12 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 			evasion: 0,
 			lifesteal: 0,
 			encounterChance: 0,
+			fireBonus: 0,
+			iceBonus: 0,
+			poisonBonus: 0,
+			lightningBonus: 0,
+			lightBonus: 0,
+			physicalBonus: 0,
 		};
 	}
 

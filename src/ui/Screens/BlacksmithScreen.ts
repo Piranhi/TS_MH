@@ -7,6 +7,7 @@ import { Tooltip } from "../components/Tooltip";
 import { BlacksmithSlot } from "../components/BlacksmithSlot";
 import { UpgradeSelectionContainer, UpgradeSelectionData } from "../components/UpgradeSelectionContainer";
 import { BuildingStatus } from "../components/BuildingStatus";
+import { formatNumberShort } from "@/shared/utils/stringUtils";
 
 interface ResourceRowData {
 	element: HTMLElement;
@@ -175,7 +176,7 @@ export class BlacksmithScreen extends BaseScreen {
 		row.appendChild(img);
 
 		const qty = document.createElement("span");
-		qty.textContent = String(data.quantity);
+		qty.textContent = formatNumberShort(data.quantity);
 		row.appendChild(qty);
 
 		const lvl = document.createElement("span");
@@ -236,7 +237,7 @@ export class BlacksmithScreen extends BaseScreen {
 
 			// Only update if values changed
 			if (data.quantity !== row.lastQuantity) {
-				row.quantityEl.textContent = String(data.quantity);
+				row.quantityEl.textContent = formatNumberShort(data.quantity);
 				row.lastQuantity = data.quantity;
 			}
 

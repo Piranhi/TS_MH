@@ -32,16 +32,16 @@ export class BlacksmithSlot extends UIBase {
 	private lastXp: number = -1;
 	private lastProgress: number = -1;
 
-        // Track recipe cards and their cost displays
-        private recipeCards: Map<
-                string,
-                {
-                        card: HTMLElement;
-                        costsEl: HTMLElement;
-                        timeEl: HTMLElement;
-                        isHovered: boolean;
-                }
-        > = new Map();
+	// Track recipe cards and their cost displays
+	private recipeCards: Map<
+		string,
+		{
+			card: HTMLElement;
+			costsEl: HTMLElement;
+			timeEl: HTMLElement;
+			isHovered: boolean;
+		}
+	> = new Map();
 
 	constructor(container: HTMLElement, slotIndex: number) {
 		super();
@@ -180,16 +180,16 @@ export class BlacksmithSlot extends UIBase {
 			const spec = Resource.getSpec(resourceId);
 			if (!spec) return;
 
-                        const { card, costsEl, timeEl } = this.createResourceCard(resourceId, spec);
-                        this.optionRow.appendChild(card);
+			const { card, costsEl, timeEl } = this.createResourceCard(resourceId, spec);
+			this.optionRow.appendChild(card);
 
-                        // Store card reference for updates
-                        this.recipeCards.set(resourceId, {
-                                card,
-                                costsEl,
-                                timeEl,
-                                isHovered: false,
-                        });
+			// Store card reference for updates
+			this.recipeCards.set(resourceId, {
+				card,
+				costsEl,
+				timeEl,
+				isHovered: false,
+			});
 		});
 	}
 
@@ -198,7 +198,7 @@ export class BlacksmithSlot extends UIBase {
 	 * @param resourceId - The resource identifier
 	 * @param spec - The resource specification
 	 */
-        private createResourceCard(resourceId: string, spec: ResourceSpec): { card: HTMLElement; costsEl: HTMLElement; timeEl: HTMLElement } {
+	private createResourceCard(resourceId: string, spec: ResourceSpec): { card: HTMLElement; costsEl: HTMLElement; timeEl: HTMLElement } {
 		const card = document.createElement("div");
 		card.className = "bs-recipe-card";
 
@@ -212,15 +212,15 @@ export class BlacksmithSlot extends UIBase {
 		costsEl.className = "bs-recipe-costs";
 		card.appendChild(costsEl);
 
-                // Populate initial costs
-                this.updateCardCosts(costsEl, spec);
+		// Populate initial costs
+		this.updateCardCosts(costsEl, spec);
 
-                // Time (show real craft time)
-                const timeEl = document.createElement("div");
-                timeEl.className = "bs-recipe-time";
-                const craftInfo = this.context.resources.getCraftingData(resourceId);
-                timeEl.textContent = `${Math.ceil(craftInfo.time)}s`;
-                card.appendChild(timeEl);
+		// Time (show real craft time)
+		const timeEl = document.createElement("div");
+		timeEl.className = "bs-recipe-time";
+		const craftInfo = this.context.resources.getCraftingData(resourceId);
+		timeEl.textContent = `${Math.ceil(craftInfo.time)}s`;
+		card.appendChild(timeEl);
 
 		// Track hover state
 		this.bindDomEvent(card, "mouseenter", () => {
@@ -245,8 +245,8 @@ export class BlacksmithSlot extends UIBase {
 			this.update(); // Immediate update after selection
 		});
 
-                return { card, costsEl, timeEl };
-        }
+		return { card, costsEl, timeEl };
+	}
 
 	/**
 	 * Updates the cost display for a resource card.
@@ -255,12 +255,12 @@ export class BlacksmithSlot extends UIBase {
 	private updateCardCosts(costsEl: HTMLElement, spec: ResourceSpec): void {
 		costsEl.innerHTML = "";
 
-                const craftInfo = this.context.resources.getCraftingData(spec.id);
-                craftInfo.costs.forEach((req) => {
-                        if (!req.resource) return;
+		const craftInfo = this.context.resources.getCraftingData(spec.id);
+		craftInfo.costs.forEach((req) => {
+			if (!req.resource) return;
 
-                        const have = this.context.resources.getResourceQuantity(req.resource);
-                        const reqSpec = Resource.getSpec(req.resource);
+			const have = this.context.resources.getResourceQuantity(req.resource);
+			const reqSpec = Resource.getSpec(req.resource);
 
 			const item = document.createElement("div");
 			item.className = "bs-cost-item";
@@ -270,7 +270,7 @@ export class BlacksmithSlot extends UIBase {
 			item.appendChild(icon);
 
 			const text = document.createElement("span");
-			text.textContent = `${have}/${req.quantity}`;
+			text.textContent = `${formatNumberShort(req.quantity)} / ${formatNumberShort(have)}`;
 			if (have < req.quantity) text.classList.add("insufficient");
 			item.appendChild(text);
 
@@ -322,9 +322,9 @@ export class BlacksmithSlot extends UIBase {
 				this.selectBtn.textContent = spec.name;
 				this.icon.src = spec.iconUrl;
 
-                                // Update progress bar max value using real craft time
-                                const craftInfo = this.context.resources.getCraftingData(slot.resourceId);
-                                this.progressBar.setMax(craftInfo.time);
+				// Update progress bar max value using real craft time
+				const craftInfo = this.context.resources.getCraftingData(slot.resourceId);
+				this.progressBar.setMax(craftInfo.time);
 
 				// Update costs
 				this.updateCosts(spec);
@@ -351,15 +351,15 @@ export class BlacksmithSlot extends UIBase {
 	/**
 	 * Updates the crafting progress display.
 	 */
-        private updateProgress(slot: CraftSlot): void {
-                this.lastProgress = slot.progress;
-                const spec = Resource.getSpec(slot.resourceId!);
-                if (spec) {
-                        const craftInfo = this.context.resources.getCraftingData(spec.id);
-                        this.progressBar.setValue(craftInfo.time - slot.progress);
-                        this.progressText.textContent = `${Math.ceil(slot.progress)}s`;
-                }
-        }
+	private updateProgress(slot: CraftSlot): void {
+		this.lastProgress = slot.progress;
+		const spec = Resource.getSpec(slot.resourceId!);
+		if (spec) {
+			const craftInfo = this.context.resources.getCraftingData(spec.id);
+			this.progressBar.setValue(craftInfo.time - slot.progress);
+			this.progressText.textContent = `${Math.ceil(slot.progress)}s`;
+		}
+	}
 
 	/**
 	 * Updates resource level and XP only if changed.
@@ -395,12 +395,12 @@ export class BlacksmithSlot extends UIBase {
 	private updateCosts(spec: ResourceSpec): void {
 		this.costEl.innerHTML = "";
 
-                const craftInfo = this.context.resources.getCraftingData(spec.id);
-                craftInfo.costs.forEach((req) => {
-                        if (!req.resource) return;
+		const craftInfo = this.context.resources.getCraftingData(spec.id);
+		craftInfo.costs.forEach((req) => {
+			if (!req.resource) return;
 
-                        const have = this.context.resources.getResourceQuantity(req.resource);
-                        const reqSpec = Resource.getSpec(req.resource);
+			const have = this.context.resources.getResourceQuantity(req.resource);
+			const reqSpec = Resource.getSpec(req.resource);
 
 			const item = document.createElement("div");
 			item.className = "bs-cost-item";
@@ -409,10 +409,10 @@ export class BlacksmithSlot extends UIBase {
 			icon.src = reqSpec?.iconUrl ?? "";
 			item.appendChild(icon);
 
-                        const text = document.createElement("span");
-                        text.textContent = `${formatNumberShort(req.quantity)} / ${formatNumberShort(have)}`;
-                        if (have < req.quantity) text.classList.add("insufficient");
-                        item.appendChild(text);
+			const text = document.createElement("span");
+			text.textContent = `${formatNumberShort(req.quantity)} / ${formatNumberShort(have)}`;
+			if (have < req.quantity) text.classList.add("insufficient");
+			item.appendChild(text);
 
 			this.costEl.appendChild(item);
 		});
@@ -432,17 +432,17 @@ export class BlacksmithSlot extends UIBase {
 		// If the available resource list changed, rebuild
 		if (available.length !== this.recipeCards.size) {
 			this.buildResourceOptions();
-                } else {
-                        // Just update the costs and times on existing cards
-                        this.recipeCards.forEach((cardData, resourceId) => {
-                                const spec = Resource.getSpec(resourceId);
-                                if (spec) {
-                                        this.updateCardCosts(cardData.costsEl, spec);
-                                        const info = this.context.resources.getCraftingData(resourceId);
-                                        cardData.timeEl.textContent = `${Math.ceil(info.time)}s`;
-                                }
-                        });
-                }
+		} else {
+			// Just update the costs and times on existing cards
+			this.recipeCards.forEach((cardData, resourceId) => {
+				const spec = Resource.getSpec(resourceId);
+				if (spec) {
+					this.updateCardCosts(cardData.costsEl, spec);
+					const info = this.context.resources.getCraftingData(resourceId);
+					cardData.timeEl.textContent = `${Math.ceil(info.time)}s`;
+				}
+			});
+		}
 
 		// Also update current costs if we have a selected resource
 		if (this.currentResourceId) {

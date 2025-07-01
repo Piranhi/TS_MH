@@ -18,16 +18,20 @@ export class PlayerStatsDisplay extends UIBase {
 	private traitListEl!: HTMLUListElement;
 
 	private statsData: StatData[] = [
-		{ name: "Strength", value: 0 },
-		{ name: "Power", value: 0 },
-		{ name: "CritChance", value: 0 },
-		{ name: "CritDamage", value: 0 },
+		{ name: "Attack", value: 0 },
 		{ name: "Defence", value: 0 },
-		{ name: "Guard", value: 0 },
-		{ name: "Evasion", value: 0 },
 		{ name: "Health", value: 0 },
 		{ name: "Speed", value: 0 },
+		{ name: "CritChance", value: 0 },
+		{ name: "CritDamage", value: 0 },
+		{ name: "Evasion", value: 0 },
 		{ name: "Encounter Chance", value: 0 },
+		{ name: "Fire Bonus", value: 0 },
+		{ name: "Ice Bonus", value: 0 },
+		{ name: "Poison Bonus", value: 0 },
+		{ name: "Lightning Bonus", value: 0 },
+		{ name: "Light Bonus", value: 0 },
+		{ name: "Physical Bonus", value: 0 },
 	];
 
 	constructor(container: HTMLElement) {
@@ -188,15 +192,20 @@ export class PlayerStatsDisplay extends UIBase {
 
 		// Map your game stats to display stats
 		this.updateStats({
-			Strength: stats.attack.toPrecision(2) || 0,
-			Power: stats.power.toPrecision(2) || 0,
-			Defence: stats.defence.toPrecision(2) || 0,
-			Health: character.maxHp.toString() || 0,
-			Guard: stats.guard.toPrecision(2) || 0,
-			Speed: stats.speed.toPrecision(2) || 0,
-			Evasion: stats.evasion.toPrecision(2) || 0,
-			CritChance: stats.critChance.toPrecision(2) || 0,
-			CritDamage: stats.critDamage.toPrecision(2) || 0,
+			Attack: formatNumberShort(stats.attack) || 0,
+			Defence: formatNumberShort(stats.defence) || 0,
+			Health: formatNumberShort(character.maxHp) || 0,
+			Speed: formatNumberShort(stats.speed) || 0,
+			Evasion: formatNumberShort(stats.evasion) || 0,
+			CritChance: formatNumberShort(stats.critChance) || 0,
+			CritDamage: formatNumberShort(stats.critDamage) || 0,
+			EncounterChance: formatNumberShort(stats.encounterChance) || 0,
+			FireBonus: formatNumberShort(stats.fireBonus) || 0,
+			IceBonus: formatNumberShort(stats.iceBonus) || 0,
+			PoisonBonus: formatNumberShort(stats.poisonBonus) || 0,
+			LightningBonus: formatNumberShort(stats.lightningBonus) || 0,
+			LightBonus: formatNumberShort(stats.lightBonus) || 0,
+			PhysicalBonus: formatNumberShort(stats.physicalBonus) || 0,
 		});
 		this.updateTraitDisplay();
 	}
