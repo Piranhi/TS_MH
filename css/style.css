@@ -795,3 +795,57 @@ h4 {
 	margin: 0; /* Remove default pre margins */
 	font-family: monospace; /* Keep monospace font */
 }
+
+#debug-menu .debug-column.area-info {
+	font-size: 0.75rem;
+	line-height: 1.3;
+}
+
+#debug-menu .area-info-section {
+	margin-bottom: 0.8rem;
+	padding: 0.3rem;
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 4px;
+}
+
+#debug-menu .area-info-section h4 {
+	font-size: 0.8rem;
+	margin: 0 0 0.3rem 0;
+	padding: 0;
+	color: #ccc;
+	font-weight: bold;
+}
+
+#debug-menu .area-info-section p {
+	margin: 0.1rem 0;
+	font-size: 0.7rem;
+}
+
+#debug-menu .enemy-entry {
+	margin-bottom: 0.3rem;
+	padding: 0.2rem;
+	background: rgba(255, 255, 255, 0.03);
+	border-radius: 3px;
+}
+
+#debug-menu .enemy-entry strong {
+	color: #fff;
+}
+
+#debug-menu .enemy-entry small {
+	color: #aaa;
+	font-size: 0.65rem;
+}
+
+#debug-menu .loot-tags {
+	margin-bottom: 0.3rem;
+}
+
+#debug-menu .loot-entry {
+	margin: 0.1rem 0;
+}
+
+#debug-menu .loot-entry small {
+	color: #bbb;
+	font-size: 0.65rem;
+}

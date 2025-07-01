@@ -152,6 +152,18 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 		return this.spec.tier;
 	}
 
+	get spawns() {
+		return this.spec.spawns;
+	}
+
+	get boss() {
+		return this.spec.boss;
+	}
+
+	get requires() {
+		return this.spec.requires;
+	}
+
 	// Registry.
 	public static override specById = new Map<string, AreaSpec>();
 	static create(id: string): Area {
