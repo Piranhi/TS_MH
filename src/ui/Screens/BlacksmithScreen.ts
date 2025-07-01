@@ -36,6 +36,10 @@ export class BlacksmithScreen extends BaseScreen {
 	// Upgrade selection component
 	private upgradeContainer!: UpgradeSelectionContainer;
 
+	// Raw Ore progress elements
+	private rawOreFill!: HTMLElement;
+	private rawOreOutput!: HTMLSpanElement;
+
 	init() {
 		const root = this.addMarkuptoPage(Markup);
 		const statusEl = root.querySelector("#bs-building-status") as HTMLElement;
@@ -44,6 +48,10 @@ export class BlacksmithScreen extends BaseScreen {
 		this.slotGrid = this.byId("bsSlotGrid");
 		this.resourceList = this.byId("bsResourceList");
 		this.upgradeGrid = this.byId("bsUpgradeGrid");
+
+		// Raw ore progress elements
+		this.rawOreFill = this.byId("bsRawOreFill");
+		this.rawOreOutput = this.byId("bsRawOreOutput") as HTMLSpanElement;
 
 		this.buildInitial();
 		this.bindEvents();
@@ -67,6 +75,7 @@ export class BlacksmithScreen extends BaseScreen {
 		this.buildSlots();
 		this.buildResourceRows();
 		this.buildUpgradeContainer();
+		this.updateRawOre(); // initialise bar
 	}
 
 	/**
@@ -74,7 +83,10 @@ export class BlacksmithScreen extends BaseScreen {
 	 */
 	private bindEvents() {
 		// Update slots every tick
-		bus.on("Game:UITick", () => this.updateSlots());
+		bus.on("Game:UITick", () => {
+			this.updateSlots();
+			this.updateRawOre();
+		});
 
 		// Update resources when they change
 		bindEvent(this.eventBindings, "resources:changed", () => this.updateResourcesDisplay());
@@ -278,6 +290,18 @@ export class BlacksmithScreen extends BaseScreen {
 		this.updateSlots();
 		this.updateResourcesDisplay();
 		this.refreshUpgrades();
+		this.updateRawOre();
+	}
+
+	/**
+	 * Updates the raw ore progress bar and output text.
+	 */
+	private updateRawOre() {
+		if (!this.rawOreFill || !this.rawOreOutput) return;
+		const status = this.context.blacksmith.getRawOreStatus();
+		const pct = Math.min(1, Math.max(0, status.ratio));
+		this.rawOreFill.style.width = `${pct * 100}%`;
+		this.rawOreOutput.textContent = `+${status.orePerCycle}`;
 	}
 
 	/**

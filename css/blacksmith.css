@@ -208,3 +208,27 @@
 .bs-cost-item .insufficient {
 	color: #e53e3e;
 }
+/* ---------------- Raw Ore Progress ---------------- */
+.raw-ore-section {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+.raw-ore-progress-bar {
+	flex: 1;
+	height: 14px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 7px;
+	overflow: hidden;
+}
+.raw-ore-progress-fill {
+	height: 100%;
+	width: 0%;
+	background: var(--accent, #f6c73c);
+	transition: width 0.1s linear;
+}
+.raw-ore-output {
+	min-width: 40px;
+	text-align: right;
+	font-weight: bold;
+}
