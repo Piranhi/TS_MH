@@ -11,6 +11,7 @@ import { DebugMenu } from "@/ui/components/Debug-Menu";
 import { bus } from "./EventBus";
 import { initGameData } from "./gameData";
 import { PlayerStatsDisplay } from "@/ui/components/PlayerStatsDisplay";
+import { ResourceData } from "@/shared/types";
 
 export class GameApp {
 	private readonly root: HTMLElement;
@@ -22,7 +23,8 @@ export class GameApp {
 	// UI Components
 	private sidebar!: SidebarDisplay;
 	private header!: HeaderDisplay;
-	private playerStatsDiplay!: PlayerStatsDisplay;
+        private playerStatsDiplay!: PlayerStatsDisplay;
+        private pendingResourceState: Map<string, ResourceData> | null = null;
 
 	constructor(root: HTMLElement) {
 		this.root = root;
@@ -98,14 +100,19 @@ export class GameApp {
 	}
 
 	// ---------------------- PRESTIGE ----------------------------------
-	private handlePrestigePrep() {
-		console.log("Preparing for prestige...");
+        private handlePrestigePrep() {
+                console.log("Preparing for prestige...");
 
-		// Save current state
-		this.services.saveManager.saveAll();
+                // Save current state
+                this.services.saveManager.saveAll();
 
-		// End current run
-		this.context.endCurrentRun();
+                // Capture resource state for next run
+                if (this.context.currentRun) {
+                        this.pendingResourceState = this.context.resources.getAllResources();
+                }
+
+                // End current run
+                this.context.endCurrentRun();
 
 		// Clean up UI
 		this.context.screens.destroyAll();
@@ -114,17 +121,23 @@ export class GameApp {
 		this.context.player.prestigeReset();
 	}
 
-	private handlePrestige() {
-		console.log("Starting new prestige run...");
+        private handlePrestige() {
+                console.log("Starting new prestige run...");
 
-		// Start new run with updated prestige state
-		const prestigeState = this.context.player.getPrestigeState();
-		this.context.startNewRun(prestigeState, true);
+                // Start new run with updated prestige state
+                const prestigeState = this.context.player.getPrestigeState();
+                this.context.startNewRun(prestigeState, true);
 
-		// Rebuild UI
+                // Apply carried over resource levels and starting amounts
+                if (this.pendingResourceState) {
+                        this.context.resources.applyPrestigeResources(this.pendingResourceState);
+                        this.pendingResourceState = null;
+                }
 
-		this.context.screens.init(this.container);
-	}
+                // Rebuild UI
+
+                this.context.screens.init(this.container);
+        }
 
 	private buildUI() {
 		this.sidebar = new SidebarDisplay((name) => this.context.screens.show(name));

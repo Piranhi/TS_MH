@@ -108,9 +108,33 @@ export class ResourceManager extends Destroyable implements Saveable {
 		return this.resources.get(id);
 	}
 
-	public getAllResources(): Map<string, ResourceData> {
-		return new Map(Array.from(this.resources.entries()).map(([key, value]) => [key, { ...value }]));
-	}
+        public getAllResources(): Map<string, ResourceData> {
+                return new Map(Array.from(this.resources.entries()).map(([key, value]) => [key, { ...value }]));
+        }
+
+        /** Calculate the total starting amount for a resource based on its level */
+        public getPrestigeStartAmount(resourceId: string): number {
+                return this.getActiveUpgrades(resourceId).reduce(
+                        (total, upg) => total + (upg.effects.prestigeStartAmount || 0),
+                        0
+                );
+        }
+
+        /** Apply saved resource levels and set quantities for a new prestige run */
+        public applyPrestigeResources(data: Map<string, ResourceData>): void {
+                data.forEach((saved, id) => {
+                        const current = this.resources.get(id);
+                        if (!current) return;
+                        current.level = saved.level;
+                        current.xp = saved.xp;
+                        current.infinite = saved.infinite;
+                        current.isUnlocked = saved.isUnlocked;
+                        current.quantity = current.infinite
+                                ? Number.MAX_SAFE_INTEGER
+                                : this.getPrestigeStartAmount(id);
+                });
+                this.emitChange();
+        }
 
 	public getAllUpgrades(resourceId: string): ResourceUpgradeEffect[] {
 		return RESOURCE_UPGRADES;
