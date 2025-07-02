@@ -99,5 +99,5 @@ export interface AreaScaling {
 export type Stats = CoreStats & BuildStats;
 export type StatKey = keyof Stats;
 export type StatsModifier = Partial<Stats>;
-export type TrainedStatType = "power" | "guard" | "heal" | "crit";
+export type TrainedStatType = "attack1" | "attack2" | "defence1" | "defence2";
 export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden";

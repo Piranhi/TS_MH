@@ -96,13 +96,6 @@ export class GuildHallScreen extends BaseScreen {
 		prestigeContainer.appendChild(prestigeRewardList);
 
 		this.updatePrestigeInfo(prestigeRewardList);
-
-		const building = this.context.settlement.getBuilding("guild_hall");
-		const unlocked = building?.buildingStatus === "unlocked";
-		const prestigeBtn = new UIButton(prestigeContainer, {
-			text: "Prestige Now",
-			disabled: !unlocked,
-		});
 	}
 
 	private updatePrestigeInfo(prestigeRewardList: HTMLUListElement) {

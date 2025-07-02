@@ -64,7 +64,7 @@ export const GAME_BALANCE = {
 	// === PLAYER CHARACTER SCALING ===
 	player: {
 		levelling: {
-			baseXpRequirementPerLevel: 100,
+			baseXpRequirementPerLevel: 30,
 		},
 		// XP system
 		xpThresholdMultiplier: 1.45, // XP needed increases by 75% per level
@@ -72,21 +72,29 @@ export const GAME_BALANCE = {
 
 		// Level bonus growth rates (exponential)
 		levelBonuses: {
-			attackBase: 1.2, // 20% compound growth per level
+			attackBase: 1.25, // 20% compound growth per level
 			defenseBase: 1.15, // 15% compound growth per level
-			utilityBase: 1.1, // 10% compound growth per level
+			utilityBase: 1.2, // 10% compound growth per level
+			elementBase: 1.2, // 10% compound growth per level
 		},
 
 		// Base stat values for level 1 (multiplied by growth rates)
 		baseStats: {
-			attack: 5,
-			hp: 50,
-			defense: 3,
-			power: 2,
-			guard: 2,
+			attack: 10,
+			defence: 10,
 			speed: 1,
-			critChance: 0.5,
-			critDamage: 1,
+			hp: 100,
+			critChance: 1,
+			critDamage: 0,
+			evasion: 0,
+			lifesteal: 0,
+			encounterChance: 1,
+			fireBonus: 0,
+			iceBonus: 0,
+			poisonBonus: 0,
+			lightningBonus: 0,
+			lightBonus: 0,
+			physicalBonus: 0,
 		},
 
 		healing: {
@@ -408,7 +416,7 @@ export const BalanceCalculators = {
 	 * @param level - Character level (1-based)
 	 * @param statCategory - Which category of stat
 	 */
-	getPlayerLevelBonus(level: number, statCategory: "attack" | "defense" | "utility"): number {
+	getPlayerLevelBonus(level: number, statCategory: "attack" | "defense" | "utility" | "element"): number {
 		const baseKey = `${statCategory}Base` as const;
 		const base = GAME_BALANCE.player.levelBonuses[baseKey];
 		return Math.pow(base, level - 1);
@@ -439,21 +447,29 @@ export const BalanceCalculators = {
 		const attackMultiplier = this.getPlayerLevelBonus(level, "attack");
 		const defenseMultiplier = this.getPlayerLevelBonus(level, "defense");
 		const utilityMultiplier = this.getPlayerLevelBonus(level, "utility");
+		const elementMultiplier = this.getPlayerLevelBonus(level, "element");
 
 		return {
 			attack: Math.floor(GAME_BALANCE.player.baseStats.attack * attackMultiplier),
 			hp: Math.floor(GAME_BALANCE.player.baseStats.hp * attackMultiplier),
-			defense: Math.floor(GAME_BALANCE.player.baseStats.defense * defenseMultiplier),
-			power: Math.floor(GAME_BALANCE.player.baseStats.power * defenseMultiplier),
-			guard: Math.floor(GAME_BALANCE.player.baseStats.guard * defenseMultiplier),
+			defense: Math.floor(GAME_BALANCE.player.baseStats.defence * defenseMultiplier),
 			speed: Math.floor(GAME_BALANCE.player.baseStats.speed * utilityMultiplier),
-			critChance: Math.floor(GAME_BALANCE.player.baseStats.critChance * utilityMultiplier),
-			critDamage: Math.floor(GAME_BALANCE.player.baseStats.critDamage * utilityMultiplier),
+			critChance: Math.floor(GAME_BALANCE.player.baseStats.critChance * attackMultiplier),
+			critDamage: Math.floor(GAME_BALANCE.player.baseStats.critDamage * attackMultiplier),
+			evasion: Math.floor(GAME_BALANCE.player.baseStats.evasion * defenseMultiplier),
+			lifesteal: Math.floor(GAME_BALANCE.player.baseStats.lifesteal * defenseMultiplier),
+			encounterChance: Math.floor(GAME_BALANCE.player.baseStats.encounterChance * utilityMultiplier),
+			fireBonus: Math.floor(GAME_BALANCE.player.baseStats.fireBonus * elementMultiplier),
+			iceBonus: Math.floor(GAME_BALANCE.player.baseStats.iceBonus * elementMultiplier),
+			poisonBonus: Math.floor(GAME_BALANCE.player.baseStats.poisonBonus * elementMultiplier),
+			lightningBonus: Math.floor(GAME_BALANCE.player.baseStats.lightningBonus * elementMultiplier),
+			lightBonus: Math.floor(GAME_BALANCE.player.baseStats.lightBonus * elementMultiplier),
+			physicalBonus: Math.floor(GAME_BALANCE.player.baseStats.physicalBonus * elementMultiplier),
 		};
 	},
 
 	/**
-	 * Calculate XP threshold for next level
+	 * Calculate XP threshold for next level - PLAYER CHARACTER
 	 */
 	getPlayerXPThreshold(currentLevel: number): number {
 		return Math.floor(

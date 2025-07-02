@@ -109,69 +109,69 @@ export class TrainedStatManager extends Destroyable implements Saveable, Offline
 
 function makeDefaultTrainedStatStates(): Record<TrainedStatType, TrainedStatState> {
 	return {
-		power: {
-			id: "power",
+		attack1: {
+			id: "attack1",
 			level: 1,
 			progress: 0,
-			nextThreshold: 10,
+			nextThreshold: 5,
 			assignedPoints: 0,
 			status: "Unlocked",
 		},
-		guard: {
-			id: "guard",
+		attack2: {
+			id: "attack2",
 			level: 1,
 			progress: 0,
-			nextThreshold: 10,
+			nextThreshold: 100,
+			assignedPoints: 0,
+			status: "Hidden",
+		},
+		defence1: {
+			id: "defence1",
+			level: 1,
+			progress: 0,
+			nextThreshold: 5,
 			assignedPoints: 0,
 			status: "Unlocked",
 		},
-		heal: {
-			id: "heal",
+		defence2: {
+			id: "defence2",
 			level: 1,
 			progress: 0,
-			nextThreshold: 1000,
+			nextThreshold: 100,
 			assignedPoints: 0,
-			status: "Unlocked",
-		},
-		crit: {
-			id: "crit",
-			level: 1,
-			progress: 0,
-			nextThreshold: 1000,
-			assignedPoints: 0,
-			status: "Unlocked",
+			status: "Hidden",
 		},
 	};
 }
 
 // Specs are loaded from config/data, not created at runtime
 export const TrainedStatSpecs: Record<TrainedStatType, TrainedStatSpec> = {
-	power: {
-		id: "power",
-		name: "Power",
+	attack1: {
+		id: "attack1",
+		name: "Attack 1",
 		baseMultiplier: 0.05,
 		levelUpBase: 60,
-		statMod: { power: 1 },
+		statMod: { attack: 0.1 },
 	},
-	guard: {
-		id: "guard",
-		name: "Guard",
+	attack2: {
+		id: "attack2",
+		name: "Attack 2",
 		baseMultiplier: 0.05,
 		levelUpBase: 60,
-		statMod: { guard: 1 },
+		statMod: { attack: 0.5 },
 	},
-	heal: {
-		id: "heal",
-		name: "Healing",
+	defence1: {
+		id: "defence1",
+		name: "Defence 1",
 		baseMultiplier: 0.125,
 		levelUpBase: 6000,
-		statMod: {},
+		statMod: { defence: 0.1 },
 	},
-	crit: {
-		id: "crit",
-		name: "Critical",
+	defence2: {
+		id: "defence2",
+		name: "Defence 2",
 		baseMultiplier: 0.125,
 		levelUpBase: 6000,
-		statMod: {},
+		statMod: { defence: 0.5 },
 	},
 };

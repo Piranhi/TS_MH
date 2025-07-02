@@ -73,7 +73,12 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 	}
 
 	public gainXp(amt: number) {
-		this._currentXp += amt;
+		// Debug - set xp to next threshold
+		if (amt === -1) {
+			this._currentXp = this.nextXpThreshold;
+		} else {
+			this._currentXp += amt;
+		}
 		let levelledUp = false;
 
 		while (this._currentXp >= this.nextXpThreshold) {

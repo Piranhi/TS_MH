@@ -174,6 +174,7 @@ export class DebugMenu {
 		this.addButton("Progression Curves", () => BalanceDebug.logProgressionCurves());
 		this.addButton("Unlock all buildings", () => context.settlement.unlockAllBuildings());
 		this.addButton("Unlock all buildings", () => context.settlement.unlockAllBuildings());
+		this.addButton("Level Up Player Character", () => context.character.gainXp(-1));
 		//  Player.getInstance().inventory.addItemToInventory);
 		//this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));
 	}
@@ -218,22 +219,22 @@ export class DebugMenu {
 	private updateAreaInfo(area?: Area) {
 		const context = GameContext.getInstance();
 		const currentArea = area || context.hunt.getActiveArea();
-		
+
 		if (!currentArea) {
 			this.areaInfoEl.innerHTML = "<h3>Area Info</h3><p>No area selected</p>";
 			return;
 		}
 
 		const areaStats = context.stats.getAreaStats(currentArea.id);
-		
+
 		// Get enemy pool information
-		const enemyPool = currentArea.spawns.map(spawn => {
+		const enemyPool = currentArea.spawns.map((spawn) => {
 			const monsterSpec = Monster.getSpec(spawn.monsterId);
 			return {
 				name: monsterSpec?.displayName || spawn.monsterId,
 				weight: spawn.weight,
 				dropTags: spawn.drops.tags,
-				dropChance: spawn.drops.baseDropChance
+				dropChance: spawn.drops.baseDropChance,
 			};
 		});
 
@@ -243,22 +244,22 @@ export class DebugMenu {
 			name: bossSpec?.displayName || currentArea.boss.monsterId,
 			weight: currentArea.boss.weight,
 			dropTags: currentArea.boss.drops.tags,
-			dropChance: currentArea.boss.drops.baseDropChance
+			dropChance: currentArea.boss.drops.baseDropChance,
 		};
 
 		// Get loot pool information
-		const lootTags = [...new Set(enemyPool.flatMap(enemy => enemy.dropTags))];
-		const lootPool = lootTags.flatMap(tag => 
-			InventoryRegistry.getSpecsByTags([tag]).map(spec => ({
+		const lootTags = [...new Set(enemyPool.flatMap((enemy) => enemy.dropTags))];
+		const lootPool = lootTags.flatMap((tag) =>
+			InventoryRegistry.getSpecsByTags([tag]).map((spec) => ({
 				name: spec.name || spec.id,
 				id: spec.id,
-				tags: spec.tags
+				tags: spec.tags,
 			}))
 		);
 
 		// Get progression requirements
 		const requirements = currentArea.requires;
-		
+
 		// Get progression unlocks (what this area unlocks) - simplified approach
 		const unlocks: string[] = [];
 		// Note: We could implement a proper progression system lookup here if needed
@@ -290,12 +291,16 @@ export class DebugMenu {
 
 			<div class="area-info-section">
 				<h4>Enemy Pool (${enemyPool.length} enemies)</h4>
-				${enemyPool.map(enemy => `
+				${enemyPool
+					.map(
+						(enemy) => `
 					<div class="enemy-entry">
 						<strong>${enemy.name}</strong> (Weight: ${enemy.weight})<br>
 						<small>Drop chance: ${(enemy.dropChance * 100).toFixed(3)}% | Tags: ${enemy.dropTags.join(", ")}</small>
 					</div>
-				`).join("")}
+				`
+					)
+					.join("")}
 			</div>
 
 			<div class="area-info-section">
@@ -312,11 +317,16 @@ export class DebugMenu {
 					<strong>Available Tags:</strong> ${lootTags.join(", ")}
 				</div>
 				<div class="loot-items">
-					${lootPool.slice(0, 10).map(item => `
+					${lootPool
+						.slice(0, 10)
+						.map(
+							(item) => `
 						<div class="loot-entry">
 							<small>${item.name} (${item.id})</small>
 						</div>
-					`).join("")}
+					`
+						)
+						.join("")}
 					${lootPool.length > 10 ? `<small>... and ${lootPool.length - 10} more items</small>` : ""}
 				</div>
 			</div>
