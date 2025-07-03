@@ -107,7 +107,8 @@ export class GameContext {
 	}
 
 	public get blacksmith(): BlacksmithManager {
-		return this.services.blacksmithManager;
+		if (!this.currentRun) throw new Error("No active run!");
+		return this.currentRun.blacksmithManager;
 	}
 
 	public get classes(): ClassManager {

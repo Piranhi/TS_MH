@@ -15,7 +15,7 @@ import { Area } from "@/models/Area";
 import { Monster, MonsterSpec } from "@/models/Monster";
 import { Ability, AbilitySpec } from "@/models/Ability";
 import { Equipment } from "@/models/Equipment";
-import { EquipmentItemSpec, OutpostSpec, ProgressionTrigger, ResearchSpec, TraitSpec } from "@/shared/types";
+import { BlacksmithUpgradeSpec, EquipmentItemSpec, OutpostSpec, ProgressionTrigger, ResearchSpec, ResourceSpec, TraitSpec } from "@/shared/types";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { Building } from "@/features/settlement/Building";
 import { MilestoneManager } from "@/models/MilestoneManager";
@@ -23,7 +23,7 @@ import { Outpost } from "@/features/hunt/Outpost";
 import { ResearchUpgrade } from "@/features/settlement/ResearchUpgrade";
 import { Trait } from "@/models/Trait";
 import { Resource } from "@/features/inventory/Resource";
-import { ResourceSpec } from "@/features/inventory/ResourceManager";
+import { BlacksmithUpgrade } from "@/features/settlement/BlacksmithUpgrade";
 
 /* ---------- Register Data ---------------------------- */
 
@@ -36,6 +36,7 @@ export function initGameData() {
 
 	Building.registerSpecs(rawBuilding);
 	ResearchUpgrade.registerSpecs(research as ResearchSpec[]);
+	BlacksmithUpgrade.registerSpecs(blacksmith as BlacksmithUpgradeSpec[]);
 	Equipment.registerSpecs(rawEquipment as EquipmentItemSpec[]);
 	Monster.registerSpecs(rawMonsters as MonsterSpec[]);
 	Area.registerSpecs(rawAreas);

@@ -5,8 +5,9 @@ import { BlacksmithUpgrade } from "./BlacksmithUpgrade";
 import { BlacksmithUpgradeSpec } from "@/shared/types";
 import { Resource } from "@/features/inventory/Resource";
 import { GAME_BALANCE } from "@/balance/GameBalance";
-import { GameBase } from "@/core/GameBase";
 import { OfflineProgressHandler } from "@/models/OfflineProgress";
+import { Destroyable } from "@/core/Destroyable";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export interface CraftSlot {
 	resourceId: string | null;
@@ -19,18 +20,23 @@ interface BlacksmithSave {
 	upgrades: string[];
 }
 
-export class BlacksmithManager extends GameBase implements Saveable, OfflineProgressHandler {
+export class BlacksmithManager extends Destroyable implements Saveable, OfflineProgressHandler {
 	private slots: CraftSlot[] = [{ resourceId: null, progress: 0 }];
 	private unlockedSlots = 1;
 	private upgrades = new Map<string, BlacksmithUpgrade>();
-        private speedMultiplier = 1;
+	private speedMultiplier = 1;
 	private rawOreTimer = 0;
 
-        constructor() {
-                super();
-                bus.on("Game:GameTick", (dt) => this.handleTick(dt));
-                bus.on("game:prestigePrep", () => this.prestigeReset());
-        }
+	constructor() {
+		super();
+		this.initaliseResearch();
+		this.setupEventBindings();
+	}
+
+	private setupEventBindings() {
+		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
+		bindEvent(this.eventBindings, "game:prestigePrep", () => this.prestigeReset());
+	}
 
 	private get resources() {
 		return GameContext.getInstance().resources;
@@ -39,6 +45,13 @@ export class BlacksmithManager extends GameBase implements Saveable, OfflineProg
 	registerUpgrades(specs: BlacksmithUpgradeSpec[]) {
 		BlacksmithUpgrade.registerSpecs(specs);
 		specs.forEach((s) => this.upgrades.set(s.id, BlacksmithUpgrade.create(s.id)));
+	}
+
+	private initaliseResearch() {
+		const specs = BlacksmithUpgrade.getAllSpecs();
+		specs.forEach((s) => {
+			this.upgrades.set(s.id, BlacksmithUpgrade.create(s.id));
+		});
 	}
 
 	setSlotResource(index: number, id: string | null) {
@@ -53,14 +66,14 @@ export class BlacksmithManager extends GameBase implements Saveable, OfflineProg
 		return this.slots;
 	}
 
-        getUpgrades(): BlacksmithUpgrade[] {
-                return Array.from(this.upgrades.values());
-        }
+	getUpgrades(): BlacksmithUpgrade[] {
+		return Array.from(this.upgrades.values());
+	}
 
-        /** Get the current global speed multiplier from blacksmith upgrades */
-        getSpeedMultiplier(): number {
-                return this.speedMultiplier;
-        }
+	/** Get the current global speed multiplier from blacksmith upgrades */
+	getSpeedMultiplier(): number {
+		return this.speedMultiplier;
+	}
 
 	purchaseUpgrade(id: string): boolean {
 		const upg = this.upgrades.get(id);
@@ -144,29 +157,29 @@ export class BlacksmithManager extends GameBase implements Saveable, OfflineProg
 	private processSlots(dt: number) {
 		for (const slot of this.slots) {
 			if (!slot.resourceId) continue;
-                        const spec = Resource.getSpec(slot.resourceId);
-                        if (!spec) continue;
+			const spec = Resource.getSpec(slot.resourceId);
+			if (!spec) continue;
 
-                        const craftData = this.resources.getCraftingData(slot.resourceId);
+			const craftData = this.resources.getCraftingData(slot.resourceId);
 
-                        if (slot.progress <= 0) {
-                                if (!this.resources.canAfford(craftData.costs)) continue;
+			if (slot.progress <= 0) {
+				if (!this.resources.canAfford(craftData.costs)) continue;
 
-                                craftData.costs.forEach((r) => this.resources.consumeResource(r.resource, r.quantity));
-                                slot.progress = craftData.time;
-                        }
+				craftData.costs.forEach((r) => this.resources.consumeResource(r.resource, r.quantity));
+				slot.progress = craftData.time;
+			}
 
-                        if (slot.progress > 0) {
-                                slot.progress -= dt;
+			if (slot.progress > 0) {
+				slot.progress -= dt;
 
-                                if (slot.progress <= 0) {
-                                        this.resources.addResource(spec.id, 1);
-                                        this.resources.addResourceXP(spec.id, 1);
-                                        slot.progress = 0;
-                                }
-                        }
-                }
-        }
+				if (slot.progress <= 0) {
+					this.resources.addResource(spec.id, 1);
+					this.resources.addResourceXP(spec.id, 1);
+					slot.progress = 0;
+				}
+			}
+		}
+	}
 
 	// Save/Load
 	save(): BlacksmithSave {
@@ -179,11 +192,11 @@ export class BlacksmithManager extends GameBase implements Saveable, OfflineProg
 		};
 	}
 
-        load(data: BlacksmithSave): void {
-                this.unlockedSlots = data.unlockedSlots || 1;
-                this.slots = data.slots || [{ resourceId: null, progress: 0 }];
-                (data.upgrades || []).forEach((id) => {
-                        const upg = this.upgrades.get(id);
+	load(data: BlacksmithSave): void {
+		this.unlockedSlots = data.unlockedSlots || 1;
+		this.slots = data.slots || [{ resourceId: null, progress: 0 }];
+		(data.upgrades || []).forEach((id) => {
+			const upg = this.upgrades.get(id);
 			if (upg) upg.purchase();
 			if (id.startsWith("slot_")) {
 				// ensure slots array length
@@ -192,18 +205,18 @@ export class BlacksmithManager extends GameBase implements Saveable, OfflineProg
 				}
 			}
 			if (id === "better_tools") this.speedMultiplier = 1.2;
-                });
-        }
+		});
+	}
 
-        /** Reset crafting slots when a prestige occurs */
-        prestigeReset() {
-                this.slots = Array.from({ length: this.unlockedSlots }, () => ({
-                        resourceId: null,
-                        progress: 0,
-                }));
-                this.rawOreTimer = 0;
-                bus.emit("blacksmith:slots-changed");
-        }
+	/** Reset crafting slots when a prestige occurs */
+	prestigeReset() {
+		this.slots = Array.from({ length: this.unlockedSlots }, () => ({
+			resourceId: null,
+			progress: 0,
+		}));
+		this.rawOreTimer = 0;
+		bus.emit("blacksmith:slots-changed");
+	}
 
 	// -- UI Helper Methods --
 	/**

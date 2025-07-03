@@ -2,6 +2,7 @@ import { bus } from "@/core/EventBus";
 import { Saveable } from "@/shared/storage-types";
 import { GameContext } from "@/core/GameContext";
 import { Destroyable } from "@/core/Destroyable";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 interface MineSaveState {
 	timers: number[];
@@ -11,11 +12,16 @@ export class MineManager extends Destroyable implements Saveable<MineSaveState> 
 	private timers: number[] = [];
 	private readonly durations = [2 * 3600, 4 * 3600, 8 * 3600, 12 * 3600, 18 * 3600, 24 * 3600];
 
-	constructor(initialShafts: number) {
+	constructor() {
 		super();
+		const initialShafts = GameContext.getInstance().settlement.getBuilding("mine")?.level || 0;
 		this.timers = Array(initialShafts).fill(0);
-		bus.on("Game:GameTick", (dt) => this.handleTick(dt));
-		bus.on("settlement:changed", () => this.checkForNewShafts());
+		this.setupEventBindings();
+	}
+
+	private setupEventBindings() {
+		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
+		bindEvent(this.eventBindings, "settlement:changed", () => this.checkForNewShafts());
 	}
 
 	private handleTick(dt: number) {

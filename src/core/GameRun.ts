@@ -13,6 +13,7 @@ import { EquipmentManager } from "@/models/EquipmentManager";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { ResourceManager } from "@/features/inventory/ResourceManager";
 import { MineManager } from "@/features/mine/MineManager";
+import { BlacksmithManager } from "@/features/settlement/BlacksmithManager";
 
 export interface RunStats {
 	runId: string;
@@ -30,6 +31,7 @@ export class GameRun extends Destroyable {
 	public readonly equipmentManager: EquipmentManager;
 	public readonly resourceManager: ResourceManager;
 	public readonly mineManager: MineManager;
+	public readonly blacksmithManager: BlacksmithManager;
 	public readonly runStartTime: number;
 	public readonly runId: string;
 	public readonly traits: Trait[];
@@ -50,8 +52,10 @@ export class GameRun extends Destroyable {
 		this.trainedStats = new TrainedStatManager();
 		this.equipmentManager = new EquipmentManager();
 		this.resourceManager = new ResourceManager();
-		const mineLevel = this.context.settlement.getBuilding("mine")?.level || 0;
-		this.mineManager = new MineManager(mineLevel);
+
+		//const mineLevel = this.context.settlement.getBuilding("mine")?.level || 0;
+		this.mineManager = new MineManager();
+		this.blacksmithManager = new BlacksmithManager();
 
 		this.setupEventBindings();
 		this.initialize();
@@ -75,6 +79,7 @@ export class GameRun extends Destroyable {
 		saveManager.updateRegister("trainedManager", this.trainedStats);
 		saveManager.updateRegister("resourceManager", this.resourceManager);
 		saveManager.updateRegister("mineManager", this.mineManager);
+		saveManager.updateRegister("blacksmithManager", this.blacksmithManager);
 
 		// Emit that run is ready
 		bus.emit("gameRun:initialized", this);
@@ -117,6 +122,7 @@ export class GameRun extends Destroyable {
 		this.equipmentManager.destroy();
 		this.resourceManager.destroy();
 		this.mineManager.destroy();
+		this.blacksmithManager.destroy();
 
 		bus.emit("gameRun:destroyed", this.runId);
 		super.destroy();

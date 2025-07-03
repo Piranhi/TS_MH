@@ -9,13 +9,9 @@ import { StatsManager } from "@/models/StatsManager";
 import { MilestoneManager } from "@/models/MilestoneManager";
 import { OfflineProgressManager } from "@/models/OfflineProgress";
 import { LibraryManager } from "@/features/settlement/LibraryManager";
-import { BlacksmithManager } from "@/features/settlement/BlacksmithManager";
 import { ClassManager } from "@/features/classes/ClassManager";
 import { ClassSpec } from "@/features/classes/ClassTypes";
 import rawClasses from "@/data/classes.json" assert { type: "json" };
-import rawUpgrades from "@/data/upgrades.json" assert { type: "json" };
-import { ResearchSpec } from "@/shared/types";
-import { BlacksmithUpgradeSpec } from "@/shared/types";
 import { ModifierEngine } from "./ModifierEngine";
 import { GAME_BALANCE } from "@/balance/GameBalance";
 
@@ -33,7 +29,6 @@ export class GameServices {
 	public readonly inventoryManager: InventoryManager;
 	public readonly settlementManager: SettlementManager;
 	public readonly libraryManager: LibraryManager;
-	public readonly blacksmithManager: BlacksmithManager;
 	public readonly classManager: ClassManager;
 
 	private constructor() {
@@ -43,12 +38,7 @@ export class GameServices {
 		this.milestoneManager = MilestoneManager.instance;
 		this.inventoryManager = new InventoryManager();
 		this.settlementManager = new SettlementManager();
-		const { research = [], blacksmith = [] } = rawUpgrades as any;
-
 		this.libraryManager = new LibraryManager();
-		this.libraryManager.registerResearch(research as ResearchSpec[]);
-		this.blacksmithManager = new BlacksmithManager();
-		this.blacksmithManager.registerUpgrades(blacksmith as BlacksmithUpgradeSpec[]);
 		this.offlineManager = new OfflineProgressManager();
 		this.classManager = new ClassManager(rawClasses as ClassSpec[]);
 		this.modifierEngine = new ModifierEngine({
