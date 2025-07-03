@@ -59,13 +59,15 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		this.canDie = debugManager.get("player_canDie");
 	}
 
+	// Heal 0.25% of max hp per tick
 	private passiveHeal() {
 		if (!this.alive) return;
-		this.hp.increase(GAME_BALANCE.player.healing.passiveHealPercent);
+		this.hp.increase(this.maxHp * GAME_BALANCE.player.healing.passiveHealPercent);
 	}
 
+	// Heal 5% of max hp per tick
 	healInRecovery() {
-		this.hp.increase(this.maxHp * GAME_BALANCE.player.healing.recoveryStateHeal); // Always heal at least 1
+		this.hp.increase(this.maxHp * GAME_BALANCE.player.healing.recoveryStateHeal);
 	}
 
 	private updateStats() {

@@ -2,6 +2,7 @@
 	{
 		"id": "test",
 		"iconUrl": "/images/abilities/ability_ice.png",
+		"description": "none",
 		"displayName": "test",
 		"cooldown": 20,
 		"staminaCost": 10,
@@ -41,6 +42,7 @@
 	{
 		"id": "basic_melee",
 		"iconUrl": "/images/abilities/ability_basic_melee.png",
+		"description": "none",
 		"displayName": "Slam",
 		"cooldown": 5,
 		"staminaCost": 10,
@@ -55,9 +57,10 @@
 	},
 	{
 		"id": "basic_heal",
-		"iconUrl": "",
-		"displayName": "Heal",
-		"cooldown": 30,
+		"iconUrl": "Heals the caster for 10% of their health",
+		"description": "none",
+		"displayName": "Heal Basic",
+		"cooldown": 5,
 		"staminaCost": 15,
 		"element": "light",
 		"effects": [
@@ -72,6 +75,7 @@
 	{
 		"id": "root_snare",
 		"iconUrl": "",
+		"description": "none",
 		"displayName": "Root Snare",
 		"cooldown": 4,
 		"staminaCost": 20,
@@ -89,6 +93,7 @@
 	{
 		"id": "warrior_charge",
 		"iconUrl": "",
+		"description": "none",
 		"displayName": "Warrior Charge",
 		"cooldown": 8,
 		"staminaCost": 30,
@@ -111,6 +116,7 @@
 	{
 		"id": "bulwark_defend",
 		"iconUrl": "",
+		"description": "none",
 		"displayName": "Bulwark Defend",
 		"cooldown": 10,
 		"staminaCost": 25,

@@ -34,15 +34,12 @@ export class CombatManager extends Destroyable {
 	}
 
 	public update(dt: number) {
-		// Update both characters (handles status effects, stamina regen, etc.)
-		this.handleCombatUpdate(this.playerCharacter, dt);
-		this.handleCombatUpdate(this.enemyCharacter, dt);
-		if (this.checkCombatEnd()) return; // Characters may have died from status effects
-
+		// Characters may have died from status effects
+		if (this.checkCombatEnd()) return;
 		// Process abilities for both characters
+		// Player first to give advantage
 		this.processCharacterAbilities(this.playerCharacter, this.enemyCharacter, dt);
 		if (this.checkCombatEnd()) return;
-
 		this.processCharacterAbilities(this.enemyCharacter, this.playerCharacter, dt);
 		if (this.checkCombatEnd()) return;
 	}
@@ -55,50 +52,14 @@ export class CombatManager extends Destroyable {
 		return false;
 	}
 
-	// Ticks the characters and handles status effects + Regen Stamina
-	// Also runs through periodic effects
-	private handleCombatUpdate(character: BaseCharacter, dt: number) {
-		// Run any debug updates defined on the character
-		character.checkDebugOptions();
-		const periodicEffects = character.statusEffects.processPeriodicEffects(dt);
-
-		this.periodicTick += dt;
-		if (this.periodicTick >= GAME_BALANCE.combat.periodicTick) {
-			this.periodicTick -= GAME_BALANCE.combat.periodicTick;
-			for (const effect of periodicEffects) {
-				if (effect.type === "damage") {
-					const dmg = CombatCalculator.calculatePeriodicDamage(effect.amount, effect.element, character);
-					const actual = character.takeDamage(dmg);
-					bus.emit("char:hpChanged", { char: character, amount: -actual });
-				} else if (effect.type === "heal") {
-					const actual = character.heal(effect.amount);
-					bus.emit("char:hpChanged", { char: character, amount: actual });
-				}
-			}
-		}
-
-		character.regenStamina(dt);
-	}
-
 	// Returns a list of abilities that are ready to be used
-	private getReadyAbilities(character: BaseCharacter, dt: number): Ability[] {
+	private getReadyAbilities(character: BaseCharacter): Ability[] {
 		if (!character.alive || !character.canAttack) return [];
 
 		const abilities = character
 			.getAbilities()
 			.filter((a) => a.enabled)
 			.sort((a, b) => a.priority - b.priority);
-
-		// Get speed modifiers
-		const baseSpeed = character.stats.get("speed");
-		const baseSpeedMultiplier = baseSpeed / 1; // 100 speed = 1.0x, 150 = 1.5x, 50 = 0.5x
-		const statusSpeedMultiplier = character.statusEffects.getSpeedModifier();
-
-		// Combine multipliers
-		const totalSpeedMultiplier = baseSpeedMultiplier * statusSpeedMultiplier;
-		const effectiveDt = dt * totalSpeedMultiplier;
-
-		abilities.forEach((a) => a.reduceCooldown(effectiveDt));
 		return abilities.filter((a) => a.isReady() && character.hasStamina(a.spec.staminaCost));
 	}
 
@@ -125,7 +86,7 @@ export class CombatManager extends Destroyable {
 		if (!source.alive || !target.alive) return;
 
 		// Get abilities that are ready to use
-		const readyAbilities = this.getReadyAbilities(source, dt);
+		const readyAbilities = this.getReadyAbilities(source);
 
 		for (const ability of readyAbilities) {
 			if (!target.alive) break;
@@ -139,6 +100,15 @@ export class CombatManager extends Destroyable {
 
 					// Apply damage
 					const actual = target.takeDamage(damage);
+
+					// Apply lifesteal
+					if (source.stats.get("lifesteal") > 0) {
+						const lifesteal = source.stats.get("lifesteal") / 100;
+						const lifestealAmount = damage * lifesteal;
+						const actualHeal = source.heal(lifestealAmount);
+						bus.emit("char:hpChanged", { char: source, amount: actualHeal });
+					}
+
 					bus.emit("char:hpChanged", {
 						char: target,
 						amount: -actual,

@@ -4,6 +4,7 @@ import { AbilityCondition, AbilityModifier, EffectSpec, ElementType } from "@/sh
 export interface AbilitySpec {
 	id: string;
 	iconUrl: string;
+	description: string;
 	displayName: string;
 	cooldown: number;
 	staminaCost: number;
@@ -45,6 +46,10 @@ export class Ability extends SpecRegistryBase<AbilitySpec> {
 	}
 	get enabled() {
 		return this.state.enabled;
+	}
+
+	get description(): string {
+		return this.spec.description;
 	}
 	set enabled(v: boolean) {
 		this.state.enabled = v;

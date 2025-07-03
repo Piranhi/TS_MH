@@ -6,7 +6,7 @@ import { STAT_KEYS } from "@/models/Stats";
 import { UIBase } from "./UIBase";
 import { Tooltip } from "./Tooltip";
 import { ProgressBar } from "./ProgressBar";
-import { formatNumberShort } from "@/shared/utils/stringUtils";
+import { formatNumberShort, prettify } from "@/shared/utils/stringUtils";
 import { bus } from "@/core/EventBus";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { STATUSES } from "@/features/hunt/satus-definition";
@@ -183,9 +183,12 @@ export class CharacterDisplay extends UIBase {
 
 				li.addEventListener("mouseenter", () => {
 					Tooltip.instance.show(li, {
-						icon: ability.spec.iconUrl,
+						icon: ability.spec.iconUrl ?? null,
+						type: prettify(ability.spec.element),
+						list: [`Cost: ${ability.spec.staminaCost} stamina`, ability.description],
 						name: ability.name,
-						description: `Cost: ${ability.spec.staminaCost} stamina`,
+
+						//description: `Cost: ${ability.spec.staminaCost} stamina`,
 					});
 				});
 				li.addEventListener("mouseleave", () => Tooltip.instance.hide());
@@ -219,10 +222,27 @@ export class CharacterDisplay extends UIBase {
 		this.cleanupAllTransitions(); // Clean up any active transitions
 	}
 
-	render(): void {
-		if (!this.character) return;
-		const snapshot = this.character.snapshot();
+	// Used for rendering dead enemies - But setting health to 0
+	private renderInactive() {
+		this.element.classList.add("inactive");
+		this.hpBar.setValue(0);
+		this.abilitiesListMap.clear();
+		this.abilitiesListEl.innerHTML = "";
+		this.statusRowEl.innerHTML = "";
+	}
 
+	render(): void {
+		if (!this.character) {
+			this.renderInactive();
+			return;
+		}
+		if (!this.character.alive) {
+			this.element.classList.add("inactive");
+		} else {
+			this.element.classList.remove("inactive");
+		}
+
+		const snapshot = this.character.snapshot();
 		const { name, hpCurrent, hpMax, staminaCurrent, staminaMax, abilities } = snapshot;
 		this.nameEl.textContent = name;
 		this.hpBar.setValue(hpCurrent);
@@ -395,6 +415,10 @@ export class CharacterDisplay extends UIBase {
 	private renderStatusEffects() {
 		if (!this.statusRowEl) return;
 		this.statusRowEl.innerHTML = "";
+		if (!this.character) {
+			this.statusRowEl.innerHTML = "";
+			return;
+		}
 		const effects = this.character.statusEffects.getActiveEffects();
 		for (const effect of effects) {
 			const wrapper = document.createElement("div");
@@ -463,7 +487,7 @@ export class CharacterDisplay extends UIBase {
 
 	private showHpChange(amount: number, isCrit: boolean) {
 		const cls = amount < 0 ? "damage" : "heal";
-		this.hpChangeEl.textContent = Math.abs(amount).toString();
+		this.hpChangeEl.textContent = formatNumberShort(amount); // Math.abs(amount).toString();
 		this.hpChangeEl.classList.remove("damage", "heal", "crit", "show");
 		this.hpChangeEl.classList.add(cls);
 		if (isCrit) this.hpChangeEl.classList.add("crit");

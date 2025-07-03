@@ -7,6 +7,7 @@ export const STAT_KEYS: (keyof Stats)[] = [
 	"defence",
 	"speed",
 	"hp",
+	"regen",
 	"critChance",
 	"critDamage",
 	"evasion",
@@ -35,6 +36,7 @@ export interface EnemyArchetypeData extends CoreStats {
 
 /** Build Stats */
 export interface BuildStats {
+	regen: number;
 	critChance: number;
 	critDamage: number;
 	evasion: number;
@@ -74,10 +76,11 @@ export const defaultPlayerStats: Stats = {
 	defence: 10,
 	speed: 1,
 	hp: 100,
+	regen: 0,
 	critChance: 1,
 	critDamage: 0,
 	evasion: 0,
-	lifesteal: 0,
+	lifesteal: 100,
 	encounterChance: 1,
 	fireBonus: 0,
 	iceBonus: 0,

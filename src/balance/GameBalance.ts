@@ -98,8 +98,8 @@ export const GAME_BALANCE = {
 		},
 
 		healing: {
-			passiveHealPercent: 1,
-			recoveryStateHeal: 0.01,
+			passiveHealPercent: 0.0025,
+			recoveryStateHeal: 0.05,
 		},
 
 		stamina: {

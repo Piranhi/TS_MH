@@ -39,14 +39,14 @@ interface StateHandler {
 }
 
 export class HuntManager extends Destroyable implements Saveable {
-        public readonly areaManager: AreaManager;
+	public readonly areaManager: AreaManager;
 
-        private state: HuntState = HuntState.Idle; // current enum value – useful for save files
-        private handler: StateHandler;
-        private area!: Area;
-        private areaIndex: number = 0;
-        private context = GameContext.getInstance();
-        private autoAdvance = false;
+	private state: HuntState = HuntState.Idle; // current enum value – useful for save files
+	private handler: StateHandler;
+	private area!: Area;
+	private areaIndex: number = 0;
+	private context = GameContext.getInstance();
+	private autoAdvance = false;
 
 	constructor() {
 		super();
@@ -58,8 +58,8 @@ export class HuntManager extends Destroyable implements Saveable {
 		bindEvent(this.eventBindings, "hunt:areaSelected", (areaId) => this.setArea(areaId));
 		bindEvent(this.eventBindings, "game:gameReady", () => this.gameReady());
 		//bindEvent(this.eventBindings, "game:prestigePrep", () => this.prestigePrep);
-                bindEvent(this.eventBindings, "milestone:achieved", () => this.handleMilestones);
-                bindEvent(this.eventBindings, "hunt:bossKill", ({ areaId }) => this.onBossKill(areaId));
+		bindEvent(this.eventBindings, "milestone:achieved", () => this.handleMilestones);
+		bindEvent(this.eventBindings, "hunt:bossKill", ({ areaId }) => this.onBossKill(areaId));
 	}
 
 	private gameReady() {
@@ -117,42 +117,37 @@ export class HuntManager extends Destroyable implements Saveable {
 	}
 
 	// SEARCH STATE
-        private makeSearchState(): StateHandler {
+	private makeSearchState(): StateHandler {
 		// Local closure variable keeps track of an accumulated timer so that we roll
 		// once per second independent of frame rate.
 		let elapsed = 0;
 		const rollTime = GAME_BALANCE.hunt.baseSearchTime;
 
-                return {
-                        onEnter: () => {
-                                elapsed = 0;
-                                // Immediately challenge boss if unlocked and auto advance is enabled
-                                const stats = this.context.stats.getAreaStats(this.area.id);
-                                if (
-                                        this.autoAdvance &&
-                                        stats.bossUnlockedThisRun &&
-                                        !stats.bossKilledThisRun &&
-                                        !this.context.isOfflinePaused
-                                ) {
-                                        this.fightBoss();
-                                        return;
-                                }
-                        },
-                        onTick: (dt: number) => {
-                                if (
-                                        this.autoAdvance &&
-                                        !this.context.isOfflinePaused &&
-                                        this.context.stats.getAreaStats(this.area.id).bossUnlockedThisRun &&
-                                        !this.context.stats.getAreaStats(this.area.id).bossKilledThisRun
-                                ) {
-                                        this.fightBoss();
-                                        return;
-                                }
-                                elapsed += dt;
-                                if (elapsed >= rollTime) {
-                                        elapsed -= rollTime;
-                                        if (this.rollEncounter()) {
-                                                // Create Enemy from monster picker
+		return {
+			onEnter: () => {
+				elapsed = 0;
+				// Immediately challenge boss if unlocked and auto advance is enabled
+				const stats = this.context.stats.getAreaStats(this.area.id);
+				if (this.autoAdvance && stats.bossUnlockedThisRun && !stats.bossKilledThisRun && !this.context.isOfflinePaused) {
+					this.fightBoss();
+					return;
+				}
+			},
+			onTick: (dt: number) => {
+				if (
+					this.autoAdvance &&
+					!this.context.isOfflinePaused &&
+					this.context.stats.getAreaStats(this.area.id).bossUnlockedThisRun &&
+					!this.context.stats.getAreaStats(this.area.id).bossKilledThisRun
+				) {
+					this.fightBoss();
+					return;
+				}
+				elapsed += dt;
+				if (elapsed >= rollTime) {
+					elapsed -= rollTime;
+					if (this.rollEncounter()) {
+						// Create Enemy from monster picker
 						const enemy = new EnemyCharacter(this.area.pickMonster());
 						this.startCombat(enemy);
 					}
@@ -175,15 +170,15 @@ export class HuntManager extends Destroyable implements Saveable {
 				if (combatManager.isFinished) {
 					// Combat finished - Either goto search again or recovery.
 					// Increase stats here
-                                        if (combatManager.playerWon) {
-                                                if (this.state === HuntState.Boss) {
-                                                        bus.emit("hunt:bossKill", { areaId: this.area.id });
-                                                }
-                                                this.transition(HuntState.Search, this.makeSearchState());
-                                        } else {
-                                                this.disableAutoAdvance();
-                                                this.transition(HuntState.Recovery, this.makeRecoveryState());
-                                        }
+					if (combatManager.playerWon) {
+						if (this.state === HuntState.Boss) {
+							bus.emit("hunt:bossKill", { areaId: this.area.id });
+						}
+						this.transition(HuntState.Search, this.makeSearchState());
+					} else {
+						this.disableAutoAdvance();
+						this.transition(HuntState.Recovery, this.makeRecoveryState());
+					}
 				}
 			},
 			onExit: () => {
@@ -259,42 +254,40 @@ export class HuntManager extends Destroyable implements Saveable {
 
 	// ---------------- DEBUG ------------------
 
-        public debugForceEnemy(id: string, tier: number): EnemyCharacter {
-                const spec = Monster.getSpec(id);
-                if (!spec) throw new Error(`Unknown monster "${id}"`);
-                const enemy = new EnemyCharacter(Monster.create(spec, tier));
-                this.startCombat(enemy);
-                return enemy;
-        }
+	public debugForceEnemy(id: string, tier: number): EnemyCharacter {
+		const spec = Monster.getSpec(id);
+		if (!spec) throw new Error(`Unknown monster "${id}"`);
+		const enemy = new EnemyCharacter(Monster.create(spec, tier));
+		this.startCombat(enemy);
+		return enemy;
+	}
 
-        // ────────────────────────────────────────────────────────────────────────
-        //  Auto progression helpers
-        // ────────────────────────────────────────────────────────────────────────
+	// ────────────────────────────────────────────────────────────────────────
+	//  Auto progression helpers
+	// ────────────────────────────────────────────────────────────────────────
 
-        public setAutoAdvance(enabled: boolean) {
-                this.autoAdvance = enabled;
-        }
+	public setAutoAdvance(enabled: boolean) {
+		this.autoAdvance = enabled;
+	}
 
-        private disableAutoAdvance() {
-                if (this.autoAdvance) {
-                        this.autoAdvance = false;
-                        bus.emit("hunt:autoAdvanceDisabled");
-                }
-        }
+	private disableAutoAdvance() {
+		if (this.autoAdvance) {
+			this.autoAdvance = false;
+			bus.emit("hunt:autoAdvanceDisabled");
+		}
+	}
 
-        private onBossKill(areaId: string) {
-                if (!this.autoAdvance || this.context.isOfflinePaused) return;
-                this.advanceToNextArea();
-        }
+	private onBossKill(areaId: string) {
+		if (!this.autoAdvance || this.context.isOfflinePaused) return;
+		this.advanceToNextArea();
+	}
 
-        private advanceToNextArea() {
-                const unlocked = this.areaManager
-                        .getUnlockedAreas()
-                        .sort((a, b) => a.tier - b.tier);
-                const currentTier = this.area.tier;
-                const next = unlocked.find((a) => a.tier > currentTier);
-                if (next) {
-                        this.setArea(next.id);
-                }
-        }
+	private advanceToNextArea() {
+		const unlocked = this.areaManager.getUnlockedAreas().sort((a, b) => a.tier - b.tier);
+		const currentTier = this.area.tier;
+		const next = unlocked.find((a) => a.tier > currentTier);
+		if (next) {
+			this.setArea(next.id);
+		}
+	}
 }

@@ -9,6 +9,8 @@ import { CharacterResistances } from "../features/hunt/CharacterResistances";
 import { StatusEffectManager } from "@/features/hunt/StatusEffectManager";
 import { bus } from "@/core/EventBus";
 import { AbilityModifier, Affinity, ElementType } from "@/shared/types";
+import { bindEvent } from "@/shared/utils/busUtils";
+import { CombatCalculator } from "@/features/hunt/CombatCalculator";
 
 export interface CharacterSnapshot {
 	name: string;
@@ -46,6 +48,7 @@ export abstract class BaseCharacter extends Destroyable {
 	/* ───────────────────── private fields ────────────────────── */
 	private inCombat = false;
 	private _alive = true;
+	private periodicStatusTick = 0;
 	public readonly resistances: CharacterResistances;
 	public readonly statusEffects: StatusEffectManager;
 
@@ -61,6 +64,35 @@ export abstract class BaseCharacter extends Destroyable {
 		this.statusEffects = new StatusEffectManager();
 		this.hp = new BoundedNumber(0, this.calcRealHp(this.stats.get("hp")), this.calcRealHp(this.stats.get("hp"))); // TODO - ADD CALCULATIONS TO GET 'REAL' HP FROM MULTIPLIERS
 		this.stamina = new RegenPool(GAME_BALANCE.player.stamina.baseMax, GAME_BALANCE.player.stamina.regenPerSecond, true, false);
+		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
+	}
+
+	// Handle tick - Keep to a minimum
+	private handleTick(dt: number) {
+		if (!this.alive) return;
+		this.reduceAbilityCooldowns(dt);
+		this.handleCombatUpdates(dt);
+	}
+
+	private handleCombatUpdates(dt: number) {
+		this.checkDebugOptions();
+		const periodicEffects = this.statusEffects.processPeriodicEffects(dt);
+
+		this.periodicStatusTick += dt;
+		if (this.periodicStatusTick >= GAME_BALANCE.combat.periodicTick) {
+			this.periodicStatusTick -= GAME_BALANCE.combat.periodicTick;
+			for (const effect of periodicEffects) {
+				if (effect.type === "damage") {
+					const dmg = CombatCalculator.calculatePeriodicDamage(effect.amount, effect.element, this);
+					const actual = this.takeDamage(dmg);
+					bus.emit("char:hpChanged", { char: this, amount: -actual });
+				} else if (effect.type === "heal") {
+					const actual = this.heal(effect.amount);
+					bus.emit("char:hpChanged", { char: this, amount: actual });
+				}
+			}
+		}
+		this.regenStamina(dt);
 	}
 
 	private calcRealHp(base: number): number {
@@ -164,13 +196,18 @@ export abstract class BaseCharacter extends Destroyable {
 		const beforeHp = this.hp.current;
 		this.hp.decrease(amount);
 		if (this.hp.current <= 0 && this.canDie) {
-			this.alive = false;
+			this.characterDied();
 		} else if (this.hp.current <= 0 && !this.canDie) {
 			this.hp.setToMax();
 		}
 		const actualDamage = beforeHp - this.hp.current;
 
 		return actualDamage;
+	}
+
+	private characterDied() {
+		this.alive = false;
+		this.statusEffects.clear();
 	}
 
 	/**
@@ -200,6 +237,20 @@ export abstract class BaseCharacter extends Destroyable {
 
 	public getAllAbilityModifiersFromAbility(abilityId: string): AbilityModifier[] {
 		return this.abilityModifiers.get(abilityId) || [];
+	}
+
+	public reduceAbilityCooldowns(dt: number) {
+		const abilities = this.getAbilities().filter((a) => a.enabled);
+
+		const baseSpeed = this.stats.get("speed");
+		const baseSpeedMultiplier = baseSpeed / 1; // 100 speed = 1.0x, 150 = 1.5x, 50 = 0.5x
+		const statusSpeedMultiplier = this.statusEffects.getSpeedModifier();
+
+		// Combine multipliers
+		const totalSpeedMultiplier = baseSpeedMultiplier * statusSpeedMultiplier;
+		const effectiveDt = dt * totalSpeedMultiplier;
+
+		abilities.forEach((a) => a.reduceCooldown(effectiveDt));
 	}
 
 	/* ───────────────────── combat lifecycle ──────────────────── */
