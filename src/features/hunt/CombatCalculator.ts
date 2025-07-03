@@ -12,39 +12,40 @@ export class CombatCalculator {
 		baseDamageMultiplier: number,
 		element: ElementType = "physical"
 	): { damage: number; isCrit: boolean } {
-		// Step 1: Get attacker's base attack
-		const baseAttack = attacker.stats.get("attack");
+                // Step 1: Get attacker's base attack and element bonus
+                const baseAttack = attacker.stats.get("attack");
+                const elementBonusDamage = attacker.stats.get(`${element}Bonus` as any) || 0;
 
-		// Step 2: Apply attacker's status modifiers
-		const attackModifier = 1 + attacker.statusEffects.getAttackModifier();
+                // Base damage gets the element bonus before any modifiers
+                let baseDamage = baseAttack + elementBonusDamage;
 
-		// Step 3: Apply elemental bonus from attacker's stats
-		const elementBonus = 1 + attacker.stats.get(`${element}Bonus` as any);
+                // Step 2: Apply attacker's status modifiers
+                const attackModifier = 1 + attacker.statusEffects.getAttackModifier();
 
-		// Step 4: Calculate critical hit
-		const critChance = attacker.stats.get("critChance") / 100;
-		const isCrit = Math.random() < critChance;
-		const critMultiplier = isCrit ? 1 + attacker.stats.get("critDamage") / 100 : 1;
+                // Step 3: Calculate critical hit
+                const critChance = attacker.stats.get("critChance") / 100;
+                const isCrit = Math.random() < critChance;
+                const critMultiplier = isCrit ? 1 + attacker.stats.get("critDamage") / 100 : 1;
 
-		// Step 5: Add variance
-		const variance = 0.9 + Math.random() * 0.2; // 90% to 110%
+                // Step 4: Add variance
+                const variance = 0.9 + Math.random() * 0.2; // 90% to 110%
 
-		// Step 6: Calculate raw damage
-		const rawDamage = baseAttack * baseDamageMultiplier * attackModifier * elementBonus * critMultiplier * variance;
+                // Step 5: Calculate raw damage
+                const rawDamage = baseDamage * baseDamageMultiplier * attackModifier * critMultiplier * variance;
 
-		// Step 7: Get defender's defense
-		const defense = defender.stats.get("defence");
-		const defenseModifier = 1 + defender.statusEffects.getDefenseModifier();
-		const effectiveDefense = defense * defenseModifier;
+                // Step 6: Get defender's defense
+                const defense = defender.stats.get("defence");
+                const defenseModifier = 1 + defender.statusEffects.getDefenseModifier();
+                const effectiveDefense = defense * defenseModifier;
 
-		// Step 8: Apply defense reduction (simple formula)
-		const defenseReduction = effectiveDefense / (effectiveDefense + 100);
-		const afterDefense = rawDamage * (1 - defenseReduction * 0.5); // Max 50% reduction
+                // Step 7: Apply defense reduction (simple formula)
+                const defenseReduction = effectiveDefense / (effectiveDefense + 100);
+                const afterDefense = rawDamage * (1 - defenseReduction * 0.5); // Max 50% reduction
 
-		// Step 9: Apply elemental resistance
-		const baseResistance = defender.resistances.getBase(element);
-		const statusResistance = defender.statusEffects.getResistanceModifier(element);
-		const totalResistance = baseResistance + statusResistance;
+                // Step 8: Apply elemental resistance
+                const baseResistance = defender.resistances.getBase(element);
+                const statusResistance = defender.statusEffects.getResistanceModifier(element);
+                const totalResistance = baseResistance + statusResistance;
 
 		// Resistance as percentage: positive reduces damage, negative increases
 		const finalDamage = afterDefense * (1 - totalResistance / 100);
