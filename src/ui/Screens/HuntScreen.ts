@@ -20,6 +20,7 @@ export class HuntScreen extends BaseScreen {
 	private areaSelectEl!: HTMLSelectElement;
 	private areaDisplay!: AreaDisplay;
 	private autoAdvanceCb!: HTMLInputElement;
+	private searchingOverlay!: HTMLElement;
 
 	constructor() {
 		super();
@@ -33,6 +34,9 @@ export class HuntScreen extends BaseScreen {
 		this.playerCard.receiveCharacter(this.context.character);
 		this.playerCard.setup();
 		this.areaDisplay = new AreaDisplay(this.byId("area-stats"));
+
+		// Initialize searching overlay as hidden
+		this.hideSearchingOverlay();
 
 		// Create auto advance checkbox in the area options section
 		const label = document.createElement("label");
@@ -60,6 +64,7 @@ export class HuntScreen extends BaseScreen {
 	private setupElements() {
 		this.huntUpdateEl = document.getElementById("hunt-update-log") as HTMLElement;
 		this.areaSelectEl = this.byId("area-select") as HTMLSelectElement;
+		this.searchingOverlay = this.byId("searching-overlay") as HTMLElement;
 	}
 
 	private bindEvents() {
@@ -141,6 +146,7 @@ export class HuntScreen extends BaseScreen {
 	areaChanged(state: HuntState) {
 		switch (state) {
 			case HuntState.Idle:
+				this.hideSearchingOverlay();
 				return;
 				break;
 			case HuntState.Search:
@@ -152,15 +158,32 @@ export class HuntScreen extends BaseScreen {
 			case HuntState.Recovery:
 				return this.enterRecovery();
 				break;
+			case HuntState.Boss:
+				this.hideSearchingOverlay();
+				return;
+				break;
 		}
 	}
 
-	enterSearch() {}
+	enterSearch() {
+		this.showSearchingOverlay();
+	}
 
-	enterCombat() {}
+	enterCombat() {
+		this.hideSearchingOverlay();
+	}
 
 	enterRecovery() {
+		this.hideSearchingOverlay();
 		this.updateOutput("In Recovery");
+	}
+
+	private showSearchingOverlay() {
+		this.searchingOverlay.classList.remove("hidden");
+	}
+
+	private hideSearchingOverlay() {
+		this.searchingOverlay.classList.add("hidden");
 	}
 
 	private updateOutput(s: string) {
