@@ -27,6 +27,7 @@ export class AreaDisplay extends UIBase {
 	private fightBossBtn!: UIButton;
 	private buildOutpostBtn!: UIButton;
 	private optionsContainer!: HTMLDivElement;
+	private autoAdvanceCb!: HTMLInputElement;
 
 	constructor(parentElement: HTMLElement) {
 		super();
@@ -73,6 +74,9 @@ export class AreaDisplay extends UIBase {
 			id: AreaDisplay.DOM_IDS.OPTIONS,
 			className: "area-options",
 		});
+
+		// Create auto advance checkbox
+		this.createAutoAdvanceCheckbox();
 
 		const killsNeeded = this.createElement("span", {
 			textContent: "Kills Needed",
@@ -123,6 +127,30 @@ export class AreaDisplay extends UIBase {
 
 		return section;
 	}
+
+	/**
+	 * Creates the auto advance checkbox and adds it to the options container
+	 */
+	private createAutoAdvanceCheckbox(): void {
+		const label = document.createElement("label");
+		label.textContent = "Auto advance";
+		this.autoAdvanceCb = document.createElement("input");
+		this.autoAdvanceCb.type = "checkbox";
+		label.prepend(this.autoAdvanceCb);
+		
+		// Add event listener for checkbox change
+		this.autoAdvanceCb.addEventListener("change", this.onAutoAdvanceChange);
+		
+		this.optionsContainer.appendChild(label);
+	}
+
+	/**
+	 * Handles auto advance checkbox change
+	 */
+	private onAutoAdvanceChange = (e: Event) => {
+		const enabled = (e.target as HTMLInputElement).checked;
+		this.context.hunt.setAutoAdvance(enabled);
+	};
 
 	/**
 	 * Allows other components to add option elements to the area display
