@@ -294,11 +294,45 @@ h4 {
 }
 
 .basic-table td {
-	padding: 6px;
-	font-size: 13px;
-	border-top: 1px solid #4d4d4d;
-	height: 12px;
-	vertical-align: middle;
+        padding: 6px;
+        font-size: 13px;
+        border-top: 1px solid #4d4d4d;
+        height: 12px;
+        vertical-align: middle;
+}
+
+/* Optional table modifiers */
+.basic-table--banded tbody tr:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.03);
+}
+
+.basic-table--first-col-bold td:first-child {
+        font-weight: bold;
+}
+
+.basic-table--red thead {
+        background: #d86d6d;
+}
+.basic-table--green thead {
+        background: #55bb77;
+}
+.basic-table--blue thead {
+        background: #6a96c9;
+}
+.basic-table--yellow thead {
+        background: #facc15;
+}
+.basic-table--purple thead {
+        background: #a855f7;
+}
+
+.table-toggle-btn {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 4px;
+        font-size: 1rem;
 }
 
 .basic-stat-name {
