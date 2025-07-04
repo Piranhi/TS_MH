@@ -270,18 +270,20 @@ export class BlacksmithScreen extends BaseScreen {
 	}
 
 	private getUpgradeData(): UpgradeSelectionData[] {
-		return this.context.blacksmith.getUpgrades().map((upg) => ({
-			id: upg.id,
-			title: upg.name,
-			description: upg.description,
-			costs: upg.cost.map((c) => ({
-				icon: Resource.getSpec(c.resource)?.iconUrl ?? "",
-				amount: c.quantity,
-			})),
-			purchased: upg.isPurchased,
-			canAfford: this.context.resources.canAfford(upg.cost),
-		}));
-	}
+                return this.context.blacksmith.getUpgrades().map((upg) => ({
+                        id: upg.id,
+                        title: upg.name,
+                        description: upg.description,
+                        costs: upg.cost.map((c) => ({
+                                icon: Resource.getSpec(c.resource)?.iconUrl ?? "",
+                                amount: c.quantity,
+                        })),
+                        level: upg.currentLevel,
+                        maxLevel: upg.maxLevel,
+                        purchased: upg.isPurchased,
+                        canAfford: this.context.resources.canAfford(upg.cost),
+                }));
+        }
 
 	/**
 	 * Updates all UI elements.

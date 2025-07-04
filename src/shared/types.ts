@@ -40,25 +40,27 @@ export interface BuildingSnapshot {
 }
 
 export interface ResearchSpec {
-	id: string;
-	name: string;
-	description: string;
-	icon: string;
-	baseTime: number; // seconds required at base speed
+        id: string;
+        name: string;
+        description: string;
+        icon: string;
+        baseTime: number; // seconds required at base speed
+        maxLevel?: number; // how many times this research can be upgraded
 }
 
 export interface ResearchState {
-	progress: number;
-	unlocked: boolean;
+        progress: number;
+        level: number;
 }
 
 export interface BlacksmithUpgradeSpec {
-	id: string;
-	name: string;
-	description: string;
-	cost: ResourceRequirement[];
-	icon?: string;
-	effect?: string;
+        id: string;
+        name: string;
+        description: string;
+        cost: ResourceRequirement[];
+        icon?: string;
+        effect?: string;
+        maxLevel?: number; // number of times this upgrade can be purchased
 }
 
 // ------------------- AREA + COMBAT ------------------------------

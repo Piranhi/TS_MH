@@ -558,13 +558,14 @@ section + section {
 }
 
 .upgrade-card {
-	background: rgba(0, 0, 0, 0.25);
-	border-radius: 6px;
-	padding: 0.6rem;
-	display: flex;
-	flex-direction: column;
-	gap: 0.4rem;
-	color: #fff;
+        position: relative;
+        background: rgba(0, 0, 0, 0.25);
+        border-radius: 6px;
+        padding: 0.6rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        color: #fff;
 }
 .upgrade-card.purchased {
 	opacity: 0.5;
@@ -581,8 +582,14 @@ section + section {
 	color: var(--text-muted, #ccc);
 }
 .upgrade-level {
-	font-size: 0.8rem;
-	opacity: 0.8;
+        position: absolute;
+        bottom: 4px;
+        right: 6px;
+        font-size: 0.75rem;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 0 4px;
+        border-radius: 4px;
+        pointer-events: none;
 }
 .upgrade-progress {
 	display: flex;
