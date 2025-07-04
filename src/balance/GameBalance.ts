@@ -5,6 +5,7 @@
 // ===================================================
 
 import { printLog } from "@/core/DebugManager";
+import { GameContext } from "@/core/GameContext";
 import { ITEM_RARITIES, ItemRarity, ResourceUpgradeEffect, TraitRarity } from "@/shared/types";
 
 export const GAME_BALANCE = {
@@ -248,7 +249,7 @@ export const GAME_BALANCE = {
 
 	// === HUNT BALANCE ===
 	hunt: {
-		baseSearchTime: 1, // Base time between encounter rolls in seconds
+		baseSearchTime: 2.5, // Base time between encounter rolls in seconds
 		baseEncounterChance: 0.5, // Base chance to encounter a monster per search
 		enemiesNeededForBoss: 100, // How many enemies to defeat for a boss encounter
 		clearsNeededForOutpost: 10, // How many enemies to defeat for a outpost encounter
@@ -409,6 +410,15 @@ export const BalanceCalculators = {
 		// TODO - Hook in library upgrades.
 		return Math.floor(Math.pow(3, baseTier - 1) * rarityMultiplier);
 	},
+
+	// === HUNT CALCULATIONS ===
+	getHuntSearchTime(): number {
+		// Each point in encounterchance reduces the search time by 1%
+		const encounterChance = GameContext.getInstance().character.stats.get("encounterChance");
+		const searchTime = GAME_BALANCE.hunt.baseSearchTime * (1 - encounterChance / 100);
+		return searchTime;
+	},
+
 	// === PLAYER CALCULATIONS ===
 
 	/**

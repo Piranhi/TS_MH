@@ -183,7 +183,7 @@ export class CharacterDisplay extends UIBase {
 
 				li.addEventListener("mouseenter", () => {
 					Tooltip.instance.show(li, {
-						icon: ability.spec.iconUrl ?? null,
+						icon: ability.spec.iconUrl ?? "",
 						type: prettify(ability.spec.element),
 						list: [`Cost: ${ability.spec.staminaCost} stamina`, ability.description],
 						name: ability.name,

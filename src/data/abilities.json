@@ -57,8 +57,8 @@
 	},
 	{
 		"id": "basic_heal",
-		"iconUrl": "Heals the caster for 10% of their health",
-		"description": "none",
+		"iconUrl": "",
+		"description": "Heals the caster for 10% of their health",
 		"displayName": "Heal Basic",
 		"cooldown": 5,
 		"staminaCost": 15,

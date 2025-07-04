@@ -153,6 +153,8 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 		this.stamina.setMax(state.stamina.max);
 		this.stamina.setCurrent(state.stamina.current);
 		this._currentXp = state.currentXp;
+		this.calcLevelBonuses();
+		bus.emit("player:statsChanged");
 
 		for (const abilityState of state.abilityStates) {
 			const ability = Ability.createFromSaveState(abilityState);

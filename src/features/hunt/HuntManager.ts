@@ -11,7 +11,7 @@ import { Destroyable } from "@/core/Destroyable";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { AreaManager } from "./AreaManager";
 import { GameContext } from "@/core/GameContext";
-import { GAME_BALANCE } from "@/balance/GameBalance";
+import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 import { Monster } from "@/models/Monster";
 
 export enum HuntState {
@@ -121,7 +121,7 @@ export class HuntManager extends Destroyable implements Saveable {
 		// Local closure variable keeps track of an accumulated timer so that we roll
 		// once per second independent of frame rate.
 		let elapsed = 0;
-		const rollTime = GAME_BALANCE.hunt.baseSearchTime;
+		const rollTime = BalanceCalculators.getHuntSearchTime();
 
 		return {
 			onEnter: () => {
