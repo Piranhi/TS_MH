@@ -154,17 +154,6 @@ export class DebugMenu {
 		this.addButton("Print Stats", () => {
 			context.character.statsEngine.printStats();
 		});
-		this.addButton("Print Modifiers", () => {
-			context.modifiers.printDebug();
-		});
-
-		this.addButton("Test Attack", () => {
-			const array: string[] = [];
-			for (let i = 0; i < 50; i++) {
-				array.push(this.debugAttack(context.character).toString());
-			}
-			console.log(array);
-		});
 		this.addButton("Fake Offline Session", () => this.testOfflineSession());
 		this.addButton("Set Max Energy", () => context.player.debugEnergy());
 		this.addButton("Char Level Up", () => context.character.gainXp(context.character.nextXpThreshold));
@@ -175,6 +164,7 @@ export class DebugMenu {
 		this.addButton("Unlock all buildings", () => context.settlement.unlockAllBuildings());
 		this.addButton("Unlock all buildings", () => context.settlement.unlockAllBuildings());
 		this.addButton("Level Up Player Character", () => context.character.gainXp(-1));
+		this.addButton("Grant Class Points", () => context.classes.gainPoints(100));
 		//  Player.getInstance().inventory.addItemToInventory);
 		//this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));
 	}
@@ -189,23 +179,6 @@ export class DebugMenu {
 			};
 			GameContext.getInstance().offlineManager.processOfflineSession(fakeSession);
 		}
-	}
-
-	private debugAttack(pc: PlayerCharacter) {
-		//const attack = new BigNumber(pc.stats.get("attack"));
-		const attack = new BigNumber(1000);
-		const powerMultiplier = 1 + pc.stats.get("power") / 10;
-		const critChance = pc.stats.get("critChance") / 100;
-		const critDamage = pc.stats.get("critDamage") / 100;
-		const rolledCrit = Math.random() < critChance;
-		const critMultiplier = rolledCrit ? 1 + critDamage : 1;
-		const variance = 0.9 + Math.random() * 0.2;
-
-		// for a damage effect: attack × power × crit × variance × effect.scale
-		const totalMultiplier = powerMultiplier * critMultiplier * variance;
-		const final = attack.multiply(totalMultiplier);
-		return final;
-		printLog(`Attack ${rolledCrit ? "[CRIT]" : ""} : ${final} `, 1, "Debug-Menu.ts");
 	}
 
 	private addButton(name: string, onClick: () => void) {

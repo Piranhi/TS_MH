@@ -4,21 +4,28 @@ import { Saveable } from "@/shared/storage-types";
 import { AbilityModifierStats, StatsModifier } from "@/models/Stats";
 import { GAME_BALANCE } from "@/balance/GameBalance";
 import { ClassSpec, ClassSystemState, NodeEffect } from "./ClassTypes";
+import { bindEvent } from "@/shared/utils/busUtils";
+import { Destroyable } from "@/core/Destroyable";
 
-export class ClassManager implements Saveable<ClassSystemState> {
+export class ClassManager extends Destroyable implements Saveable<ClassSystemState> {
 	private specs = new Map<string, ClassSpec>();
 	private unlocked = new Set<string>();
 	private nodePoints = new Map<string, Map<string, number>>();
 	private availablePoints = 5;
 
 	constructor(specs: ClassSpec[] = []) {
+		super();
 		specs.forEach((s) => {
 			this.specs.set(s.id, s);
 			this.nodePoints.set(s.id, new Map());
 		});
-		bus.on("player:level-up", () => this.gainPoints(GAME_BALANCE.classes.pointsPerLevel));
-		bus.on("game:prestigePrep", () => this.resetPoints());
-		bus.on("gameRun:initialized", () => this.recalculate());
+		this.bindEvents();
+	}
+
+	private bindEvents() {
+		bindEvent(this.eventBindings, "player:level-up", () => this.gainPoints(GAME_BALANCE.classes.pointsPerLevel));
+		bindEvent(this.eventBindings, "game:prestigePrep", () => this.resetPoints());
+		bindEvent(this.eventBindings, "game:gameReady", () => this.recalculate());
 	}
 
 	unlockClass(id: string) {

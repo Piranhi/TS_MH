@@ -13,7 +13,7 @@
 				"col": 0,
 				"cost": 1,
 				"maxPoints": 3,
-				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 0.1 }]
 			},
 			{
 				"id": "warrior_charge",
@@ -36,7 +36,7 @@
 				"col": 2,
 				"cost": 1,
 				"maxPoints": 3,
-				"effects": [{ "kind": "statModifier", "stat": "attack", "amount": 1 }]
+				"effects": [{ "kind": "statModifier", "stat": "defence", "amount": 0.1 }]
 			},
 			{
 				"id": "warrior_charge_power1",

@@ -70,9 +70,9 @@ export class GameApp {
 
 		// 9. Start game
 		this.context.flags.isGameReady = true;
+		bus.emit("game:gameReady");
 		this.initUI();
 		this.buildDebugMenu();
-		bus.emit("game:gameReady");
 
 		// 10. Setup Offline Manager
 		this.services.offlineManager.initalize();
