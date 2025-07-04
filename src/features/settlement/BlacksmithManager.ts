@@ -15,9 +15,9 @@ export interface CraftSlot {
 }
 
 interface BlacksmithSave {
-	slots: CraftSlot[];
-	unlockedSlots: number;
-	upgrades: string[];
+        slots: CraftSlot[];
+        unlockedSlots: number;
+        upgrades: Record<string, number>;
 }
 
 export class BlacksmithManager extends Destroyable implements Saveable, OfflineProgressHandler {
@@ -75,21 +75,21 @@ export class BlacksmithManager extends Destroyable implements Saveable, OfflineP
 		return this.speedMultiplier;
 	}
 
-	purchaseUpgrade(id: string): boolean {
-		const upg = this.upgrades.get(id);
-		if (!upg || upg.isPurchased) return false;
-		if (!this.resources.canAfford(upg.cost)) return false;
-		upg.cost.forEach((c) => this.resources.consumeResource(c.resource, c.quantity));
-		upg.purchase();
-		if (id.startsWith("slot_")) {
-			this.unlockedSlots += 1;
-			this.slots.push({ resourceId: null, progress: 0 });
-		}
-		if (id === "better_tools") {
-			this.speedMultiplier = 1.2;
-		}
-		bus.emit("blacksmith:changed");
-		return true;
+        purchaseUpgrade(id: string): boolean {
+                const upg = this.upgrades.get(id);
+                if (!upg || upg.isPurchased) return false;
+                if (!this.resources.canAfford(upg.cost)) return false;
+                upg.cost.forEach((c) => this.resources.consumeResource(c.resource, c.quantity));
+                upg.purchase();
+                if (id.startsWith("slot_")) {
+                        this.unlockedSlots += 1;
+                        this.slots.push({ resourceId: null, progress: 0 });
+                }
+                if (id === "better_tools") {
+                        this.speedMultiplier = 1 + 0.2 * upg.currentLevel;
+                }
+                bus.emit("blacksmith:changed");
+                return true;
 	}
 
 	/**
@@ -182,31 +182,30 @@ export class BlacksmithManager extends Destroyable implements Saveable, OfflineP
 	}
 
 	// Save/Load
-	save(): BlacksmithSave {
-		return {
-			slots: this.slots,
-			unlockedSlots: this.unlockedSlots,
-			upgrades: Array.from(this.upgrades.values())
-				.filter((u) => u.isPurchased)
-				.map((u) => u.id),
-		};
-	}
+        save(): BlacksmithSave {
+                const upgrades: Record<string, number> = {};
+                this.upgrades.forEach((u, id) => {
+                        if (u.currentLevel > 0) upgrades[id] = u.currentLevel;
+                });
+                return {
+                        slots: this.slots,
+                        unlockedSlots: this.unlockedSlots,
+                        upgrades,
+                };
+        }
 
-	load(data: BlacksmithSave): void {
-		this.unlockedSlots = data.unlockedSlots || 1;
-		this.slots = data.slots || [{ resourceId: null, progress: 0 }];
-		(data.upgrades || []).forEach((id) => {
-			const upg = this.upgrades.get(id);
-			if (upg) upg.purchase();
-			if (id.startsWith("slot_")) {
-				// ensure slots array length
-				if (this.slots.length < ++this.unlockedSlots) {
-					this.slots.push({ resourceId: null, progress: 0 });
-				}
-			}
-			if (id === "better_tools") this.speedMultiplier = 1.2;
-		});
-	}
+        load(data: BlacksmithSave): void {
+                this.unlockedSlots = data.unlockedSlots || 1;
+                this.slots = data.slots || [{ resourceId: null, progress: 0 }];
+                Object.entries(data.upgrades || {}).forEach(([id, level]) => {
+                        const upg = this.upgrades.get(id);
+                        if (!upg) return;
+                        upg.setLevel(level);
+                        if (id === "better_tools") {
+                                this.speedMultiplier = 1 + 0.2 * upg.currentLevel;
+                        }
+                });
+        }
 
 	/** Reset crafting slots when a prestige occurs */
 	prestigeReset() {

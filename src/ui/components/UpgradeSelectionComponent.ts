@@ -50,12 +50,12 @@ export class UpgradeSelectionComponent extends UIBase {
 		desc.textContent = data.description;
 		root.appendChild(desc);
 
-		if (data.level !== undefined) {
-			const level = document.createElement("div");
-			level.className = "upgrade-level";
-			level.textContent = `Lv ${data.level}`;
-			root.appendChild(level);
-		}
+                if (data.level !== undefined && data.maxLevel !== undefined) {
+                        const level = document.createElement("div");
+                        level.className = "upgrade-level";
+                        level.textContent = `${data.level}/${data.maxLevel}`;
+                        root.appendChild(level);
+                }
 
 		if (data.requiredTime) {
 			const progWrap = document.createElement("div");

@@ -85,18 +85,20 @@ export class LibraryScreen extends BaseScreen {
 		});
 	}
 
-	private getAvailableUpgrades(): UpgradeSelectionData[] {
-		return this.context.library.getAvailable().map((upg) => ({
-			id: upg.id,
-			title: upg.name,
-			description: upg.description,
-			costs: [],
-			requiredTime: upg.requiredTime,
-			purchased: false,
-			canAfford: true,
-			buttonOverride: "Research",
-		}));
-	}
+        private getAvailableUpgrades(): UpgradeSelectionData[] {
+                return this.context.library.getAvailable().map((upg) => ({
+                        id: upg.id,
+                        title: upg.name,
+                        description: upg.description,
+                        costs: [],
+                        requiredTime: upg.requiredTime,
+                        level: upg.level,
+                        maxLevel: upg.maxLevel,
+                        purchased: false,
+                        canAfford: true,
+                        buttonOverride: "Research",
+                }));
+        }
 
 	private updateCompleted() {
 		const list = this.context.library.getCompleted();
