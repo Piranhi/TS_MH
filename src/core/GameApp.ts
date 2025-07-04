@@ -23,8 +23,8 @@ export class GameApp {
 	// UI Components
 	private sidebar!: SidebarDisplay;
 	private header!: HeaderDisplay;
-        private playerStatsDiplay!: PlayerStatsDisplay;
-        private pendingResourceState: Map<string, ResourceData> | null = null;
+	private playerStatsDiplay!: PlayerStatsDisplay;
+	private pendingResourceState: Map<string, ResourceData> | null = null;
 
 	constructor(root: HTMLElement) {
 		this.root = root;
@@ -69,16 +69,19 @@ export class GameApp {
 		this.context.screens.init(this.container);
 
 		// 9. Start game
-		bus.emit("game:gameReady");
+		this.context.flags.isGameReady = true;
 		this.initUI();
-		engine.start();
 		this.buildDebugMenu();
+		bus.emit("game:gameReady");
 
 		// 10. Setup Offline Manager
 		this.services.offlineManager.initalize();
 
 		// 11. Setup prestige handlers
 		this.setupPrestigeHandlers();
+
+		// 12. Start Tick
+		engine.start();
 	}
 
 	private registerPersistentSystems() {
@@ -99,19 +102,19 @@ export class GameApp {
 	}
 
 	// ---------------------- PRESTIGE ----------------------------------
-        private handlePrestigePrep() {
-                console.log("Preparing for prestige...");
+	private handlePrestigePrep() {
+		console.log("Preparing for prestige...");
 
-                // Save current state
-                this.services.saveManager.saveAll();
+		// Save current state
+		this.services.saveManager.saveAll();
 
-                // Capture resource state for next run
-                if (this.context.currentRun) {
-                        this.pendingResourceState = this.context.resources.getAllResources();
-                }
+		// Capture resource state for next run
+		if (this.context.currentRun) {
+			this.pendingResourceState = this.context.resources.getAllResources();
+		}
 
-                // End current run
-                this.context.endCurrentRun();
+		// End current run
+		this.context.endCurrentRun();
 
 		// Clean up UI
 		this.context.screens.destroyAll();
@@ -120,23 +123,23 @@ export class GameApp {
 		this.context.player.prestigeReset();
 	}
 
-        private handlePrestige() {
-                console.log("Starting new prestige run...");
+	private handlePrestige() {
+		console.log("Starting new prestige run...");
 
-                // Start new run with updated prestige state
-                const prestigeState = this.context.player.getPrestigeState();
-                this.context.startNewRun(prestigeState, true);
+		// Start new run with updated prestige state
+		const prestigeState = this.context.player.getPrestigeState();
+		this.context.startNewRun(prestigeState, true);
 
-                // Apply carried over resource levels and starting amounts
-                if (this.pendingResourceState) {
-                        this.context.resources.applyPrestigeResources(this.pendingResourceState);
-                        this.pendingResourceState = null;
-                }
+		// Apply carried over resource levels and starting amounts
+		if (this.pendingResourceState) {
+			this.context.resources.applyPrestigeResources(this.pendingResourceState);
+			this.pendingResourceState = null;
+		}
 
-                // Rebuild UI
+		// Rebuild UI
 
-                this.context.screens.init(this.container);
-        }
+		this.context.screens.init(this.container);
+	}
 
 	private buildUI() {
 		this.sidebar = new SidebarDisplay((name) => this.context.screens.show(name));

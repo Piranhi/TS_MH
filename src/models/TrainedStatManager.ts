@@ -111,7 +111,7 @@ function makeDefaultTrainedStatStates(): Record<TrainedStatType, TrainedStatStat
 	return {
 		attack1: {
 			id: "attack1",
-			level: 1,
+			level: 0,
 			progress: 0,
 			nextThreshold: 5,
 			assignedPoints: 0,
@@ -119,7 +119,7 @@ function makeDefaultTrainedStatStates(): Record<TrainedStatType, TrainedStatStat
 		},
 		attack2: {
 			id: "attack2",
-			level: 1,
+			level: 0,
 			progress: 0,
 			nextThreshold: 100,
 			assignedPoints: 0,
@@ -127,7 +127,7 @@ function makeDefaultTrainedStatStates(): Record<TrainedStatType, TrainedStatStat
 		},
 		defence1: {
 			id: "defence1",
-			level: 1,
+			level: 0,
 			progress: 0,
 			nextThreshold: 5,
 			assignedPoints: 0,
@@ -135,7 +135,7 @@ function makeDefaultTrainedStatStates(): Record<TrainedStatType, TrainedStatStat
 		},
 		defence2: {
 			id: "defence2",
-			level: 1,
+			level: 0,
 			progress: 0,
 			nextThreshold: 100,
 			assignedPoints: 0,

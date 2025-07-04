@@ -27,11 +27,24 @@ export function formatTimeFull(ms: number): string {
 export function formatNumberShort(value: number, fixed?: number): string {
 	const units = ["", "K", "M", "B", "T", "Q"];
 	let unitIndex = 0;
-	while (Math.abs(value) >= 1000 && unitIndex < units.length - 1) {
-		value /= 1000;
+	let displayValue = value; // Use a separate variable for display calculation
+
+	while (Math.abs(displayValue) >= 1000 && unitIndex < units.length - 1) {
+		displayValue /= 1000;
 		unitIndex++;
 	}
-	let str = value.toFixed(fixed ?? 1);
-	if (str.endsWith(".0")) str = str.slice(0, -2);
+
+	let str: string;
+	if (Math.abs(value) < 1000) {
+		str = value.toFixed(1); // Include first decimal for values under 1000
+	} else {
+		str = displayValue.toFixed(fixed ?? 0); // No decimal for values 1000 or over, unless 'fixed' is specified
+	}
+
+	// Remove trailing .0 if present, but only if it's not a value under 1000 where we want the decimal
+	if (str.endsWith(".0") && Math.abs(value) >= 1000) {
+		str = str.slice(0, -2);
+	}
+
 	return str + units[unitIndex];
 }

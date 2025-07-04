@@ -57,10 +57,10 @@ export interface GameEvents {
 	"player:statsChanged": PlayerCharacter;
 
 	// PLAYER CHARACTER
-        "char:levelUp": number; // New Level
-        "char:gainedXp": number; // Amount incoming
-        "char:hpChanged": { char: BaseCharacter; amount: number; isCrit?: boolean };
-        "classes:pointsChanged": void;
+	"char:levelUp": number; // New Level
+	"char:gainedXp": number; // Amount incoming
+	"char:hpChanged": { char: BaseCharacter; amount: number; isCrit?: boolean };
+	"classes:pointsChanged": void;
 	"classes:nodesChanged": void;
 
 	//HUNT
@@ -91,11 +91,11 @@ export interface GameEvents {
 	"stats:areaStatsChanged": AreaStats;
 	"stats:gameStatsChanged": GameStats;
 	"stats:prestigeStatsChanged": PrestigeStats;
-        "milestone:achieved": MilestoneEventPayload;
-        //------------------ DEBUG ---------------------
-        "debug:killEnemy": void;
-        "debug:statsUpdate": { isPlayer: boolean; data: string };
-        // ------------------ GAME RUN ------------------------
+	"milestone:achieved": MilestoneEventPayload;
+	//------------------ DEBUG ---------------------
+	"debug:killEnemy": void;
+	"debug:statsUpdate": { isPlayer: boolean; data: string };
+	// ------------------ GAME RUN ------------------------
 	"gameRun:started": GameRun;
 	"gameRun:initialized": GameRun;
 	"gameRun:ended": RunStats;

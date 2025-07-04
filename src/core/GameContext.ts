@@ -30,6 +30,7 @@ export class GameContext {
 
 	public flags = {
 		isNewRun: true, // Used to prevent loading of old data when prestiging
+		isGameReady: false,
 	};
 
 	private constructor(player: Player, services: GameServices) {

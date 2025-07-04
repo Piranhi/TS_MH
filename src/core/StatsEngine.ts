@@ -1,31 +1,58 @@
-import { StatsModifier, CoreStats, Stats, defaultPlayerStats } from "@/models/Stats";
+import { StatsModifier, Stats, defaultPlayerStats } from "@/models/Stats";
 import { bus } from "./EventBus";
-import { mergeStats } from "@/shared/utils/stat-utils";
-import { BaseCharacter } from "@/models/BaseCharacter";
 
 export type LayerFn = () => StatsModifier;
+export type LayerType = "additive" | "multiplicative";
+
+// Define all possible layers as a const array for order
+const LAYER_DEFINITIONS = [
+	// Additive layers (processed first)
+	{ name: "level", type: "additive" },
+	{ name: "equipment", type: "additive" },
+	{ name: "abilities", type: "additive" },
+	{ name: "classes", type: "additive" },
+	// Multiplicative layers (processed after additives)
+	{ name: "trainedStats", type: "multiplicative" },
+	{ name: "prestige", type: "multiplicative" },
+] as const;
+
+// Create a type from the layer names for type safety
+export type LayerName = (typeof LAYER_DEFINITIONS)[number]["name"];
 
 /**
  * Generic so you can plug in CoreStats or PlayerStats.
  * S must be an object whose fields are numeric.
  */
 export class StatsEngine {
-	private layers: Record<string, LayerFn> = {};
+	private layers: Map<LayerName, LayerFn> = new Map();
 	private readonly base: Stats;
 	private current: Stats;
 
 	constructor() {
 		this.base = { ...defaultPlayerStats };
 		this.current = { ...defaultPlayerStats };
-	}
 
-	setLayer(name: string, fn: LayerFn): void {
-		this.layers[name] = fn;
+		// Initialize all layers with empty functions
+		for (const layerDef of LAYER_DEFINITIONS) {
+			this.layers.set(layerDef.name, () => ({}));
+		}
+
+		// Initial calculation
 		this.recalculate();
 	}
 
-	removeLayer(name: string): void {
-		delete this.layers[name];
+	// Now setLayer only accepts predefined layer names
+	setLayer(name: LayerName, fn: LayerFn): void {
+		if (!this.layers.has(name)) {
+			throw new Error(`Unknown layer: ${name}. Valid layers are: ${Array.from(this.layers.keys()).join(", ")}`);
+		}
+		this.layers.set(name, fn);
+		this.recalculate();
+	}
+
+	removeLayer(name: LayerName): void {
+		// Reset to empty function instead of deleting
+		this.layers.set(name, () => ({}));
 		this.recalculate();
 	}
 
@@ -38,26 +65,103 @@ export class StatsEngine {
 	}
 
 	private recalculate(): void {
-		let agg: Stats = { ...this.base };
-		for (const fn of Object.values(this.layers)) {
-			agg = mergeStats(agg, fn()) as Stats;
+		let result: Stats = { ...this.base };
+		const additiveBonus: StatsModifier = {};
+		const multiplicativeBonus: StatsModifier = {};
+
+		// Process layers in the defined order
+		for (const layerDef of LAYER_DEFINITIONS) {
+			const fn = this.layers.get(layerDef.name)!;
+			const modifiers = fn();
+
+			if (layerDef.type === "additive") {
+				for (const key in modifiers) {
+					const statKey = key as keyof Stats;
+					const modValue = modifiers[statKey];
+					if (modValue !== undefined) {
+						additiveBonus[statKey] = (additiveBonus[statKey] || 0) + modValue;
+					}
+				}
+			} else {
+				for (const key in modifiers) {
+					const statKey = key as keyof Stats;
+					const modValue = modifiers[statKey];
+					if (modValue !== undefined) {
+						multiplicativeBonus[statKey] = (multiplicativeBonus[statKey] || 0) + modValue;
+					}
+				}
+			}
 		}
-		this.current = agg;
+
+		// Apply formula: (Base + Additive) × (1 + Multiplicative/100)
+		for (const key of Object.keys(result) as (keyof Stats)[]) {
+			const baseValue = this.base[key] || 0;
+			const addBonus = additiveBonus[key] || 0;
+			const multBonus = multiplicativeBonus[key] || 0;
+
+			// Clamp to one decimal place
+			result[key] = Math.round((baseValue + addBonus) * (1 + multBonus / 100) * 10) / 10;
+		}
+
+		this.current = result;
 		bus.emit("player:statsChanged");
 	}
 
-        public printStats(): void {
-                console.table(this.getAll());
-        }
+	// Check if a layer has any modifiers
+	public isLayerActive(name: LayerName): boolean {
+		const fn = this.layers.get(name);
+		return fn ? Object.keys(fn()).length > 0 : false;
+	}
 
-        public getBreakdown(): { base: Stats; layers: Record<string, StatsModifier>; total: Stats } {
-                const layers: Record<string, StatsModifier> = {};
-                let agg: Stats = { ...this.base };
-                for (const [name, fn] of Object.entries(this.layers)) {
-                        const layerStats = fn();
-                        layers[name] = { ...layerStats };
-                        agg = mergeStats(agg, layerStats) as Stats;
-                }
-                return { base: { ...this.base }, layers, total: agg };
-        }
+	// Clear all modifiers from a specific layer
+	public clearLayer(name: LayerName): void {
+		this.setLayer(name, () => ({}));
+	}
+
+	// Get modifiers from a specific layer
+	public getLayerModifiers(name: LayerName): StatsModifier {
+		const fn = this.layers.get(name);
+		return fn ? fn() : {};
+	}
+
+	// --------------------- DEBUG METHODS -----------------------
+
+	public printStats(): void {
+		console.table(this.getAll());
+	}
+
+	public debugLayers(): void {
+		console.group("Stats Engine Layers (in processing order)");
+
+		for (const layerDef of LAYER_DEFINITIONS) {
+			const fn = this.layers.get(layerDef.name)!;
+			const stats = fn();
+			const hasStats = Object.keys(stats).length > 0;
+
+			console.log(`${layerDef.name} (${layerDef.type}):`, hasStats ? stats : "empty");
+		}
+
+		console.log("Final Stats:", this.current);
+		console.groupEnd();
+	}
+
+	public getBreakdown(): {
+		base: Stats;
+		layers: Record<string, StatsModifier>;
+		total: Stats;
+	} {
+		const layers: Record<string, StatsModifier> = {};
+
+		// Include all layers, even empty ones
+		for (const layerDef of LAYER_DEFINITIONS) {
+			const fn = this.layers.get(layerDef.name)!;
+			layers[layerDef.name] = { ...fn() };
+		}
+
+		return {
+			base: { ...this.base },
+			layers,
+			total: { ...this.current },
+		};
+	}
 }

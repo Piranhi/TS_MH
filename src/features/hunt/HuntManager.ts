@@ -48,6 +48,8 @@ export class HuntManager extends Destroyable implements Saveable {
 	private context = GameContext.getInstance();
 	private autoAdvance = false;
 
+	private pendingArea: string | null = null;
+
 	constructor() {
 		super();
 		this.handler = this.makeIdleState();
@@ -65,6 +67,12 @@ export class HuntManager extends Destroyable implements Saveable {
 	private gameReady() {
 		const areaSelector = document.getElementById("area-select")! as HTMLSelectElement;
 		areaSelector.selectedIndex = this.areaIndex;
+		// Loading protection
+		// If we are loading a game, we need to wait for the game to be ready before setting the area as we reference the player, which isn't loaded yet.
+		if (this.pendingArea) {
+			this.setArea(this.pendingArea);
+			this.pendingArea = null;
+		}
 	}
 
 	destroy(): void {
@@ -85,6 +93,10 @@ export class HuntManager extends Destroyable implements Saveable {
 
 	/** Change the hunting grounds without restarting the whole loop. */
 	public setArea(areaId: string) {
+		if (!this.context.flags.isGameReady) {
+			this.pendingArea = areaId;
+			return;
+		}
 		const foundArea = Area.create(areaId);
 		if (!foundArea) {
 			return Error("Area not found when setting area");
@@ -273,7 +285,6 @@ export class HuntManager extends Destroyable implements Saveable {
 	private disableAutoAdvance() {
 		if (this.autoAdvance) {
 			this.autoAdvance = false;
-			bus.emit("hunt:autoAdvanceDisabled");
 		}
 	}
 

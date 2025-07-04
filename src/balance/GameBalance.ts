@@ -454,10 +454,12 @@ export const BalanceCalculators = {
 	 * Get all player level bonuses for a given level
 	 */
 	getAllPlayerLevelBonuses(level: number) {
-		const attackMultiplier = this.getPlayerLevelBonus(level, "attack");
-		const defenseMultiplier = this.getPlayerLevelBonus(level, "defense");
-		const utilityMultiplier = this.getPlayerLevelBonus(level, "utility");
-		const elementMultiplier = this.getPlayerLevelBonus(level, "element");
+		// No bonuses for level 1
+		//if (level === 1) return;
+		const attackMultiplier = this.getPlayerLevelBonus(level, "attack") - 1;
+		const defenseMultiplier = this.getPlayerLevelBonus(level, "defense") - 1;
+		const utilityMultiplier = this.getPlayerLevelBonus(level, "utility") - 1;
+		const elementMultiplier = this.getPlayerLevelBonus(level, "element") - 1;
 
 		return {
 			attack: Math.floor(GAME_BALANCE.player.baseStats.attack * attackMultiplier),
