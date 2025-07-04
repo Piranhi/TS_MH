@@ -86,6 +86,8 @@ export class InventoryManager implements Saveable {
 				.fill(0)
 				.map((_, i) => this.makeSlot("resource", i)),
 		];
+		this.updateSlotMap();
+		this.emitChange();
 	}
 
 	private updateSlotMap() {
@@ -145,6 +147,7 @@ export class InventoryManager implements Saveable {
 			bus.emit("player:equipmentChanged", this.getEquippedEquipment());
 		}
 
+		this.emitChange();
 		return true;
 	}
 
@@ -160,6 +163,7 @@ export class InventoryManager implements Saveable {
 		if (isEquipmentItemSpec(spec)) {
 			const target = this.getSlot(`equipment-${spec.equipType}`);
 			if (!target) return false;
+			this.emitChange();
 			return this.moveItem(fromId, target.id);
 		}
 		return false;

@@ -362,7 +362,7 @@ export class CharacterDisplay extends UIBase {
 		let output = "";
 
 		if (this.character instanceof PlayerCharacter) {
-			const breakdown = this.character.statsEngine.getBreakdown();
+			const breakdown = this.character.statsEngine.getFullBreakdown();
 			output += "Total Stats:\n" + JSON.stringify(breakdown.total, null, 2) + "\n";
 			output += "Base:\n" + JSON.stringify(breakdown.base, null, 2) + "\n";
 			for (const [name, stats] of Object.entries(breakdown.layers)) {

@@ -145,7 +145,7 @@ export class StatsEngine {
 		console.groupEnd();
 	}
 
-	public getBreakdown(): {
+	public getFullBreakdown(): {
 		base: Stats;
 		layers: Record<string, StatsModifier>;
 		total: Stats;

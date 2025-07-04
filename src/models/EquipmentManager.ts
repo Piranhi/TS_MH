@@ -15,7 +15,7 @@ export class EquipmentManager extends Destroyable {
 		super();
 		this.context = GameContext.getInstance();
 		bus.on("player:equipmentChanged", () => this.recalculate());
-		bus.on("game:gameLoaded", () => this.recalculate());
+		bus.on("game:gameReady", () => this.recalculate());
 	}
 
 	private getEquippedEquipment(): Equipment[] {

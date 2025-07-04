@@ -3,6 +3,8 @@ import Markup from "./inventory.html?raw";
 import { bus } from "@/core/EventBus";
 import { InventorySlot } from "../components/InventorySlot";
 import { bindEvent } from "@/shared/utils/busUtils";
+import { TableDisplay } from "../components/TableDisplay";
+import { prettify } from "@/shared/utils/stringUtils";
 
 export class InventoryScreen extends BaseScreen {
 	readonly screenName = "inventory";
@@ -20,7 +22,9 @@ export class InventoryScreen extends BaseScreen {
 		this.bindEvents();
 		this.renderInventory();
 	}
-	show() {}
+	show() {
+		this.renderInventory();
+	}
 	hide() {}
 
 	private bindEvents() {
@@ -37,6 +41,7 @@ export class InventoryScreen extends BaseScreen {
 			if (changed) bus.emit("inventory:changed");
 		});
 		bindEvent(this.eventBindings, "inventory:changed", () => this.renderInventory());
+		bindEvent(this.eventBindings, "player:equipmentChanged", () => this.renderInventory());
 	}
 
 	private renderInventory() {
@@ -60,5 +65,34 @@ export class InventoryScreen extends BaseScreen {
 					break;
 			}
 		});
+		this.updateBonusesTable();
+	}
+
+	private updateBonusesTable() {
+		this.infoGridEl.innerHTML = "";
+		const wrapper = document.createElement("div");
+		wrapper.classList.add("basic-table-wrapper");
+		this.infoGridEl.appendChild(wrapper);
+
+		const table = new TableDisplay({
+			container: wrapper,
+			columns: 2,
+			headers: ["Stat", "Value"],
+			banded: true,
+			boldFirstColumn: true,
+			collapsible: false,
+		});
+
+		const bonuses = this.context.character.statsEngine.getLayerModifiers("equipment");
+
+		table.setRows(Object.entries(bonuses).map(([stat, value]) => [prettify(stat), value]));
+		/*
+		this.bonusesTableEl.innerHTML = "";
+
+		for (const [stat, value] of Object.entries(bonuses)) {
+			const row = this.bonusesTableEl.insertRow();
+			row.insertCell().textContent = stat;
+			row.insertCell().textContent = value.toString();
+		} */
 	}
 }
