@@ -19,7 +19,6 @@ export class HuntScreen extends BaseScreen {
 	private enemyCard!: CharacterDisplay | null;
 	private areaSelectEl!: HTMLSelectElement;
 	private areaDisplay!: AreaDisplay;
-	private autoAdvanceCb!: HTMLInputElement;
 	private searchingOverlay!: HTMLElement;
 
 	constructor() {
@@ -37,14 +36,6 @@ export class HuntScreen extends BaseScreen {
 
 		// Initialize searching overlay as hidden
 		this.hideSearchingOverlay();
-
-		// Create auto advance checkbox in the area options section
-		const label = document.createElement("label");
-		label.textContent = "Auto advance";
-		this.autoAdvanceCb = document.createElement("input");
-		this.autoAdvanceCb.type = "checkbox";
-		label.prepend(this.autoAdvanceCb);
-		this.areaDisplay.addOptionElement(label);
 
 		this.bindEvents();
 	}
@@ -78,22 +69,12 @@ export class HuntScreen extends BaseScreen {
 			this.updateOutput(`Dropped: ${names}`);
 		});
 
-		bindEvent(this.eventBindings, "hunt:autoAdvanceDisabled", () => {
-			this.autoAdvanceCb.checked = false;
-		});
-
 		this.bindDomEvent(this.areaSelectEl, "change", this.onAreaChanged);
-		this.bindDomEvent(this.autoAdvanceCb, "change", this.onAutoAdvanceChange);
 	}
 
 	private onAreaChanged = (e: Event) => {
 		const areaId = (e.target as HTMLSelectElement).value;
 		bus.emit("hunt:areaSelected", areaId);
-	};
-
-	private onAutoAdvanceChange = (e: Event) => {
-		const enabled = (e.target as HTMLInputElement).checked;
-		this.context.hunt.setAutoAdvance(enabled);
 	};
 
 	private buildAreaSelect() {
