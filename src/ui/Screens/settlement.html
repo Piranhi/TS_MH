@@ -10,9 +10,11 @@
                 <div class="progress-holder">
                     <div class="progress-text"></div>
                 </div>
-
             </div>
-            <div class="basic-list" id="building-spend-points"></div>
+            <div
+                class="basic-list"
+                id="building-spend-points"
+            ></div>
         </div>
     </template>
 
@@ -22,23 +24,31 @@
             <span class="basic-subtitle">Hunter’s Rest</span>
         </div>
         <div>
-            <span id="settlement-build-points" class="basic-subtitle">Build Points : N/A</span>
+            <span
+                id="settlement-build-points"
+                class="basic-subtitle"
+                >Build Points : N/A</span
+            >
         </div>
     </header>
 
+    <footer class="settlement-footer">
+        <div class="settlement-passive-bar">
+            <div class="progress"></div>
+        </div>
+        <div class="basic-text-footer">
+            <span id="settlement-reward-info">Reward x1.8</span>
+            <span class="dot-sep">•</span>
+            <span id="settlement-time-info">Peak in 3h</span>
+        </div>
+    </footer>
+
     <div class="settlement-container">
         <div class="settlement-main">
-            <main class="building-grid" id="settlement-building-grid"></main>
+            <main
+                class="building-grid"
+                id="settlement-building-grid"
+            ></main>
         </div>
-        <footer class="settlement-footer">
-            <div class="settlement-passive-bar">
-                <div class="progress"></div>
-            </div>
-            <div class="basic-text-footer">
-                <span id="settlement-reward-info">Reward x1.8</span>
-                <span class="dot-sep">•</span>
-                <span id="settlement-time-info">Peak in 3h</span>
-            </div>
-        </footer>
     </div>
 </section>

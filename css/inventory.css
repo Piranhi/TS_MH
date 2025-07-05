@@ -1,246 +1,246 @@
 /* 1) Layout panels */
 .inventory-screen {
-	display: flex;
-	flex-direction: column;
-	padding: 0.5rem;
-	gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    gap: 0.5rem;
 }
 
 .top-section {
-	display: flex;
-	gap: 1rem;
+    display: flex;
+    gap: 1rem;
 }
 
 .panel {
-	background: rgb(48, 55, 63);
-	border-radius: 8px;
-	padding: 0.5rem;
-	flex-shrink: 0;
+    background: rgb(48, 55, 63);
+    border-radius: 8px;
+    padding: 0.5rem;
+    flex-shrink: 0;
 }
 
 .equipment-panel {
-	width: auto;
+    width: auto;
 }
 
 .equipment-grid {
-	display: grid;
-	grid-template-columns: 64px 64px 64px 64px;
-	grid-template-rows: 64px 64px 64px 64px;
-	grid-template-areas:
-		"neck    head .    ."
-		"back chest finger1 weapon"
-		"hands    legs     finger2 weapon2"
-		".    feet     .    .";
-	gap: 0.75rem;
+    display: grid;
+    grid-template-columns: 84px 84px 84px 84px;
+    grid-template-rows: 84px 84px 84px 84px;
+    grid-template-areas:
+        "neck    head .    ."
+        "back chest finger1 weapon"
+        "hands    legs     finger2 weapon2"
+        ".    feet     .    .";
+    gap: 0.75rem;
 }
 
 .recycle-panel {
-	width: auto;
-	height: auto;
-	justify-content: flex-end;
-	flex-direction: column;
-	flex: 0;
-	flex-shrink: 1;
-	flex-grow: 0;
-	display: flex;
-	margin: 0%;
-	align-items: flex-end;
-	vertical-align: bottom;
-	margin-top: auto;
+    width: auto;
+    height: auto;
+    justify-content: flex-end;
+    flex-direction: column;
+    flex: 0;
+    flex-shrink: 1;
+    flex-grow: 0;
+    display: flex;
+    margin: 0%;
+    align-items: flex-end;
+    vertical-align: bottom;
+    margin-top: auto;
 }
 
 .recycle-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-	gap: 0.75rem;
-	padding-bottom: 0rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 0.75rem;
+    padding-bottom: 0rem;
 }
 
 .info-panel {
-	margin-top: 0%;
-	width: 100%;
-	gap: 0.75rem;
-	flex: 1;
+    margin-top: 0%;
+    width: 100%;
+    gap: 0.75rem;
+    flex: 1;
 }
 
 .inventory-panel {
-	flex: 1;
-	overflow-y: auto;
+    flex: 1;
+    overflow-y: auto;
 }
 .inventory-panel h2 {
-	margin-top: 0;
+    margin-top: 0;
 }
 
 .inventory-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-	gap: 0.75rem;
-	padding-bottom: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 0.75rem;
+    padding-bottom: 1rem;
 }
 
 /* 2) Base slot styles */
 .slot {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: 2px dashed #555;
-	border-radius: 8px;
-	background: rgb(61, 61, 61);
-	transition: background 0.2s, border-color 0.2s;
-	min-width: 64px;
-	max-width: 64px;
-	overflow-y: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #555;
+    border-radius: 8px;
+    background: rgb(61, 61, 61);
+    transition: background 0.2s, border-color 0.2s;
+    min-width: 84px;
+    max-width: 84px;
+    overflow-y: hidden;
 }
 
 /* drag-over feedback */
 .slot.drag-over {
-	border-color: #fff;
-	background: rgba(255, 255, 255, 0.15);
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.15);
 }
 
 /* 3) Slot modifiers */
 .slot--equipment,
 .slot--recycleBin,
 .slot--inventory {
-	width: 64px;
-	height: 64px;
+    width: 84px;
+    height: 84px;
 }
 
 /* 4) Empty vs Filled */
 .slot.empty {
-	border-style: dashed;
-	cursor: default;
-	background-size: contain;
-	background-position: center;
-	background-repeat: no-repeat;
-	background-color: #ffffff1c;
-	background-blend-mode: lighten;
+    border-style: dashed;
+    cursor: default;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #ffffff1c;
+    background-blend-mode: lighten;
 }
 .slot.empty .item-icon,
 .slot.empty .item-count {
-	display: none;
+    display: none;
 }
 
 /* 5) Shared item visuals */
 .item-icon img {
-	width: 100%;
-	height: 100%;
-	object-fit: contain;
-	pointer-events: none;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
 }
 
 .item-count {
-	position: absolute;
-	bottom: 2px;
-	right: 4px;
-	font-size: 0.75rem;
-	background: rgba(0, 0, 0, 0.6);
-	padding: 0 4px;
-	border-radius: 4px;
-	pointer-events: none;
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 0.75rem;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 0 4px;
+    border-radius: 4px;
+    pointer-events: none;
 }
 
 /* 6) Rarity borders via CSS-var overrides */
 .slot.rarity-common {
-	--slot-border: #888;
-	--slot-glow: rgba(136, 136, 136, 0.5);
+    --slot-border: #888;
+    --slot-glow: rgba(136, 136, 136, 0.5);
 }
 .slot.rarity-uncommon {
-	--slot-border: #4caf50;
-	--slot-glow: rgba(76, 175, 80, 0.5);
+    --slot-border: #4caf50;
+    --slot-glow: rgba(76, 175, 80, 0.5);
 }
 .slot.rarity-rare {
-	--slot-border: #2196f3;
-	--slot-glow: rgba(33, 150, 243, 0.5);
+    --slot-border: #2196f3;
+    --slot-glow: rgba(33, 150, 243, 0.5);
 }
 .slot.rarity-epic {
-	--slot-border: #9c27b0;
-	--slot-glow: rgba(156, 39, 176, 0.5);
+    --slot-border: #9c27b0;
+    --slot-glow: rgba(156, 39, 176, 0.5);
 }
 .slot.rarity-legendary {
-	--slot-border: #ff99008e;
-	--slot-glow: rgba(255, 152, 0, 0.5);
+    --slot-border: #ff99008e;
+    --slot-glow: rgba(255, 152, 0, 0.5);
 }
 .slot.rarity-unique {
-	--slot-border: #e91e63;
-	--slot-glow: rgba(233, 30, 99, 0.5);
+    --slot-border: #e91e63;
+    --slot-glow: rgba(233, 30, 99, 0.5);
 }
 
 .slot.filled {
-	border: 2px solid var(--slot-border);
-	box-shadow: 0 0 4px var(--slot-border), /* a tighter glow to define edges */ 0 0 12px var(--slot-glow); /* a soft, diffused halo */
-	cursor: grab;
+    border: 2px solid var(--slot-border);
+    box-shadow: 0 0 4px var(--slot-border), /* a tighter glow to define edges */ 0 0 12px var(--slot-glow); /* a soft, diffused halo */
+    cursor: grab;
 }
 
 .slot.filled:active {
-	box-shadow: 0 0 2px var(--slot-border), 0 0 8px var(--slot-glow);
-	cursor: grabbing;
+    box-shadow: 0 0 2px var(--slot-border), 0 0 8px var(--slot-glow);
+    cursor: grabbing;
 }
 
 .slot--equipment[data-slot="neck"] {
-	grid-area: neck;
+    grid-area: neck;
 }
 .slot--equipment[data-slot="neck"].empty {
-	background-image: url("/images/equipment/equipment-bg-neck.png");
+    background-image: url("/images/equipment/equipment-bg-neck.png");
 }
 .slot--equipment[data-slot="head"] {
-	grid-area: head;
+    grid-area: head;
 }
 .slot--equipment[data-slot="head"].empty {
-	background-image: url("/images/equipment/equipment-bg-head.png");
+    background-image: url("/images/equipment/equipment-bg-head.png");
 }
 .slot--equipment[data-slot="back"] {
-	grid-area: back;
+    grid-area: back;
 }
 .slot--equipment[data-slot="back"].empty {
-	background-image: url("/images/equipment/equipment-bg-back.png");
+    background-image: url("/images/equipment/equipment-bg-back.png");
 }
 .slot--equipment[data-slot="hands"] {
-	grid-area: hands;
+    grid-area: hands;
 }
 .slot--equipment[data-slot="hands"].empty {
-	background-image: url("/images/equipment/equipment-bg-hands.png");
+    background-image: url("/images/equipment/equipment-bg-hands.png");
 }
 .slot--equipment[data-slot="chest"] {
-	grid-area: chest;
+    grid-area: chest;
 }
 .slot--equipment[data-slot="chest"].empty {
-	background-image: url("/images/equipment/equipment-bg-chest.png");
+    background-image: url("/images/equipment/equipment-bg-chest.png");
 }
 .slot--equipment[data-slot="legs"] {
-	grid-area: legs;
+    grid-area: legs;
 }
 .slot--equipment[data-slot="legs"].empty {
-	background-image: url("/images/equipment/equipment-bg-legs.png");
+    background-image: url("/images/equipment/equipment-bg-legs.png");
 }
 .slot--equipment[data-slot="feet"] {
-	grid-area: feet;
+    grid-area: feet;
 }
 .slot--equipment[data-slot="feet"].empty {
-	background-image: url("/images/equipment/equipment-bg-feet.png");
+    background-image: url("/images/equipment/equipment-bg-feet.png");
 }
 .slot--equipment[data-slot="weapon"] {
-	grid-area: weapon;
+    grid-area: weapon;
 }
 .slot--equipment[data-slot="weapon"].empty {
-	background-image: url("/images/equipment/equipment-bg-weapon.png");
+    background-image: url("/images/equipment/equipment-bg-weapon.png");
 }
 .slot--equipment[data-slot="weapon2"] {
-	grid-area: weapon2;
+    grid-area: weapon2;
 }
 .slot--equipment[data-slot="weapon2"].empty {
-	background-image: url("/images/equipment/equipment-bg-weapon2.png");
+    background-image: url("/images/equipment/equipment-bg-weapon2.png");
 }
 .slot--equipment[data-slot="finger1"] {
-	grid-area: finger1;
+    grid-area: finger1;
 }
 .slot--equipment[data-slot="finger1"].empty {
-	background-image: url("/images/equipment/equipment-bg-finger.png");
+    background-image: url("/images/equipment/equipment-bg-finger.png");
 }
 .slot--equipment[data-slot="finger2"] {
-	grid-area: finger2;
+    grid-area: finger2;
 }
 .slot--equipment[data-slot="finger2"].empty {
-	background-image: url("/images/equipment/equipment-bg-finger.png");
+    background-image: url("/images/equipment/equipment-bg-finger.png");
 }

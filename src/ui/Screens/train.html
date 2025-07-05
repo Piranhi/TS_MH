@@ -1,33 +1,72 @@
 <!-- training.html -->
-<section class="game train-screen" id="train-root">
-    <div id="training-section" class="training-section">
-        <div class="training-list" id="trained-stats-list">
+<section
+    class="game train-screen"
+    id="train-root"
+>
+    <div class="top-section">
+        <div
+            id="training-section"
+            class="training-section"
+        >
+            <section class="basic-panel">
+                <h2>Stats</h2>
+                <div
+                    class="training-list"
+                    id="trained-stats-list"
+                ></div>
+            </section>
         </div>
+
+        <section class="basic-panel info-panel">
+            <h2>Stat Bonuses</h2>
+            <div class="info-grid"></div>
+        </section>
     </div>
 
     <template id="training-item-locked">
-        <div class="training-item locked" data-key="strength">
+        <div
+            class="training-item locked"
+            data-key="strength"
+        >
             <div class="locked-label">Locked</div>
         </div>
     </template>
 
     <template id="training-item-unlocked">
-        <div class="basic-subsection-row" data-key="agility">
+        <div
+            class="basic-subsection-row"
+            data-key="agility"
+        >
             <div class="training-icon">
-                <img src="icons/agility.svg" alt="Agility" />
+                <img
+                    src="icons/agility.svg"
+                    alt="Agility"
+                />
             </div>
             <div class="training-content">
-                <div class="training-header" id="training-header">
-                    <span class="basic-title" id="training-name">Agility</span>
-                    <span class="basic-subtitle" id="training-level">Lvl 3</span>
+                <div
+                    class="training-header"
+                    id="training-header"
+                >
+                    <span
+                        class="basic-title"
+                        id="training-name"
+                        >Agility</span
+                    >
+                    <span
+                        class="basic-subtitle"
+                        id="training-level"
+                        >Lvl 3</span
+                    >
                 </div>
-                <div class="training-bar" id="training-bar">
-                </div>
+                <div
+                    class="training-bar"
+                    id="training-bar"
+                ></div>
             </div>
             <div>
                 <div class="training-assigned">500</div>
-                <div class="controls">
-                </div>
+                <div class="controls"></div>
             </div>
         </div>
     </template>

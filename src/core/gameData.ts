@@ -27,25 +27,25 @@ import { BlacksmithUpgrade } from "@/features/settlement/BlacksmithUpgrade";
 
 /* ---------- Register Data ---------------------------- */
 
-//export let areaManager: AreaManager;
+//export let areaManager: AreaManager
 export const milestoneManager = MilestoneManager.instance;
 export function initGameData() {
-	console.log("📦 Registering game data…");
+    console.log("📦 Registering game data…");
 
-	const { research = [], blacksmith = [] } = rawUpgrades as any;
+    const { research = [], blacksmith = [] } = rawUpgrades as any;
 
-	Building.registerSpecs(rawBuilding);
-	ResearchUpgrade.registerSpecs(research as ResearchSpec[]);
-	BlacksmithUpgrade.registerSpecs(blacksmith as BlacksmithUpgradeSpec[]);
-	Equipment.registerSpecs(rawEquipment as EquipmentItemSpec[]);
-	Monster.registerSpecs(rawMonsters as MonsterSpec[]);
-	Area.registerSpecs(rawAreas);
-	Ability.registerSpecs(rawAbilities as AbilitySpec[]);
-	Outpost.registerSpecs(rawOutposts as OutpostSpec[]);
-	Trait.registerSpecs(rawTraits as TraitSpec[]);
-	Resource.registerSpecs(rawResource as ResourceSpec[]);
+    Building.registerSpecs(rawBuilding);
+    ResearchUpgrade.registerSpecs(research as ResearchSpec[]);
+    BlacksmithUpgrade.registerSpecs(blacksmith as BlacksmithUpgradeSpec[]);
+    Equipment.registerSpecs(rawEquipment as EquipmentItemSpec[]);
+    Monster.registerSpecs(rawMonsters as MonsterSpec[]);
+    Area.registerSpecs(rawAreas);
+    Ability.registerSpecs(rawAbilities as AbilitySpec[]);
+    Outpost.registerSpecs(rawOutposts as OutpostSpec[]);
+    Trait.registerSpecs(rawTraits as TraitSpec[]);
+    Resource.registerSpecs(rawResource as ResourceSpec[]);
 
-	InventoryRegistry.init();
+    InventoryRegistry.init();
 
-	milestoneManager.registerSpecs(rawTriggers as ProgressionTrigger[]);
+    milestoneManager.registerSpecs(rawTriggers as ProgressionTrigger[]);
 }
