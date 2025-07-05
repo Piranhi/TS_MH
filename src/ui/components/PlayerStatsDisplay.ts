@@ -1,52 +1,59 @@
-import { Stats } from "@/models/Stats";
 import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { formatNumberShort, prettify } from "@/shared/utils/stringUtils";
-import { calculateRawBaseDamage } from "@/shared/utils/stat-utils";
 import { ProgressBar } from "./ProgressBar";
+import { TableDisplay } from "./TableDisplay";
 
-interface StatData {
-	name: string;
-	value: string | number;
+interface StatMapping {
+	displayName: string;
+	getValue: (stats: any) => string | number; // We'll make this more specific later
 }
 
 export class PlayerStatsDisplay extends UIBase {
-	private tableBody!: HTMLTableSectionElement;
 	private levelNumberEl!: HTMLElement;
 	private xpTextEl!: HTMLElement;
 	private xpProgressBar!: ProgressBar;
 	private traitListEl!: HTMLUListElement;
+	private tableWrapper!: HTMLElement;
+	private statsTable!: TableDisplay;
+	private traitTable!: TableDisplay;
 
-	private statsData: StatData[] = [
-		{ name: "Attack", value: 0 },
-		{ name: "Defence", value: 0 },
-		{ name: "Health", value: 0 },
-		{ name: "Regen", value: 0 },
-		{ name: "Lifesteal", value: 0 },
-		{ name: "Speed", value: 0 },
-		{ name: "CritChance", value: 0 },
-		{ name: "CritDamage", value: 0 },
-		{ name: "Evasion", value: 0 },
-		{ name: "Encounter Chance", value: 0 },
-		{ name: "Fire Bonus", value: 0 },
-		{ name: "Ice Bonus", value: 0 },
-		{ name: "Poison Bonus", value: 0 },
-		{ name: "Lightning Bonus", value: 0 },
-		{ name: "Light Bonus", value: 0 },
-		{ name: "Physical Bonus", value: 0 },
+	// Then create your stat mappings
+	private statMappings: StatMapping[] = [
+		{ displayName: "Attack", getValue: (stats) => formatNumberShort(stats.attack) || 0 },
+		{ displayName: "Defence", getValue: (stats) => formatNumberShort(stats.defence) || 0 },
+		{ displayName: "Health", getValue: (stats) => formatNumberShort(stats.hp) || 0 },
+		{ displayName: "Regen", getValue: (stats) => formatNumberShort(stats.regen) || 0 },
+		{ displayName: "Lifesteal", getValue: (stats) => formatNumberShort(stats.lifesteal) || 0 },
+		{ displayName: "Speed", getValue: (stats) => formatNumberShort(stats.speed) || 0 },
+		{ displayName: "Crit Chance", getValue: (stats) => formatNumberShort(stats.critChance) || 0 },
+		{ displayName: "Crit Damage", getValue: (stats) => formatNumberShort(stats.critDamage) || 0 },
+		{ displayName: "Evasion", getValue: (stats) => formatNumberShort(stats.evasion) || 0 },
+		{ displayName: "Encounter Chance", getValue: (stats) => formatNumberShort(stats.encounterChance) || 0 },
+		{ displayName: "Fire Bonus", getValue: (stats) => formatNumberShort(stats.fireBonus) || 0 },
+		{ displayName: "Ice Bonus", getValue: (stats) => formatNumberShort(stats.iceBonus) || 0 },
+		{ displayName: "Poison Bonus", getValue: (stats) => formatNumberShort(stats.poisonBonus) || 0 },
+		{ displayName: "Lightning Bonus", getValue: (stats) => formatNumberShort(stats.lightningBonus) || 0 },
+		{ displayName: "Light Bonus", getValue: (stats) => formatNumberShort(stats.lightBonus) || 0 },
+		{ displayName: "Physical Bonus", getValue: (stats) => formatNumberShort(stats.physicalBonus) || 0 },
 	];
 
 	constructor(container: HTMLElement) {
 		super();
 		this.element = container;
-		this.createTable();
+		this.createElements();
+		this.setupLevelDisplay();
+		this.createTables();
 		this.bindEvents();
+		this.updateFromPlayerStats();
+		this.updateTraitDisplay();
 	}
 
-	private createTable() {
+	private createElements() {
 		this.element.innerHTML = `
         <div class="stats-container">
-            <!-- Player Level Section -->
+
+			<h2 class="basic-subtitle">Level</h2>
             <div class="player-level-section">
                 <div class="level-display">
                     <span class="level-text">Lvl</span>
@@ -57,30 +64,36 @@ export class PlayerStatsDisplay extends UIBase {
                 </div>
                 <div class="xp-text" id="xp-text">0 / 100 XP</div>
             </div>
-            
-            <div class="basic-table-wrapper">
-                <table class="basic-table">
-                    <thead>
-                        <tr>
-                            <th>Stat</th>
-                            <th>Value</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+                            <h2 class="basic-subtitle">Stats</h2>
+            <div class="basic-table-wrapper" id="stats-table">
+			</div>
+		<h2 class="basic-subtitle">Traits</h2>
             <div class="trait-section">
-                <h3 class="basic-subtitle">Traits</h3>
 				<ul id="trait-list" class="basic-list"></ul>
             </div>
-        </div>
-    `;
-
-		this.tableBody = this.element.querySelector("tbody")!;
+        </div>`;
+		this.tableWrapper = this.element.querySelector("#stats-table")!;
 		this.traitListEl = this.element.querySelector("#trait-list")!;
-		this.setupLevelDisplay();
-		this.renderStats();
-		this.updateTraitDisplay();
+	}
+
+	private createTables() {
+		this.statsTable = new TableDisplay({
+			container: this.tableWrapper,
+			columns: 2,
+			headers: ["Stat", "Value"],
+			banded: true,
+			boldFirstColumn: true,
+			collapsible: true,
+		});
+
+		this.traitTable = new TableDisplay({
+			container: this.traitListEl,
+			columns: 2,
+			headers: ["Trait", "Rarity"],
+			banded: true,
+			boldFirstColumn: true,
+			collapsible: true,
+		});
 	}
 
 	private setupLevelDisplay() {
@@ -117,54 +130,6 @@ export class PlayerStatsDisplay extends UIBase {
 		this.xpTextEl.textContent = `${formatNumberShort(currentXP)} / ${formatNumberShort(xpForNextLevel)} XP`;
 	}
 
-	private renderStats() {
-		// Clear existing rows
-		this.tableBody.innerHTML = "";
-
-		// Create rows for each stat
-		this.statsData.forEach((stat) => {
-			const row = document.createElement("tr");
-			row.innerHTML = `
-                <td class="basic-stat-name">${stat.name}</td>
-                <td class="basic-stat-value" data-stat="${stat.name}">${stat.value}</td>
-            `;
-			this.tableBody.appendChild(row);
-		});
-	}
-
-	// Update a single stat
-	public updateStat(statName: string, value: string | number) {
-		// Update in data array
-		const statIndex = this.statsData.findIndex((stat) => stat.name === statName);
-		if (statIndex !== -1) {
-			this.statsData[statIndex].value = value;
-
-			// Update DOM element
-			const valueCell = this.element.querySelector(`[data-stat="${statName}"]`);
-			if (valueCell) {
-				valueCell.textContent = value.toString();
-			}
-		}
-	}
-
-	// Update multiple stats at once
-	public updateStats(updates: Record<string, string | number>) {
-		Object.entries(updates).forEach(([statName, value]) => {
-			this.updateStat(statName, value);
-		});
-	}
-
-	private updateTraitDisplay() {
-		const traits = this.context.character.getTraits();
-		this.traitListEl.innerHTML = "";
-		traits.forEach((t) => {
-			const li = document.createElement("li");
-			li.textContent = `${t.name} (${t.rarity})`;
-			this.traitListEl.appendChild(li);
-			li.classList.add("basic-list-item");
-		});
-	}
-
 	// Integration with your game's event system
 	private bindEvents() {
 		// Listen for stat changes
@@ -181,43 +146,45 @@ export class PlayerStatsDisplay extends UIBase {
 		bindEvent(this.eventBindings, "Game:UITick", () => {
 			this.updateLevelDisplay();
 		});
-		bindEvent(this.eventBindings, "gameRun:started", () => {
+		bindEvent(this.eventBindings, "game:gameReady", () => {
 			this.updateTraitDisplay();
 		});
 	}
 
 	private updateFromPlayerStats() {
 		if (!this.context.currentRun) return;
+		this.updateStatsTable();
+		this.updateTraitDisplay();
+	}
+
+	// Update multiple stats at once
+	public updateStatsTable() {
+		if (!this.context.currentRun) return;
 
 		const character = this.context.character;
 		const stats = character.statsEngine.getAll();
+		this.statsTable.setRows(this.statMappings.map((stat) => [stat.displayName, stat.getValue(stats)]));
+	}
 
-		// Map your game stats to display stats
-		this.updateStats({
-			Attack: formatNumberShort(stats.attack) || 0,
-			Defence: formatNumberShort(stats.defence) || 0,
-			Health: formatNumberShort(character.maxHp) || 0,
-			Regen: formatNumberShort(stats.regen) || 0,
-			Lifesteal: formatNumberShort(stats.lifesteal) || 0,
-			Speed: formatNumberShort(stats.speed) || 0,
-			Evasion: formatNumberShort(stats.evasion) || 0,
-			CritChance: formatNumberShort(stats.critChance) || 0,
-			CritDamage: formatNumberShort(stats.critDamage) || 0,
-			EncounterChance: formatNumberShort(stats.encounterChance) || 0,
-			FireBonus: formatNumberShort(stats.fireBonus) || 0,
-			IceBonus: formatNumberShort(stats.iceBonus) || 0,
-			PoisonBonus: formatNumberShort(stats.poisonBonus) || 0,
-			LightningBonus: formatNumberShort(stats.lightningBonus) || 0,
-			LightBonus: formatNumberShort(stats.lightBonus) || 0,
-			PhysicalBonus: formatNumberShort(stats.physicalBonus) || 0,
-		});
-		this.updateTraitDisplay();
+	private updateTraitDisplay() {
+		const traits = this.context.character.getTraits();
+		this.traitTable.setRows(traits.map((t) => [t.name, t.rarity]));
+		/* 		this.traitListEl.innerHTML = "";
+		traits.forEach((t) => {
+			const li = document.createElement("li");
+			li.textContent = `${t.name} (${t.rarity})`;
+			this.traitListEl.appendChild(li);
+			li.classList.add("basic-list-item");
+		}); */
 	}
 
 	// Clean up when component is destroyed
 	public destroy() {
 		if (this.xpProgressBar) {
 			this.xpProgressBar.destroy();
+		}
+		if (this.statsTable) {
+			this.statsTable.destroy();
 		}
 		super.destroy();
 	}

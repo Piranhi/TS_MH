@@ -42,13 +42,36 @@ export interface BuildStats {
 	evasion: number;
 	lifesteal: number;
 	encounterChance: number;
+	physicalBonus: number;
 	fireBonus: number;
 	iceBonus: number;
 	poisonBonus: number;
 	lightningBonus: number;
 	lightBonus: number;
-	physicalBonus: number;
 }
+
+// Friendly names for stats
+export const STAT_DISPLAY_NAMES: Record<string, string> = {
+	// Core Stats
+	attack: "Attack",
+	defence: "Defence",
+	speed: "Speed",
+	hp: "Health",
+
+	// Build Stats
+	regen: "Regen",
+	critChance: "Crit Chance",
+	critDamage: "Crit Damage",
+	evasion: "Evasion",
+	lifesteal: "Lifesteal",
+	encounterChance: "Encounter Chance",
+	physicalBonus: "Physical Bonus",
+	fireBonus: "Fire Bonus",
+	iceBonus: "Ice Bonus",
+	poisonBonus: "Poison Bonus",
+	lightningBonus: "Lightning Bonus",
+	lightBonus: "Light Bonus",
+};
 
 export interface TrainedStatState {
 	id: TrainedStatType;

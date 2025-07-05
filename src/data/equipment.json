@@ -28,7 +28,7 @@
 		"name": "Cracked Sword",
 		"description": "A crappy tier 1 sword",
 		"equipType": "weapon",
-		"statMod": { "attack": 3 },
+		"statMod": { "physicalBonus": 3 },
 		"iconUrl": "/images/equipment/equipment-t1-weapon-crackedsword.png",
 		"tags": ["t1"]
 	},

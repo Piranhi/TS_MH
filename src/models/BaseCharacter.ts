@@ -101,16 +101,6 @@ export abstract class BaseCharacter extends Destroyable {
 
 	public checkDebugOptions() {}
 
-	calculatePowerStats(): number {
-		// 1) Base weights
-		const ATTACK_WEIGHT = 1.2;
-		const DEFENCE_WEIGHT = 1.0;
-		const HP_WEIGHT = 0.8;
-
-		const powerStats = this.stats.get("attack") * ATTACK_WEIGHT + this.stats.get("defence") * DEFENCE_WEIGHT + this.hp.max * HP_WEIGHT;
-		return powerStats;
-	}
-
 	/* ───────────────────── getters (read-only) ───────────────── */
 
 	get type(): "PLAYER" | "ENEMY" {
@@ -182,7 +172,7 @@ export abstract class BaseCharacter extends Destroyable {
 
 	getPowerLevel(): PowerLevel {
 		return {
-			attack: this.calcPower().toString(),
+			attack: this.stats.get("attack").toString(),
 			defence: this.stats.get("defence").toString(),
 		};
 	}
@@ -219,15 +209,6 @@ export abstract class BaseCharacter extends Destroyable {
 		const actualHealing = this.hp.current - beforeHp;
 
 		return actualHealing;
-	}
-
-	private calcPower(): number {
-		const attack = this.stats.get("attack");
-		const powerMultiplier = 1 + this.stats.get("power") / 100;
-		const critChance = this.stats.get("critChance") / 100 + 1;
-		const critDamage = this.stats.get("critDamage") / 100 + 1;
-
-		return Math.floor(attack * powerMultiplier * critChance * critDamage);
 	}
 
 	public addAbilityModifier(abilityId: string, modifier: AbilityModifier) {
@@ -271,7 +252,7 @@ export abstract class BaseCharacter extends Destroyable {
 
 	public addNewAbility(abilityId: string) {
 		if (!this.abilityMap.has(abilityId)) {
-			this.abilityMap.set(abilityId, Ability.createNew(abilityId));
+			this.abilityMap.set(abilityId, Ability.createNew(abilityId, this._type === "PLAYER")); // Player abilities start ready, enemies start on cooldown
 		}
 	}
 

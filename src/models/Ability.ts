@@ -32,9 +32,9 @@ export interface AttackState {}
 export class Ability extends SpecRegistryBase<AbilitySpec> {
 	public currentCooldown: number = 0;
 	public maxCooldown: number = 0;
-	private constructor(public readonly spec: AbilitySpec, readonly state: AbilityState) {
+	private constructor(public readonly spec: AbilitySpec, readonly state: AbilityState, readonly startReady: boolean = true) {
 		super();
-		this.currentCooldown = 0; // spec.cooldown;
+		this.currentCooldown = this.startReady ? 0 : spec.cooldown;
 		this.maxCooldown = spec.cooldown;
 	}
 
@@ -105,7 +105,7 @@ export class Ability extends SpecRegistryBase<AbilitySpec> {
 
 	public static override specById = new Map<string, AbilitySpec>();
 
-	static createNew(id: string): Ability {
+	static createNew(id: string, startReady: boolean = true): Ability {
 		const spec = this.specById.get(id);
 		if (!spec) throw new Error(`Unknown ability "${id}"`);
 		const state: AbilityState = {
@@ -114,7 +114,7 @@ export class Ability extends SpecRegistryBase<AbilitySpec> {
 			enabled: true,
 			priority: this.specById.size,
 		};
-		return new Ability(spec, state);
+		return new Ability(spec, state, startReady);
 	}
 
 	static createFromSaveState(saveState: AbilitySaveState): Ability {

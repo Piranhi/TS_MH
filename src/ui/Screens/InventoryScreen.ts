@@ -5,6 +5,7 @@ import { InventorySlot } from "../components/InventorySlot";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { TableDisplay } from "../components/TableDisplay";
 import { prettify } from "@/shared/utils/stringUtils";
+import { STAT_DISPLAY_NAMES, StatKey } from "@/models/Stats";
 
 export class InventoryScreen extends BaseScreen {
 	readonly screenName = "inventory";
@@ -85,14 +86,11 @@ export class InventoryScreen extends BaseScreen {
 
 		const bonuses = this.context.character.statsEngine.getLayerModifiers("equipment");
 
-		table.setRows(Object.entries(bonuses).map(([stat, value]) => [prettify(stat), value]));
-		/*
-		this.bonusesTableEl.innerHTML = "";
-
-		for (const [stat, value] of Object.entries(bonuses)) {
-			const row = this.bonusesTableEl.insertRow();
-			row.insertCell().textContent = stat;
-			row.insertCell().textContent = value.toString();
-		} */
+		table.setRows(
+			Object.entries(bonuses).map(([stat, value]) => [
+				STAT_DISPLAY_NAMES[stat as string] || stat, // Falls back to the original stat name if not found
+				value,
+			])
+		);
 	}
 }
