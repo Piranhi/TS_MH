@@ -64,32 +64,40 @@ export class BlacksmithSlot extends UIBase {
 		this.bindDomEvent(slotEl, "mouseenter", () => {
 			if (!this.currentResourceId) return;
 
-			const upgradeArray = this.context.resources.getAllUpgrades(this.currentResourceId);
-			const resourceData = this.context.resources.getResourceData(this.currentResourceId);
-			const currentLevel = resourceData?.level || 1;
+                        const resourceData = this.context.resources.getResourceData(this.currentResourceId);
+                        const currentLevel = resourceData?.level || 1;
 
-			const upgradeList: TooltipListItem[] = upgradeArray.map((upgrade) => {
-				const isUnlocked = currentLevel >= upgrade.level;
-				return {
-					text: `Lvl ${upgrade.level}: ${upgrade.displayText}`,
-					className: isUnlocked ? "upgrade-unlocked" : "upgrade-locked",
-				};
-			});
+                        // Combine standard upgrades with level based unlocks from the resource spec
+                        const upgrades: Array<{ level: number; text: string; unlocked: boolean }> = [];
 
-			// Add unlock information from the resource spec
-			const resourceSpec = Resource.getSpec(this.currentResourceId);
-			if (resourceSpec && resourceSpec.unlocks) {
-				resourceSpec.unlocks.forEach((unlock) => {
-					const isUnlocked = currentLevel >= unlock.level;
-					const unlockedResourceSpec = Resource.getSpec(unlock.id);
-					const unlockName = unlockedResourceSpec?.name || unlock.id;
-					
-					upgradeList.push({
-						text: `Lvl ${unlock.level}: Unlock ${unlockName}`,
-						className: isUnlocked ? "upgrade-unlocked" : "upgrade-locked",
-					});
-				});
-			}
+                        const upgradeArray = this.context.resources.getAllUpgrades(this.currentResourceId);
+                        upgradeArray.forEach((upgrade) => {
+                                upgrades.push({
+                                        level: upgrade.level,
+                                        text: upgrade.displayText,
+                                        unlocked: currentLevel >= upgrade.level,
+                                });
+                        });
+
+                        const resourceSpec = Resource.getSpec(this.currentResourceId);
+                        if (resourceSpec && resourceSpec.unlocks) {
+                                resourceSpec.unlocks.forEach((unlock) => {
+                                        const unlockedResourceSpec = Resource.getSpec(unlock.id);
+                                        const unlockName = unlockedResourceSpec?.name || unlock.id;
+                                        upgrades.push({
+                                                level: unlock.level,
+                                                text: `Unlock ${unlockName}`,
+                                                unlocked: currentLevel >= unlock.level,
+                                        });
+                                });
+                        }
+
+                        upgrades.sort((a, b) => a.level - b.level);
+
+                        const upgradeList: TooltipListItem[] = upgrades.map((u) => ({
+                                text: `Lvl ${u.level}: ${u.text}`,
+                                className: u.unlocked ? "upgrade-unlocked" : "upgrade-locked",
+                        }));
 
 			Tooltip.instance.show(slotEl, {
 				icon: this.icon.src,

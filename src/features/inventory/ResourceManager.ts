@@ -43,12 +43,11 @@ export class ResourceManager extends Destroyable implements Saveable {
     }
 
     private setUnlockedResources() {
+        // Only starting resources are unlocked by default. Additional resources
+        // become available via level based unlocks defined in the resource JSON
+        // and processed by `processLevelUnlocks`.
         this.setResourceUnlocked("raw_ore");
         this.setResourceUnlocked("iron_ingot");
-        this.setResourceUnlocked("charstone");
-        this.setResourceUnlocked("copper_bar");
-        this.setResourceUnlocked("clear_quartz");
-        this.setResourceUnlocked("forge_flux");
     }
 
     private setResourceUnlocked(id: string) {
