@@ -772,3 +772,47 @@ section + section {
 	opacity: 1;
 	color: rgba(255, 255, 255, 0.9);
 }
+
+/* ===== Toast Notifications ===== */
+.toast-container {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        z-index: 2000;
+}
+
+.toast {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        width: 260px;
+        color: var(--c-hi);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+}
+
+.toast-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+}
+
+.toast-text {
+        font-size: 0.875rem;
+        margin: 0;
+}
+
+.toast-ok {
+        align-self: flex-end;
+        width: auto;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+}

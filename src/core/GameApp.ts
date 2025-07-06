@@ -12,6 +12,8 @@ import { bus } from "./EventBus";
 import { initGameData } from "./gameData";
 import { PlayerStatsDisplay } from "@/ui/components/PlayerStatsDisplay";
 import { ResourceData } from "@/shared/types";
+import { Area } from "@/models/Area";
+import { ToastManager } from "@/ui/components/ToastManager";
 
 export class GameApp {
 	private readonly root: HTMLElement;
@@ -21,17 +23,24 @@ export class GameApp {
 	//private offlineManager!: OfflineProgressManager;
 
 	// UI Components
-	private sidebar!: SidebarDisplay;
-	private header!: HeaderDisplay;
-	private playerStatsDiplay!: PlayerStatsDisplay;
-	private pendingResourceState: Map<string, ResourceData> | null = null;
+        private sidebar!: SidebarDisplay;
+        private header!: HeaderDisplay;
+        private playerStatsDiplay!: PlayerStatsDisplay;
+        private toast!: ToastManager;
+        private pendingResourceState: Map<string, ResourceData> | null = null;
 
-	constructor(root: HTMLElement) {
-		this.root = root;
-		const maybeArea = root.querySelector<HTMLElement>("#game-area");
-		if (!maybeArea) throw new Error("#game-area not found");
-		this.container = maybeArea;
-	}
+        constructor(root: HTMLElement) {
+                this.root = root;
+                const maybeArea = root.querySelector<HTMLElement>("#game-area");
+                if (!maybeArea) throw new Error("#game-area not found");
+                this.container = maybeArea;
+                this.toast = ToastManager.instance;
+                bus.on("hunt:areaUnlocked", (id) => {
+                        const spec = Area.specById.get(id);
+                        const name = spec?.displayName ?? id;
+                        this.toast.enqueue("Area Unlocked", `You can now explore ${name}!`);
+                });
+        }
 
 	async init(): Promise<void> {
 		// 1. Initialize game data
