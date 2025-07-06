@@ -1,295 +1,294 @@
 [
-	{
-		"id": "raw_ore",
-		"tier": 0,
-		"name": "Raw Ore",
-		"description": "Unsorted chunks of rock threaded with metallic veins the seed of every other smithing material.",
-		"iconUrl": "/images/resources/resource_raw_ore.png",
-		"requires": [{ "resource": "raw_ore", "quantity": 2 }],
-		"craftTime": 0,
-		"unlocks": [{"level": 1, "id": "iron_ingot"}]
-	},
-	{
-		"id": "iron_ingot",
-		"tier": 1,
-		"name": "Iron Ingot",
-		"description": "Reliable, weighty bars forged from smelted Raw Ore; cornerstone of entry-level arms.",
-		"iconUrl": "/images/resources/resource_iron_ingot.png",
-		"requires": [{ "resource": "raw_ore", "quantity": 10 }],
-		"craftTime": 5,
-		"unlocks": [{"level": 25, "id": "charstone"}]
-	},
-	{
-		"id": "charstone",
-		"tier": 1,
-		"name": "Charstone",
-		"description": "Dense, jet-black bricks that burn hot and clean, perfect for small apprentice forges.",
-		"iconUrl": "/images/resources/resource_charstone.png",
-		"requires": [{ "resource": "raw_ore", "quantity": 15 }],
-		"craftTime": 7,
-		"unlocks": [{"level": 1, "id": "copper_bar"}]
-	},
-	{
-		"id": "copper_bar",
-		"tier": 1,
-		"name": "Copper Bar",
-		"description": "Reddish, conductive metal used for basic talismans and corrosion-resistant fittings.",
-		"iconUrl": "/images/resources/resource_copper_bar.png",
-		"requires": [
-			{ "resource": "raw_ore", "quantity": 20 },
-			{ "resource": "iron_ingot", "quantity": 20 }
-		],
-		"craftTime": 9,
-		"unlocks": [{"level": 1, "id": "clear_quartz"}]
-	},
-	{
-		"id": "clear_quartz",
-		"tier": 1,
-		"name": "Clear Quartz",
-		"description": "Unblemished crystal shards that focus simple runes or serve as glass-grade filler.",
-		"iconUrl": "/images/resources/resource_clear_quartz.png",
-		"requires": [
-			{ "resource": "raw_ore", "quantity": 20 },
-			{ "resource": "iron_ingot", "quantity": 20 }
-		],
-		"craftTime": 12,
-		"unlocks": [{"level": 1, "id": "forge_flux"}]
-	},
-	{
-		"id": "forge_flux",
-		"tier": 1,
-		"name": "Forge Flux",
-		"description": "Pulverised limestone; purges slag and lets molten metal flow smoothly in the crucible.",
-		"iconUrl": "/images/resources/resource_forge_flux.png",
-		"requires": [
-			{ "resource": "iron_bar", "quantity": 50 },
-			{ "resource": "clear_quartz", "quantity": 50 }
-		],
-		"craftTime": 20
-	},
-	{
-		"id": "tin_ingot",
-		"tier": 2,
-		"name": "Tin Ingot",
-		"description": "Soft, silvery metal blended with iron or copper to lower melting points and add sheen.",
-		"iconUrl": "/images/resources/resource_tin_ingot.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "steel_ingot",
-		"tier": 2,
-		"name": "Steel Ingot",
-		"description": "Carbon-tempered iron delivering a sharper edge and tougher plate than its predecessor.",
-		"iconUrl": "/images/resources/resource_steel_ingot.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "forgebrick",
-		"tier": 2,
-		"name": "Forgebrick",
-		"description": "Kiln-baked fuel blocks that ignite with a blue-white flame, sustaining higher forge temps.",
-		"iconUrl": "/images/resources/resource_forgebrick.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "silver_bar",
-		"tier": 2,
-		"name": "Silver Bar",
-		"description": "Luminous metal prized for anti-monster coatings and ornate weapon filigree.",
-		"iconUrl": "/images/resources/resource_silver_bar.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "blood_garnet",
-		"tier": 2,
-		"name": "Blood Garnet",
-		"description": "Deep-red stones that channel heat runes and enhance bleeding-edge enchantments.",
-		"iconUrl": "/images/resources/resource_blood_garnet.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "flaredust",
-		"tier": 2,
-		"name": "Flaredust",
-		"description": "Volatile salt grains that flash-temper steel or power simple explosive charges.",
-		"iconUrl": "/images/resources/resource_flaredust.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "verdium",
-		"tier": 2,
-		"name": "Verdium",
-		"description": "Green-tinged nickel alloy; stiffens fine blades and resists magical corrosion.",
-		"iconUrl": "/images/resources/resource_verdium.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "damascus_billet",
-		"tier": 3,
-		"name": "Damascus Billet",
-		"description": "Folded-layer bars with swirling patterns balance, flexibility, and prestige in one.",
-		"iconUrl": "/images/resources/resource_damascus_billet.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "anthracite",
-		"tier": 3,
-		"name": "Anthracite",
-		"description": "Glassy black lumps that burn longer and hotter than common coals for deep forgework.",
-		"iconUrl": "/images/resources/resource_anthracite.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "sunblend",
-		"tier": 3,
-		"name": "Sunblend",
-		"description": "Radiant gold-silver alloy that amplifies spell-flow and buffs holy damage.",
-		"iconUrl": "/images/resources/resource_sunblend.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "azure_sapphire",
-		"tier": 3,
-		"name": "Azure Sapphire",
-		"description": "Mana-conductive blue gems ideal for power-hungry rune slots.",
-		"iconUrl": "/images/resources/resource_azure_sapphire.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "quicksilver",
-		"tier": 3,
-		"name": "Quicksilver",
-		"description": "Alchemical mercury sealed in glass vials; softens metal lattices for enchant bonding.",
-		"iconUrl": "/images/resources/resource_quicksilver.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "cobalt_core",
-		"tier": 3,
-		"name": "Cobalt Core",
-		"description": "Hard, blue-grey rods that raise weapon durability and boost lightning affinity.",
-		"iconUrl": "/images/resources/resource_cobalt_core.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "adamantite_bar",
-		"tier": 4,
-		"name": "Adamantite Bar",
-		"description": "Near-unbreakable green-steel bars; legendary for shield faces and great-sword spines.",
-		"iconUrl": "/images/resources/resource_adamantite_bar.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "voidfire",
-		"tier": 4,
-		"name": "Voidfire",
-		"description": "Pitch-black coal that burns with violet tongues, reaching other-worldly forge heats.",
-		"iconUrl": "/images/resources/resource_voidfire.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "mithril_bar",
-		"tier": 4,
-		"name": "Mithril Bar",
-		"description": "Feather-light silver-blue metal perfect for chainmail that moves like cloth.",
-		"iconUrl": "/images/resources/resource_mithril_bar.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "star_ruby",
-		"tier": 4,
-		"name": "Star Ruby",
-		"description": "Crimson stones shot through with starlike asterisms; store immense thermal runes.",
-		"iconUrl": "/images/resources/resource_star_ruby.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "philosophers_dust",
-		"tier": 4,
-		"name": "Philosophers Dust",
-		"description": "Golden powder that transmutes base stats of gear during late-stage forging.",
-		"iconUrl": "/images/resources/resource_philosophers_dust.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "wolfrite",
-		"tier": 4,
-		"name": "Wolfrite",
-		"description": "Near-unmeltable tungsten alloy used to edge-bind masterwork blades for extreme sharpness.",
-		"iconUrl": "/images/resources/resource_wolfrite.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "aetherium_ingot",
-		"tier": 5,
-		"name": "Aetherium Ingot",
-		"description": "Weightless, shimmering alloy channels pure energy and self-repairs minor nicks.",
-		"iconUrl": "/images/resources/resource_aetherium_ingot.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "dragon_ember",
-		"tier": 5,
-		"name": "Dragon-Ember",
-		"description": "Crystalline cinders from ancient drakes; a single shard can liquefy adamantite.",
-		"iconUrl": "/images/resources/resource_dragon_ember.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "orichalcum_bar",
-		"tier": 5,
-		"name": "Orichalcum Bar",
-		"description": "Mythic rose-gold metal rumoured to resist time itself and amplify aura-based skills.",
-		"iconUrl": "/images/resources/resource_orichalcum_bar.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "stardust_diamond",
-		"tier": 5,
-		"name": "Stardust Diamond",
-		"description": "Perfectly clear stones flecked with cosmic motes; apex conduits for spell matrices.",
-		"iconUrl": "/images/resources/resource_stardust_diamond.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "primordial_essence",
-		"tier": 5,
-		"name": "Primordial Essence",
-		"description": "Iridescent ether-sludge that binds souls to forged relics used sparingly by grandmasters.",
-		"iconUrl": "/images/resources/resource_primordial_essence.png",
-		"requires": [{}],
-		"craftTime": 0
-	},
-	{
-		"id": "oblivion_steel",
-		"tier": 5,
-		"name": "Oblivion Steel",
-		"description": "Pitch-black alloy that deadens sound and light, ideal for relic-grade assassin weapons.",
-		"iconUrl": "/images/resources/resource_oblivion_steel.png",
-		"requires": [{}],
-		"craftTime": 0
-	}
+    {
+        "id": "raw_ore",
+        "tier": 0,
+        "name": "Raw Ore",
+        "description": "Unsorted chunks of rock threaded with metallic veins the seed of every other smithing material.",
+        "iconUrl": "/images/resources/resource_raw_ore.png",
+        "requires": [{ "resource": "raw_ore", "quantity": 2 }],
+        "craftTime": 0
+    },
+    {
+        "id": "iron_ingot",
+        "tier": 1,
+        "name": "Iron Ingot",
+        "description": "Reliable, weighty bars forged from smelted Raw Ore; cornerstone of entry-level arms.",
+        "iconUrl": "/images/resources/resource_iron_ingot.png",
+        "requires": [{ "resource": "raw_ore", "quantity": 10 }],
+        "craftTime": 5,
+        "unlocks": [{ "level": 25, "id": "charstone" }]
+    },
+    {
+        "id": "charstone",
+        "tier": 1,
+        "name": "Charstone",
+        "description": "Dense, jet-black bricks that burn hot and clean, perfect for small apprentice forges.",
+        "iconUrl": "/images/resources/resource_charstone.png",
+        "requires": [{ "resource": "raw_ore", "quantity": 15 }],
+        "craftTime": 7,
+        "unlocks": [{ "level": 25, "id": "copper_bar" }]
+    },
+    {
+        "id": "copper_bar",
+        "tier": 1,
+        "name": "Copper Bar",
+        "description": "Reddish, conductive metal used for basic talismans and corrosion-resistant fittings.",
+        "iconUrl": "/images/resources/resource_copper_bar.png",
+        "requires": [
+            { "resource": "raw_ore", "quantity": 20 },
+            { "resource": "iron_ingot", "quantity": 20 }
+        ],
+        "craftTime": 9,
+        "unlocks": [{ "level": 1, "id": "clear_quartz" }]
+    },
+    {
+        "id": "clear_quartz",
+        "tier": 1,
+        "name": "Clear Quartz",
+        "description": "Unblemished crystal shards that focus simple runes or serve as glass-grade filler.",
+        "iconUrl": "/images/resources/resource_clear_quartz.png",
+        "requires": [
+            { "resource": "raw_ore", "quantity": 20 },
+            { "resource": "iron_ingot", "quantity": 20 }
+        ],
+        "craftTime": 12,
+        "unlocks": [{ "level": 1, "id": "forge_flux" }]
+    },
+    {
+        "id": "forge_flux",
+        "tier": 1,
+        "name": "Forge Flux",
+        "description": "Pulverised limestone; purges slag and lets molten metal flow smoothly in the crucible.",
+        "iconUrl": "/images/resources/resource_forge_flux.png",
+        "requires": [
+            { "resource": "iron_bar", "quantity": 50 },
+            { "resource": "clear_quartz", "quantity": 50 }
+        ],
+        "craftTime": 20
+    },
+    {
+        "id": "tin_ingot",
+        "tier": 2,
+        "name": "Tin Ingot",
+        "description": "Soft, silvery metal blended with iron or copper to lower melting points and add sheen.",
+        "iconUrl": "/images/resources/resource_tin_ingot.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "steel_ingot",
+        "tier": 2,
+        "name": "Steel Ingot",
+        "description": "Carbon-tempered iron delivering a sharper edge and tougher plate than its predecessor.",
+        "iconUrl": "/images/resources/resource_steel_ingot.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "forgebrick",
+        "tier": 2,
+        "name": "Forgebrick",
+        "description": "Kiln-baked fuel blocks that ignite with a blue-white flame, sustaining higher forge temps.",
+        "iconUrl": "/images/resources/resource_forgebrick.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "silver_bar",
+        "tier": 2,
+        "name": "Silver Bar",
+        "description": "Luminous metal prized for anti-monster coatings and ornate weapon filigree.",
+        "iconUrl": "/images/resources/resource_silver_bar.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "blood_garnet",
+        "tier": 2,
+        "name": "Blood Garnet",
+        "description": "Deep-red stones that channel heat runes and enhance bleeding-edge enchantments.",
+        "iconUrl": "/images/resources/resource_blood_garnet.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "flaredust",
+        "tier": 2,
+        "name": "Flaredust",
+        "description": "Volatile salt grains that flash-temper steel or power simple explosive charges.",
+        "iconUrl": "/images/resources/resource_flaredust.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "verdium",
+        "tier": 2,
+        "name": "Verdium",
+        "description": "Green-tinged nickel alloy; stiffens fine blades and resists magical corrosion.",
+        "iconUrl": "/images/resources/resource_verdium.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "damascus_billet",
+        "tier": 3,
+        "name": "Damascus Billet",
+        "description": "Folded-layer bars with swirling patterns balance, flexibility, and prestige in one.",
+        "iconUrl": "/images/resources/resource_damascus_billet.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "anthracite",
+        "tier": 3,
+        "name": "Anthracite",
+        "description": "Glassy black lumps that burn longer and hotter than common coals for deep forgework.",
+        "iconUrl": "/images/resources/resource_anthracite.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "sunblend",
+        "tier": 3,
+        "name": "Sunblend",
+        "description": "Radiant gold-silver alloy that amplifies spell-flow and buffs holy damage.",
+        "iconUrl": "/images/resources/resource_sunblend.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "azure_sapphire",
+        "tier": 3,
+        "name": "Azure Sapphire",
+        "description": "Mana-conductive blue gems ideal for power-hungry rune slots.",
+        "iconUrl": "/images/resources/resource_azure_sapphire.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "quicksilver",
+        "tier": 3,
+        "name": "Quicksilver",
+        "description": "Alchemical mercury sealed in glass vials; softens metal lattices for enchant bonding.",
+        "iconUrl": "/images/resources/resource_quicksilver.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "cobalt_core",
+        "tier": 3,
+        "name": "Cobalt Core",
+        "description": "Hard, blue-grey rods that raise weapon durability and boost lightning affinity.",
+        "iconUrl": "/images/resources/resource_cobalt_core.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "adamantite_bar",
+        "tier": 4,
+        "name": "Adamantite Bar",
+        "description": "Near-unbreakable green-steel bars; legendary for shield faces and great-sword spines.",
+        "iconUrl": "/images/resources/resource_adamantite_bar.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "voidfire",
+        "tier": 4,
+        "name": "Voidfire",
+        "description": "Pitch-black coal that burns with violet tongues, reaching other-worldly forge heats.",
+        "iconUrl": "/images/resources/resource_voidfire.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "mithril_bar",
+        "tier": 4,
+        "name": "Mithril Bar",
+        "description": "Feather-light silver-blue metal perfect for chainmail that moves like cloth.",
+        "iconUrl": "/images/resources/resource_mithril_bar.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "star_ruby",
+        "tier": 4,
+        "name": "Star Ruby",
+        "description": "Crimson stones shot through with starlike asterisms; store immense thermal runes.",
+        "iconUrl": "/images/resources/resource_star_ruby.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "philosophers_dust",
+        "tier": 4,
+        "name": "Philosophers Dust",
+        "description": "Golden powder that transmutes base stats of gear during late-stage forging.",
+        "iconUrl": "/images/resources/resource_philosophers_dust.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "wolfrite",
+        "tier": 4,
+        "name": "Wolfrite",
+        "description": "Near-unmeltable tungsten alloy used to edge-bind masterwork blades for extreme sharpness.",
+        "iconUrl": "/images/resources/resource_wolfrite.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "aetherium_ingot",
+        "tier": 5,
+        "name": "Aetherium Ingot",
+        "description": "Weightless, shimmering alloy channels pure energy and self-repairs minor nicks.",
+        "iconUrl": "/images/resources/resource_aetherium_ingot.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "dragon_ember",
+        "tier": 5,
+        "name": "Dragon-Ember",
+        "description": "Crystalline cinders from ancient drakes; a single shard can liquefy adamantite.",
+        "iconUrl": "/images/resources/resource_dragon_ember.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "orichalcum_bar",
+        "tier": 5,
+        "name": "Orichalcum Bar",
+        "description": "Mythic rose-gold metal rumoured to resist time itself and amplify aura-based skills.",
+        "iconUrl": "/images/resources/resource_orichalcum_bar.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "stardust_diamond",
+        "tier": 5,
+        "name": "Stardust Diamond",
+        "description": "Perfectly clear stones flecked with cosmic motes; apex conduits for spell matrices.",
+        "iconUrl": "/images/resources/resource_stardust_diamond.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "primordial_essence",
+        "tier": 5,
+        "name": "Primordial Essence",
+        "description": "Iridescent ether-sludge that binds souls to forged relics used sparingly by grandmasters.",
+        "iconUrl": "/images/resources/resource_primordial_essence.png",
+        "requires": [{}],
+        "craftTime": 0
+    },
+    {
+        "id": "oblivion_steel",
+        "tier": 5,
+        "name": "Oblivion Steel",
+        "description": "Pitch-black alloy that deadens sound and light, ideal for relic-grade assassin weapons.",
+        "iconUrl": "/images/resources/resource_oblivion_steel.png",
+        "requires": [{}],
+        "craftTime": 0
+    }
 ]
