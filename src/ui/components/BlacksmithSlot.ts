@@ -76,6 +76,21 @@ export class BlacksmithSlot extends UIBase {
 				};
 			});
 
+			// Add unlock information from the resource spec
+			const resourceSpec = Resource.getSpec(this.currentResourceId);
+			if (resourceSpec && resourceSpec.unlocks) {
+				resourceSpec.unlocks.forEach((unlock) => {
+					const isUnlocked = currentLevel >= unlock.level;
+					const unlockedResourceSpec = Resource.getSpec(unlock.id);
+					const unlockName = unlockedResourceSpec?.name || unlock.id;
+					
+					upgradeList.push({
+						text: `Lvl ${unlock.level}: Unlock ${unlockName}`,
+						className: isUnlocked ? "upgrade-unlocked" : "upgrade-locked",
+					});
+				});
+			}
+
 			Tooltip.instance.show(slotEl, {
 				icon: this.icon.src,
 				type: "Resource upgrade",
