@@ -7,7 +7,7 @@
 		"iconUrl": "/images/resources/resource_raw_ore.png",
 		"requires": [{ "resource": "raw_ore", "quantity": 2 }],
 		"craftTime": 0,
-		"unlock": ["iron_ingot"]
+		"unlocks": [{"level": 1, "id": "iron_ingot"}]
 	},
 	{
 		"id": "iron_ingot",
@@ -17,7 +17,7 @@
 		"iconUrl": "/images/resources/resource_iron_ingot.png",
 		"requires": [{ "resource": "raw_ore", "quantity": 10 }],
 		"craftTime": 5,
-		"unlock": ["charstone"]
+		"unlocks": [{"level": 25, "id": "charstone"}]
 	},
 	{
 		"id": "charstone",
@@ -27,12 +27,12 @@
 		"iconUrl": "/images/resources/resource_charstone.png",
 		"requires": [{ "resource": "raw_ore", "quantity": 15 }],
 		"craftTime": 7,
-		"unlock": ["copper_bar"]
+		"unlocks": [{"level": 1, "id": "copper_bar"}]
 	},
 	{
-		"id": "iron_bar",
+		"id": "copper_bar",
 		"tier": 1,
-		"name": "Iron Bar",
+		"name": "Copper Bar",
 		"description": "Reddish, conductive metal used for basic talismans and corrosion-resistant fittings.",
 		"iconUrl": "/images/resources/resource_copper_bar.png",
 		"requires": [
@@ -40,7 +40,7 @@
 			{ "resource": "iron_ingot", "quantity": 20 }
 		],
 		"craftTime": 9,
-		"unlock": ["clear_quartz"]
+		"unlocks": [{"level": 1, "id": "clear_quartz"}]
 	},
 	{
 		"id": "clear_quartz",
@@ -53,7 +53,7 @@
 			{ "resource": "iron_ingot", "quantity": 20 }
 		],
 		"craftTime": 12,
-		"unlock": ["forge_flux"]
+		"unlocks": [{"level": 1, "id": "forge_flux"}]
 	},
 	{
 		"id": "forge_flux",

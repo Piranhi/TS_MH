@@ -186,11 +186,14 @@ export class BlacksmithScreen extends BaseScreen {
 
 		// Tooltip handling
 		row.addEventListener("mouseenter", () => {
-			Tooltip.instance.show(row, {
+			const tooltipData = {
 				icon: spec.iconUrl,
 				name: spec.name,
 				description: spec.description,
-			});
+				list: this.getResourceUnlockList(id, spec, data)
+			};
+			
+			Tooltip.instance.show(row, tooltipData);
 		});
 		row.addEventListener("mouseleave", () => Tooltip.instance.hide());
 
@@ -201,6 +204,28 @@ export class BlacksmithScreen extends BaseScreen {
 			lastQuantity: data.quantity,
 			lastLevel: data.level,
 		};
+	}
+
+	/**
+	 * Gets the unlock list for a resource tooltip
+	 */
+	private getResourceUnlockList(resourceId: string, spec: any, data: any): string[] {
+		const unlockList: string[] = [];
+		
+		if (spec.unlocks) {
+			for (const unlock of spec.unlocks) {
+				const unlockSpec = Resource.getSpec(unlock.id);
+				if (unlockSpec) {
+					if (data.level >= unlock.level) {
+						unlockList.push(`✓ Unlocked ${unlockSpec.name} at level ${unlock.level}`);
+					} else {
+						unlockList.push(`🔒 Unlocks ${unlockSpec.name} at level ${unlock.level}`);
+					}
+				}
+			}
+		}
+		
+		return unlockList;
 	}
 
 	/**
@@ -244,11 +269,45 @@ export class BlacksmithScreen extends BaseScreen {
 			if (data.level !== row.lastLevel) {
 				row.levelEl.textContent = `Lv ${data.level}`;
 				row.lastLevel = data.level;
+				// Level changed - need to update tooltip event handler for unlock info
+				this.updateTooltipForRow(row.element, id);
 			}
 		});
 
 		// Notify slots that resources changed (for cost updates)
 		this.slotComponents.forEach((slot) => slot.onResourcesChanged());
+	}
+
+	/**
+	 * Updates the tooltip event handler for a resource row
+	 */
+	private updateTooltipForRow(element: HTMLElement, resourceId: string) {
+		const spec = Resource.getSpec(resourceId);
+		const data = this.context.resources.getResourceData(resourceId);
+		if (!spec || !data) return;
+
+		// Remove old event listeners by cloning the element
+		const newElement = element.cloneNode(true) as HTMLElement;
+		element.parentNode?.replaceChild(newElement, element);
+
+		// Add new event listeners with updated data
+		newElement.addEventListener("mouseenter", () => {
+			const tooltipData = {
+				icon: spec.iconUrl,
+				name: spec.name,
+				description: spec.description,
+				list: this.getResourceUnlockList(resourceId, spec, data)
+			};
+			
+			Tooltip.instance.show(newElement, tooltipData);
+		});
+		newElement.addEventListener("mouseleave", () => Tooltip.instance.hide());
+
+		// Update the row reference
+		const rowData = this.resourceRows.get(resourceId);
+		if (rowData) {
+			rowData.element = newElement;
+		}
 	}
 
 	/**

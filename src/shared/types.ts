@@ -205,7 +205,7 @@ export interface ResourceSpec {
 	iconUrl: string;
 	requires: ResourceRequirement[];
 	craftTime: number; // seconds
-	unlock: string[];
+	unlocks?: Array<{level: number, id: string}>;
 }
 
 export interface ResourceRequirement {
