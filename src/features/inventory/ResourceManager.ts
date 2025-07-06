@@ -46,7 +46,7 @@ export class ResourceManager extends Destroyable implements Saveable {
 		this.setResourceUnlocked("raw_ore");
 		this.setResourceUnlocked("iron_ingot");
 		this.setResourceUnlocked("charstone");
-		this.setResourceUnlocked("iron_bar");
+		this.setResourceUnlocked("copper_bar");
 		this.setResourceUnlocked("clear_quartz");
 		this.setResourceUnlocked("forge_flux");
 	}
@@ -86,7 +86,12 @@ export class ResourceManager extends Destroyable implements Saveable {
 		data.xp += xp;
 		while (data.level < this.MAX_LEVEL && data.xp >= this.getXpForNextLevel(data.level)) {
 			data.xp -= this.getXpForNextLevel(data.level);
+			const previousLevel = data.level;
 			data.level += 1;
+			
+			// Check for level-based unlocks
+			this.processLevelUnlocks(id, previousLevel, data.level);
+			
 			if (data.level >= this.MAX_LEVEL) {
 				data.infinite = true;
 				data.quantity = Number.MAX_SAFE_INTEGER;
@@ -94,6 +99,18 @@ export class ResourceManager extends Destroyable implements Saveable {
 			}
 		}
 		this.emitChange();
+	}
+
+	private processLevelUnlocks(resourceId: string, previousLevel: number, currentLevel: number) {
+		const spec = Resource.getSpec(resourceId);
+		if (!spec?.unlocks) return;
+		
+		// Check if any unlocks should happen at the current level
+		for (const unlock of spec.unlocks) {
+			if (unlock.level === currentLevel) {
+				this.setResourceUnlocked(unlock.id);
+			}
+		}
 	}
 
 	private getXpForNextLevel(level: number): number {

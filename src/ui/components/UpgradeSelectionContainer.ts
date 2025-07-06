@@ -1,5 +1,8 @@
-import { UIBase } from "./UIBase";
 import { UpgradeSelectionComponent, UpgradeSelectionData } from "./UpgradeSelectionComponent";
+import { UIBase } from "./UIBase";
+
+// Re-export the type for external use
+export type { UpgradeSelectionData } from "./UpgradeSelectionComponent";
 
 export interface UpgradeSelectionContainerOptions {
     container: HTMLElement;

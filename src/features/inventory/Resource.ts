@@ -29,8 +29,8 @@ export class Resource extends SpecRegistryBase<ResourceSpec> {
 	get tier() {
 		return this.spec.tier;
 	}
-	get unlock() {
-		return this.spec.unlock;
+	get unlocks() {
+		return this.spec.unlocks;
 	}
 
 	// ─────────────────────────────────────────────────────
