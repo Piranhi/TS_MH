@@ -5,6 +5,7 @@ import { ResourceData, ResourceRequirement, ResourceUpgradeEffect } from "@/shar
 import { RESOURCE_UPGRADES } from "@/balance/GameBalance";
 import { Resource } from "./Resource";
 import { GameContext } from "@/core/GameContext";
+import { ToastManager } from "@/ui/components/ToastManager";
 
 interface ResourceManagerSaveState {
     resourceData: ResourceData[];
@@ -108,6 +109,7 @@ export class ResourceManager extends Destroyable implements Saveable {
         for (const unlock of spec.unlocks) {
             if (unlock.level === currentLevel) {
                 this.setResourceUnlocked(unlock.id);
+                ToastManager.instance.enqueue("Resource Unlocked", `${Resource.getSpec(unlock.id)?.name} is now available!`);
             }
         }
     }

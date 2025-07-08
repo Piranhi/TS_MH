@@ -8,6 +8,7 @@ import { OfflineSession, OfflineReason } from "@/models/OfflineProgress";
 import { BalanceDebug } from "@/balance/GameBalance";
 import { Area } from "@/models/Area";
 import { Monster } from "@/models/Monster";
+import { ToastManager } from "./ToastManager";
 
 export class DebugMenu {
     private rootEl!: HTMLElement;
@@ -165,6 +166,7 @@ export class DebugMenu {
         this.addButton("Unlock all buildings", () => context.settlement.unlockAllBuildings());
         this.addButton("Level Up Player Character", () => context.character.gainXp(-1));
         this.addButton("Level Up Resource", () => context.blacksmith.debugLevelUpResource());
+        this.addButton("Test Toast", () => ToastManager.instance.enqueue("Test", "Test"));
         this.addButton("Grant Class Points", () => context.classes.gainPoints(100));
         //  Player.getInstance().inventory.addItemToInventory);
         //this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));
