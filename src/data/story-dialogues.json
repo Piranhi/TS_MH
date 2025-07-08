@@ -2,7 +2,7 @@
   "building.blacksmith": {
     "speaker": {
       "title": "Guild Master",
-      "avatar": "/public/images/player/player-avatar-01.png"
+      "avatar": "/images/player/player-avatar-01.png"
     },
     "title": "The Blacksmith Reopens",
     "text": [
@@ -13,7 +13,7 @@
   "hunt.boss.tier1": {
     "speaker": {
       "title": "Scout",
-      "avatar": "/public/images/player/player-avatar-01.png"
+      "avatar": "/images/player/player-avatar-01.png"
     },
     "title": "A New Threat Emerges",
     "text": [
