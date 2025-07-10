@@ -1,47 +1,68 @@
 [
-	{
-		"id": "tier1_chest",
-		"category": "equipment",
-		"name": "Worn padded vest3",
-		"description": "Todo",
-		"equipType": "chest",
-		"statMod": { "defence": 1 },
-		"iconUrl": "/images/equipment/equipment-t1-chest-wornpaddedchest.png",
-		"resistances": { "fire": 1, "ice": 1, "poison": 1, "lightning": 1, "physical": 1 },
+    {
+        "id": "tier1_chest",
+        "category": "equipment",
+        "name": "Worn padded vest3",
+        "description": "Todo",
+        "equipType": "chest",
+        "statMod": { "defence": 1, "hp": 20 },
+        "iconUrl": "/images/equipment/equipment-t1-chest-wornpaddedchest.png",
+        "resistances": {},
 
-		"tags": ["t1"]
-	},
-	{
-		"id": "tier1_head",
-		"category": "equipment",
-		"name": "Leather Cap",
-		"description": "Todo",
-		"equipType": "head",
-		"statMod": { "defence": 1 },
-		"iconUrl": "",
-		"resistances": { "fire": 1, "ice": 1, "poison": 1, "lightning": 1, "physical": 1 },
-		"tags": ["t1"]
-	},
-	{
-		"id": "tier1_weapon",
-		"category": "equipment",
-		"name": "Cracked Sword",
-		"description": "A crappy tier 1 sword",
-		"equipType": "weapon",
-		"statMod": { "physicalBonus": 3 },
-		"iconUrl": "/images/equipment/equipment-t1-weapon-crackedsword.png",
-		"tags": ["t1"]
-	},
-	{
-		"id": "tier1_legs",
-		"category": "equipment",
-		"name": "Ripped Trousers",
-		"description": "Todo",
-		"equipType": "legs",
-		"statMod": { "defence": 1 },
-		"iconUrl": "/images/equipment/equipment-t1-legs-rippedtrousers.png",
-		"resistances": { "fire": 1, "ice": 1, "poison": 1, "lightning": 1, "physical": 1 },
-
-		"tags": ["t1"]
-	}
+        "tags": ["t1"]
+    },
+    {
+        "id": "tier1_head",
+        "category": "equipment",
+        "name": "Leather Cap",
+        "description": "Todo",
+        "equipType": "head",
+        "statMod": { "defence": 3, "hp": 10 },
+        "iconUrl": "",
+        "resistances": {},
+        "tags": ["t1"]
+    },
+    {
+        "id": "tier1_weapon",
+        "category": "equipment",
+        "name": "Cracked Sword",
+        "description": "A crappy tier 1 sword",
+        "equipType": "weapon",
+        "statMod": { "attack": 4 },
+        "iconUrl": "/images/equipment/equipment-t1-weapon-crackedsword.png",
+        "tags": ["t1"]
+    },
+    {
+        "id": "tier1_legs",
+        "category": "equipment",
+        "name": "Ripped Trousers",
+        "description": "Todo",
+        "equipType": "legs",
+        "statMod": { "defence": 2, "hp": 10 },
+        "iconUrl": "/images/equipment/equipment-t1-legs-rippedtrousers.png",
+        "resistances": {},
+        "tags": ["t1"]
+    },
+    {
+        "id": "tier1_feet",
+        "category": "equipment",
+        "name": "Ripped Shoes",
+        "description": "Todo",
+        "equipType": "feet",
+        "statMod": { "defence": 1, "hp": 5, "speed": 0.05 },
+        "iconUrl": "",
+        "resistances": {},
+        "tags": ["t1"]
+    },
+    {
+        "id": "tier1_hands",
+        "category": "equipment",
+        "name": "Ripped Gloves",
+        "description": "Todo",
+        "equipType": "hands",
+        "statMod": { "defence": 1, "hp": 5, "critChance": 0.1 },
+        "iconUrl": "",
+        "resistances": {},
+        "tags": ["t1"]
+    }
 ]

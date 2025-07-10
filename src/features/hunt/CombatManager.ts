@@ -13,196 +13,199 @@ import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 import { CombatCalculator } from "./CombatCalculator";
 
 export class CombatManager extends Destroyable {
-	private context: GameContext;
-	public isFinished: boolean = false;
-	public playerWon: boolean = false;
-	private elapsed: number = 0;
-	private combatEndOverride = false;
-	private periodicTick = 0;
+    private context: GameContext;
+    public isFinished: boolean = false;
+    public playerWon: boolean = false;
+    private elapsed: number = 0;
+    private combatEndOverride = false;
+    private periodicTick = 0;
 
-	constructor(private readonly playerCharacter: PlayerCharacter, private readonly enemyCharacter: EnemyCharacter, private readonly area: Area) {
-		super();
-		this.context = GameContext.getInstance();
+    constructor(private readonly playerCharacter: PlayerCharacter, private readonly enemyCharacter: EnemyCharacter, private readonly area: Area) {
+        super();
+        this.context = GameContext.getInstance();
 
-		playerCharacter.beginCombat();
-		enemyCharacter.beginCombat();
+        playerCharacter.beginCombat();
+        enemyCharacter.beginCombat();
 
-		bus.emit("combat:started", {
-			player: this.playerCharacter,
-			enemy: this.enemyCharacter,
-		});
-	}
+        bus.emit("combat:started", {
+            player: this.playerCharacter,
+            enemy: this.enemyCharacter,
+        });
+    }
 
-	public update(dt: number) {
-		// Characters may have died from status effects
-		if (this.checkCombatEnd()) return;
-		// Process abilities for both characters
-		// Player first to give advantage
-		this.processCharacterAbilities(this.playerCharacter, this.enemyCharacter, dt);
-		if (this.checkCombatEnd()) return;
-		this.processCharacterAbilities(this.enemyCharacter, this.playerCharacter, dt);
-		if (this.checkCombatEnd()) return;
-	}
+    public update(dt: number) {
+        // Characters may have died from status effects
+        if (this.checkCombatEnd()) return;
+        // Process abilities for both characters
+        // Player first to give advantage
+        this.processCharacterAbilities(this.playerCharacter, this.enemyCharacter, dt);
+        if (this.checkCombatEnd()) return;
+        this.processCharacterAbilities(this.enemyCharacter, this.playerCharacter, dt);
+        if (this.checkCombatEnd()) return;
+    }
 
-	private checkCombatEnd(): boolean {
-		if (!this.playerCharacter.isAlive() || !this.enemyCharacter.isAlive()) {
-			this.endCombat();
-			return true;
-		}
-		return false;
-	}
+    private checkCombatEnd(): boolean {
+        if (!this.playerCharacter.isAlive() || !this.enemyCharacter.isAlive()) {
+            this.endCombat();
+            return true;
+        }
+        return false;
+    }
 
-	// Returns a list of abilities that are ready to be used
-	private getReadyAbilities(character: BaseCharacter): Ability[] {
-		if (!character.alive || !character.canAttack) return [];
+    // Returns a list of abilities that are ready to be used
+    private getReadyAbilities(character: BaseCharacter): Ability[] {
+        if (!character.alive || !character.canAttack) return [];
 
-		const abilities = character
-			.getAbilities()
-			.filter((a) => a.enabled)
-			.sort((a, b) => a.priority - b.priority);
-		return abilities.filter((a) => a.isReady() && character.hasStamina(a.spec.staminaCost));
-	}
+        const abilities = character
+            .getAbilities()
+            .filter((a) => a.enabled)
+            .sort((a, b) => a.priority - b.priority);
+        return abilities.filter((a) => a.isReady() && character.hasStamina(a.spec.staminaCost));
+    }
 
-	private calculateDamage(
-		source: BaseCharacter,
-		target: BaseCharacter,
-		baseMultiplier: number,
-		ability: Ability
-	): { damage: number; isCrit: boolean } {
-		let multiplier = baseMultiplier;
-		const mods = source.getAllAbilityModifiersFromAbility(ability.id);
-		for (const mod of mods) {
-			if (mod.stat === "multiplier") {
-				multiplier *= 1 + mod.amount / 100;
-			} else if (mod.stat === "addition") {
-				multiplier += mod.amount;
-			}
-		}
+    private calculateDamage(source: BaseCharacter, target: BaseCharacter, baseMultiplier: number, ability: Ability): { damage: number; isCrit: boolean } {
+        let multiplier = baseMultiplier;
+        const mods = source.getAllAbilityModifiersFromAbility(ability.id);
+        for (const mod of mods) {
+            if (mod.stat === "multiplier") {
+                multiplier *= 1 + mod.amount / 100;
+            } else if (mod.stat === "addition") {
+                multiplier += mod.amount;
+            }
+        }
 
-		return CombatCalculator.calculateDamage(source, target, multiplier, ability.spec.element);
-	}
+        return CombatCalculator.calculateDamage(source, target, multiplier, ability.spec.element);
+    }
 
-	private processCharacterAbilities(source: BaseCharacter, target: BaseCharacter, dt: number) {
-		if (!source.alive || !target.alive) return;
+    private processCharacterAbilities(source: BaseCharacter, target: BaseCharacter, dt: number) {
+        if (!source.alive || !target.alive) return;
 
-		// Get abilities that are ready to use
-		const readyAbilities = this.getReadyAbilities(source);
+        // Get abilities that are ready to use
+        const readyAbilities = this.getReadyAbilities(source);
 
-		for (const ability of readyAbilities) {
-			if (!target.alive) break;
-			if (!this.checkAbilityConditions(ability, source, target)) continue;
+        for (const ability of readyAbilities) {
+            if (!target.alive) break;
+            if (!this.checkAbilityConditions(ability, source, target)) continue;
 
-			// Process each effect of the ability
-			for (const effectSpec of ability.spec.effects) {
-				if (effectSpec.type === "attack") {
-					// Calculate damage with ability modifiers
-					const { damage, isCrit } = this.calculateDamage(source, target, effectSpec.value || 1, ability);
+            // Process each effect of the ability
+            for (const effectSpec of ability.spec.effects) {
+                if (effectSpec.type === "attack") {
+                    // Calculate damage with ability modifiers
+                    const { damage, isCrit } = this.calculateDamage(source, target, effectSpec.value || 1, ability);
 
-					// Apply damage
-					const actual = target.takeDamage(damage);
+                    // Apply damage
+                    const actual = target.takeDamage(damage);
 
-					// Apply lifesteal
-					if (source.stats.get("lifesteal") > 0) {
-						const lifesteal = source.stats.get("lifesteal") / 100;
-						const lifestealAmount = damage * lifesteal;
-						const actualHeal = source.heal(lifestealAmount);
-						bus.emit("char:hpChanged", { char: source, amount: actualHeal });
-					}
+                    // Apply lifesteal
+                    if (source.stats.get("lifesteal") > 0) {
+                        const lifesteal = source.stats.get("lifesteal") / 100;
+                        const lifestealAmount = damage * lifesteal;
+                        const actualHeal = source.heal(lifestealAmount);
+                        bus.emit("char:hpChanged", { char: source, amount: actualHeal });
+                    }
 
-					bus.emit("char:hpChanged", {
-						char: target,
-						amount: -actual,
-						isCrit,
-					});
-				} else if (effectSpec.type === "status") {
-					// Apply status effect based on target
-					const actualTarget = effectSpec.target === "enemy" ? target : source;
-					actualTarget.statusEffects.add(
-						effectSpec.effectId!,
-						source.stats.get("attack") // For DoT scaling
-					);
-				} else if (effectSpec.type === "heal") {
-					// Apply heal based on target
-					const actualTarget = effectSpec.target === "self" ? source : target;
-					const healing = CombatCalculator.calculateHealing(source, effectSpec.value || 1);
-					const actual = actualTarget.heal(healing);
-					bus.emit("char:hpChanged", { char: actualTarget, amount: actual });
-				}
-			}
+                    bus.emit("char:hpChanged", {
+                        char: target,
+                        amount: -actual,
+                        isCrit,
+                    });
+                } else if (effectSpec.type === "status") {
+                    // Apply status effect based on target
+                    const actualTarget = effectSpec.target === "enemy" ? target : source;
+                    actualTarget.statusEffects.add(
+                        effectSpec.effectId!,
+                        source.stats.get("attack"), // For DoT scaling
+                    );
+                } else if (effectSpec.type === "heal") {
+                    // Apply heal based on target
+                    const actualTarget = effectSpec.target === "self" ? source : target;
+                    const healing = CombatCalculator.calculateHealing(source, effectSpec.value || 1);
+                    const actual = actualTarget.heal(healing);
+                    bus.emit("char:hpChanged", { char: actualTarget, amount: actual });
+                }
+            }
 
-			// Consume resources and reset cooldown
-			source.spendStamina(ability.spec.staminaCost);
-			ability.resetCooldown();
-		}
-	}
+            // Consume resources and reset cooldown
+            source.spendStamina(ability.spec.staminaCost);
+            ability.resetCooldown();
+        }
+    }
 
-	private checkAbilityConditions(ability: Ability, self: BaseCharacter, target: BaseCharacter): boolean {
-		if (!ability.spec.conditions) return true;
-		if (ability.spec.conditions.length === 0) return true;
+    private checkAbilityConditions(ability: Ability, self: BaseCharacter, target: BaseCharacter): boolean {
+        if (!ability.spec.conditions) return true;
+        if (ability.spec.conditions.length === 0) return true;
 
-		for (const condition of ability.spec.conditions) {
-			switch (condition) {
-				case "selfNotFullHealth":
-					if (self.currentHp >= self.maxHp) return false;
-					break;
-				default:
-					break;
-			}
-		}
+        for (const condition of ability.spec.conditions) {
+            switch (condition) {
+                case "selfNotFullHealth":
+                    if (self.currentHp >= self.maxHp) return false;
+                    break;
+                default:
+                    break;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	public endCombatEarly() {
-		this.combatEndOverride = true;
-		this.playerCharacter.endCombat();
-		this.enemyCharacter.endCombat();
-		bus.emit("combat:ended", "Changing Areas");
-		this.enemyCharacter.destroy();
-	}
+    public endCombatEarly() {
+        this.combatEndOverride = true;
+        this.playerCharacter.endCombat();
+        this.enemyCharacter.endCombat();
+        bus.emit("combat:ended", "Changing Areas");
+        this.enemyCharacter.destroy();
+    }
 
-	private endCombat() {
-		this.playerCharacter.endCombat();
-		this.enemyCharacter.endCombat();
-		this.isFinished = true;
-		this.playerWon = this.playerCharacter.isAlive();
+    private endCombat() {
+        this.playerCharacter.endCombat();
+        this.enemyCharacter.endCombat();
+        this.isFinished = true;
+        this.playerWon = this.playerCharacter.isAlive();
 
-		if (this.playerWon) {
-			// Emit kill event
-			bus.emit("hunt:areaKill", {
-				enemyId: this.enemyCharacter.spec.id,
-				areaId: this.area.id,
-			});
+        if (this.playerWon) {
+            // Emit kill event
+            bus.emit("hunt:areaKill", {
+                enemyId: this.enemyCharacter.spec.id,
+                areaId: this.area.id,
+            });
 
-			this.rewardPlayer();
-		}
+            this.rewardPlayer();
+        }
 
-		bus.emit("combat:ended", this.playerWon ? "Player Won" : "Player fled");
-		this.enemyCharacter.destroy();
-	}
+        bus.emit("combat:ended", this.playerWon ? "Player Won" : "Player fled");
+        this.enemyCharacter.destroy();
+    }
 
-	private rewardPlayer() {
-		// Award renown
-		const renownReward = BalanceCalculators.getMonsterRenown(this.area.tier, this.enemyCharacter.spec.rarity);
-		this.context.player.adjustRenown(renownReward);
+    private rewardPlayer() {
+        // Award renown
+        const renownReward = BalanceCalculators.getMonsterRenown(this.area.tier, this.enemyCharacter.spec.rarity);
+        this.context.player.adjustRenown(renownReward);
 
-		// Award experience
-		const enemyId = this.enemyCharacter.spec.id;
-		const kills = this.context.stats.getEnemyStats(enemyId).killsTotal;
-		const xpBonusPct = BalanceCalculators.getEnemyKillXpBonus(kills);
-		const baseXp = this.area.getXpPerKill(false);
-		const xpWithBonus = Math.floor(baseXp * (1 + xpBonusPct / 100));
-		this.context.character.gainXp(xpWithBonus);
+        // Award experience
+        const enemyId = this.enemyCharacter.spec.id;
+        const kills = this.context.stats.getEnemyStats(enemyId).killsTotal;
+        const xpBonusPct = BalanceCalculators.getEnemyKillXpBonus(kills);
+        const baseXp = this.area.getXpPerKill(false);
+        const xpWithBonus = Math.floor(baseXp * (1 + xpBonusPct / 100));
+        this.context.character.gainXp(xpWithBonus);
 
-		//this.context.player.gainExperience(expReward);
+        //this.context.player.gainExperience(expReward);
 
-		// Roll and award loot
-		const lootArray = this.area.rollLoot();
-		if (lootArray && lootArray.length > 0) {
-			lootArray.forEach((lootId) => {
-				this.context.inventory.addLootById(lootId, 1);
-			});
-			bus.emit("inventory:dropped", lootArray);
-		}
-	}
+        // Roll and award loot
+        const lootArray = this.area.rollLoot();
+        if (lootArray && lootArray.length > 0) {
+            lootArray.forEach((lootId) => {
+                this.context.inventory.addLootById(lootId, 1);
+            });
+            bus.emit("inventory:dropped", lootArray);
+        }
+
+        bus.emit("combat:postCombatReport", {
+            enemy: this.enemyCharacter,
+            area: this.area,
+            xp: xpWithBonus,
+            loot: lootArray,
+            renown: renownReward,
+        });
+    }
 }
