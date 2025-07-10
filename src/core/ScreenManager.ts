@@ -15,6 +15,7 @@ import { LibraryScreen } from "@/ui/Screens/LibraryScreen";
 import { MarketScreen } from "@/ui/Screens/MarketScreen";
 import { MineScreen } from "@/ui/Screens/MineScreen";
 import { GuildHallScreen } from "@/ui/Screens/GuildHallScreen";
+import { BestiaryScreen } from "@/ui/Screens/BestiaryScreen";
 
 // Screen Factory
 
@@ -32,6 +33,7 @@ export class ScreenManager<Name extends ScreenName = ScreenName> {
 		research: () => new ResearchScreen(),
 		mine: () => new MineScreen(),
 		guildHall: () => new GuildHallScreen(),
+		bestiary: () => new BestiaryScreen(),
 	};
 
 	private screens = new Map<ScreenName, GameScreen>();

@@ -15,6 +15,7 @@ export const screenNav: ScreenNav[] = [
 	},
 	{ name: "character" },
 	{ name: "inventory" },
+	{ name: "bestiary" },
 ];
 
 export type ScreenName =
@@ -29,4 +30,5 @@ export type ScreenName =
 	| "library"
 	| "market"
 	| "mine"
-	| "guildHall";
+	| "guildHall"
+	| "bestiary";

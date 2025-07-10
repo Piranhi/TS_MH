@@ -114,19 +114,25 @@ export class StatsManager implements Saveable {
 	// --------------- STAT MODIFICATION METHODS -----------------------
 
 	private prestigeInit() {
-		if (this.areaStats.size === 0) return;
+		if (this.areaStats.size === 0 && this.enemyStats.size === 0) return;
+		// Reset area specific run counters
 		for (const [areaId, stats] of this.areaStats) {
-			// Do something with areaId and stats
 			stats.bossKilledThisRun = false;
 			stats.bossUnlockedThisRun = false;
 			stats.killsThisRun = 0;
 			this.setAreaStats(areaId, stats);
 		}
+
+		// Reset enemy specific run counters
+		for (const [enemyId, eStats] of this.enemyStats) {
+			eStats.killsThisRun = 0;
+			this.setEnemyStats(enemyId, eStats);
+		}
 	}
 
 	private areaKill(enemyId: string, areaId: string) {
+		// Update area-level stats
 		const areaStats = this.getAreaStats(areaId);
-		if (!areaStats) return;
 		areaStats.killsThisRun++;
 		areaStats.killsTotal++;
 		if (areaStats.killsThisRun >= GAME_BALANCE.hunt.enemiesNeededForBoss) {
@@ -134,6 +140,12 @@ export class StatsManager implements Saveable {
 			areaStats.bossUnlockedEver = true;
 		}
 		this.setAreaStats(areaId, areaStats);
+
+		// Update enemy-level stats
+		const enemyStats = this.getEnemyStats(enemyId);
+		enemyStats.killsThisRun++;
+		enemyStats.killsTotal++;
+		this.setEnemyStats(enemyId, enemyStats);
 	}
 
 	public unlockArea(areaId: string) {
