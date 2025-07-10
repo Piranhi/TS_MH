@@ -40,27 +40,27 @@ export interface BuildingSnapshot {
 }
 
 export interface ResearchSpec {
-        id: string;
-        name: string;
-        description: string;
-        icon: string;
-        baseTime: number; // seconds required at base speed
-        maxLevel?: number; // how many times this research can be upgraded
+	id: string;
+	name: string;
+	description: string;
+	icon: string;
+	baseTime: number; // seconds required at base speed
+	maxLevel?: number; // how many times this research can be upgraded
 }
 
 export interface ResearchState {
-        progress: number;
-        level: number;
+	progress: number;
+	level: number;
 }
 
 export interface BlacksmithUpgradeSpec {
-        id: string;
-        name: string;
-        description: string;
-        cost: ResourceRequirement[];
-        icon?: string;
-        effect?: string;
-        maxLevel?: number; // number of times this upgrade can be purchased
+	id: string;
+	name: string;
+	description: string;
+	cost: ResourceRequirement[];
+	icon?: string;
+	effect?: string;
+	maxLevel?: number; // number of times this upgrade can be purchased
 }
 
 // ------------------- AREA + COMBAT ------------------------------
@@ -70,49 +70,49 @@ export const ENEMY_ARCHETYPES = {
 		hp: 6,
 		attack: 2,
 		defence: 4,
-		speed: 1,
+		speed: 0.5,
 		defaultAbilities: ["basic_melee", "defensive_stance"],
 	},
 	bruiser: {
 		hp: 4,
 		attack: 4,
 		defence: 2,
-		speed: 2,
+		speed: 0.8,
 		defaultAbilities: ["basic_melee", "power_strike"],
 	},
 	glass_cannon: {
 		hp: 2,
 		attack: 6,
 		defence: 1,
-		speed: 2,
+		speed: 1,
 		defaultAbilities: ["basic_melee", "critical_strike"],
 	},
 	dodger: {
 		hp: 3,
 		attack: 3,
 		defence: 1,
-		speed: 4,
+		speed: 1.5,
 		defaultAbilities: ["basic_melee", "quick_strike"],
 	},
 	balanced: {
 		hp: 4,
 		attack: 3,
 		defence: 2,
-		speed: 2,
+		speed: 1,
 		defaultAbilities: ["basic_melee"],
 	},
 	rare_elite: {
 		hp: 5,
 		attack: 5,
 		defence: 3,
-		speed: 3,
+		speed: 1.2,
 		defaultAbilities: ["basic_melee", "elite_combo"],
 	},
 	boss: {
 		hp: 40,
 		attack: 20,
 		defence: 15,
-		speed: 3,
+		speed: 1,
 		defaultAbilities: ["basic_melee", "boss_slam", "area_attack"],
 	},
 } as const;
@@ -205,7 +205,7 @@ export interface ResourceSpec {
 	iconUrl: string;
 	requires: ResourceRequirement[];
 	craftTime: number; // seconds
-	unlocks?: Array<{level: number, id: string}>;
+	unlocks?: Array<{ level: number; id: string }>;
 }
 
 export interface ResourceRequirement {

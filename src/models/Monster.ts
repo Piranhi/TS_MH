@@ -32,8 +32,7 @@ export class Monster extends SpecRegistryBase<MonsterSpec> {
 			defence: this.scaleForArea(base.defence, "defense"),
 			speed: base.speed, // Don't scale speed, or scale differently
 			hp: this.scaleForArea(base.hp, "hp"),
-			power: 0,
-			guard: 0,
+			regen: 0,
 			critChance: 0,
 			critDamage: 0,
 			evasion: 0,

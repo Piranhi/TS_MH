@@ -1,134 +1,168 @@
 [
-    {
-        "id": "test",
-        "iconUrl": "/images/abilities/ability_ice.png",
-        "description": "none",
-        "displayName": "test",
-        "cooldown": 20,
-        "staminaCost": 10,
-        "element": "ice",
-        "effects": [
-            {
-                "type": "attack",
-                "value": 0.1,
-                "target": "enemy"
-            },
-            {
-                "type": "status",
-                "target": "enemy",
-                "effectId": "slow",
-                "durationSeconds": 3
-            },
-            {
-                "type": "status",
-                "target": "enemy",
-                "effectId": "burn",
-                "durationSeconds": 3
-            },
-            {
-                "type": "status",
-                "target": "enemy",
-                "effectId": "weaken",
-                "durationSeconds": 3
-            },
-            {
-                "type": "status",
-                "target": "self",
-                "effectId": "strengthen",
-                "durationSeconds": 10
-            }
-        ]
-    },
-    {
-        "id": "basic_melee",
-        "iconUrl": "/images/abilities/ability_basic_melee.png",
-        "description": "none",
-        "displayName": "Melee",
-        "cooldown": 5,
-        "staminaCost": 10,
-        "element": "physical",
-        "effects": [
-            {
-                "type": "attack",
-                "value": 1.0,
-                "target": "enemy"
-            }
-        ]
-    },
-    {
-        "id": "basic_heal",
-        "iconUrl": "",
-        "description": "Heals the caster for 10% of their health",
-        "displayName": "Heal Basic",
-        "cooldown": 5,
-        "staminaCost": 15,
-        "element": "light",
-        "effects": [
-            {
-                "type": "heal",
-                "value": 0.1,
-                "target": "self"
-            }
-        ],
-        "conditions": ["selfNotFullHealth"]
-    },
-    {
-        "id": "root_snare",
-        "iconUrl": "",
-        "description": "none",
-        "displayName": "Root Snare",
-        "cooldown": 4,
-        "staminaCost": 20,
-        "element": "earth",
-        "effects": [
-            {
-                "type": "status",
-                "target": "enemy",
-                "effectId": "slow",
-                "value": 0.3,
-                "durationSeconds": 3
-            }
-        ]
-    },
-    {
-        "id": "warrior_charge",
-        "iconUrl": "",
-        "description": "none",
-        "displayName": "Warrior Charge",
-        "cooldown": 8,
-        "staminaCost": 30,
-        "element": "physical",
-        "effects": [
-            {
-                "type": "attack",
-                "value": 0.8,
-                "target": "enemy"
-            },
-            {
-                "type": "status",
-                "value": 30,
-                "durationSeconds": 5,
-                "statKey": "power",
-                "target": "enemy"
-            }
-        ]
-    },
-    {
-        "id": "bulwark_defend",
-        "iconUrl": "",
-        "description": "none",
-        "displayName": "Bulwark Defend",
-        "cooldown": 10,
-        "staminaCost": 25,
-        "element": "physical",
-        "effects": [
-            {
-                "type": "status",
-                "value": 20,
-                "durationSeconds": 3,
-                "statKey": "guard",
-                "target": "enemy"
-            }
-        ]
-    }
+	{
+		"id": "test",
+		"iconUrl": "/images/abilities/ability_ice.png",
+		"description": "none",
+		"displayName": "test",
+		"cooldown": 20,
+		"staminaCost": 10,
+		"element": "ice",
+		"effects": [
+			{
+				"type": "attack",
+				"value": 0.1,
+				"target": "enemy"
+			},
+			{
+				"type": "status",
+				"target": "enemy",
+				"effectId": "slow",
+				"durationSeconds": 3
+			},
+			{
+				"type": "status",
+				"target": "enemy",
+				"effectId": "burn",
+				"durationSeconds": 3
+			},
+			{
+				"type": "status",
+				"target": "enemy",
+				"effectId": "weaken",
+				"durationSeconds": 3
+			},
+			{
+				"type": "status",
+				"target": "self",
+				"effectId": "strengthen",
+				"durationSeconds": 10
+			}
+		]
+	},
+	{
+		"id": "basic_melee",
+		"iconUrl": "/images/abilities/ability_basic_melee.png",
+		"description": "none",
+		"displayName": "Melee",
+		"cooldown": 5,
+		"staminaCost": 10,
+		"element": "physical",
+		"effects": [
+			{
+				"type": "attack",
+				"value": 1.0,
+				"target": "enemy"
+			}
+		]
+	},
+	{
+		"id": "basic_heal",
+		"iconUrl": "",
+		"description": "Heals the caster for 10% of their health",
+		"displayName": "Heal Basic",
+		"cooldown": 5,
+		"staminaCost": 15,
+		"element": "light",
+		"effects": [
+			{
+				"type": "heal",
+				"value": 0.1,
+				"target": "self"
+			}
+		],
+		"conditions": ["selfNotFullHealth"]
+	},
+	{
+		"id": "root_snare",
+		"iconUrl": "",
+		"description": "none",
+		"displayName": "Root Snare",
+		"cooldown": 4,
+		"staminaCost": 20,
+		"element": "earth",
+		"effects": [
+			{
+				"type": "status",
+				"target": "enemy",
+				"effectId": "slow",
+				"value": 0.3,
+				"durationSeconds": 3
+			}
+		]
+	},
+	{
+		"id": "warrior_charge",
+		"iconUrl": "",
+		"description": "none",
+		"displayName": "Warrior Charge",
+		"cooldown": 8,
+		"staminaCost": 30,
+		"element": "physical",
+		"effects": [
+			{
+				"type": "attack",
+				"value": 0.8,
+				"target": "enemy"
+			},
+			{
+				"type": "status",
+				"value": 30,
+				"durationSeconds": 5,
+				"statKey": "power",
+				"target": "enemy"
+			}
+		]
+	},
+	{
+		"id": "bulwark_defend",
+		"iconUrl": "",
+		"description": "none",
+		"displayName": "Bulwark Defend",
+		"cooldown": 10,
+		"staminaCost": 25,
+		"element": "physical",
+		"effects": [
+			{
+				"type": "status",
+				"value": 20,
+				"durationSeconds": 3,
+				"statKey": "guard",
+				"target": "enemy"
+			}
+		]
+	},
+	{
+		"id": "branch_slam",
+		"iconUrl": "",
+		"description": "none",
+		"displayName": "Branch Slam",
+		"cooldown": 8,
+		"staminaCost": 20,
+		"element": "physical",
+		"effects": [
+			{
+				"type": "attack",
+				"value": 1.25,
+				"target": "enemy"
+			}
+		]
+	},
+	{
+		"id": "entangle",
+		"iconUrl": "",
+		"description": "none",
+		"displayName": "Entangle",
+		"cooldown": 13,
+		"staminaCost": 20,
+		"element": "physical",
+		"effects": [
+			{
+				"type": "status",
+				"target": "enemy",
+				"effectId": "slow",
+				"value": 1,
+				"durationSeconds": 10
+			}
+		]
+	}
 ]

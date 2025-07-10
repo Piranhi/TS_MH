@@ -42,23 +42,11 @@
 				"element": "fire"
 			},
 			{
-				"type": "weakness",
-				"element": "ice"
-			},
-			{
-				"type": "weakness",
-				"element": "lightning"
-			},
-			{
-				"type": "weakness",
+				"type": "resistance",
 				"element": "physical"
-			},
-			{
-				"type": "weakness",
-				"element": "poison"
 			}
 		],
-		"abilities": ["basic_melee"],
+		"abilities": ["branch_slam", "entangle"],
 		"imgUrl": "/images/monsters/monster-treant-basic.png"
 	},
 	{
