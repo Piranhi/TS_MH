@@ -816,3 +816,100 @@ section + section {
     padding: 0.25rem 0.75rem;
     font-size: 0.6rem;
 }
+
+/* ---------------- STORY MODAL (Progression / Story) ---------------- */
+.story-modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0 0 0 / 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1100;
+
+    /* Hidden by default */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Visible state added by TS */
+.story-modal-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* -------------  Card ------------- */
+.story-modal-card {
+    position: relative;
+    width: clamp(320px, 90%, 480px);
+    padding: 2rem 2rem 2.5rem;
+    border-radius: 1rem;
+
+    background: rgba(255 255 255 / 0.12);
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    border: 1px solid rgba(255 255 255 / 0.3);
+    box-shadow: 0 10px 32px rgba(0 0 0 / 0.35);
+
+    color: var(--c-mid, #fff);
+
+    transform: translateY(24px);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+/* Slide-in once overlay becomes .show */
+.story-modal-overlay.show .story-modal-card {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* -------------  Speaker header ------------- */
+.story-dialogue-speaker {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.story-dialogue-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(0 0 0 / 0.35);
+}
+
+.story-dialogue-speaker-title {
+    font-size: var(--fs-base, 1rem);
+    font-weight: 600;
+    margin: 0;
+    color: var(--c-hi, #fff);
+}
+
+/* -------------  Dialogue title ------------- */
+.story-dialogue-title {
+    font-size: var(--fs-h2, 1.5rem);
+    font-weight: 600;
+    color: var(--c-hi, #fff);
+    margin: 0 0 1rem;
+    text-align: center;
+}
+
+/* -------------  Dialogue text ------------- */
+.story-dialogue-text {
+    font-size: var(--fs-base, 1rem);
+    line-height: 1.45;
+    color: var(--c-mid, #fff);
+    margin: 0 0 1.5rem;
+    white-space: pre-line; /* preserve intentional line breaks */
+}
+
+/* -------------  Button ------------- */
+.story-dialogue-button {
+    margin: 0 auto 0;
+}

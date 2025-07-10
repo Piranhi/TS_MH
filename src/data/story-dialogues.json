@@ -1,0 +1,24 @@
+{
+  "building.blacksmith": {
+    "speaker": {
+      "title": "Guild Master",
+      "avatar": "/images/player/player-avatar-01.png"
+    },
+    "title": "The Blacksmith Reopens",
+    "text": [
+      "Thank you for restoring the blacksmith. Our warriors can now forge new weapons!",
+      "Gather resources and let's get to work."
+    ]
+  },
+  "hunt.boss.tier1": {
+    "speaker": {
+      "title": "Scout",
+      "avatar": "/images/player/player-avatar-01.png"
+    },
+    "title": "A New Threat Emerges",
+    "text": [
+      "We have defeated the treant but new dangers await.",
+      "Prepare your party for the next challenge."
+    ]
+  }
+}
