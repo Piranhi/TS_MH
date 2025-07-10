@@ -187,7 +187,12 @@ export class CombatManager extends Destroyable {
 		this.context.player.adjustRenown(renownReward);
 
 		// Award experience
-		this.context.character.gainXp(this.area.getXpPerKill(false));
+		const enemyId = this.enemyCharacter.spec.id;
+		const kills = this.context.stats.getEnemyStats(enemyId).killsTotal;
+		const xpBonusPct = BalanceCalculators.getEnemyKillXpBonus(kills);
+		const baseXp = this.area.getXpPerKill(false);
+		const xpWithBonus = Math.floor(baseXp * (1 + xpBonusPct / 100));
+		this.context.character.gainXp(xpWithBonus);
 
 		//this.context.player.gainExperience(expReward);
 

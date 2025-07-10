@@ -1,5 +1,9 @@
 import { BaseCharacter } from "@/models/BaseCharacter";
 import { ElementType } from "@/shared/types";
+import { StatsManager } from "@/models/StatsManager";
+import { PlayerCharacter } from "@/models/PlayerCharacter";
+import { EnemyCharacter } from "@/models/EnemyCharacter";
+import { BalanceCalculators } from "@/balance/GameBalance";
 
 export class CombatCalculator {
 	/**
@@ -48,7 +52,17 @@ export class CombatCalculator {
 		const totalResistance = baseResistance + statusResistance;
 
 		// Resistance as percentage: positive reduces damage, negative increases
-		const finalDamage = afterDefense * (1 - totalResistance / 100);
+		let finalDamage = afterDefense * (1 - totalResistance / 100);
+
+		// === BESTIARY KILL BONUS ===
+		// If the attacker is the player and the defender is an enemy, apply the kill-based damage bonus.
+		if (attacker instanceof PlayerCharacter && defender instanceof EnemyCharacter) {
+			const enemyId = defender.spec.id;
+			const totalKills = StatsManager.instance.getEnemyStats(enemyId).killsTotal;
+			const isBoss = defender.spec.archetype === "boss";
+			const bonusPct = BalanceCalculators.getEnemyKillDamageBonus(totalKills, isBoss);
+			finalDamage = finalDamage * (1 + bonusPct / 100);
+		}
 
 		// Always deal at least 1 damage
 		return { damage: Math.max(1, Math.floor(finalDamage)), isCrit };

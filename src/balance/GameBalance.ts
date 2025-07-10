@@ -559,8 +559,29 @@ export const BalanceCalculators = {
 		const levelMultiplier = Math.pow(GAME_BALANCE.resources.levelXPMultiplier, currentLevel - 1);
 		const tierMultiplier = Math.pow(GAME_BALANCE.resources.tierXPMultiplier, tier - 1);
 
-		return Math.floor(baseXP * levelMultiplier * tierMultiplier);
-	},
+        return Math.floor(baseXP * levelMultiplier * tierMultiplier);
+    },
+
+    // === BESTIARY / KILL TRACKING ===
+    /**
+     * Flat damage bonus percentage from total kills of a specific enemy.
+     * Regular enemies grant +0.1% per 10 kills (rounded down).
+     * Boss-type enemies grant +0.1% per kill.
+     */
+    getEnemyKillDamageBonus(totalKills: number, isBoss: boolean = false): number {
+        if (isBoss) {
+            return totalKills * 0.1;
+        }
+        return Math.floor(totalKills / 10) * 0.1;
+    },
+
+    /**
+     * Extra XP bonus percentage once the player has defeated an enemy 100 times.
+     * Returns 10 (i.e. 10%) when threshold met, otherwise 0.
+     */
+    getEnemyKillXpBonus(totalKills: number): number {
+        return totalKills >= 100 ? 10 : 0;
+    },
 } as const;
 
 // ===================================================
