@@ -9,7 +9,7 @@
   overflow-y: auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px 8px; /* reduced row gap */
   padding: 8px;
 }
 
@@ -34,6 +34,24 @@
   object-fit: contain;
 }
 
+.bestiary-list .enemy-icon.undiscovered {
+  cursor: default;
+}
+
+/* Counter text */
+.bestiary-count {
+  margin: 4px 8px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Detail flex layout */
+.bestiary-detail .detail-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
 .bestiary-detail {
   flex: 1;
   overflow-y: auto;
@@ -46,6 +64,11 @@
   object-fit: contain;
   display: block;
   margin-bottom: 8px;
+}
+
+/* When avatar is inside horizontal detail-content, remove bottom margin */
+.detail-content .enemy-avatar {
+  margin-bottom: 0;
 }
 
 .bestiary-detail .info-list {

@@ -4,6 +4,7 @@ import { Monster } from "@/models/Monster";
 import { StatsManager } from "@/models/StatsManager";
 import { BalanceCalculators } from "@/balance/GameBalance";
 import { Tooltip } from "@/ui/components/Tooltip";
+import { TableDisplay } from "@/ui/components/TableDisplay";
 import { Area } from "@/models/Area";
 import { ScreenName } from "@/shared/ui-types";
 
@@ -12,17 +13,19 @@ export class BestiaryScreen extends BaseScreen {
 
 	private listEl!: HTMLElement;
 	private detailEl!: HTMLElement;
+	private countEl!: HTMLElement;
 
 	init(): void {
 		const root = this.addMarkuptoPage(Markup);
 		this.listEl = root.querySelector("#bestiaryList") as HTMLElement;
 		this.detailEl = root.querySelector("#bestiaryDetail") as HTMLElement;
+		this.countEl = root.querySelector("#bestiaryCount") as HTMLElement;
 
 		this.buildList();
 	}
 
 	show(): void {
-		// Refresh icons in case new enemies were killed this run
+		// Refresh icons and discovered counter in case new enemies were killed this run
 		this.refreshList();
 	}
 
@@ -38,27 +41,34 @@ export class BestiaryScreen extends BaseScreen {
 			iconDiv.classList.add("enemy-icon");
 			iconDiv.dataset.id = spec.id;
 
+			const kills = StatsManager.instance.getEnemyStats(spec.id).killsTotal;
+
+			// Render icon (image or ?)
 			this.renderIconContents(iconDiv, spec.id);
 
-			// Tooltip
-			iconDiv.addEventListener("mouseenter", () => {
-				Tooltip.instance.show(iconDiv, { name: spec.displayName, icon: spec.imgUrl });
-			});
-			iconDiv.addEventListener("mouseleave", () => Tooltip.instance.hide());
+			if (kills > 0) {
+				// Tooltip for discovered monsters
+				iconDiv.addEventListener("mouseenter", () => {
+					Tooltip.instance.show(iconDiv, { name: spec.displayName, icon: spec.imgUrl });
+				});
+				iconDiv.addEventListener("mouseleave", () => Tooltip.instance.hide());
 
-			// Click handler
-			iconDiv.addEventListener("click", () => this.showDetails(spec.id));
+				// Click handler for discovered monsters
+				iconDiv.addEventListener("click", () => this.showDetails(spec.id));
+			} else {
+				iconDiv.classList.add("undiscovered");
+			}
 
 			this.listEl.appendChild(iconDiv);
 		}
+
+		// Update count after building list
+		this.updateCount();
 	}
 
 	private refreshList() {
-		// Update each icon to swap ? for image when discovered
-		for (const iconDiv of Array.from(this.listEl.children) as HTMLElement[]) {
-			const id = iconDiv.dataset.id!;
-			this.renderIconContents(iconDiv, id);
-		}
+		// Simply rebuild the list to ensure icons, tooltips and handlers are up-to-date
+		this.buildList();
 	}
 
 	private renderIconContents(container: HTMLElement, enemyId: string) {
@@ -100,36 +110,51 @@ export class BestiaryScreen extends BaseScreen {
 		header.textContent = spec.displayName;
 		this.detailEl.appendChild(header);
 
+		// Flex container for avatar + table
+		const contentRow = document.createElement("div");
+		contentRow.classList.add("detail-content");
+		this.detailEl.appendChild(contentRow);
+
 		// Avatar
 		const avatarImg = document.createElement("img");
 		avatarImg.src = spec.imgUrl;
 		avatarImg.alt = spec.displayName;
 		avatarImg.classList.add("enemy-avatar");
-		this.detailEl.appendChild(avatarImg);
+		contentRow.appendChild(avatarImg);
 
-		// Info list
-		const infoList = document.createElement("ul");
-		infoList.classList.add("info-list");
-
-		infoList.appendChild(this.makeLi(`Archetype: ${spec.archetype}`));
-		infoList.appendChild(this.makeLi(`Rarity: ${spec.rarity}`));
-		if (locationNames.length > 0) infoList.appendChild(this.makeLi(`Areas: ${locationNames.join(", ")}`));
-		infoList.appendChild(this.makeLi(`Abilities: ${spec.abilities.join(", ")}`));
+		// Prepare rows for table display
+		const rows: (string | number)[][] = [];
+		rows.push(["Archetype", spec.archetype]);
+		rows.push(["Rarity", spec.rarity]);
+		if (locationNames.length > 0) rows.push(["Areas", locationNames.join(", ")]);
+		rows.push(["Abilities", spec.abilities.join(", ")]);
 		if (spec.affinities && spec.affinities.length > 0) {
 			const affinities = spec.affinities.map((a) => `${a.type} ${a.element}`).join(", ");
-			infoList.appendChild(this.makeLi(`Affinities: ${affinities}`));
+			rows.push(["Affinities", affinities]);
 		}
-		infoList.appendChild(this.makeLi(`Total Kills: ${kills}`));
-		infoList.appendChild(this.makeLi(`Damage Bonus: ${dmgBonus.toFixed(2)}%`));
-		if (xpBonus > 0) infoList.appendChild(this.makeLi(`XP Bonus: ${xpBonus}%`));
+		rows.push(["Total Kills", kills]);
+		rows.push(["Damage Bonus", `${dmgBonus.toFixed(2)}%`]);
+		if (xpBonus > 0) rows.push(["XP Bonus", `${xpBonus}%`]);
 
-		this.detailEl.appendChild(infoList);
+		// Table Display
+		const table = new TableDisplay({
+			container: contentRow,
+			columns: 2,
+			boldFirstColumn: true,
+		});
+		table.setRows(rows);
 	}
 
-	private makeLi(text: string): HTMLLIElement {
-		const li = document.createElement("li");
-		li.textContent = text;
-		return li;
+	/** Update the found/total counter */
+	private updateCount() {
+		const specs = Monster.getAllSpecs();
+		let discovered = 0;
+		for (const spec of specs) {
+			if (StatsManager.instance.getEnemyStats(spec.id).killsTotal > 0) discovered++;
+		}
+		if (this.countEl) {
+			this.countEl.textContent = `Found: ${discovered}/${specs.length}`;
+		}
 	}
 
 	destroy(): void {
