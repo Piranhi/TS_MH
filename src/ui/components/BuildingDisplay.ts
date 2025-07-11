@@ -76,6 +76,21 @@ export class BuildingDisplay extends UIBase {
 			onClick: () => this.spendPoints(this.context.settlement.totalBuildPoints),
 			size: "small",
 		});
+		new UIButton(this.spendContainer, {
+			text: "Eff +10g",
+			onClick: () => this.allocateGold(10),
+			size: "small",
+		});
+		new UIButton(this.spendContainer, {
+			text: "Eff +100g",
+			onClick: () => this.allocateGold(100),
+			size: "small",
+		});
+		new UIButton(this.spendContainer, {
+			text: "Stop Eff",
+			onClick: () => this.allocateGold(0),
+			size: "small",
+		});
 	}
 
 	private updateButtons() {
@@ -105,5 +120,9 @@ export class BuildingDisplay extends UIBase {
 
 	private handleMouseLeave() {
 		Tooltip.instance.hide();
+	}
+
+	private allocateGold(amt: number) {
+		this.building.allocateGold(amt);
 	}
 }

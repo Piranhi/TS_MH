@@ -429,16 +429,39 @@ export const BalanceCalculators = {
 		return Math.pow(base, level - 1);
 	},
 
-	// === LOOT CALCULATIONS ===
-	getItemRarity(): ItemRarity {
-		const chance = Math.random() * 10000;
-		printLog("Creating Item - Rarity Chance: " + chance, 4, "types.ts");
-		for (const [rarity, max] of GAME_BALANCE.loot.rarityChances) {
-			if (chance <= max) return rarity;
-		}
-		// Fallback if none match (shouldn't happen)
-		return "common";
-	},
+    // === LOOT CALCULATIONS ===
+    getItemRarity(): ItemRarity {
+        const chance = Math.random() * 10000;
+        printLog("Creating Item - Rarity Chance: " + chance, 4, "types.ts");
+        for (const [rarity, max] of GAME_BALANCE.loot.rarityChances) {
+            if (chance <= max) return rarity;
+        }
+        // Fallback if none match (shouldn't happen)
+        return "common";
+    },
+
+    // === GOLD CALCULATIONS ===
+
+    /**
+     * Calculate gold reward for killing an enemy.
+     * @param tier Area tier (1-based)
+     * @param isBoss Whether the enemy is a boss
+     * @param rarity Monster rarity key (common, uncommon, etc.)
+     */
+    getGoldReward(tier: number, isBoss: boolean, rarity: keyof typeof GAME_BALANCE.monsters.renownMultipliers): number {
+        // Base gold scales with tier quadratically for better progression
+        let gold = 5 * Math.pow(tier, 2);
+
+        // Bosses give a hefty bonus
+        if (isBoss) gold *= 5;
+
+        // Apply rarity multiplier (reuse renown multipliers for now)
+        gold *= GAME_BALANCE.monsters.renownMultipliers[rarity] ?? 1;
+
+        // Future: apply upgrades / settlement / prestige multipliers here
+
+        return Math.floor(gold);
+    },
 
 	getTraitRarity(): TraitRarity {
 		const chance = Math.random() * 10000;

@@ -200,6 +200,11 @@ export class CombatManager extends Destroyable {
             bus.emit("inventory:dropped", lootArray);
         }
 
+        // Award gold
+        const isBoss = this.enemyCharacter.spec.id === this.area.boss.monsterId;
+        const goldReward = BalanceCalculators.getGoldReward(this.area.tier, isBoss, this.enemyCharacter.spec.rarity);
+        this.context.player.adjustGold(goldReward);
+
         bus.emit("combat:postCombatReport", {
             enemy: this.enemyCharacter,
             area: this.area,

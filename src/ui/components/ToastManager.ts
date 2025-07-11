@@ -14,6 +14,13 @@ export class ToastManager {
     private current: HTMLElement | null = null;
 
     private constructor() {
+        if (typeof document === 'undefined') {
+            // Node/test environment - no DOM available
+            this.container = {
+                appendChild: () => {}
+            } as unknown as HTMLElement;
+            return;
+        }
         this.container = document.createElement('div');
         this.container.id = 'toast-container';
         this.container.className = 'toast-container';
@@ -28,6 +35,13 @@ export class ToastManager {
     }
 
     private showNext() {
+        if (typeof document === 'undefined') {
+            // In tests, just log and skip DOM operations
+            const next = this.queue.shift();
+            if (next) console.log(`[Toast] ${next.title}: ${next.text}`);
+            this.current = null;
+            return;
+        }
         if (this.queue.length === 0) {
             this.current = null;
             return;
