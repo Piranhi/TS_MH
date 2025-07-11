@@ -71,27 +71,29 @@ export class DebugManager {
 	}
 
 	// Save current overrides to localStorage
-	public saveToStorage(): void {
-		try {
-			const dataToSave = JSON.stringify(this.overrides);
-			localStorage.setItem(this.STORAGE_KEY, dataToSave);
-		} catch (error) {
-			console.warn("Failed to save debug settings:", error);
-		}
-	}
+        public saveToStorage(): void {
+                if (typeof localStorage === 'undefined') return;
+                try {
+                        const dataToSave = JSON.stringify(this.overrides);
+                        localStorage.setItem(this.STORAGE_KEY, dataToSave);
+                } catch (error) {
+                        console.warn("Failed to save debug settings:", error);
+                }
+        }
 
-	// Load overrides from localStorage
-	public loadFromStorage(): void {
-		try {
-			const saved = localStorage.getItem(this.STORAGE_KEY);
-			if (saved) {
-				const parsed = JSON.parse(saved) as Partial<DebugOptions>;
-				this.overrides = { ...this.overrides, ...parsed };
-			}
-		} catch (error) {
-			console.warn("Failed to load debug settings:", error);
-		}
-	}
+        // Load overrides from localStorage
+        public loadFromStorage(): void {
+                if (typeof localStorage === 'undefined') return;
+                try {
+                        const saved = localStorage.getItem(this.STORAGE_KEY);
+                        if (saved) {
+                                const parsed = JSON.parse(saved) as Partial<DebugOptions>;
+                                this.overrides = { ...this.overrides, ...parsed };
+                        }
+                } catch (error) {
+                        console.warn("Failed to load debug settings:", error);
+                }
+        }
 }
 
 export function printLog(msg: string, verbosity: number, sender?: string, type?: DebugType) {
