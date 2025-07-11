@@ -1,16 +1,26 @@
-import { InventoryItemState, EquipmentItemSpec, ClassCardItemSpec, Resistances } from "@/shared/types";
+import { InventoryItemState, EquipmentItemSpec, Resistances } from "@/shared/types";
 import { scaleStatsModifier } from "@/shared/utils/stat-utils";
 import { SpecRegistryBase } from "@/models/SpecRegistryBase";
 import { StatsModifier } from "@/models/Stats";
 import { UpgradeCalculator } from "@/models/UpgradeCalculator";
+import { GameContext } from "@/core/GameContext";
 
-export abstract class InventoryItem<T extends EquipmentItemSpec | ClassCardItemSpec> extends SpecRegistryBase<T> {
+export abstract class InventoryItem<T extends EquipmentItemSpec> extends SpecRegistryBase<T> {
 	constructor(protected readonly spec: T, protected state: InventoryItemState) {
 		super();
 	}
 
+	// Returns the base stats modifier for the item, scaled by equipment quality.
+	// Bonuses can come from blacksmith upgrades, equipment quality, etc.
 	public getBonuses(): StatsModifier {
-		return scaleStatsModifier(this.spec.statMod, this.state.rarity ?? "common", this.state.heirloom ?? 0);
+		const baseBonus = scaleStatsModifier(this.spec.statMod, this.state.rarity ?? "common", this.state.heirloom ?? 0);
+		const equipmentQualityBonus = GameContext.getInstance().modifiers.getValue("equipmentQuality");
+
+		const scaled: StatsModifier = {};
+		for (const [key, value] of Object.entries(baseBonus)) {
+			scaled[key as keyof StatsModifier] = value * equipmentQualityBonus;
+		}
+		return scaled;
 	}
 
 	public equip() {

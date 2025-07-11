@@ -4,7 +4,7 @@ import { bus } from "./EventBus";
 export type ModifierOp = "add" | "mul";
 
 /** Strict types for systems and layers */
-export const ALL_MODIFIER_SYSTEMS = ["researchSpeed", "blacksmithSpeed", "trainingSpeed"] as const;
+export const ALL_MODIFIER_SYSTEMS = ["researchSpeed", "blacksmithSpeed", "trainingSpeed", "equipmentQuality"] as const;
 export type ModifierSystem = (typeof ALL_MODIFIER_SYSTEMS)[number];
 
 export const ALL_MODIFIER_LAYERS = ["building", "equipment", "run", "permanent", "prestige", "challenge"] as const;
@@ -179,6 +179,7 @@ export class ModifierEngine implements Saveable<ModifierEngineSave> {
 		researchSpeed: undefined!,
 		blacksmithSpeed: undefined!,
 		trainingSpeed: undefined!,
+		equipmentQuality: undefined!,
 	};
 	private disabledLayers = new Set<ModifierLayerName>();
 

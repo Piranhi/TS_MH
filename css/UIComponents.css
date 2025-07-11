@@ -678,8 +678,8 @@ section + section {
 	border-radius: 12px;
 
 	/* Glassmorphism */
-	background: linear-gradient(to bottom, var(--tooltip-tint, rgba(255, 255, 255, 0.05)), rgba(255, 255, 255, 0.12));
-	backdrop-filter: blur(12px) saturate(160%);
+	background: linear-gradient(to bottom, var(--tooltip-tint, rgba(36, 35, 35, 1)), rgba(50, 59, 61, 1));
+	backdrop-filter: blur(12px) saturate(60%);
 	border: 1px solid rgba(255, 255, 255, 0.25);
 	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 
@@ -722,8 +722,8 @@ section + section {
 }
 
 .tooltip-icon {
-	width: 60px;
-	height: 60px;
+	width: 80px;
+	height: 80px;
 	object-fit: contain;
 	flex-shrink: 0;
 }
