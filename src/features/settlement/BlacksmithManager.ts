@@ -70,9 +70,10 @@ export class BlacksmithManager extends Destroyable implements Saveable, OfflineP
         return Array.from(this.upgrades.values());
     }
 
-    /** Get the current global speed multiplier from blacksmith upgrades */
+    /** Get the current global speed multiplier from blacksmith upgrades and building efficiency */
     getSpeedMultiplier(): number {
-        return this.speedMultiplier;
+        const buildingMult = GameContext.getInstance().settlement.getBuilding("blacksmith")?.getEfficiencyMultiplier?.() ?? 1;
+        return this.speedMultiplier * buildingMult;
     }
 
     purchaseUpgrade(id: string): boolean {

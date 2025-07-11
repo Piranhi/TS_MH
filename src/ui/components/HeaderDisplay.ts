@@ -20,6 +20,7 @@ export class HeaderDisplay extends UIBase {
 	public build() {
 		this.PlayerStatsEl.innerHTML = "";
 		this.createEnergy();
+		this.createGold();
 		this.createRenown();
 		const headerRight = this.$(".header-right");
 		const levelEl = document.createElement("span");
@@ -63,6 +64,25 @@ export class HeaderDisplay extends UIBase {
 			value.textContent = `${curr} / ${mx}`;
 			this.energyProgressBar.setMax(payload.max);
 			this.energyProgressBar.setValue(Math.floor(payload.current));
+		});
+	}
+	private createGold() {
+		// Add Gold
+		const li = document.createElement("li");
+		li.className = "player-stats";
+		const label = document.createElement("span");
+		label.className = "basic-text-light";
+		label.textContent = "Gold";
+		li.appendChild(label);
+		const value = document.createElement("span");
+		value.className = "basic-text-stat";
+		value.textContent = "0";
+		li.appendChild(value);
+		this.PlayerStatsEl.appendChild(li);
+
+		bus.on("gold:changed" as any, (payload: { amount: number; incomePerSec: number }) => {
+			const incomeStr = payload.incomePerSec > 0 ? ` (+${payload.incomePerSec.toFixed(1)}/s)` : "";
+			value.textContent = `${payload.amount}${incomeStr}`;
 		});
 	}
 	private createRenown() {
