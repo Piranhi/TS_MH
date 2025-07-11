@@ -11,6 +11,7 @@ import { GameBase } from "./GameBase";
 interface PlayerSaveState {
 	level: number;
 	renown: number;
+	gold: number;
 	energy: RegenPool;
 	experience: number;
 	prestigeState: PrestigeState;
@@ -34,9 +35,13 @@ export class Player extends GameBase implements Saveable {
 	// Persistent player stats
 	private level: number = 1;
 	private renown = 0;
+	private gold = 0;
 	private experience: number = 0;
 	private energy: RegenPool;
 	private prestigeState: PrestigeState;
+
+	/** Rolling window of gold gains for income estimation */
+	private goldIncomeWindow: Array<{ amount: number; time: number }> = [];
 
 	private constructor() {
 		super();
@@ -152,6 +157,48 @@ export class Player extends GameBase implements Saveable {
 		bus.emit("renown:changed", this.renown);
 	}
 
+	// ================ GOLD MANAGEMENT =================
+
+	/** Adjust the player's gold by the given delta (positive or negative) */
+	public adjustGold(delta: number): void {
+		if (delta === 0) return;
+
+		this.gold = Math.max(this.gold + delta, 0);
+
+		const now = Date.now();
+
+		// Track positive income for rolling-window calculations
+		if (delta > 0) {
+			this.goldIncomeWindow.push({ amount: delta, time: now });
+		}
+
+		// Prune entries older than 25 seconds
+		const WINDOW_MS = 25_000;
+		this.goldIncomeWindow = this.goldIncomeWindow.filter((entry) => now - entry.time <= WINDOW_MS);
+
+		const earned = this.goldIncomeWindow.reduce((sum, e) => sum + e.amount, 0);
+		const elapsed = this.goldIncomeWindow.length > 0 ? Math.max(now - this.goldIncomeWindow[0].time, 1) : 1;
+		// Income per second
+		const incomePerSec = earned / (elapsed / 1000);
+
+		bus.emit("gold:changed" as any, {
+			amount: this.gold,
+			incomePerSec,
+		});
+	}
+
+	/** Current gold amount */
+	public get currentGold(): number {
+		return this.gold;
+	}
+
+	/** Spend gold if available; returns true if successful */
+	public spendGold(amount: number): boolean {
+		if (this.gold < amount) return false;
+		this.adjustGold(-amount);
+		return true;
+	}
+
 	// ================ PRESTIGE ================
 
 	public prestigeReset(): void {
@@ -163,6 +210,10 @@ export class Player extends GameBase implements Saveable {
 		// Reset energy but keep max upgrades?
 		const baseEnergy = 10 + Math.floor(this.prestigeState.runsCompleted * 2);
 		this.energy = new RegenPool(baseEnergy, 1 + this.prestigeState.runsCompleted * 0.1, false);
+
+		// Reset gold and tracking
+		this.gold = 0;
+		this.goldIncomeWindow = [];
 
 		this.emitEnergyChanged();
 		bus.emit("renown:changed", this.renown);
@@ -224,6 +275,7 @@ export class Player extends GameBase implements Saveable {
 		return {
 			level: this.level,
 			renown: this.renown,
+			gold: this.gold,
 			energy: this.energy,
 			experience: this.experience,
 			prestigeState: this.prestigeState,
@@ -234,12 +286,15 @@ export class Player extends GameBase implements Saveable {
 		this.level = state.level ?? 1;
 		this.experience = state.experience ?? 0;
 		this.renown = state.renown ?? 0;
+		this.gold = state.gold ?? 0;
 		this.energy = state.energy ? RegenPool.fromJSON(state.energy) : new RegenPool(10, 1, false);
 		this.prestigeState = state.prestigeState ?? { ...DEFAULT_PRESTIGE_STATE };
 
 		// Emit initial state
 		this.emitEnergyChanged();
 		bus.emit("renown:changed", this.renown);
+		// emit initial gold state
+		bus.emit("gold:changed" as any, { amount: this.gold, incomePerSec: 0 });
 	}
 
 	// DEBUG

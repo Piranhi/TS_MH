@@ -30,6 +30,12 @@ export interface BuildingState {
 	pointsAllocated: number;
 	nextUnlock: number;
 	level: number;
+	/** Current efficiency level earned by spending gold */
+	goldEfficiencyLevel?: number;
+	/** Base gold cost allocated for maintaining efficiency */
+	goldAllocation?: number;
+	/** Whether the building is currently running in an efficiency state */
+	efficiencyActive?: boolean;
 }
 
 export interface BuildingSnapshot {
