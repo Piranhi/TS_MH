@@ -629,13 +629,41 @@ section + section {
 
 /* Building Status */
 .building-status {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 0.5rem 1rem;
-	background: rgba(32, 32, 32, 0.719);
-	border-radius: 12px;
-	margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background: rgba(32, 32, 32, 0.719);
+        border-radius: 12px;
+        margin-bottom: 1rem;
+}
+
+.recruit-portrait {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 2px solid var(--recruit-border, #888);
+        margin-right: 0.5rem;
+        cursor: pointer;
+        object-fit: cover;
+}
+.recruit-portrait.rarity-common {
+        --recruit-border: #888;
+}
+.recruit-portrait.rarity-uncommon {
+        --recruit-border: #4caf50;
+}
+.recruit-portrait.rarity-rare {
+        --recruit-border: #2196f3;
+}
+.recruit-portrait.rarity-epic {
+        --recruit-border: #9c27b0;
+}
+.recruit-portrait.rarity-legendary {
+        --recruit-border: #ff99008e;
+}
+.recruit-portrait.rarity-unique {
+        --recruit-border: #e91e63;
 }
 
 .mh-progress-container {
