@@ -1,14 +1,13 @@
 import { PrestigeManager } from "@/models/PrestigeManager";
 import { UIBase } from "./UIBase";
-import { bindEvent } from "@/shared/utils/busUtils";
 import { bus } from "@/core/EventBus";
 import { ProgressBar } from "./ProgressBar";
 import { UIButton } from "./UIButton";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export class HeaderDisplay extends UIBase {
 	private PlayerStatsEl: HTMLElement;
 	private energyProgressBar!: ProgressBar;
-	private levelEl: HTMLElement;
 	constructor(container: HTMLElement) {
 		super();
 		this.element = container;
@@ -58,7 +57,7 @@ export class HeaderDisplay extends UIBase {
 		li.appendChild(value);
 		this.PlayerStatsEl.appendChild(li);
 
-		bus.on("player:energy-changed", (payload) => {
+		bindEvent(this.eventBindings, "player:energy-changed", (payload) => {
 			const curr = Math.floor(payload.current);
 			const mx = Math.floor(payload.max);
 			value.textContent = `${curr} / ${mx}`;
@@ -80,7 +79,7 @@ export class HeaderDisplay extends UIBase {
 		li.appendChild(value);
 		this.PlayerStatsEl.appendChild(li);
 
-		bus.on("gold:changed" as any, (payload: { amount: number; incomePerSec: number }) => {
+		bindEvent(this.eventBindings, "gold:changed" as any, (payload: { amount: number; incomePerSec: number }) => {
 			const incomeStr = payload.incomePerSec > 0 ? ` (+${payload.incomePerSec.toFixed(1)}/s)` : "";
 			value.textContent = `${payload.amount}${incomeStr}`;
 		});
@@ -98,7 +97,7 @@ export class HeaderDisplay extends UIBase {
 		value.textContent = "0";
 		li.appendChild(value);
 		this.PlayerStatsEl.appendChild(li);
-		bus.on("renown:changed", (amt) => {
+		bindEvent(this.eventBindings, "renown:changed", (amt) => {
 			value.textContent = amt.toString();
 		});
 	}

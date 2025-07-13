@@ -10,10 +10,10 @@
 	--fs-base: 1rem;
 	--fs-sm: 0.875rem;
 
-	--btn-bg: #3d98f4;
+	--btn-bg: #52727c;
 	--btn-bg-selected: #3d98f4;
 	--btn-bg-disabled: #283039;
-	--btn-bg-hover: rgba(255, 255, 255, 0.24);
+	--btn-bg-hover: #7496a0;
 	--btn-text: #fff;
 	--btn-border: none;
 	--btn-radius: 8px;

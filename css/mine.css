@@ -17,13 +17,13 @@
 	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
 }
 .mine-output {
-        margin-top: 1rem;
-        background: rgba(255, 255, 255, 0.06);
-        border-radius: 12px;
-        padding: 0.5rem;
-        max-height: 150px;
-        overflow-y: auto;
-        font-size: 0.9rem;
+	margin-top: 1rem;
+	background: rgba(255, 255, 255, 0.06);
+	border-radius: 12px;
+	padding: 0.5rem;
+	max-height: 150px;
+	overflow-y: auto;
+	font-size: 0.9rem;
 }
 .mine-resource-row {
 	display: flex;
@@ -87,17 +87,18 @@
 	font-size: 1.35rem;
 	font-weight: 600;
 	margin-bottom: 1.2rem;
-@media (max-width: 600px) {
-	.mine-page {
-		padding: 0.5rem;
-	}
-	.mine-upgrades-section {
-		padding: 0.5rem 0.3rem 0.2rem 0.3rem;
-	}
-	.mine-resource-list {
-		padding: 0.5rem;
-	}
-	.mine-upgrades-header {
-		font-size: 1.08rem;
+	@media (max-width: 600px) {
+		.mine-page {
+			padding: 0.5rem;
+		}
+		.mine-upgrades-section {
+			padding: 0.5rem 0.3rem 0.2rem 0.3rem;
+		}
+		.mine-resource-list {
+			padding: 0.5rem;
+		}
+		.mine-upgrades-header {
+			font-size: 1.08rem;
+		}
 	}
 }

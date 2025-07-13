@@ -61,6 +61,7 @@ export class Player extends GameBase implements Saveable {
 
 	private handleGameReady() {
 		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.regenEnergy(dt));
+		bindEvent(this.eventBindings, "Game:GameTick", () => this.calculateGoldIncome());
 		bindEvent(this.eventBindings, "renown:award", (amt) => this.adjustRenown(amt));
 		bus.emit("player:initialized", this);
 	}
@@ -172,6 +173,25 @@ export class Player extends GameBase implements Saveable {
 			this.goldIncomeWindow.push({ amount: delta, time: now });
 		}
 
+		const incomePerSec = this.calculateGoldIncome();
+
+		/* 		// Prune entries older than 25 seconds
+		const WINDOW_MS = 25_000;
+		this.goldIncomeWindow = this.goldIncomeWindow.filter((entry) => now - entry.time <= WINDOW_MS);
+
+		const earned = this.goldIncomeWindow.reduce((sum, e) => sum + e.amount, 0);
+		const elapsed = this.goldIncomeWindow.length > 0 ? Math.max(now - this.goldIncomeWindow[0].time, 1) : 1;
+		// Income per second
+		const incomePerSec = earned / (elapsed / 1000); */
+
+		bus.emit("gold:changed" as any, {
+			amount: this.gold,
+			incomePerSec,
+		});
+	}
+
+	private calculateGoldIncome(): number {
+		const now = Date.now();
 		// Prune entries older than 25 seconds
 		const WINDOW_MS = 25_000;
 		this.goldIncomeWindow = this.goldIncomeWindow.filter((entry) => now - entry.time <= WINDOW_MS);
@@ -185,6 +205,7 @@ export class Player extends GameBase implements Saveable {
 			amount: this.gold,
 			incomePerSec,
 		});
+		return incomePerSec;
 	}
 
 	/** Current gold amount */
