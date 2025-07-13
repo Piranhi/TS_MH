@@ -180,6 +180,7 @@ export class CombatManager extends Destroyable {
         // Award renown
         const renownReward = BalanceCalculators.getMonsterRenown(this.area.tier, this.enemyCharacter.spec.rarity);
         this.context.player.adjustRenown(renownReward);
+        this.context.inventory.awardRenownToEquipped(renownReward);
 
         // Award experience
         const enemyId = this.enemyCharacter.spec.id;

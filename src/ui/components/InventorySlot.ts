@@ -38,14 +38,16 @@ export class InventorySlot extends UIBase {
 		if (!this.itemState || !this.spec) return;
 
 		// Common tooltip data
-		const baseTooltip = {
-			icon: this.spec.iconUrl,
-			name: `Lvl:${this.itemState.level} - ${prettify(this.spec.name)}`,
-			rarity: prettify(this.itemState.rarity!),
-			type: getItemCategoryLabel(this.spec.category),
-			tintColour: this.itemState.rarity,
-			heirloom: this.itemState.heirloom,
-		};
+                const baseTooltip = {
+                        icon: this.spec.iconUrl,
+                        name: `Lvl:${this.itemState.level} - ${prettify(this.spec.name)}`,
+                        rarity: prettify(this.itemState.rarity!),
+                        type: getItemCategoryLabel(this.spec.category),
+                        tintColour: this.itemState.rarity,
+                        heirloom: this.itemState.heirloom,
+                        renownCurrent: this.itemState.renown,
+                        renownRequired: this.itemState.renownRequired,
+                };
 
 		// TODO: This is a hack to get the stat modifiers for equipment
 		// TODO: We should have a better way to do this

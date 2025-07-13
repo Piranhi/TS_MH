@@ -231,18 +231,28 @@ export class InventoryManager implements Saveable {
 
 	//------------------------ EQUIPMENT ------------------------------
 
-	public getEquippedEquipment(): Equipment[] {
-		return (
-			this.slots
-				// 1) Pick only the equipment‐slots that actually have something in them
-				.filter((slot) => slot.type === "equipment" && slot.itemState !== null)
-				// 2) For each one, grab its saved state, look up the latest spec, and construct an Equipment
-				.map((slot) => {
-					const state = slot.itemState!; // { id, quantity, rarity }
-					return Equipment.createFromState(state);
-				})
-		);
-	}
+        public getEquippedEquipment(): Equipment[] {
+                return (
+                        this.slots
+                                // 1) Pick only the equipment‐slots that actually have something in them
+                                .filter((slot) => slot.type === "equipment" && slot.itemState !== null)
+                                // 2) For each one, grab its saved state, look up the latest spec, and construct an Equipment
+                                .map((slot) => {
+                                        const state = slot.itemState!; // { id, quantity, rarity }
+                                        return Equipment.createFromState(state);
+                                })
+                );
+        }
+
+        /** Award renown to all equipped items */
+        public awardRenownToEquipped(amount: number) {
+                for (const slot of this.slots) {
+                        if (slot.type === "equipment" && slot.itemState) {
+                                const eq = Equipment.createFromState(slot.itemState);
+                                eq.addRenown(amount);
+                        }
+                }
+        }
 
 	private emitChange() {
 		bus.emit("inventory:changed");

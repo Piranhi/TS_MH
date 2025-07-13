@@ -8,6 +8,7 @@
         "statMod": { "defence": 1, "hp": 20 },
         "iconUrl": "/images/equipment/equipment-t1-chest-wornpaddedchest.png",
         "resistances": {},
+        "baseRenown": 100,
 
         "tags": ["t1"]
     },
@@ -20,6 +21,7 @@
         "statMod": { "defence": 3, "hp": 10 },
         "iconUrl": "",
         "resistances": {},
+        "baseRenown": 100,
         "tags": ["t1"]
     },
     {
@@ -30,6 +32,7 @@
         "equipType": "weapon",
         "statMod": { "attack": 4 },
         "iconUrl": "/images/equipment/equipment-t1-weapon-crackedsword.png",
+        "baseRenown": 100,
         "tags": ["t1"]
     },
     {
@@ -41,6 +44,7 @@
         "statMod": { "defence": 2, "hp": 10 },
         "iconUrl": "/images/equipment/equipment-t1-legs-rippedtrousers.png",
         "resistances": {},
+        "baseRenown": 100,
         "tags": ["t1"]
     },
     {
@@ -52,6 +56,7 @@
         "statMod": { "defence": 1, "hp": 5, "speed": 0.05 },
         "iconUrl": "",
         "resistances": {},
+        "baseRenown": 100,
         "tags": ["t1"]
     },
     {
@@ -63,6 +68,7 @@
         "statMod": { "defence": 1, "hp": 5, "critChance": 0.1 },
         "iconUrl": "",
         "resistances": {},
+        "baseRenown": 100,
         "tags": ["t1"]
     }
 ]

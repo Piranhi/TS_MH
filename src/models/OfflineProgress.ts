@@ -306,8 +306,9 @@ class HuntOfflineHandler implements OfflineProgressHandler {
 		const renownGained = kills * area.tier;
 		const xpGained = kills * area.getXpPerKill(false);
 
-		context.player.adjustRenown(renownGained);
-		context.character.gainXp(xpGained);
+                context.player.adjustRenown(renownGained);
+                context.inventory.awardRenownToEquipped(renownGained);
+                context.character.gainXp(xpGained);
 
 		const chests = this.treasure.calculateTreasureRewards(offlineSeconds);
 		if (chests.chestsEarned > 0) {

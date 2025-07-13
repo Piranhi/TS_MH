@@ -53,14 +53,38 @@ export abstract class InventoryItem<T extends EquipmentItemSpec> extends SpecReg
 	get description() {
 		return this.spec.description;
 	}
-	get statMod() {
-		return this.spec.statMod;
-	}
+        get statMod() {
+                return this.spec.statMod;
+        }
+        get renown() {
+                return this.state.renown ?? 0;
+        }
+        get renownRequired() {
+                return this.state.renownRequired ?? 0;
+        }
 
-	// We only add heirloom to equipped equipment during prestige.
-	public addHeirloom(amount: number) {
-		this.state.heirloom = (this.state.heirloom ?? 0) + amount;
-	}
+        // We only add heirloom to equipped equipment during prestige.
+        public addHeirloom(amount: number) {
+                this.state.heirloom = (this.state.heirloom ?? 0) + amount;
+        }
+
+        /** Add renown progress, capped at renownRequired */
+        public addRenown(amount: number) {
+                const req = this.state.renownRequired ?? 0;
+                const current = this.state.renown ?? 0;
+                this.state.renown = Math.min(current + amount, req);
+        }
+
+        /** Check if item is ready to prestige and apply heirloom level */
+        public tryPrestigeUpgrade(): boolean {
+                if ((this.state.renown ?? 0) >= (this.state.renownRequired ?? 0)) {
+                        this.addHeirloom(1);
+                        this.state.renown = 0;
+                        this.state.renownRequired = Math.ceil((this.state.renownRequired ?? 1) * 1.5);
+                        return true;
+                }
+                return false;
+        }
 
 	// Add levels to the item
 	// If over level 100, upgrade the rarity

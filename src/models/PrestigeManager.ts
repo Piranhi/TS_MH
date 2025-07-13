@@ -21,9 +21,9 @@ export class PrestigeManager {
 
 			// 2. Apply persistent rewards
 			context.settlement.modifyBuildPoints(buildPoints);
-			for (const equipment of context.inventory.getEquippedEquipment()) {
-				equipment.addHeirloom(1);
-			}
+                        for (const equipment of context.inventory.getEquippedEquipment()) {
+                                equipment.tryPrestigeUpgrade();
+                        }
 			//context.player.updatePrestigeStats();
 
 			// 3. Trigger prestige events
