@@ -3,13 +3,22 @@ import { bus } from "@/core/EventBus";
 import { SpecRegistryBase } from "@/models/SpecRegistryBase";
 import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 import { GameContext } from "@/core/GameContext";
+import { Recruit } from "@/models/Recruit";
 
 export class Building extends SpecRegistryBase<BuildingSpec> {
-	private constructor(private readonly spec: BuildingSpec, private state: BuildingState) {
-		super();
-		bus.on("Game:GameTick", (dt) => this.handleTick(dt));
-		bus.on("game:prestige", () => this.resetEfficiency());
-	}
+        private constructor(private readonly spec: BuildingSpec, private state: BuildingState) {
+                super();
+                bus.on("Game:GameTick", (dt) => this.handleTick(dt));
+                bus.on("game:prestige", () => this.resetEfficiency());
+        }
+
+        get staffId(): string | undefined {
+                return this.state.staffId;
+        }
+
+        assignStaff(recruit: Recruit | null) {
+                this.state.staffId = recruit ? recruit.id : undefined;
+        }
 
 	private handleTick(delta: number) {
 		this.processEfficiency(delta);
@@ -68,9 +77,19 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 	/**
 	 * Multiplier applied to building effects from gold efficiency.
 	 */
-	public getEfficiencyMultiplier(): number {
-		return 1 + (this.state.goldEfficiencyLevel || 0) * 0.01;
-	}
+        public getEfficiencyMultiplier(): number {
+                return 1 + (this.state.goldEfficiencyLevel || 0) * 0.01;
+        }
+
+        private getStaffBonus(): number {
+                if (!this.state.staffId) return 0;
+                const recruit = GameContext.getInstance().recruits.getRecruit(this.state.staffId);
+                return recruit ? recruit.bondBonus : 0;
+        }
+
+        public getTotalMultiplier(): number {
+                return this.getEfficiencyMultiplier() * (1 + this.getStaffBonus());
+        }
 
 	public upgradeBuilding() {
 		if (this.state.level === GAME_BALANCE.buildings.maxlevel) return;
@@ -163,8 +182,9 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 			nextUnlock: BalanceCalculators.getBuildingCost(spec.baseCost, 0),
 			goldEfficiencyLevel: 0,
 			goldAllocation: 0,
-			efficiencyActive: false,
-		};
+                        efficiencyActive: false,
+                        staffId: undefined,
+                };
 		return new Building(spec, defaultState);
 	}
 }
