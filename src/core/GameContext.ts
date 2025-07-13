@@ -10,6 +10,7 @@ import { InventoryManager } from "@/features/inventory/InventoryManager";
 import { SettlementManager } from "@/features/settlement/SettlementManager";
 import { LibraryManager } from "@/features/settlement/LibraryManager";
 import { BlacksmithManager } from "@/features/settlement/BlacksmithManager";
+import { RecruitService } from "@/features/settlement/RecruitService";
 import { ClassManager } from "@/features/classes/ClassManager";
 import { bus } from "./EventBus";
 import { SaveManager } from "./SaveManager";
@@ -25,8 +26,8 @@ export class GameContext {
 	private static _instance: GameContext | null = null;
 
 	public readonly player: Player;
-	public readonly services: GameServices;
-	public currentRun: GameRun | null = null;
+        public readonly services: GameServices;
+        public currentRun: GameRun | null = null;
 
 	public flags = {
 		isNewRun: true, // Used to prevent loading of old data when prestiging
@@ -99,9 +100,13 @@ export class GameContext {
 		return this.services.inventoryManager;
 	}
 
-	public get settlement(): SettlementManager {
-		return this.services.settlementManager;
-	}
+        public get settlement(): SettlementManager {
+                return this.services.settlementManager;
+        }
+
+        public get recruits(): RecruitService {
+                return this.services.recruitService;
+        }
 
 	public get library(): LibraryManager {
 		return this.services.libraryManager;

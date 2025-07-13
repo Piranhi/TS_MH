@@ -87,6 +87,8 @@ export interface GameEvents {
 
     "settlement:changed": void;
     "settlement:buildPointsChanged": number;
+    "settlement:renownChanged": number;
+    "recruits:changed": void;
     // ----------------- STATS -----------------
     "stats:userStatsChanged": UserStats;
     "stats:enemyStatsChanged": EnemyStats;

@@ -101,6 +101,7 @@ export class GameApp {
         saveManager.register("milestonesManager", this.services.milestoneManager);
         saveManager.register("statsManager", this.services.statsManager);
         saveManager.register("libraryManager", this.services.libraryManager);
+        saveManager.register("recruitService", this.services.recruitService);
         saveManager.register("classManager", this.services.classManager);
         saveManager.register("modifiers", this.services.modifierEngine);
     }
@@ -128,6 +129,9 @@ export class GameApp {
         // Clean up UI
         this.context.screens.destroyAll();
 
+        // Transfer run renown into settlement pool before resetting
+        const runRenown = this.context.player.currentRenown;
+        this.services.recruitService.addSettlementRenown(runRenown);
         // Reset player for new run
         this.context.player.prestigeReset();
     }
