@@ -21,12 +21,14 @@ export class InventoryRegistry {
 		if (!spec) {
 			throw new Error(`No spec registered for item ID "${id}"`);
 		}
-		const baseState: InventoryItemState = {
-			specId: id,
-			quantity,
-			rarity: BalanceCalculators.getItemRarity(),
-			heirloom: 0,
-		};
+                const baseState: InventoryItemState = {
+                        specId: id,
+                        quantity,
+                        rarity: BalanceCalculators.getItemRarity(),
+                        heirloom: 0,
+                        renown: 0,
+                        renownRequired: (spec as any).baseRenown ?? 100,
+                };
 		if (spec.category === "equipment") {
 			return {
 				...baseState,

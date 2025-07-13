@@ -266,10 +266,11 @@ export interface InventoryItemSpec extends Identifiable {
 }
 
 export interface EquipmentItemSpec extends InventoryItemSpec {
-	category: "equipment";
-	equipType: EquipmentType;
-	statMod: StatsModifier;
-	resistances?: Partial<Resistances>;
+        category: "equipment";
+        equipType: EquipmentType;
+        statMod: StatsModifier;
+        resistances?: Partial<Resistances>;
+        baseRenown: number;
 }
 
 export interface ResourceItemSpec extends InventoryItemSpec {
@@ -290,8 +291,10 @@ export interface InventoryItemState {
 	status?: ItemEquipStatus;
 	level?: number;
 	progress?: number;
-	rarity?: ItemRarity;
-	heirloom?: number;
+        rarity?: ItemRarity;
+        heirloom?: number;
+        renown?: number;
+        renownRequired?: number;
 }
 
 export function getItemCategoryLabel(category: ItemCategory): string {

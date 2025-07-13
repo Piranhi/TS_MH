@@ -4,15 +4,17 @@ export interface TooltipListItem {
 }
 
 export interface TooltipData {
-	icon: string;
-	name: string;
-	rarity?: string;
-	type?: string;
-	stats?: string[];
-	heirloom?: number;
-	description?: string;
-	tintColour?: string;
-	list?: (string | TooltipListItem)[];
+        icon: string;
+        name: string;
+        rarity?: string;
+        type?: string;
+        stats?: string[];
+        heirloom?: number;
+        renownCurrent?: number;
+        renownRequired?: number;
+        description?: string;
+        tintColour?: string;
+        list?: (string | TooltipListItem)[];
 }
 
 export class Tooltip {
@@ -34,8 +36,9 @@ export class Tooltip {
 				<img class="tooltip-icon" />
 				<h3 class="tooltip-name"></h3>
 			</header>
-			<p class="tooltip-type"></p>
-			<p class="tooltip-heirloom"></p>
+                        <p class="tooltip-type"></p>
+                        <p class="tooltip-heirloom"></p>
+                        <p class="tooltip-renown"></p>
 			<ul class="tooltip-stats"></ul>
 			<p class='tooltip-description'></p>
 			<ul class='tooltip-list'></ul>
@@ -56,8 +59,12 @@ export class Tooltip {
 		this.$(".tooltip-name").textContent = data.name;
 		this.$(".tooltip-type").textContent = `${data.type ?? ""} • ${data.rarity ?? ""}`.trim();
 		this.fillStats(data.stats ?? []);
-		this.$(".tooltip-heirloom").textContent = data.heirloom ? `Heirloom: ${data.heirloom}` : "";
-		this.$(".tooltip-description").textContent = data.description ?? "";
+                this.$(".tooltip-heirloom").textContent = data.heirloom ? `Heirloom: ${data.heirloom}` : "";
+                this.$(".tooltip-renown").textContent =
+                        data.renownCurrent !== undefined && data.renownRequired !== undefined
+                                ? `Renown: ${data.renownCurrent} / ${data.renownRequired}`
+                                : "";
+                this.$(".tooltip-description").textContent = data.description ?? "";
 		this.fillList(data.list ?? []);
 
 		// Optional tint
