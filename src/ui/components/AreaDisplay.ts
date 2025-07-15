@@ -137,10 +137,10 @@ export class AreaDisplay extends UIBase {
 		this.autoAdvanceCb = document.createElement("input");
 		this.autoAdvanceCb.type = "checkbox";
 		label.prepend(this.autoAdvanceCb);
-		
+
 		// Add event listener for checkbox change
 		this.autoAdvanceCb.addEventListener("change", this.onAutoAdvanceChange);
-		
+
 		this.optionsContainer.appendChild(label);
 	}
 
@@ -173,7 +173,8 @@ export class AreaDisplay extends UIBase {
 			this.buildOutpostBtn.setState(stats.outpostAvailable ? "enabled" : "disabled");
 
 			const container = this.$(`#${AreaDisplay.DOM_IDS.STATS_ROWS}`) as HTMLDivElement;
-			container.innerHTML = "";
+			container.innerHTML = "<h3 style='margin: 0 0 1rem 0;'>Area Progress</h3>";
+
 			// Create stat rows using our helper method
 			const statRows = this.createStatRows(stats);
 

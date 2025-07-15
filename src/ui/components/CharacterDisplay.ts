@@ -24,15 +24,17 @@ export class CharacterDisplay extends UIBase {
 	private nameEl!: HTMLElement;
 	private statGridEl!: HTMLElement;
 	private hpBar!: ProgressBar;
-	private hpLabel!: HTMLElement;
+	private hpValueEl!: HTMLElement;
 	private hpChangeEl!: HTMLElement;
 	private staminaBar!: ProgressBar;
-	private staminaLabel!: HTMLElement;
+	private staminaValueEl!: HTMLElement;
 	private avatarImg!: HTMLImageElement;
 	private abilitiesListEl!: HTMLUListElement;
 	private abilitiesListMap = new Map<string, HTMLElement>();
 	private affinityRowEl?: HTMLElement;
 	private statusRowEl!: HTMLElement;
+	private manaBar!: ProgressBar;
+	private manaValueEl!: HTMLElement;
 	private debugStatsEl?: HTMLElement;
 
 	// Track active transitions for cleanup
@@ -56,14 +58,14 @@ export class CharacterDisplay extends UIBase {
 
 	private createDisplay() {
 		// CACHE ELEMENTS
-		this.nameEl = this.$(".char-card__name");
-		this.statGridEl = this.$(".stat-grid");
+		this.nameEl = this.$(".char-name");
+		//this.statGridEl = this.$(".stat-grid");
 		this.buildHealthStack();
 
 		this.affinityRowEl = this.element.querySelector<HTMLElement>(".affinity-row") || undefined;
 		this.statusRowEl = this.$(".status-effects-row");
 
-		this.avatarImg = this.$(".char-card__portrait") as HTMLImageElement;
+		this.avatarImg = this.byId("char-portrait") as HTMLImageElement;
 		this.element.classList.add(this.isPlayer ? "player" : "enemy");
 		this.abilitiesListEl = this.$(".ability-list") as HTMLUListElement;
 
@@ -75,16 +77,16 @@ export class CharacterDisplay extends UIBase {
 	}
 
 	private buildHealthStack() {
-		const healthStackEl = this.$(".health-stack");
-		healthStackEl.innerHTML = "";
-
-		this.staminaLabel = document.createElement("small");
-		this.staminaLabel.className = "stamina-label basic-small";
-		this.staminaLabel.textContent = `0/0 ST`;
-		healthStackEl.appendChild(this.staminaLabel);
+		this.hpValueEl = this.byId("health-value");
+		this.manaValueEl = this.byId("mana-value");
+		this.staminaValueEl = this.byId("stamina-value");
+		this.hpChangeEl = this.byId("hp-change");
+		this.hpChangeEl.addEventListener("animationend", () => {
+			this.hpChangeEl.classList.remove("show");
+		});
 
 		this.staminaBar = new ProgressBar({
-			container: healthStackEl,
+			container: this.byId("stamina-bar"),
 			label: "ST",
 			showLabel: false,
 			initialValue: 0,
@@ -92,27 +94,23 @@ export class CharacterDisplay extends UIBase {
 			color: "blue",
 			smooth: true,
 		});
-
-		this.hpLabel = document.createElement("small");
-		this.hpLabel.className = "hp-label basic-small";
-		this.hpLabel.textContent = `0/0 HP`;
-		healthStackEl.appendChild(this.hpLabel);
-
-		this.hpChangeEl = document.createElement("div");
-		this.hpChangeEl.className = "hp-change basic-small";
-		this.hpChangeEl.addEventListener("animationend", () => {
-			this.hpChangeEl.classList.remove("show");
-		});
-		healthStackEl.appendChild(this.hpChangeEl);
-
 		this.hpBar = new ProgressBar({
-			container: healthStackEl,
+			container: this.byId("health-bar"),
 			label: "HP",
 			showLabel: false,
 			initialValue: 0,
 			maxValue: 1,
 			color: "green",
 			smooth: true, //this.isPlayer ? "green" : "red",
+		});
+		this.manaBar = new ProgressBar({
+			container: this.byId("mana-bar"),
+			label: "MP",
+			showLabel: false,
+			initialValue: 0,
+			maxValue: 1,
+			color: "blue",
+			smooth: true,
 		});
 	}
 
@@ -248,10 +246,10 @@ export class CharacterDisplay extends UIBase {
 		this.hpBar.setValue(hpCurrent);
 		this.hpBar.setMax(hpMax);
 
-		this.hpLabel.textContent = `${formatNumberShort(hpCurrent, 0)} / ${formatNumberShort(hpMax, 0)} HP`;
+		this.hpValueEl.textContent = `${formatNumberShort(hpCurrent, 0)} / ${formatNumberShort(hpMax, 0)} HP`;
 		this.staminaBar.setValue(staminaCurrent);
 		this.staminaBar.setMax(staminaMax);
-		this.staminaLabel.textContent = `${formatNumberShort(staminaCurrent, 0)} / ${formatNumberShort(staminaMax, 0)} ST`;
+		this.staminaValueEl.textContent = `${formatNumberShort(staminaCurrent, 0)} / ${formatNumberShort(staminaMax, 0)} ST`;
 
 		abilities.forEach((ability, i) => {
 			const bar = this.abilitiesListMap.get(ability.id);
@@ -343,19 +341,10 @@ export class CharacterDisplay extends UIBase {
 	}
 
 	private createStatsGrid() {
-		this.statGridEl.innerHTML = "";
-
-		const powerStats: PowerLevel = this.character.getPowerLevel();
-		for (const [key, value] of Object.entries(powerStats)) {
-			const wrapper = document.createElement("div");
-			const dt = document.createElement("dt");
-			dt.textContent = key;
-			const dd = document.createElement("dd");
-			dd.textContent = value;
-			wrapper.appendChild(dt);
-			wrapper.appendChild(dd);
-			this.statGridEl.appendChild(wrapper);
-		}
+		const attackLabel = this.byId("attack-label");
+		const defenceLabel = this.byId("defence-label");
+		attackLabel.textContent = formatNumberShort(this.character.stats.get("attack") ?? 0);
+		defenceLabel.textContent = formatNumberShort(this.character.stats.get("defence") ?? 0);
 	}
 
 	public getDebugStatsString(): string {
@@ -514,10 +503,10 @@ export class CharacterDisplay extends UIBase {
 		this.nameEl = undefined!;
 		this.statGridEl = undefined!;
 		this.hpBar = undefined!;
-		this.hpLabel = undefined!;
+		this.hpValueEl = undefined!;
 		this.hpChangeEl = undefined!;
 		this.staminaBar = undefined!;
-		this.staminaLabel = undefined!;
+		this.staminaValueEl = undefined!;
 		this.avatarImg = undefined!;
 		this.abilitiesListEl = undefined!;
 		this.affinityRowEl = undefined;

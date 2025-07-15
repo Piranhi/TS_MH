@@ -1,82 +1,80 @@
 import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
-import { formatNumberShort, prettify } from "@/shared/utils/stringUtils";
 import { ProgressBar } from "./ProgressBar";
 import { TableDisplay } from "./TableDisplay";
-
-interface StatMapping {
-	displayName: string;
-	getValue: (stats: any) => string | number; // We'll make this more specific later
-}
+import { formatNumberShort } from "@/shared/utils/stringUtils";
 
 export class PlayerStatsDisplay extends UIBase {
+	private tableWrapper!: HTMLElement;
+	private traitListEl!: HTMLElement;
 	private levelNumberEl!: HTMLElement;
 	private xpTextEl!: HTMLElement;
 	private xpProgressBar!: ProgressBar;
-	private traitListEl!: HTMLUListElement;
-	private tableWrapper!: HTMLElement;
 	private statsTable!: TableDisplay;
 	private traitTable!: TableDisplay;
-
-	// Then create your stat mappings
-	private statMappings: StatMapping[] = [
-		{ displayName: "Attack", getValue: (stats) => formatNumberShort(stats.attack) || 0 },
-		{ displayName: "Defence", getValue: (stats) => formatNumberShort(stats.defence) || 0 },
-		{ displayName: "Health", getValue: (stats) => formatNumberShort(stats.hp) || 0 },
-		{ displayName: "Regen", getValue: (stats) => formatNumberShort(stats.regen) || 0 },
-		{ displayName: "Lifesteal", getValue: (stats) => formatNumberShort(stats.lifesteal) || 0 },
-		{ displayName: "Speed", getValue: (stats) => formatNumberShort(stats.speed) || 0 },
-		{ displayName: "Crit Chance", getValue: (stats) => formatNumberShort(stats.critChance) || 0 },
-		{ displayName: "Crit Damage", getValue: (stats) => formatNumberShort(stats.critDamage) || 0 },
-		{ displayName: "Evasion", getValue: (stats) => formatNumberShort(stats.evasion) || 0 },
-		{ displayName: "Encounter Chance", getValue: (stats) => formatNumberShort(stats.encounterChance) || 0 },
-		{ displayName: "Fire Bonus", getValue: (stats) => formatNumberShort(stats.fireBonus) || 0 },
-		{ displayName: "Ice Bonus", getValue: (stats) => formatNumberShort(stats.iceBonus) || 0 },
-		{ displayName: "Poison Bonus", getValue: (stats) => formatNumberShort(stats.poisonBonus) || 0 },
-		{ displayName: "Lightning Bonus", getValue: (stats) => formatNumberShort(stats.lightningBonus) || 0 },
-		{ displayName: "Light Bonus", getValue: (stats) => formatNumberShort(stats.lightBonus) || 0 },
-		{ displayName: "Physical Bonus", getValue: (stats) => formatNumberShort(stats.physicalBonus) || 0 },
-	];
 
 	constructor(container: HTMLElement) {
 		super();
 		this.element = container;
-		this.createElements();
-		this.setupLevelDisplay();
+		this.setupElements();
 		this.createTables();
+		this.setupLevelDisplay();
 		this.bindEvents();
-		this.updateFromPlayerStats();
-		this.updateTraitDisplay();
+
+		// Add glass effect to main container
+		this.element.classList.add("player-stats-glass-container");
 	}
 
-	private createElements() {
+	private setupElements() {
+		// Create glass panels for different sections
 		this.element.innerHTML = `
-        <div class="stats-container">
+            <div class="player-stats-section glass-panel">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">📊</span>
+                        Character Level
+                    </h3>
+                </div>
+                <div class="level-display-container">
+                    <div class="level-circle">
+                        <span id="player-level-number" class="level-number">1</span>
+                    </div>
+                    <div class="xp-info">
+                        <div id="xp-progress-container"></div>
+                        <span id="xp-text" class="xp-text">0 / 100 XP</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="player-stats-section glass-panel">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">⚔️</span>
+                        Combat Stats
+                    </h3>
+                    <button class="toggle-btn glass-btn-mini">▼</button>
+                </div>
+                <div id="stats-table-wrapper" class="table-wrapper"></div>
+            </div>
+            
+            <div class="player-stats-section glass-panel">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">✨</span>
+                        Traits
+                    </h3>
+                    <button class="toggle-btn glass-btn-mini">▼</button>
+                </div>
+                <div id="trait-list" class="trait-list-wrapper"></div>
+            </div>
+        `;
 
-			<h2 class="basic-subtitle">Level</h2>
-            <div class="player-level-section">
-                <div class="level-display">
-                    <span class="level-text">Lvl</span>
-                    <span class="level-number" id="player-level-number">1</span>
-                </div>
-                <div class="xp-progress-container" id="xp-progress-container">
-                    <!-- ProgressBarSimple will be inserted here -->
-                </div>
-                <div class="xp-text" id="xp-text">0 / 100 XP</div>
-            </div>
-                            <h2 class="basic-subtitle">Stats</h2>
-            <div class="basic-table-wrapper" id="stats-table">
-			</div>
-		<h2 class="basic-subtitle">Traits</h2>
-            <div class="trait-section">
-				<ul id="trait-list" class="basic-list"></ul>
-            </div>
-        </div>`;
-		this.tableWrapper = this.element.querySelector("#stats-table")!;
+		this.tableWrapper = this.element.querySelector("#stats-table-wrapper")!;
 		this.traitListEl = this.element.querySelector("#trait-list")!;
 	}
 
 	private createTables() {
+		// Stats table with glass styling
 		this.statsTable = new TableDisplay({
 			container: this.tableWrapper,
 			columns: 2,
@@ -84,8 +82,10 @@ export class PlayerStatsDisplay extends UIBase {
 			banded: true,
 			boldFirstColumn: true,
 			collapsible: true,
+			className: "glass-table",
 		});
 
+		// Traits table with glass styling
 		this.traitTable = new TableDisplay({
 			container: this.traitListEl,
 			columns: 2,
@@ -93,6 +93,7 @@ export class PlayerStatsDisplay extends UIBase {
 			banded: true,
 			boldFirstColumn: true,
 			collapsible: true,
+			className: "glass-table",
 		});
 	}
 
@@ -101,91 +102,89 @@ export class PlayerStatsDisplay extends UIBase {
 		this.levelNumberEl = this.element.querySelector("#player-level-number")!;
 		this.xpTextEl = this.element.querySelector("#xp-text")!;
 
-		// Create XP progress bar
+		// Create XP progress bar with glass effect
 		const progressContainer = this.element.querySelector("#xp-progress-container")!;
 		this.xpProgressBar = new ProgressBar({
 			container: progressContainer as HTMLElement,
 			maxValue: 100,
 			initialValue: 0,
+			smooth: true,
+			color: "blue",
 		});
-
-		// Initial update
-		this.updateLevelDisplay();
 	}
 
-	private updateLevelDisplay() {
-		const char = this.context.character;
-		const currentLevel = char.level;
-		const currentXP = char.currentXp;
-		const xpForNextLevel = char.nextXpThreshold;
-
-		// Update level number
-		this.levelNumberEl.textContent = currentLevel.toString();
-
-		// Update XP progress bar
-		this.xpProgressBar.setMax(xpForNextLevel);
-		this.xpProgressBar.setValue(currentXP);
-
-		// Update XP text
-		this.xpTextEl.textContent = `${formatNumberShort(currentXP)} / ${formatNumberShort(xpForNextLevel)} XP`;
-	}
-
-	// Integration with your game's event system
 	private bindEvents() {
-		// Listen for stat changes
-		bindEvent(this.eventBindings, "player:statsChanged", () => {
-			this.updateFromPlayerStats();
+		// Level up event with animation
+		bindEvent(this.eventBindings, "player:level-up", (level: number) => {
+			this.levelNumberEl.textContent = level.toString();
+
+			// Add level up animation
+			const levelCircle = this.element.querySelector(".level-circle") as HTMLElement;
+			levelCircle.classList.add("level-up-burst");
+			setTimeout(() => levelCircle.classList.remove("level-up-burst"), 1000);
 		});
 
-		// Listen for level changes
-		bindEvent(this.eventBindings, "char:gainedXp", () => {
-			this.updateLevelDisplay();
+		// XP change event
+		bindEvent(this.eventBindings, "player:xp-changed", (data: { current: number; max: number }) => {
+			this.xpProgressBar.setMax(data.max);
+			this.xpProgressBar.setValue(data.current);
+			this.xpTextEl.textContent = `${formatNumberShort(data.current)} / ${formatNumberShort(data.max)} XP`;
 		});
 
-		// Listen for any game tick to update XP (in case XP changes without leveling)
-		bindEvent(this.eventBindings, "Game:UITick", () => {
-			this.updateLevelDisplay();
+		// Stats update event
+		bindEvent(this.eventBindings, "player:stats-changed", (stats: any) => {
+			this.updateStatsTable(stats);
 		});
-		bindEvent(this.eventBindings, "game:gameReady", () => {
-			this.updateTraitDisplay();
+
+		// Traits update event
+		bindEvent(this.eventBindings, "player:traits-changed", (traits: any[]) => {
+			this.updateTraitsTable(traits);
+		});
+
+		// Toggle buttons
+		const toggleBtns = this.element.querySelectorAll(".toggle-btn");
+		toggleBtns.forEach((btn) => {
+			btn.addEventListener("click", (e) => {
+				const section = (e.target as HTMLElement).closest(".player-stats-section");
+				section?.classList.toggle("collapsed");
+				(e.target as HTMLElement).textContent = section?.classList.contains("collapsed") ? "▶" : "▼";
+			});
 		});
 	}
 
-	private updateFromPlayerStats() {
-		if (!this.context.currentRun) return;
-		this.updateStatsTable();
-		this.updateTraitDisplay();
+	private updateStatsTable(stats: any) {
+		const rows: [string, string][] = [
+			["Attack", `⚔️ ${formatNumberShort(stats.attack || 0)}`],
+			["Defense", `🛡️ ${formatNumberShort(stats.defense || 0)}`],
+			["HP", `❤️ ${formatNumberShort(stats.maxHp || 0)}`],
+			["MP", `💙 ${formatNumberShort(stats.maxMp || 0)}`],
+			["Speed", `💨 ${formatNumberShort(stats.speed || 0)}`],
+			["Crit Chance", `⚡ ${(stats.critChance || 0).toFixed(1)}%`],
+			["Crit Damage", `💥 ${(stats.critDamage || 0).toFixed(1)}%`],
+		];
+
+		this.statsTable.updateData(rows);
 	}
 
-	// Update multiple stats at once
-	public updateStatsTable() {
-		if (!this.context.currentRun) return;
+	private updateTraitsTable(traits: any[]) {
+		const rows: [string, string][] = traits.map((trait) => {
+			const rarityClass = `rarity-${trait.rarity}`;
+			const rarityIcon = this.getRarityIcon(trait.rarity);
+			return [trait.name, `<span class="${rarityClass}">${rarityIcon} ${trait.rarity}</span>`];
+		});
 
-		const character = this.context.character;
-		const stats = character.statsEngine.getAll();
-		this.statsTable.setRows(this.statMappings.map((stat) => [stat.displayName, stat.getValue(stats)]));
+		this.traitTable.updateData(rows);
 	}
 
-	private updateTraitDisplay() {
-		const traits = this.context.character.getTraits();
-		this.traitTable.setRows(traits.map((t) => [t.name, t.rarity]));
-		/* 		this.traitListEl.innerHTML = "";
-		traits.forEach((t) => {
-			const li = document.createElement("li");
-			li.textContent = `${t.name} (${t.rarity})`;
-			this.traitListEl.appendChild(li);
-			li.classList.add("basic-list-item");
-		}); */
-	}
-
-	// Clean up when component is destroyed
-	public destroy() {
-		if (this.xpProgressBar) {
-			this.xpProgressBar.destroy();
-		}
-		if (this.statsTable) {
-			this.statsTable.destroy();
-		}
-		super.destroy();
+	private getRarityIcon(rarity: string): string {
+		const icons: Record<string, string> = {
+			common: "⚪",
+			uncommon: "🟢",
+			rare: "🔵",
+			epic: "🟣",
+			legendary: "🟡",
+			mythic: "🔴",
+		};
+		return icons[rarity.toLowerCase()] || "⚪";
 	}
 }

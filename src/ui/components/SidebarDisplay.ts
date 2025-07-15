@@ -12,14 +12,25 @@ export class SidebarDisplay extends UIBase {
 
 	public build() {
 		this.navContainer.innerHTML = "";
+
+		// Add glass effect to sidebar container
+		this.navContainer.classList.add("menu-nav-glass");
+
 		const ul = document.createElement("ul");
+		ul.className = "nav-list";
 		this.buildNavItems(screenNav, ul);
 		this.navContainer.append(ul);
 
 		bus.on("ui:screenChanged", (screen) => {
 			for (const [name, li] of this.sidebarMap) {
-				if (name === screen) li.classList.add("active");
-				else li.classList.remove("active");
+				if (name === screen) {
+					li.classList.add("active");
+					// Add glow effect to active item
+					li.querySelector("button")?.classList.add("glass-glow");
+				} else {
+					li.classList.remove("active");
+					li.querySelector("button")?.classList.remove("glass-glow");
+				}
 			}
 		});
 	}
@@ -27,33 +38,50 @@ export class SidebarDisplay extends UIBase {
 	private buildNavItems(items: ScreenNav[], parent: HTMLElement, depth = 0) {
 		for (const item of items) {
 			const li = document.createElement("li");
+			li.className = "nav-item";
+
 			const btn = document.createElement("button");
-			// Create Icons
+			btn.className = "nav-btn glass-nav-btn";
+
+			// Create Icons with better styling
 			const icon = document.createElement("span");
 			icon.classList.add("icon");
-			icon.textContent = "🏠";
+			icon.textContent = this.getIconForScreen(item.name);
 			btn.append(icon);
 
-			btn.textContent = btn.textContent + prettify(item.name);
+			// Add text
+			const text = document.createElement("span");
+			text.className = "nav-text";
+			text.textContent = prettify(item.name);
+			btn.append(text);
 
 			// Style sub-buttons differently
 			if (depth > 0) {
 				btn.classList.add("nav-subbtn");
 				btn.style.paddingLeft = `${16 + 16 * depth}px`;
-			} else {
-				btn.classList.add("nav-btn");
 			}
+
+			// Add hover effect
+			btn.addEventListener("mouseenter", () => {
+				btn.classList.add("hover");
+			});
+
+			btn.addEventListener("mouseleave", () => {
+				btn.classList.remove("hover");
+			});
 
 			btn.addEventListener("click", () => this.onSelect(item.name));
 			li.append(btn);
 
 			this.sidebarMap.set(item.name, li);
 
-			// Create Counters
-			const counter = document.createElement("span");
-			counter.classList.add("badge");
-			counter.textContent = "5";
-			btn.append(counter);
+			// Create Counter badge with glass effect
+			if (this.shouldShowBadge(item.name)) {
+				const counter = document.createElement("span");
+				counter.classList.add("badge", "glass-badge");
+				counter.textContent = this.getBadgeCount(item.name);
+				btn.append(counter);
+			}
 
 			// Recursively add children
 			if (item.children && item.children.length > 0) {
@@ -64,6 +92,49 @@ export class SidebarDisplay extends UIBase {
 			}
 
 			parent.append(li);
+		}
+	}
+
+	// Helper method to get icons for each screen
+	private getIconForScreen(screenName: ScreenName): string {
+		const iconMap: Record<ScreenName, string> = {
+			train: "💪",
+			hunt: "⚔️",
+			settlement: "🏘️",
+			character: "👤",
+			inventory: "🎒",
+			bestiary: "📖",
+			outposts: "🏕️",
+			guildHall: "🏰",
+			mine: "⛏️",
+			library: "📚",
+			blacksmith: "🔨",
+			market: "🛒",
+			research: "🔬",
+		};
+		return iconMap[screenName] || "📋";
+	}
+
+	// Helper method to determine if badge should be shown
+	private shouldShowBadge(screenName: ScreenName): boolean {
+		// Add logic here for which screens should show badges
+		const badgeScreens: ScreenName[] = ["inventory", "market", "blacksmith"];
+		return badgeScreens.includes(screenName);
+	}
+
+	// Helper method to get badge count
+	private getBadgeCount(screenName: ScreenName): string {
+		// This would connect to your actual game data
+		// For now, returning example values
+		switch (screenName) {
+			case "inventory":
+				return "12";
+			case "market":
+				return "3";
+			case "blacksmith":
+				return "5";
+			default:
+				return "0";
 		}
 	}
 }

@@ -1,0 +1,945 @@
+/* ============================================
+   GLASS MORPHISM DESIGN SYSTEM
+   ============================================ */
+:root {
+	/* Core Colors */
+	--primary-hue: 200;
+	--accent-hue: 160;
+	--danger-hue: 0;
+	--success-hue: 120;
+	--warning-hue: 45;
+
+	/* Glass Effects */
+	--glass-bg: rgba(255, 255, 255, 0.05);
+	--glass-bg-hover: rgba(255, 255, 255, 0.08);
+	--glass-bg-active: rgba(255, 255, 255, 0.03);
+	--glass-bg-dark: rgba(0, 0, 0, 0.3);
+	--glass-border: rgba(255, 255, 255, 0.1);
+	--glass-border-hover: rgba(255, 255, 255, 0.15);
+	--glass-blur-light: 8px;
+	--glass-blur-medium: 12px;
+	--glass-blur-heavy: 20px;
+	--glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+	--glass-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.3);
+
+	/* Text Colors */
+	--text-primary: rgba(255, 255, 255, 0.95);
+	--text-secondary: rgba(255, 255, 255, 0.7);
+	--text-muted: rgba(255, 255, 255, 0.5);
+
+	/* Rarity Colors */
+	--rarity-common: #b0b0b0;
+	--rarity-uncommon: #51cf66;
+	--rarity-rare: #339af0;
+	--rarity-epic: #cc5de8;
+	--rarity-legendary: #ffd43b;
+	--rarity-mythic: #ff6b6b;
+
+	/* Accent Colors */
+	--accent-primary: hsl(var(--primary-hue), 70%, 60%);
+	--accent-secondary: hsl(var(--accent-hue), 60%, 55%);
+	--accent-danger: hsl(var(--danger-hue), 70%, 60%);
+	--accent-success: hsl(var(--success-hue), 60%, 55%);
+
+	/* Smooth transitions */
+	--transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-medium: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+	/* Spacing */
+	--space-xs: 0.25rem;
+	--space-sm: 0.5rem;
+	--space-md: 1rem;
+	--space-lg: 1.5rem;
+	--space-xl: 2rem;
+
+	/* Border Radius */
+	--radius-sm: 0.5rem;
+	--radius-md: 0.75rem;
+	--radius-lg: 1rem;
+	--radius-xl: 1.5rem;
+}
+
+h1 {
+	text-align: center;
+	margin-bottom: 3rem;
+	font-size: 2.5rem;
+}
+
+h2 {
+	margin-bottom: 1rem;
+	font-size: 1.6rem;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	-webkit-background-clip: text;
+	color: var(--text-secondary);
+}
+
+/* ============================================
+   BODY & BACKGROUND
+   ============================================ */
+body {
+	margin: 0;
+	padding: 0;
+	min-height: 100vh;
+	background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+	color: var(--text-primary);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	position: relative;
+	overflow-x: hidden;
+}
+
+/* Animated background orbs */
+body::before,
+body::after {
+	content: "";
+	position: fixed;
+	border-radius: 50%;
+	filter: blur(80px);
+	opacity: 0.3;
+	animation: float 20s infinite ease-in-out;
+	pointer-events: none;
+}
+
+body::before {
+	width: 400px;
+	height: 400px;
+	background: var(--accent-primary);
+	top: -200px;
+	right: -200px;
+}
+
+body::after {
+	width: 500px;
+	height: 500px;
+	background: radial-gradient(circle, var(--accent-secondary) 0%, transparent 70%);
+	bottom: -250px;
+	left: -250px;
+	animation-delay: 12.5s;
+}
+
+@keyframes float {
+	0%,
+	100% {
+		transform: translate(0, 0) rotate(0deg) scale(1);
+	}
+	33% {
+		transform: translate(30px, -30px) rotate(120deg) scale(1.1);
+	}
+	66% {
+		transform: translate(-20px, 20px) rotate(240deg) scale(0.9);
+	}
+}
+
+/* ============================================
+   HEADER GLASS STYLING
+   ============================================ */
+.header {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur-medium));
+	-webkit-backdrop-filter: blur(var(--glass-blur-medium));
+	border-bottom: 1px solid var(--glass-border);
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Hamburger menu glass effect */
+.hamburger {
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+	transition: all var(--transition-fast);
+}
+
+.hamburger:hover {
+	background: var(--glass-bg-hover);
+}
+
+.hamburger span {
+	background: var(--text-primary);
+	transition: all var(--transition-fast);
+}
+
+/* Player stats in header */
+.player-stats {
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 0.5rem;
+	padding: 0.5rem 1rem;
+	backdrop-filter: blur(8px);
+	transition: all var(--transition-fast);
+}
+
+.player-stats:hover {
+	background: rgba(0, 0, 0, 0.3);
+	transform: translateY(-1px);
+}
+
+/* ============================================
+   SIDEBAR GLASS STYLING
+   ============================================ */
+.menu-nav {
+	background: rgba(20, 20, 30, 0.8);
+	backdrop-filter: blur(var(--glass-blur-heavy));
+	-webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+	border-right: 1px solid var(--glass-border);
+	box-shadow: 4px 0 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Nav buttons with glass effect */
+.menu-nav button {
+	position: relative;
+	background: transparent;
+	border: none;
+	border-radius: 0.5rem;
+	margin: 0.25rem 0.5rem;
+	transition: all var(--transition-fast);
+	overflow: hidden;
+}
+
+.menu-nav button::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+	opacity: 0;
+	transition: opacity var(--transition-fast);
+}
+
+.menu-nav button:hover {
+	background: var(--glass-bg);
+	color: var(--text-primary);
+	transform: translateX(4px);
+}
+
+.menu-nav button:hover::before {
+	opacity: 1;
+}
+
+.menu-nav li.active button {
+	background: var(--glass-bg-hover);
+	border-left: 3px solid var(--accent-primary);
+	color: var(--text-primary);
+}
+
+/* Badges with glass effect */
+.badge {
+	background: var(--accent-primary);
+	color: white;
+	box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* ============================================
+   MAIN CONTENT AREA
+   ============================================ */
+#game-area {
+	background: transparent;
+}
+
+.game {
+	padding: var(--space-lg);
+}
+
+/* ============================================
+   GLASS PANELS
+   ============================================ */
+.glass-panel,
+.panel,
+.basic-panel {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur-medium));
+	-webkit-backdrop-filter: blur(var(--glass-blur-medium));
+	border: 1px solid var(--glass-border);
+	border-radius: 1rem;
+	box-shadow: var(--glass-shadow);
+	position: relative;
+	overflow: hidden;
+	transition: all var(--transition-medium);
+}
+
+/* Inner glow for depth */
+.glass-panel::before,
+.panel::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+	pointer-events: none;
+}
+
+.glass-panel:hover,
+.panel:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--glass-shadow-hover);
+	border-color: var(--glass-border-hover);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.ui-button,
+.btn,
+button {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur-light));
+	-webkit-backdrop-filter: blur(var(--glass-blur-light));
+	border: 1px solid var(--glass-border);
+	border-radius: 0.5rem;
+	color: var(--text-primary);
+	padding: 0.5rem 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+	position: relative;
+	overflow: hidden;
+}
+
+/* Button shine effect */
+.ui-button::before,
+.btn::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+	transform: translateX(-100%);
+	transition: transform var(--transition-medium);
+}
+
+.ui-button:hover,
+.btn:hover {
+	background: var(--glass-bg-hover);
+	border-color: var(--glass-border-hover);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.ui-button:hover::before,
+.btn:hover::before {
+	transform: translateX(100%);
+}
+
+.ui-button:active,
+.btn:active {
+	transform: translateY(0);
+	background: var(--glass-bg-active);
+}
+
+/* Primary button variant */
+.btn-primary,
+.ui-button-primary {
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+	border-color: rgba(102, 126, 234, 0.3);
+	color: var(--text-primary);
+}
+
+.btn-primary:hover,
+.ui-button-primary:hover {
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+	border-color: rgba(102, 126, 234, 0.4);
+	box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* ============================================
+   PROGRESS BARS
+   ============================================ */
+.mh-progress-container {
+	margin: var(--space-sm) 0;
+}
+
+.mh-progress {
+	height: 8px;
+	background: rgba(0, 0, 0, 0.3);
+	border-radius: 4px;
+	overflow: hidden;
+	position: relative;
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mh-progress__fill {
+	height: 100%;
+	background: linear-gradient(90deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+	border-radius: 4px;
+	transition: width var(--transition-medium);
+	position: relative;
+	overflow: hidden;
+	box-shadow: 0 0 12px currentColor;
+}
+
+/* Shimmer animation */
+.mh-progress__fill::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+	transform: translateX(-100%);
+	animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+	to {
+		transform: translateX(100%);
+	}
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+.basic-table-wrapper {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur-light));
+	border: 1px solid var(--glass-border);
+	border-radius: 0.75rem;
+	overflow: hidden;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.basic-table thead {
+	background: rgba(255, 255, 255, 0.05);
+}
+
+.basic-table th {
+	color: var(--text-primary);
+	font-weight: 600;
+	border-bottom: 1px solid var(--glass-border);
+}
+
+.basic-table td {
+	color: var(--text-secondary);
+	border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.basic-table--banded tbody tr:nth-child(odd) {
+	background: rgba(255, 255, 255, 0.02);
+}
+
+/* ============================================
+   CARDS & CONTAINERS
+   ============================================ */
+.card,
+.stat-card {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur-medium));
+	-webkit-backdrop-filter: blur(var(--glass-blur-medium));
+	border: 1px solid var(--glass-border);
+	border-radius: 1rem;
+	padding: var(--space-lg);
+	transition: all var(--transition-medium);
+	position: relative;
+}
+
+.card:hover,
+.stat-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+	border-color: var(--glass-border-hover);
+}
+
+/* ============================================
+   LISTS & GRIDS
+   ============================================ */
+.basic-list {
+	list-style: none;
+	padding: 0;
+}
+
+.basic-list li {
+	padding: var(--space-sm) var(--space-md);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	transition: all var(--transition-fast);
+}
+
+.basic-list li:hover {
+	background: var(--glass-bg);
+	padding-left: calc(var(--space-md) + 4px);
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+.glass-glow {
+	box-shadow: var(--glass-shadow), 0 0 30px rgba(102, 126, 234, 0.2);
+}
+
+.glass-border-glow {
+	border-color: var(--accent-primary);
+	box-shadow: var(--glass-shadow), inset 0 0 20px rgba(102, 126, 234, 0.1);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: rgba(255, 255, 255, 0.02);
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 4px;
+	transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(255, 255, 255, 0.2);
+}
+
+/* Firefox scrollbar */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.1) rgba(255, 255, 255, 0.02);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+	:root {
+		--glass-blur-medium: 8px;
+		--glass-blur-heavy: 12px;
+	}
+
+	.glass-panel,
+	.panel {
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+	}
+
+	body::before,
+	body::after {
+		display: none; /* Remove animated orbs on mobile for performance */
+	}
+}
+
+/* Performance optimization */
+@media (prefers-reduced-motion: reduce) {
+	* {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* GPU acceleration for frequently animated elements */
+.glass-panel,
+.panel,
+.card,
+.ui-button,
+.mh-progress__fill {
+	will-change: transform;
+	transform: translateZ(0);
+}
+
+/* -------------------------- HEADER -------------------------- */
+/* ============================================
+   HEADER GLASS STYLING
+   ============================================ */
+
+/* Player stats list in header */
+.player-stats-list {
+	display: flex;
+	gap: 1rem;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+/* Individual stat cards */
+.player-stat-item {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	background: rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(8px);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 0.75rem;
+	padding: 0.5rem 1rem;
+	min-width: 120px;
+	transition: all 0.3s ease;
+}
+
+.player-stat-item:hover {
+	background: rgba(255, 255, 255, 0.05);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Stat icon styling */
+.stat-icon-container {
+	width: 32px;
+	height: 32px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.2rem;
+}
+
+.stat-content {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+}
+
+.stat-label {
+	font-size: 0.75rem;
+	color: rgba(255, 255, 255, 0.6);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.stat-value {
+	font-size: 1rem;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.95);
+}
+
+.stat-income {
+	font-size: 0.75rem;
+	color: #51cf66;
+	display: none;
+}
+
+/* Progress container for energy */
+.stat-progress-container {
+	width: 80px;
+	margin: 0.25rem 0;
+}
+
+/* Level container */
+.level-container {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	background: rgba(102, 126, 234, 0.1);
+	backdrop-filter: blur(8px);
+	border: 1px solid rgba(102, 126, 234, 0.3);
+	border-radius: 2rem;
+	padding: 0.5rem 1rem;
+	transition: all 0.3s ease;
+}
+
+.level-container:hover {
+	background: rgba(102, 126, 234, 0.15);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.level-icon {
+	font-size: 1.2rem;
+}
+
+.level-text {
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.95);
+}
+
+/* Separator */
+.dot-sep {
+	color: rgba(255, 255, 255, 0.3);
+	margin: 0 0.5rem;
+}
+
+/* Animations */
+@keyframes level-up-animation {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.2);
+		box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.level-up-animation {
+	animation: level-up-animation 0.6s ease-out;
+}
+
+/* Gold sparkle effect */
+@keyframes gold-sparkle {
+	0% {
+		filter: brightness(1);
+	}
+	50% {
+		filter: brightness(1.3) hue-rotate(10deg);
+	}
+	100% {
+		filter: brightness(1);
+	}
+}
+
+.gold-sparkle {
+	animation: gold-sparkle 0.5s ease-out;
+}
+
+/* Renown pulse effect */
+@keyframes renown-pulse {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.05);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+.renown-pulse {
+	animation: renown-pulse 0.6s ease-out;
+}
+
+/* Full energy glow */
+.stat-full-glow {
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), 0 0 20px rgba(247, 183, 49, 0.3);
+	border-color: rgba(247, 183, 49, 0.4);
+}
+
+/* Prestige button special styling */
+.glass-btn-glow {
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(204, 93, 232, 0.2) 100%);
+	border-color: rgba(102, 126, 234, 0.4);
+	position: relative;
+	overflow: hidden;
+}
+
+.glass-btn-glow::after {
+	content: "";
+	position: absolute;
+	inset: -50%;
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+	animation: rotate 10s linear infinite;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.glass-btn-glow:hover::after {
+	opacity: 1;
+}
+
+@keyframes rotate {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.player-stats-list {
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.player-stat-item {
+		min-width: 100px;
+		padding: 0.4rem 0.8rem;
+	}
+
+	.stat-icon-container {
+		width: 28px;
+		height: 28px;
+		font-size: 1rem;
+	}
+}
+
+/* ============================================
+   PLAYER STATS DISPLAY GLASS STYLING
+   ============================================ */
+
+.player-stats-glass-container {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: 1rem;
+}
+
+.player-stats-section {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur-medium));
+	-webkit-backdrop-filter: blur(var(--glass-blur-medium));
+	border: 1px solid var(--glass-border);
+	border-radius: 1rem;
+	padding: 1.5rem;
+	transition: all var(--transition-medium);
+}
+
+.player-stats-section:hover {
+	border-color: var(--glass-border-hover);
+	box-shadow: var(--glass-shadow-hover);
+}
+
+/* Section header */
+.section-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.section-title {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 0;
+	font-size: 1.125rem;
+	color: var(--text-primary);
+}
+
+.section-icon {
+	font-size: 1.25rem;
+}
+
+/* Toggle button */
+.toggle-btn {
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 0.375rem;
+	color: var(--text-secondary);
+	font-size: 0.75rem;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+}
+
+.toggle-btn:hover {
+	background: rgba(255, 255, 255, 0.1);
+	transform: scale(1.1);
+}
+
+/* Collapsed state */
+.player-stats-section.collapsed .table-wrapper,
+.player-stats-section.collapsed .trait-list-wrapper,
+.player-stats-section.collapsed .level-display-container {
+	display: none;
+}
+
+/* Level display */
+.level-display-container {
+	display: flex;
+	align-items: center;
+	gap: 1.5rem;
+}
+
+.level-circle {
+	width: 80px;
+	height: 80px;
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+	border: 2px solid rgba(102, 126, 234, 0.4);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3), inset 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.level-number {
+	font-size: 2rem;
+	font-weight: bold;
+	color: var(--text-primary);
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* XP info */
+.xp-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.xp-text {
+	font-size: 0.875rem;
+	color: var(--text-secondary);
+}
+
+/* Level up animation */
+@keyframes level-up-burst {
+	0% {
+		transform: scale(1);
+		box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3), inset 0 2px 8px rgba(0, 0, 0, 0.2);
+	}
+	50% {
+		transform: scale(1.2);
+		box-shadow: 0 0 40px rgba(102, 126, 234, 0.8), 0 0 60px rgba(102, 126, 234, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.3);
+	}
+	100% {
+		transform: scale(1);
+		box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3), inset 0 2px 8px rgba(0, 0, 0, 0.2);
+	}
+}
+
+.level-up-burst {
+	animation: level-up-burst 1s ease-out;
+}
+
+/* Glass table styling */
+.glass-table {
+	margin-top: 0.5rem;
+}
+
+.glass-table .basic-table-wrapper {
+	background: rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(4px);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.glass-table thead {
+	background: rgba(255, 255, 255, 0.05);
+}
+
+.glass-table th {
+	color: var(--text-primary);
+	font-weight: 600;
+	text-transform: uppercase;
+	font-size: 0.75rem;
+	letter-spacing: 0.05em;
+}
+
+.glass-table td {
+	color: var(--text-secondary);
+	padding: 0.75rem;
+}
+
+/* Rarity colors */
+.rarity-common {
+	color: #b0b0b0;
+}
+.rarity-uncommon {
+	color: #51cf66;
+}
+.rarity-rare {
+	color: #339af0;
+}
+.rarity-epic {
+	color: #cc5de8;
+}
+.rarity-legendary {
+	color: #ffd43b;
+	text-shadow: 0 0 10px rgba(255, 215, 59, 0.5);
+}
+.rarity-mythic {
+	color: #ff6b6b;
+	text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.player-stats-glass-container {
+		padding: 0.5rem;
+		gap: 1rem;
+	}
+
+	.player-stats-section {
+		padding: 1rem;
+	}
+
+	.level-display-container {
+		flex-direction: column;
+		text-align: center;
+	}
+}

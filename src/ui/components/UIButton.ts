@@ -43,7 +43,14 @@ export class UIButton extends UIBase {
 				this.el.classList.add("ui-button");
 				break;
 		}
-		this.el.classList.add(!options.className ? "ui-button" : options.className);
+		if (options.className) {
+			const classes = Array.isArray(options.className)
+				? options.className // already an array
+				: options.className.trim().split(/\s+/); // split "a b" → ["a","b"]
+
+			this.el.classList.add(...classes); // ✅ pass each token separately
+		}
+		//this.el.classList.add(!options.className ? "ui-button" : options.className);
 		//this.el.classList.add("ui-button");
 
 		this.el.textContent = options.text ?? "Button";

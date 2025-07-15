@@ -1,125 +1,198 @@
 <!-- ------------- #game-area ------------- -->
 <section class="game hunt-screen">
-    <!-- ╭─────────────────────────────╮
-       │  W I D E   D E S K T O P   │
-       ╰─────────────────────────────╯ -->
-
-    <!-- LEFT ⅔ – combat + log -->
-    <main class="hunt-main">
-        <!-- row 1: player + enemy cards (auto-filled by JS) -->
-        <div class="char-holders">
-            <div class="char-card player" id="char-card-player">
-                <!-- Card header: name & affinities -->
-                <div class="char-card__header">
-                    <h2 class="char-card__name">Player</h2>
-                    <div class="affinity-row"></div>
-                </div>
-                <!-- HP + Portrait -->
-                <div class="char-card__row">
-                    <div class="health-stack">
-                        <small class="stamina-label basic-small">50 / 100 ST</small>
-                        <div class="stamina-bar" style="--hunt-stamina: 1">
-                            <span class="stamina-fill"></span>
-                        </div>
-                        <small class="hp-label basic-small">132 / 200 HP</small>
-                        <div class="health-bar" style="--hunt-hp: 0.66">
-                            <span class="hp-fill"></span>
-                        </div>
+    <div class="hunt-screen">
+        <!-- Main Combat Area -->
+        <div class="hunt-main">
+            <div class="combat-area">
+                <!-- Player Card -->
+                <div class="character-card player" id="char-card-player">
+                    <div class="char-header">
+                        <h3 class="char-name">Hero</h3>
+                        <span class="char-level">Level 15</span>
                     </div>
-
-                    <img class="char-card__portrait" src="src/Assets/Images/enemy-example.png" alt="Goblin" />
-                </div>
-
-                <div class="status-effects-row icon-row"></div>
-
-                <dl class="stat-grid">
-                </dl>
-
-                <!-- 3. Abilities -->
-                <ul class="ability-list">
-                    <li class="ability" style="--hunt-cd: 0.35">
-                        <span class="ability-fill"></span>
-                        <span class="ability-icon">🔥</span>
-                        <span class="ability-name basic-very-small">Fireball</span>
-                        <span class="ability-dmg">21</span>
-                    </li>
-                    <!-- clone & update these via JS -->
-                </ul>
-                <!-- 4. Stats -->
-            </div>
-            <div class="char-card enemy" id="char-card-enemy">
-                <!-- Searching overlay -->
-                <div class="searching-overlay" id="searching-overlay">
-                    <div class="searching-content">
-                        <div class="searching-text">Searching...</div>
-                        <div class="searching-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Card header: name & affinities -->
-                <div class="char-card__header">
-                    <h2 class="char-card__name">Player</h2>
                     <div class="affinity-row affinity-row"></div>
-                </div>
 
-                <!-- HP + Portrait -->
-                <div class="char-card__row">
-                    <div class="health-stack" id="health-stack">
-                        <small class="stamina-label basic-small">50 / 100 ST</small>
-                        <div class="stamina-bar" style="--hunt-stamina: 1">
-                            <span class="stamina-fill"></span>
+
+                    <img class="char-portrait" id="char-portrait"></img>
+                    <div class="status-effects-row icon-row"></div>
+                    <div class="stat-bars">
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <span>Health</span>
+                                <div class="hp-change basic-small" id="hp-change"></div>
+                                <span id="health-value">850 / 1000</span>
+                            </div>
+                            <div class="bar-container" id="health-bar">
+                            </div>
                         </div>
-                        <small class="hp-label basic-small">132 / 200 HP</small>
-                        <div class="health-bar" style="--hunt-hp: 0.66">
-                            <span class="hp-fill"></span>
+
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <span>Mana</span>
+                                <span id="mana-value">120 / 200</span>
+                            </div>
+                            <div class="bar-container" id="mana-bar">
+                            </div>
+                        </div>
+
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <span>Stamina</span>
+                                <span id="stamina-value">75 / 100</span>
+                            </div>
+                            <div class="bar-container" id="stamina-bar">
+                            </div>
                         </div>
                     </div>
 
-                    <img class="char-card__portrait" src="src/Assets/Images/enemy-example.png" alt="Goblin" />
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold;" id="attack-label">125</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Attack</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold;" id="defence-label">87</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Defence</div>
+                        </div>
+                    </div>
+
+                    <ul class="ability-list">
+                    </ul>
                 </div>
 
-                <div class="status-effects-row icon-row"></div>
+                <!-- Enemy Card -->
+                <div class="character-card enemy" id="char-card-enemy">
+                    <div class="searching-overlay active" id="searching-overlay">
+                        <div class="searching-content">
+                            <div class="searching-spinner"></div>
+                            <div class="searching-text">Searching for monsters...</div>
+                        </div>
+                    </div>
+                    <div class="char-header">
+                        <h3 class="char-name">Hero</h3>
+                        <span class="char-level">Level 15</span>
+                    </div>
+                    <div class="affinity-row affinity-row"></div>
 
-                <dl class="stat-grid">
-                </dl>
+                    <img class="char-portrait" id="char-portrait"></img>
+                    <div class="status-effects-row icon-row"></div>
+                    <div class="stat-bars">
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <span>Health</span>
+                                <div class="hp-change basic-small" id="hp-change"></div>
+                                <span id="health-value">850 / 1000</span>
+                            </div>
+                            <div class="bar-container" id="health-bar">
+                            </div>
+                        </div>
 
-                <!-- 3. Abilities -->
-                <ul class="ability-list">
-                    <li class="ability" style="--hunt-cd: 0.35">
-                        <span class="ability-fill"></span>
-                        <span class="ability-icon">🔥</span>
-                        <span class="ability-name basic-very-small">Fireball</span>
-                        <span class="ability-dmg">21</span>
-                    </li>
-                    <!-- clone & update these via JS -->
-                </ul>
-                <!-- 4. Stats -->
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <span>Mana</span>
+                                <span id="mana-value">120 / 200</span>
+                            </div>
+                            <div class="bar-container" id="mana-bar">
+                            </div>
+                        </div>
+
+                        <div class="stat-bar">
+                            <div class="stat-label">
+                                <span>Stamina</span>
+                                <span id="stamina-value">75 / 100</span>
+                            </div>
+                            <div class="bar-container" id="stamina-bar">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold;" id="attack-label">125</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Attack</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold;" id="defence-label">87</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Defence</div>
+                        </div>
+                    </div>
+
+                    <ul class="ability-list">
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Combat Log -->
+            <div class="combat-log" id="hunt-update-log">
+                <div class="log-entry">
+                    <span class="log-player">Hero</span> entered the
+                    <span style="color: var(--warning-hue);">Dark Forest</span>
+                </div>
+                <div class="log-entry">
+                    Searching for enemies...
+                </div>
+                <div class="log-entry">
+                    Battle started with <span class="log-enemy">Dire Wolf</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-player">Hero</span> attacks for
+                    <span class="log-damage">125 damage</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-enemy">Dire Wolf</span> strikes back for
+                    <span class="log-damage">45 damage</span>
+                </div>
+                <div class="log-entry">
+                    Critical hit! <span class="log-player">Hero</span> deals
+                    <span class="log-damage">287 damage</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-player">Hero</span> received
+                    <span class="log-heal">50 HP</span> from regeneration
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Sidebar -->
+        <div class="hunt-sidebar">
+            <!-- Area Selection -->
+            <div class="area-select-panel">
+                <h3 style="margin: 0 0 0.5rem 0;">Select Area</h3>
+                <select class="area-select" id="area-select">
+                    <option>Forest Outskirts</option>
+                    <option selected>Dark Forest</option>
+                    <option>Misty Swamp</option>
+                    <option disabled>Dragon's Lair (Locked)</option>
+                </select>
+            </div>
+
+            <!-- Area Stats -->
+            <div class="area-stats" id="area-stats">
+                <div id="area-interactions">
+
+                </div>
+                <div id="area-stats-rows">
+                    <h3 style="margin: 0 0 1rem 0;">Area Progress</h3>
+                    <div class="area-stat-item">
+                        <span class="area-stat-label">Monsters Killed</span>
+                        <span class="area-stat-value">156 / 200</span>
+                    </div>
+                    <div class="area-stat-item">
+                        <span class="area-stat-label">Boss Unlocked</span>
+                        <span class="area-stat-value" style="color: var(--success-hue);">Yes</span>
+                    </div>
+                    <div class="area-stat-item">
+                        <span class="area-stat-label">Completion</span>
+                        <span class="area-stat-value">78%</span>
+                    </div>
+                    <div class="area-stat-item">
+                        <span class="area-stat-label">Area Level</span>
+                        <span class="area-stat-value">10-15</span>
+                    </div>
+                </div>
+
             </div>
         </div>
-
-        <!-- row 2: scrolling combat log -->
-        <div class="hunt-scroll">
-            <ul id="hunt-update-log" class="basic-text-light"></ul>
-        </div>
-    </main>
-
-    <!-- RIGHT ⅓ – area selection & stats -->
-    <aside class="area-select glass">
-        <select id="area-select" class="area-select__input">
-            <option value="" disabled selected>
-                Select an area…
-            </option>
-            <option value="forest_edge">Whispering Forest</option>
-            <!-- … -->
-        </select>
-
-
-
-        <section class="area-stats" id="area-stats">
-        </section>
-    </aside>
+    </div>
 </section>

@@ -4,7 +4,7 @@
 		"iconUrl": "/images/abilities/ability_ice.png",
 		"description": "none",
 		"displayName": "test",
-		"cooldown": 20,
+		"cooldown": 2,
 		"staminaCost": 10,
 		"element": "ice",
 		"effects": [
@@ -17,7 +17,7 @@
 				"type": "status",
 				"target": "enemy",
 				"effectId": "slow",
-				"durationSeconds": 3
+				"durationSeconds": 10
 			},
 			{
 				"type": "status",
@@ -29,7 +29,7 @@
 				"type": "status",
 				"target": "enemy",
 				"effectId": "weaken",
-				"durationSeconds": 3
+				"durationSeconds": 10
 			},
 			{
 				"type": "status",

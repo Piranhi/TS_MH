@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="/css/blacksmith.css" />
     <link rel="stylesheet" href="/css/guildhall.css" />
     <link rel="stylesheet" href="/css/bestiary.css" />
+    <link rel="stylesheet" href="/css/glass-theme.css" />
 
 </head>
 
@@ -98,28 +99,28 @@
             <!-- STATS -->
             <div class="player-statlist" id="player-statlist">
 
+            </div>
+            <div id="debug-menu"></div>
         </div>
-        <div id="debug-menu"></div>
-    </div>
 
-    <template id="stat-bar-template">
-        <li>
-            <span class="label"></span>
-            <div class="progress-holder"></div>
+        <template id="stat-bar-template">
+            <li>
+                <span class="label"></span>
+                <div class="progress-holder"></div>
 
-            <span class="value"></span>
-        </li>
-    </template>
+                <span class="value"></span>
+            </li>
+        </template>
 
-    <template id="stat-num-template">
-        <li>
-            <span class="label">Level</span>
-            <span class="value">1</span>
-        </li>
-    </template>
+        <template id="stat-num-template">
+            <li>
+                <span class="label">Level</span>
+                <span class="value">1</span>
+            </li>
+        </template>
 
 
-    <script type="module" src="/src/main.ts"></script>
+        <script type="module" src="/src/main.ts"></script>
 </body>
 
 </html>

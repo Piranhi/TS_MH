@@ -36,91 +36,37 @@ export class TrainedStatDisplay extends UIBase {
 	}
 
 	private createCard() {
-		// Main stat card container
-		const statCard = document.createElement("div");
-		statCard.className = "stat-card";
+		// Copy the template: training-item-template
+		const template = document.getElementById("training-item-template") as HTMLTemplateElement;
+		const clone = template.content.cloneNode(true) as DocumentFragment;
+		this.element = clone.firstElementChild as HTMLElement;
+		this.attachTo(this.root);
 
-		// Header section with stat info and progress
-		const headerSection = document.createElement("div");
-		headerSection.className = "flex flex-wrap items-center justify-between gap-4";
+		const progressBarContainer = this.element.querySelector("#training-progressbar") as HTMLElement;
+		const progressText = this.element.querySelector("#training-progress-text") as HTMLElement;
+		const currentAllocation = this.element.querySelector("#training-assigned") as HTMLElement;
+		const toAllocate = this.element.querySelector("#training-assigned") as HTMLElement;
+		const controlsContainer = this.element.querySelector("#training-controls") as HTMLElement;
 
-		// Left side - stat name and level
-		const statInfo = document.createElement("div");
-
-		const statName = document.createElement("h3");
-		statName.className = "basic-title";
+		// Update the stat name
+		const statName = this.element.querySelector("#training-name") as HTMLElement;
 		statName.textContent = this.trainedStat.name;
 
-		const levelText = document.createElement("p");
-		levelText.className = "basic-text-light";
-		levelText.textContent = `Current Level: ${this.trainedStat.level}`;
+		// Update the level text
+		const levelText = this.element.querySelector("#training-level") as HTMLElement;
+		levelText.textContent = `Lvl ${this.trainedStat.level}`;
 
-		statInfo.appendChild(statName);
-		statInfo.appendChild(levelText);
-
-		// Right side - progress bar section
-		const progressSection = document.createElement("div");
-		progressSection.className = "flex items-center gap-4";
-
-		// Progress bar container
-		const progressBarContainer = document.createElement("div");
-		progressBarContainer.className = "progress-bar-container";
-
-		// Progress text
-		const progressText = document.createElement("p");
-		progressText.className = "text-sm font-semibold";
-
-		progressSection.appendChild(progressBarContainer);
-		progressSection.appendChild(progressText);
-
-		headerSection.appendChild(statInfo);
-		headerSection.appendChild(progressSection);
-
-		// Bottom section - Energy allocation
-		const bottomSection = document.createElement("div");
-		bottomSection.className = "energy-allocation-container";
-
-		const energyTitle = document.createElement("h4");
-		energyTitle.className = "basic-subtitle";
-		energyTitle.textContent = "Energy Allocation";
-
-		// Allocation status bar
-		const allocationBar = document.createElement("div");
-		allocationBar.className = "energy-allocation-box";
-
-		const currentAllocation = document.createElement("span");
-		currentAllocation.className = "font-medium";
-
-		const toAllocate = document.createElement("span");
-		toAllocate.className = "font-bold text-[var(--primary-color)]";
-
-		allocationBar.appendChild(currentAllocation);
-		allocationBar.appendChild(toAllocate);
-
-		// Controls container
-		const controlsContainer = document.createElement("div");
-		controlsContainer.className = "grid grid-cols-2 gap-3 sm:grid-cols-5";
-
-		bottomSection.appendChild(energyTitle);
-		bottomSection.appendChild(allocationBar);
-		bottomSection.appendChild(controlsContainer);
-
-		// Assemble the card
-		statCard.appendChild(headerSection);
-		statCard.appendChild(bottomSection);
-
-		// Create progress bar using existing ProgressBar class
+		// Update the progress bar
 		const progressBar = new ProgressBar({
 			container: progressBarContainer,
 			initialValue: this.trainedStat.progress,
 			maxValue: this.trainedStat.getLevelThreshold(),
 			smooth: true,
-			showLabel: false, // We'll handle the label separately
+			showLabel: false,
 		});
 
-		// Store references
 		this.els = {
-			container: statCard,
+			container: this.element,
 			statName,
 			levelText,
 			progressBarContainer,
@@ -130,9 +76,6 @@ export class TrainedStatDisplay extends UIBase {
 			toAllocate,
 			controlsContainer,
 		};
-
-		this.element = statCard;
-		this.attachTo(this.root);
 	}
 
 	private setupControls() {
@@ -170,7 +113,9 @@ export class TrainedStatDisplay extends UIBase {
 
 		// Update stat info
 		statName.textContent = this.trainedStat.name;
-		levelText.textContent = `Current Level: ${this.trainedStat.level}`;
+		levelText.textContent = `Level ${this.trainedStat.level}  •  ${
+			this.trainedStat.progress
+		} / ${this.trainedStat.getLevelThreshold()} XP`;
 
 		// Update progress bar
 		const levelThreshold = this.trainedStat.getLevelThreshold();
@@ -178,16 +123,12 @@ export class TrainedStatDisplay extends UIBase {
 		progressBar.setMax(levelThreshold);
 
 		// Update progress text (matches the design format)
-		progressText.textContent = `${Math.floor(this.trainedStat.progress)} / ${levelThreshold}`;
+		//progressText.textContent = `${Math.floor(this.trainedStat.progress)} / ${levelThreshold}`;
 
 		// Update allocation info
 		const maxPoints = this.trainedStat.maxAssignedPoints;
 		const assignedPoints = this.trainedStat.assignedPoints;
-		currentAllocation.textContent = `Current: ${assignedPoints}/${maxPoints}`;
-
-		// Calculate "To Allocate" - this would need to track pending changes
-		// For now, showing 0 as in the example
-		toAllocate.textContent = `To Allocate: 0`;
+		currentAllocation.textContent = `Assigned: ${assignedPoints}/${maxPoints}`;
 	}
 
 	private adjustAmount(delta: number) {

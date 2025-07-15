@@ -1,10 +1,20 @@
 [
 	{
 		"id": "test_enemy",
-		"displayName": "Green Slime",
+		"displayName": "Test Enemy",
 		"rarity": "common",
 		"archetype": "balanced",
-		"abilities": ["basic_melee"],
+		"abilities": ["basic_melee", "warrior_charge"],
+		"affinities": [
+			{
+				"type": "weakness",
+				"element": "fire"
+			},
+			{
+				"type": "resistance",
+				"element": "physical"
+			}
+		],
 		"imgUrl": "/images/monsters/monster-slime-basic.png"
 	},
 	{
