@@ -8,6 +8,7 @@ import { CharacterDisplay } from "../components/CharacterDisplay";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { AreaDisplay } from "../components/AreaDisplay";
+import { Area } from "@/models/Area";
 
 export class HuntScreen extends BaseScreen {
 	readonly screenName = "hunt";
@@ -165,7 +166,7 @@ export class HuntScreen extends BaseScreen {
 
 	private combatPostCombatReport(report: { enemy: EnemyCharacter; area: Area; xp: number; loot: string[]; renown: number }) {
 		this.updateCombatLog(
-			`You have defeated <span class="rarity-${report.enemy.spec.rarity}"> ${report.enemy.name}</span> and gained ${report.xp} XP and ${report.renown} renown!`
+			`<span class ="log-player">You</span> have defeated <span class="log-enemy rarity-${report.enemy.spec.rarity}"> ${report.enemy.name}</span> and gained <span class="log-xp">${report.xp} XP</span> and <span class="log-renown">${report.renown} renown</span>!`
 		);
 	}
 

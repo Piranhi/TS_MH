@@ -4,6 +4,11 @@ import { ProgressBar } from "./ProgressBar";
 import { TableDisplay } from "./TableDisplay";
 import { formatNumberShort } from "@/shared/utils/stringUtils";
 
+interface StatMapping {
+	displayName: string;
+	getValue: (stats: any) => string | number; // We'll make this more specific later
+}
+
 export class PlayerStatsDisplay extends UIBase {
 	private tableWrapper!: HTMLElement;
 	private traitListEl!: HTMLElement;
@@ -13,6 +18,25 @@ export class PlayerStatsDisplay extends UIBase {
 	private statsTable!: TableDisplay;
 	private traitTable!: TableDisplay;
 
+	private statMappings: StatMapping[] = [
+		{ displayName: "Attack", getValue: (stats) => formatNumberShort(stats.attack) || 0 },
+		{ displayName: "Defence", getValue: (stats) => formatNumberShort(stats.defence) || 0 },
+		{ displayName: "Health", getValue: (stats) => formatNumberShort(stats.hp) || 0 },
+		{ displayName: "Regen", getValue: (stats) => formatNumberShort(stats.regen) || 0 },
+		{ displayName: "Lifesteal", getValue: (stats) => formatNumberShort(stats.lifesteal) || 0 },
+		{ displayName: "Speed", getValue: (stats) => formatNumberShort(stats.speed) || 0 },
+		{ displayName: "Crit Chance", getValue: (stats) => formatNumberShort(stats.critChance) || 0 },
+		{ displayName: "Crit Damage", getValue: (stats) => formatNumberShort(stats.critDamage) || 0 },
+		{ displayName: "Evasion", getValue: (stats) => formatNumberShort(stats.evasion) || 0 },
+		{ displayName: "Encounter Chance", getValue: (stats) => formatNumberShort(stats.encounterChance) || 0 },
+		{ displayName: "Fire Bonus", getValue: (stats) => formatNumberShort(stats.fireBonus) || 0 },
+		{ displayName: "Ice Bonus", getValue: (stats) => formatNumberShort(stats.iceBonus) || 0 },
+		{ displayName: "Poison Bonus", getValue: (stats) => formatNumberShort(stats.poisonBonus) || 0 },
+		{ displayName: "Lightning Bonus", getValue: (stats) => formatNumberShort(stats.lightningBonus) || 0 },
+		{ displayName: "Light Bonus", getValue: (stats) => formatNumberShort(stats.lightBonus) || 0 },
+		{ displayName: "Physical Bonus", getValue: (stats) => formatNumberShort(stats.physicalBonus) || 0 },
+	];
+
 	constructor(container: HTMLElement) {
 		super();
 		this.element = container;
@@ -20,6 +44,8 @@ export class PlayerStatsDisplay extends UIBase {
 		this.createTables();
 		this.setupLevelDisplay();
 		this.bindEvents();
+		this.updateFromPlayerStats();
+		this.updateTraitDisplay();
 
 		// Add glass effect to main container
 		this.element.classList.add("player-stats-glass-container");
@@ -141,6 +167,14 @@ export class PlayerStatsDisplay extends UIBase {
 			this.updateTraitsTable(traits);
 		});
 
+		bindEvent(this.eventBindings, "Game:UITick", () => {
+			this.updateLevelDisplay();
+		});
+
+		bindEvent(this.eventBindings, "game:gameReady", () => {
+			this.updateTraitDisplay();
+		});
+
 		// Toggle buttons
 		const toggleBtns = this.element.querySelectorAll(".toggle-btn");
 		toggleBtns.forEach((btn) => {
@@ -150,20 +184,6 @@ export class PlayerStatsDisplay extends UIBase {
 				(e.target as HTMLElement).textContent = section?.classList.contains("collapsed") ? "▶" : "▼";
 			});
 		});
-	}
-
-	private updateStatsTable(stats: any) {
-		const rows: [string, string][] = [
-			["Attack", `⚔️ ${formatNumberShort(stats.attack || 0)}`],
-			["Defense", `🛡️ ${formatNumberShort(stats.defense || 0)}`],
-			["HP", `❤️ ${formatNumberShort(stats.maxHp || 0)}`],
-			["MP", `💙 ${formatNumberShort(stats.maxMp || 0)}`],
-			["Speed", `💨 ${formatNumberShort(stats.speed || 0)}`],
-			["Crit Chance", `⚡ ${(stats.critChance || 0).toFixed(1)}%`],
-			["Crit Damage", `💥 ${(stats.critDamage || 0).toFixed(1)}%`],
-		];
-
-		this.statsTable.updateData(rows);
 	}
 
 	private updateTraitsTable(traits: any[]) {
@@ -186,5 +206,42 @@ export class PlayerStatsDisplay extends UIBase {
 			mythic: "🔴",
 		};
 		return icons[rarity.toLowerCase()] || "⚪";
+	}
+
+	private updateFromPlayerStats() {
+		if (!this.context.currentRun) return;
+		this.updateStatsTable();
+		this.updateTraitDisplay();
+	}
+
+	// Update multiple stats at once
+	public updateStatsTable() {
+		if (!this.context.currentRun) return;
+
+		const character = this.context.character;
+		const stats = character.statsEngine.getAll();
+		this.statsTable.updateData(this.statMappings.map((stat) => [stat.displayName, stat.getValue(stats)]));
+	}
+
+	private updateTraitDisplay() {
+		const traits = this.context.character.getTraits();
+		this.traitTable.updateData(traits.map((t) => [t.name, t.rarity]));
+	}
+
+	private updateLevelDisplay() {
+		const char = this.context.character;
+		const currentLevel = char.level;
+		const currentXP = char.currentXp;
+		const xpForNextLevel = char.nextXpThreshold;
+
+		// Update level number
+		this.levelNumberEl.textContent = currentLevel.toString();
+
+		// Update XP progress bar
+		this.xpProgressBar.setMax(xpForNextLevel);
+		this.xpProgressBar.setValue(currentXP);
+
+		// Update XP text
+		this.xpTextEl.textContent = `${formatNumberShort(currentXP)} / ${formatNumberShort(xpForNextLevel)} XP`;
 	}
 }

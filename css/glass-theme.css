@@ -876,35 +876,6 @@ button {
 	animation: level-up-burst 1s ease-out;
 }
 
-/* Glass table styling */
-.glass-table {
-	margin-top: 0.5rem;
-}
-
-.glass-table .basic-table-wrapper {
-	background: rgba(0, 0, 0, 0.2);
-	backdrop-filter: blur(4px);
-	border: 1px solid rgba(255, 255, 255, 0.05);
-	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.glass-table thead {
-	background: rgba(255, 255, 255, 0.05);
-}
-
-.glass-table th {
-	color: var(--text-primary);
-	font-weight: 600;
-	text-transform: uppercase;
-	font-size: 0.75rem;
-	letter-spacing: 0.05em;
-}
-
-.glass-table td {
-	color: var(--text-secondary);
-	padding: 0.75rem;
-}
-
 /* Rarity colors */
 .rarity-common {
 	color: #b0b0b0;

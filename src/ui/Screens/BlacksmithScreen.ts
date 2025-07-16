@@ -12,7 +12,6 @@ import { formatNumberShort } from "@/shared/utils/stringUtils";
 interface ResourceRowData {
 	element: HTMLElement;
 	quantityEl: HTMLSpanElement;
-	levelEl: HTMLSpanElement;
 	lastQuantity: number;
 	lastLevel: number;
 }
@@ -147,7 +146,8 @@ export class BlacksmithScreen extends BaseScreen {
 	 * Updates will modify these elements rather than recreating them.
 	 */
 	private buildResourceRows() {
-		this.resourceList.innerHTML = "";
+		this.resourceList.innerHTML = "<h3 style='margin: 0 0 1rem 0; font-size: 1.125rem;'>Resources</h3>";
+
 		this.resourceRows.clear();
 
 		const resources = this.context.resources.getAllResources();
@@ -169,20 +169,26 @@ export class BlacksmithScreen extends BaseScreen {
 	 */
 	private createResourceRow(id: string, spec: any, data: any): ResourceRowData {
 		const row = document.createElement("div");
-		row.className = "blacksmith-resource-row";
+		row.className = "resource-item";
 
 		const img = document.createElement("img");
 		img.src = spec.iconUrl;
+		img.className = "resource-icon";
 		row.appendChild(img);
 
-		const qty = document.createElement("span");
-		qty.textContent = formatNumberShort(data.quantity);
-		row.appendChild(qty);
+		const info = document.createElement("div");
+		info.className = "resource-info";
+		row.appendChild(info);
 
-		const lvl = document.createElement("span");
-		lvl.className = "blacksmith-resource-level";
-		lvl.textContent = `Lv ${data.level}`;
-		row.appendChild(lvl);
+		const name = document.createElement("div");
+		name.className = "resource-name";
+		name.textContent = spec.name;
+		info.appendChild(name);
+
+		const quantity = document.createElement("div");
+		quantity.className = "resource-quantity";
+		quantity.textContent = `${formatNumberShort(data.quantity)} (Lv. ${data.level})`;
+		info.appendChild(quantity);
 
 		// Tooltip handling
 		row.addEventListener("mouseenter", () => {
@@ -190,17 +196,16 @@ export class BlacksmithScreen extends BaseScreen {
 				icon: spec.iconUrl,
 				name: spec.name,
 				description: spec.description,
-				list: this.getResourceUnlockList(id, spec, data)
+				list: this.getResourceUnlockList(id, spec, data),
 			};
-			
+
 			Tooltip.instance.show(row, tooltipData);
 		});
 		row.addEventListener("mouseleave", () => Tooltip.instance.hide());
 
 		return {
 			element: row,
-			quantityEl: qty,
-			levelEl: lvl,
+			quantityEl: quantity,
 			lastQuantity: data.quantity,
 			lastLevel: data.level,
 		};
@@ -211,7 +216,7 @@ export class BlacksmithScreen extends BaseScreen {
 	 */
 	private getResourceUnlockList(resourceId: string, spec: any, data: any): string[] {
 		const unlockList: string[] = [];
-		
+
 		if (spec.unlocks) {
 			for (const unlock of spec.unlocks) {
 				const unlockSpec = Resource.getSpec(unlock.id);
@@ -224,7 +229,7 @@ export class BlacksmithScreen extends BaseScreen {
 				}
 			}
 		}
-		
+
 		return unlockList;
 	}
 
@@ -296,9 +301,9 @@ export class BlacksmithScreen extends BaseScreen {
 				icon: spec.iconUrl,
 				name: spec.name,
 				description: spec.description,
-				list: this.getResourceUnlockList(resourceId, spec, data)
+				list: this.getResourceUnlockList(resourceId, spec, data),
 			};
-			
+
 			Tooltip.instance.show(newElement, tooltipData);
 		});
 		newElement.addEventListener("mouseleave", () => Tooltip.instance.hide());
@@ -329,20 +334,20 @@ export class BlacksmithScreen extends BaseScreen {
 	}
 
 	private getUpgradeData(): UpgradeSelectionData[] {
-                return this.context.blacksmith.getUpgrades().map((upg) => ({
-                        id: upg.id,
-                        title: upg.name,
-                        description: upg.description,
-                        costs: upg.cost.map((c) => ({
-                                icon: Resource.getSpec(c.resource)?.iconUrl ?? "",
-                                amount: c.quantity,
-                        })),
-                        level: upg.currentLevel,
-                        maxLevel: upg.maxLevel,
-                        purchased: upg.isPurchased,
-                        canAfford: this.context.resources.canAfford(upg.cost),
-                }));
-        }
+		return this.context.blacksmith.getUpgrades().map((upg) => ({
+			id: upg.id,
+			title: upg.name,
+			description: upg.description,
+			costs: upg.cost.map((c) => ({
+				icon: Resource.getSpec(c.resource)?.iconUrl ?? "",
+				amount: c.quantity,
+			})),
+			level: upg.currentLevel,
+			maxLevel: upg.maxLevel,
+			purchased: upg.isPurchased,
+			canAfford: this.context.resources.canAfford(upg.cost),
+		}));
+	}
 
 	/**
 	 * Updates all UI elements.

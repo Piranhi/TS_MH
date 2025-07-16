@@ -1,66 +1,337 @@
+/* ============================================
+   GUILD HALL SCREEN - GLASSMORPHISM
+   ============================================ */
+
 .guildhall-screen {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    color: #e7eaf1;
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: 1.5rem;
+	width: 100%;
 }
 
-.guildhall-section {
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
-    padding: 12px 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+/* Building status */
+#gh-building-status {
+	margin-bottom: 1rem;
 }
 
-.guildhall-section h2 {
-    margin-top: 0;
-    font-size: 1.25rem;
-    margin-bottom: 8px;
+/* Glass sections */
+.guildhall-screen .basic-section {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur-medium));
+	-webkit-backdrop-filter: blur(var(--glass-blur-medium));
+	border: 1px solid var(--glass-border);
+	border-radius: 1rem;
+	padding: 1.5rem;
+	box-shadow: var(--glass-shadow);
+	transition: all var(--transition-medium);
+	position: relative;
+	overflow: hidden;
 }
 
-.run-stats {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px,1fr));
-    gap: 8px;
-}
-.run-stats li {
-    background: rgba(0,0,0,0.2);
-    padding: 6px 8px;
-    border-radius: 6px;
-    font-size: 0.9rem;
+/* Inner glow for sections */
+.guildhall-screen .basic-section::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+	pointer-events: none;
 }
 
-.prestige-info ul {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 8px 0;
+.guildhall-screen .basic-section:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--glass-shadow-hover);
+	border-color: var(--glass-border-hover);
 }
 
-.challenge-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
-    gap: 10px;
+/* Section headers */
+.guildhall-screen h2 {
+	font-size: 1.5rem;
+	font-weight: 600;
+	margin: 0 0 1rem 0;
+	color: var(--text-primary);
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
 }
-.challenge-card {
-    background: rgba(0,0,0,0.2);
-    border-radius: 6px;
-    padding: 10px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+
+/* Run overview with glass cards */
+.basic-list-boxes {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 1rem;
+	list-style: none;
+	padding: 0;
+	margin: 0;
 }
-.challenge-card.active {
-    border: 2px solid var(--accent);
+
+.basic-list-boxes li {
+	background: rgba(255, 255, 255, 0.03);
+	backdrop-filter: blur(8px);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 0.75rem;
+	padding: 1.25rem;
+	text-align: center;
+	transition: all 0.3s ease;
+	position: relative;
+	overflow: hidden;
 }
-.challenge-title {
-    font-weight: 600;
+
+.basic-list-boxes li::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+	opacity: 0;
+	transition: opacity 0.3s ease;
 }
-.challenge-progress {
-    font-size: 0.8rem;
-    color: var(--text-muted);
+
+.basic-list-boxes li:hover {
+	background: rgba(255, 255, 255, 0.05);
+	transform: translateY(-4px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.basic-list-boxes li:hover::before {
+	opacity: 1;
+}
+
+/* Stat values in cards */
+.basic-list-boxes li span {
+	display: block;
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: var(--accent-primary);
+	margin-top: 0.5rem;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Icons for stats */
+.basic-list-boxes li:nth-child(1)::before {
+	content: "⏱️";
+}
+.basic-list-boxes li:nth-child(2)::before {
+	content: "⭐";
+}
+.basic-list-boxes li:nth-child(3)::before {
+	content: "🗺️";
+}
+.basic-list-boxes li:nth-child(4)::before {
+	content: "💀";
+}
+
+.basic-list-boxes li::before {
+	position: static;
+	display: block;
+	font-size: 2rem;
+	margin-bottom: 0.5rem;
+	opacity: 1;
+}
+
+/* Prestige section with special styling */
+#gh-prestige-info {
+	background: linear-gradient(135deg, rgba(204, 93, 232, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%);
+	border: 1px solid rgba(204, 93, 232, 0.3);
+	position: relative;
+	overflow: hidden;
+}
+
+/* Animated background for prestige */
+#gh-prestige-info::after {
+	content: "";
+	position: absolute;
+	top: -50%;
+	right: -50%;
+	width: 200%;
+	height: 200%;
+	background: radial-gradient(circle, rgba(204, 93, 232, 0.1) 0%, transparent 50%);
+	animation: rotate 30s linear infinite;
+	pointer-events: none;
+}
+
+@keyframes rotate {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Prestige rewards list */
+#gh-prestige-info .basic-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	position: relative;
+	z-index: 1;
+}
+
+#gh-prestige-info .basic-list li {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	padding: 0.75rem 1rem;
+	margin-bottom: 0.5rem;
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 0.5rem;
+	transition: all 0.3s ease;
+}
+
+#gh-prestige-info .basic-list li:hover {
+	background: rgba(255, 255, 255, 0.08);
+	transform: translateX(8px);
+}
+
+/* Prestige reward icons */
+#gh-prestige-info .basic-list li::before {
+	content: "";
+	width: 32px;
+	height: 32px;
+	background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1rem;
+	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+#gh-prestige-info .basic-list li:nth-child(1)::before {
+	content: "⚔️";
+}
+#gh-prestige-info .basic-list li:nth-child(2)::before {
+	content: "🛡️";
+}
+#gh-prestige-info .basic-list li:nth-child(3)::before {
+	content: "❤️";
+}
+#gh-prestige-info .basic-list li:nth-child(4)::before {
+	content: "🏗️";
+}
+#gh-prestige-info .basic-list li:nth-child(5)::before {
+	content: "⭐";
+}
+
+/* Challenges section */
+.challenge-active {
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+	border: 1px solid rgba(102, 126, 234, 0.3);
+	border-radius: 0.75rem;
+	padding: 1rem;
+	margin-bottom: 1rem;
+	display: none; /* Hidden by default */
+}
+
+.challenge-active:not(:empty) {
+	display: block;
+}
+
+/* Challenge grid */
+.basic-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 1rem;
+}
+
+/* Challenge cards */
+.basic-grid-card {
+	background: rgba(255, 255, 255, 0.03);
+	backdrop-filter: blur(8px);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 1rem;
+	padding: 1.5rem;
+	cursor: pointer;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	overflow: hidden;
+}
+
+.basic-grid-card::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.basic-grid-card:hover:not(.active) {
+	transform: translateY(-4px);
+	border-color: var(--glass-border-hover);
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.basic-grid-card:hover::before {
+	opacity: 1;
+}
+
+/* Active challenge card */
+.basic-grid-card.active {
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+	border-color: var(--accent-primary);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 40px rgba(102, 126, 234, 0.2);
+	transform: scale(1.02);
+}
+
+/* Challenge content */
+.basic-subtitle {
+	font-size: 1.125rem;
+	font-weight: 600;
+	color: var(--text-primary);
+	margin-bottom: 0.5rem;
+}
+
+.basic-text-light {
+	font-size: 0.875rem;
+	color: var(--text-secondary);
+	line-height: 1.5;
+	margin-bottom: 0.75rem;
+}
+
+.basic-text-footer {
+	font-size: 0.75rem;
+	color: var(--text-muted);
+	padding: 0.25rem 0.75rem;
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 2rem;
+	display: inline-block;
+}
+
+.basic-grid-card.active .basic-text-footer {
+	background: rgba(102, 126, 234, 0.2);
+	color: var(--accent-primary);
+	font-weight: 600;
+}
+
+/* Animations */
+@keyframes stat-pulse {
+	0%,
+	100% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.05);
+	}
+}
+
+/* Animate stat updates */
+.basic-list-boxes li span {
+	animation: stat-pulse 0.5s ease-out;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+	.guildhall-screen {
+		padding: 1rem;
+	}
+
+	.basic-list-boxes {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.basic-grid {
+		grid-template-columns: 1fr;
+	}
+
+	#gh-prestige-info .basic-list li {
+		font-size: 0.875rem;
+	}
 }

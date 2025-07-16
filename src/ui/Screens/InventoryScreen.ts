@@ -86,7 +86,7 @@ export class InventoryScreen extends BaseScreen {
 
 		const bonuses = this.context.character.statsEngine.getLayerModifiers("equipment");
 
-		table.setRows(
+		table.updateData(
 			Object.entries(bonuses).map(([stat, value]) => [
 				STAT_DISPLAY_NAMES[stat as string] || stat, // Falls back to the original stat name if not found
 				value,
