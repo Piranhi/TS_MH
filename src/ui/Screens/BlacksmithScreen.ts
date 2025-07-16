@@ -280,7 +280,7 @@ export class BlacksmithScreen extends BaseScreen {
 		});
 
 		// Notify slots that resources changed (for cost updates)
-		this.slotComponents.forEach((slot) => slot.onResourcesChanged());
+		this.slotComponents.forEach((slot) => slot.updateSlot());
 	}
 
 	/**

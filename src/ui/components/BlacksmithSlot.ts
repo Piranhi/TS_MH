@@ -15,16 +15,17 @@ export class BlacksmithSlot extends UIBase {
 	private slotIndex: number;
 
 	// Cached DOM elements - created once, updated many times
-	private selectBtn!: HTMLButtonElement;
 	private optionRow!: HTMLElement;
 	private icon!: HTMLImageElement;
 	private levelEl!: HTMLElement;
 	private xpBar!: ProgressBar;
 	private xpText!: HTMLElement;
 	private costEl!: HTMLElement;
-	private progressBar!: ProgressBar;
+	private craftProgressBar!: ProgressBar;
+	private levelProgressBar!: ProgressBar;
 	private progressText!: HTMLElement;
 	private contentEl!: HTMLElement;
+	private status: "empty" | "crafting" | "choosing" = "empty";
 
 	// Cached state to avoid unnecessary updates
 	private currentResourceId: string | null = null;
@@ -60,144 +61,172 @@ export class BlacksmithSlot extends UIBase {
 		const slotEl = document.createElement("div");
 		slotEl.className = "blacksmith-slot";
 		this.element.appendChild(slotEl);
+		this.showCrafting();
 
-		this.bindDomEvent(slotEl, "mouseenter", () => {
-			if (!this.currentResourceId) return;
+		this.bindDomEvent(slotEl, "mouseenter", () => this.createTooltip());
+		this.bindDomEvent(slotEl, "mouseleave", () => Tooltip.instance.hide());
+		this.bindDomEvent(this.element, "click", () => this.handleClick());
 
-                        const resourceData = this.context.resources.getResourceData(this.currentResourceId);
-                        const currentLevel = resourceData?.level || 1;
+		// Build the resource selection cards once
+		//this.buildResourceOptions();
+	}
 
-                        // Combine standard upgrades with level based unlocks from the resource spec
-                        const upgrades: Array<{ level: number; text: string; unlocked: boolean }> = [];
+	private handleClick(): void {
+		switch (this.status) {
+			case "empty":
+				this.showOptions();
+				break;
+			case "crafting":
+				this.showCrafting();
+		}
+	}
 
-                        const upgradeArray = this.context.resources.getAllUpgrades(this.currentResourceId);
-                        upgradeArray.forEach((upgrade) => {
-                                upgrades.push({
-                                        level: upgrade.level,
-                                        text: upgrade.displayText,
-                                        unlocked: currentLevel >= upgrade.level,
-                                });
-                        });
+	private createTooltip(): void {
+		// Only show tooltip if we have a resource selected
+		// Create Upgrade list
+		if (!this.currentResourceId) return;
 
-                        const resourceSpec = Resource.getSpec(this.currentResourceId);
-                        if (resourceSpec && resourceSpec.unlocks) {
-                                resourceSpec.unlocks.forEach((unlock) => {
-                                        const unlockedResourceSpec = Resource.getSpec(unlock.id);
-                                        const unlockName = unlockedResourceSpec?.name || unlock.id;
-                                        upgrades.push({
-                                                level: unlock.level,
-                                                text: `Unlock ${unlockName}`,
-                                                unlocked: currentLevel >= unlock.level,
-                                        });
-                                });
-                        }
+		const resourceData = this.context.resources.getResourceData(this.currentResourceId);
+		const currentLevel = resourceData?.level || 1;
 
-                        upgrades.sort((a, b) => a.level - b.level);
+		// Combine standard upgrades with level based unlocks from the resource spec
+		const upgrades: Array<{ level: number; text: string; unlocked: boolean }> = [];
 
-                        const upgradeList: TooltipListItem[] = upgrades.map((u) => ({
-                                text: `Lvl ${u.level}: ${u.text}`,
-                                className: u.unlocked ? "upgrade-unlocked" : "upgrade-locked",
-                        }));
-
-			Tooltip.instance.show(slotEl, {
-				icon: this.icon.src,
-				type: "Resource upgrade",
-				name: this.selectBtn.textContent ?? "",
-				list: upgradeList,
+		const upgradeArray = this.context.resources.getAllUpgrades(this.currentResourceId);
+		upgradeArray.forEach((upgrade) => {
+			upgrades.push({
+				level: upgrade.level,
+				text: upgrade.displayText,
+				unlocked: currentLevel >= upgrade.level,
 			});
 		});
 
-		this.bindDomEvent(slotEl, "mouseleave", () => {
-			Tooltip.instance.hide();
-		});
+		const resourceSpec = Resource.getSpec(this.currentResourceId);
+		if (resourceSpec && resourceSpec.unlocks) {
+			resourceSpec.unlocks.forEach((unlock) => {
+				const unlockedResourceSpec = Resource.getSpec(unlock.id);
+				const unlockName = unlockedResourceSpec?.name || unlock.id;
+				upgrades.push({
+					level: unlock.level,
+					text: `Unlock ${unlockName}`,
+					unlocked: currentLevel >= unlock.level,
+				});
+			});
+		}
 
-		// Create select button
-		this.selectBtn = document.createElement("button");
-		this.selectBtn.className = "bs-select-btn";
-		this.selectBtn.textContent = "Choose";
-		this.bindDomEvent(this.selectBtn, "click", () => this.toggleOptions());
-		this.element.appendChild(this.selectBtn);
+		upgrades.sort((a, b) => a.level - b.level);
 
-		// Create content area
-		this.contentEl = document.createElement("div");
-		this.contentEl.className = "bs-slot-content";
-		slotEl.appendChild(this.contentEl);
+		const upgradeList: TooltipListItem[] = upgrades.map((u) => ({
+			text: `Lvl ${u.level}: ${u.text}`,
+			className: u.unlocked ? "upgrade-unlocked" : "upgrade-locked",
+		}));
 
-		// Create options row (hidden by default)
-		this.optionRow = document.createElement("div");
-		this.optionRow.className = "bs-option-row";
-		slotEl.appendChild(this.optionRow);
-
-		// Build the resource selection cards once
-		this.buildResourceOptions();
-
-		// Create selected resource info area
-		const info = document.createElement("div");
-		info.className = "bs-selected-info";
-
-		// Icon and XP bar
-		const iconWrap = document.createElement("div");
-		iconWrap.className = "bs-icon-wrapper";
-		this.icon = document.createElement("img");
-		this.icon.className = "bs-resource-icon";
-		iconWrap.appendChild(this.icon);
-
-		const xpContainer = document.createElement("div");
-		xpContainer.className = "bs-xp-bar-container";
-		iconWrap.appendChild(xpContainer);
-
-		this.xpText = document.createElement("div");
-		this.xpText.className = "bs-xp-text";
-		xpContainer.appendChild(this.xpText);
-
-		this.xpBar = new ProgressBar({
-			container: xpContainer,
-			maxValue: 1,
-			initialValue: 0,
-			smooth: true,
-		});
-
-		info.appendChild(iconWrap);
-
-		// Level display
-		this.levelEl = document.createElement("div");
-		this.levelEl.className = "bs-level";
-		info.appendChild(this.levelEl);
-
-		this.contentEl.appendChild(info);
-
-		// Cost icons
-		this.costEl = document.createElement("div");
-		this.costEl.className = "bs-cost-icons";
-		info.appendChild(this.costEl);
-
-		// Progress bar
-		const barContainer = document.createElement("div");
-		this.contentEl.appendChild(barContainer);
-
-		this.progressText = document.createElement("div");
-		this.progressText.className = "progress-text";
-		barContainer.appendChild(this.progressText);
-
-		this.progressBar = new ProgressBar({
-			container: barContainer,
-			maxValue: 1,
-			initialValue: 0,
+		Tooltip.instance.show(this.element, {
+			icon: this.icon.src,
+			type: "Resource upgrade",
+			name: "todo",
+			list: upgradeList,
 		});
 	}
 
-	/**
-	 * Builds the resource selection options.
-	 * Only called when available resources change (rare).
-	 */
-	private buildResourceOptions(): void {
-		this.optionRow.innerHTML = "";
+	private showEmpty(): void {
+		this.element.innerHTML = `        <div class="blacksmith-slot empty">
+            <div class="empty-text">Click to select item to craft</div>
+        </div>`;
+	}
+
+	private showCrafting(): void {
+		this.element.innerHTML = `        <div class="blacksmith-slot crafting">
+            <div class="blacksmith-slot-header">
+    <img class="blacksmith-slot-icon" id="blacksmith-slot-icon">
+    <div class="blacksmith-slot-info">
+        <div class="blacksmith-slot-details">
+            <div class="blacksmith-slot-name" id="blacksmith-slot-name">Iron Sword</div>
+            <div class="slot-type">Weapon • Tier 1</div>
+        </div>
+        <div class="blacksmith-slot-level-info">
+            <div class="blacksmith-slot-level" id="blacksmith-slot-level">Lv. 3</div>
+            <div class="blacksmith-slot-xp" id="blacksmith-slot-xp">450 / 1000 XP</div>
+            <div class="blacksmith-slot-xp-bar" id="blacksmith-slot-xp-bar">
+            </div>
+        </div>
+    </div>
+
+            </div>
+            
+            <div class="blacksmith-slot-progress">
+                <div class="blacksmith-slot-progress-info">
+                    <span>Crafting Progress</span>
+                    <span>2:34 remaining</span>
+                </div>
+                <div class="progress-bar" id="blacksmith-slot-progress-bar">
+                </div>
+            </div>
+            
+            <div class="slot-resources" id="blacksmith-slot-resources">
+            </div>
+        </div>`;
+
+		const icon = this.$("#blacksmith-slot-icon") as HTMLImageElement;
+		icon.src = "/images/resources/resource_iron_ingot.png";
+
+		const name = this.$("#blacksmith-slot-name");
+		name.textContent = "Iron Sword";
+
+		this.craftProgressBar = new ProgressBar({
+			container: this.$("#blacksmith-slot-progress-bar"),
+			maxValue: 1,
+			initialValue: 0.5,
+			smooth: true,
+			showLabel: true,
+		});
+
+		this.levelProgressBar = new ProgressBar({
+			container: this.$("#blacksmith-slot-xp-bar"),
+			maxValue: 1,
+			initialValue: 0.5,
+			smooth: true,
+			showLabel: true,
+		});
+		const resourcesEl = this.$("#blacksmith-slot-resources");
+		resourcesEl.innerHTML = "";
+		resourcesEl.appendChild(this.createSlotResourceItem("iron_ingot"));
+	}
+
+	private createSlotResourceItem(resourceId: string): HTMLElement {
+		const spec = Resource.getSpec(resourceId);
+		if (!spec) return document.createElement("div");
+
+		const item = document.createElement("div");
+		item.className = "resource-item";
+
+		const icon = document.createElement("img");
+		icon.className = "resource-icon";
+		icon.src = spec.iconUrl ?? "";
+		item.appendChild(icon);
+
+		const name = document.createElement("div");
+		name.className = "resource-name";
+		name.textContent = spec.name;
+		item.appendChild(name);
+
+		const count = document.createElement("div");
+		count.className = "resource-count";
+		count.textContent = "0/0";
+		item.appendChild(count);
+
+		return item;
+	}
+
+	private getCraftingOptions(): string[] {
 		this.recipeCards.clear();
 
 		const resources = this.context.resources.getAllResources();
 		const available = Array.from(resources.entries())
 			.filter(([id, d]) => id !== "raw_ore" && d.isUnlocked && !d.infinite)
 			.map(([id]) => id);
+
+		return available;
 
 		available.forEach((resourceId) => {
 			const spec = Resource.getSpec(resourceId);
@@ -214,6 +243,120 @@ export class BlacksmithSlot extends UIBase {
 				isHovered: false,
 			});
 		});
+	}
+
+	private showOptions(): void {
+		this.status = "choosing";
+		this.element.innerHTML = `<div class="selection-content">
+                <div class="selection-header">
+                    <div class="back-button" id="back-button" onclick="toggleSelection('emptySlot')">
+                        ←
+                    </div>
+                    <div class="selection-title">Select Item to Craft</div>
+                </div>
+                
+                <div class="craft-options-list" id="craft-options-list">
+                    
+        </div>
+    </div>`;
+
+		const optionsListEl = this.$("#craft-options-list");
+		const options = this.getCraftingOptions();
+		options.forEach((resourceId) => {
+			const spec = Resource.getSpec(resourceId);
+			if (!spec) return;
+
+			const option = this.createCraftOption(resourceId, spec);
+			optionsListEl.appendChild(option);
+		});
+
+		const backButton = this.$("#back-button");
+		backButton.addEventListener("click", () => this.toggleSelection("emptySlot"));
+	}
+
+	private toggleSelection(resourceId: string): void {
+		if (resourceId === "emptySlot") {
+			this.status = "empty";
+			this.context.blacksmith.setSlotResource(this.slotIndex, this.currentResourceId);
+			this.update();
+			return;
+		}
+
+		this.status = "choosing";
+		this.context.blacksmith.setSlotResource(this.slotIndex, resourceId);
+		this.update();
+	}
+
+	// Create a single crafting option
+	private createCraftOption(resourceId: string, spec: ResourceSpec): HTMLElement {
+		const option = document.createElement("div");
+		option.className = "craft-option";
+		option.addEventListener("click", () => this.toggleSelection(resourceId));
+
+		const header = document.createElement("div");
+		header.className = "craft-option-header";
+
+		const icon = document.createElement("img") as HTMLImageElement;
+		icon.className = "craft-option-icon";
+		icon.src = spec.iconUrl;
+		header.appendChild(icon);
+
+		const info = document.createElement("div");
+		info.className = "craft-option-info";
+
+		const name = document.createElement("div");
+		name.className = "craft-option-name";
+		name.textContent = spec.name;
+		info.appendChild(name);
+
+		const type = document.createElement("div");
+		type.className = "craft-option-type";
+		type.textContent = spec.type;
+		info.appendChild(type);
+
+		header.appendChild(info);
+
+		const resources = document.createElement("div");
+		resources.className = "craft-option-resources";
+
+		const resourceItem = this.createCraftResourceItem(resourceId, spec);
+		resources.appendChild(resourceItem);
+
+		option.appendChild(header);
+		option.appendChild(resources);
+
+		return option;
+	}
+
+	// Create a single resource item to be used in a crafting option
+	private createCraftResourceItem(resourceId: string, spec: ResourceSpec): HTMLElement {
+		const item = document.createElement("div");
+		item.className = "craft-resource-item";
+
+		const icon = document.createElement("div");
+		icon.className = "craft-resource-icon";
+		icon.textContent = spec.iconUrl;
+		item.appendChild(icon);
+
+		const name = document.createElement("div");
+		name.className = "craft-resource-name";
+		name.textContent = spec.name;
+		item.appendChild(name);
+
+		const count = document.createElement("div");
+		count.className = "craft-resource-count";
+		count.textContent = "0/0";
+		item.appendChild(count);
+
+		return item;
+	}
+
+	/**
+	 * Builds the resource selection options.
+	 * Only called when available resources change (rare).
+	 */
+	private buildResourceOptions(): void {
+		this.optionRow.innerHTML = "";
 	}
 
 	/**
@@ -299,13 +442,6 @@ export class BlacksmithSlot extends UIBase {
 
 			costsEl.appendChild(item);
 		});
-	}
-
-	/**
-	 * Toggles the resource selection options visibility.
-	 */
-	private toggleOptions(): void {
-		this.$(".blacksmith-slot").classList.toggle("choosing");
 	}
 
 	/**

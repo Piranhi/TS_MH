@@ -271,3 +271,451 @@
 	font-size: 0.74rem;
 	margin-top: 2px;
 }
+
+/* ============================================
+   BUILDING DISPLAY COMPONENT - GLASSMORPHISM
+   ============================================ */
+
+.building-display-glass {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur-medium));
+	-webkit-backdrop-filter: blur(var(--glass-blur-medium));
+	border: 1px solid var(--glass-border);
+	border-radius: 1rem;
+	padding: 1.5rem;
+	position: relative;
+	overflow: hidden;
+	transition: all var(--transition-medium);
+	box-shadow: var(--glass-shadow);
+}
+
+/* Inner glow effect */
+.building-glow {
+	position: absolute;
+	inset: -50%;
+	background: radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%);
+	opacity: 0;
+	transition: opacity 0.5s ease;
+	pointer-events: none;
+}
+
+.building-display-glass:hover .building-glow {
+	opacity: 1;
+}
+
+.building-display-glass:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--glass-shadow-hover);
+	border-color: var(--glass-border-hover);
+}
+
+/* Header section */
+.building-header {
+	display: flex;
+	align-items: center;
+	gap: 1.5rem;
+}
+
+/* Icon styling */
+.building-icon-container {
+	width: 64px;
+	height: 64px;
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+	border: 1px solid rgba(102, 126, 234, 0.3);
+	border-radius: 0.75rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+	flex-shrink: 0;
+}
+
+.building-icon {
+	font-size: 2rem;
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Building info */
+.building-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.building-title-row {
+	display: flex;
+	align-items: baseline;
+	gap: 0.75rem;
+}
+
+.building-name {
+	margin: 0;
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.building-level {
+	font-size: 0.875rem;
+	color: var(--text-secondary);
+	padding: 0.25rem 0.75rem;
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 2rem;
+}
+
+/* Progress section */
+.building-progress-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.building-progress-label {
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.875rem;
+	color: var(--text-secondary);
+}
+
+.progress-value {
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+/* Efficiency display */
+.building-efficiency {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 1rem;
+	background: rgba(255, 255, 255, 0.03);
+	border-radius: 0.5rem;
+	width: fit-content;
+}
+
+.efficiency-value {
+	font-size: 1.25rem;
+	font-weight: bold;
+	transition: color 0.3s ease;
+}
+
+.efficiency-value.normal {
+	color: var(--text-primary);
+}
+.efficiency-value.medium {
+	color: #f7b731;
+}
+.efficiency-value.high {
+	color: #51cf66;
+}
+
+.efficiency-label {
+	font-size: 0.75rem;
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+/* Controls section */
+.building-controls {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 1rem;
+	padding-top: 1rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.spend-buttons {
+	display: flex;
+	gap: 0.5rem;
+	flex: 1;
+}
+
+.glass-btn-small {
+	min-width: 50px;
+	padding: 0.5rem;
+	font-size: 0.875rem;
+}
+
+.glass-btn-primary {
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+	border-color: rgba(102, 126, 234, 0.3);
+}
+
+.glass-btn-primary:hover {
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+	border-color: rgba(102, 126, 234, 0.4);
+}
+
+/* Status variations */
+.building-display-glass.locked {
+	opacity: 0.6;
+	filter: grayscale(0.5);
+}
+
+.building-display-glass.locked .building-icon-container {
+	background: rgba(0, 0, 0, 0.3);
+	border-color: var(--glass-border);
+}
+
+.building-display-glass.under-construction {
+	border-color: rgba(247, 183, 49, 0.3);
+}
+
+.building-display-glass.under-construction .building-glow {
+	background: radial-gradient(circle at 50% 50%, rgba(247, 183, 49, 0.1) 0%, transparent 50%);
+	opacity: 1;
+	animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 0.5;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+.building-display-glass.max-level {
+	border-color: rgba(81, 207, 102, 0.3);
+}
+
+.building-display-glass.max-level .building-level {
+	background: rgba(81, 207, 102, 0.2);
+	color: #51cf66;
+}
+
+/* Compact variant */
+.building-display-glass.compact {
+	padding: 1rem;
+}
+
+.building-display-glass.compact .building-icon-container {
+	width: 48px;
+	height: 48px;
+}
+
+.building-display-glass.compact .building-icon {
+	font-size: 1.5rem;
+}
+
+.building-display-glass.compact .building-name {
+	font-size: 1rem;
+}
+
+/* ============================================
+   BLACKSMITH SLOT FIXES
+   ============================================ */
+
+.blacksmith-slot {
+	background: rgba(0, 0, 0, 0.3);
+	backdrop-filter: blur(var(--glass-blur-light));
+	border: 2px solid var(--glass-border);
+	border-radius: 0.75rem;
+	padding: 1.25rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	cursor: pointer;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	overflow: hidden;
+	min-height: 220px;
+}
+
+.blacksmith-slot:hover {
+	transform: translateY(-4px);
+	border-color: var(--glass-border-hover);
+	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Slot states */
+.blacksmith-slot.empty {
+	border-style: dashed;
+	opacity: 0.6;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.blacksmith-slot.crafting {
+	border-color: rgba(102, 126, 234, 0.3);
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+.blacksmith-slot.complete {
+	border-color: rgba(81, 207, 102, 0.3);
+	background: linear-gradient(135deg, rgba(81, 207, 102, 0.05) 0%, rgba(51, 207, 102, 0.02) 100%);
+}
+
+/* ============================================
+   LAYOUT FIXES - FULL HEIGHT SIDEBAR & CONTENT
+   ============================================ */
+
+/* Reset html and body for proper height */
+html,
+body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden; /* Prevent body scroll */
+}
+
+/* App container should be full height */
+#app {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+/* Header stays fixed height */
+.header {
+	flex-shrink: 0;
+	height: var(--nav-height, 64px);
+	z-index: 100;
+}
+
+/* Main container takes remaining height */
+.main {
+	flex: 1;
+	display: flex;
+	overflow: hidden;
+	height: calc(100vh - var(--nav-height, 64px));
+}
+
+/* Sidebar full height */
+.menu {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	flex-shrink: 0;
+}
+
+.menu-nav {
+	background: rgba(20, 20, 30, 0.8);
+	backdrop-filter: blur(var(--glass-blur-heavy));
+	-webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+	border-right: 1px solid var(--glass-border);
+	padding: 0.5rem;
+	min-width: 220px;
+	height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+/* Game area takes remaining space */
+#game-area {
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	height: 100%;
+	position: relative;
+}
+
+/* Individual screens should be full height */
+.game {
+	min-height: 100%;
+	width: 100%;
+	position: relative;
+}
+
+/* Character screen specific fixes */
+.character-screen {
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	padding: 1.5rem;
+}
+
+.inventory-screen {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.inventory-screen .top-section {
+	flex-shrink: 0;
+}
+
+.inventory-screen .bottom-section {
+	flex: 1;
+	min-height: 0; /* Important for flex children */
+	display: flex;
+	flex-direction: column;
+}
+
+.inventory-panel {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.inventory-grid {
+	flex: 1;
+	overflow-y: auto;
+	min-height: 0;
+}
+
+/* Settlement screen fix */
+.settlement-screen {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.settlement-container {
+	flex: 1;
+	overflow-y: auto;
+}
+
+/* Bestiary screen fix */
+.bestiary-screen {
+	height: 100%;
+}
+
+/* Custom scrollbar for game area */
+#game-area::-webkit-scrollbar {
+	width: 8px;
+}
+
+#game-area::-webkit-scrollbar-track {
+	background: rgba(255, 255, 255, 0.02);
+}
+
+#game-area::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 4px;
+}
+
+#game-area::-webkit-scrollbar-thumb:hover {
+	background: rgba(255, 255, 255, 0.15);
+}
+
+/* Mobile responsive fixes */
+@media (max-width: 768px) {
+	.main {
+		flex-direction: column;
+	}
+
+	.menu {
+		position: fixed;
+		left: -100%;
+		top: var(--nav-height, 64px);
+		height: calc(100vh - var(--nav-height, 64px));
+		z-index: 99;
+		transition: left 0.3s ease;
+	}
+
+	.menu.mobile-open {
+		left: 0;
+	}
+
+	#game-area {
+		height: calc(100vh - var(--nav-height, 64px));
+	}
+}

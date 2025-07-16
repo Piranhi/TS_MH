@@ -22,7 +22,7 @@ interface BlacksmithSave {
 
 export class BlacksmithManager extends Destroyable implements Saveable, OfflineProgressHandler {
 	private slots: CraftSlot[] = [{ resourceId: null, progress: 0 }];
-	private unlockedSlots = 1;
+	private unlockedSlots = 4;
 	private upgrades = new Map<string, BlacksmithUpgrade>();
 	private speedMultiplier = 1;
 	private rawOreTimer = 0;
@@ -70,11 +70,11 @@ export class BlacksmithManager extends Destroyable implements Saveable, OfflineP
 		return Array.from(this.upgrades.values());
 	}
 
-    /** Get the current global speed multiplier from blacksmith upgrades and building efficiency */
-    getSpeedMultiplier(): number {
-        const buildingMult = GameContext.getInstance().settlement.getBuilding("blacksmith")?.getEfficiencyMultiplier?.() ?? 1;
-        return this.speedMultiplier * buildingMult;
-    }
+	/** Get the current global speed multiplier from blacksmith upgrades and building efficiency */
+	getSpeedMultiplier(): number {
+		const buildingMult = GameContext.getInstance().settlement.getBuilding("blacksmith")?.getEfficiencyMultiplier?.() ?? 1;
+		return this.speedMultiplier * buildingMult;
+	}
 
 	purchaseUpgrade(id: string): boolean {
 		const upg = this.upgrades.get(id);

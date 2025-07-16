@@ -108,9 +108,6 @@
 
 /* Slot grid with glass effect */
 .blacksmith-slot-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-	gap: 1rem;
 	background: var(--glass-bg);
 	backdrop-filter: blur(var(--glass-blur-medium));
 	-webkit-backdrop-filter: blur(var(--glass-blur-medium));
@@ -118,36 +115,127 @@
 	border-radius: 1rem;
 	padding: 1.5rem;
 	box-shadow: var(--glass-shadow);
+
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+	gap: 1rem;
+	margin-top: 2rem;
 }
 
 /* Individual slots */
 .blacksmith-slot {
-	aspect-ratio: 1;
 	background: rgba(0, 0, 0, 0.3);
+	backdrop-filter: blur(var(--glass-blur));
 	border: 2px solid var(--glass-border);
-	border-radius: 0.75rem;
+	border-radius: 1rem;
+	padding: 1.25rem;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	justify-content: center;
+	gap: 1rem;
 	cursor: pointer;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: all 0.3s ease;
 	position: relative;
 	overflow: hidden;
+	min-height: 200px;
 }
 
-.blacksmith-slot::before {
+.blacksmith-slot-info {
+	flex: 1;
+	display: flex; /* Added flex display */
+	justify-content: space-between; /* Space between name and level info */
+	align-items: center; /* Vertically center both sections */
+	gap: 1rem; /* Space between sections */
+}
+
+.blacksmith-slot-details {
+	flex: 1;
+}
+
+.blacksmith-slot-level-info {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end; /* Right-align the content */
+	gap: 0.25rem;
+	padding: 0.5rem;
+	background: rgba(0, 0, 0, 0.2); /* Subtle background */
+	border-radius: 0.5rem;
+	min-width: 80px;
+}
+
+/* .blacksmith-slot::before {
 	content: "";
 	position: absolute;
 	inset: -50%;
 	background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
 	opacity: 0;
 	transition: opacity 0.3s ease;
+} */
+
+.blacksmith-slot-header {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.blacksmith-slot-level {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.blacksmith-slot-xp {
+	font-size: 0.625rem;
+	color: var(--text-secondary);
+}
+
+.blacksmith-slot-icon {
+	width: 48px;
+	height: 48px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.5rem;
+}
+
+.blacksmith-slot-xp-bar {
+	width: 100%;
+	height: 8px;
+	background: rgba(0, 0, 0, 0.4);
+	border-radius: 2px;
+	overflow: hidden;
+	margin-top: 0.25rem;
+}
+
+.blacksmith-slot-name {
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.blacksmith-slot-type {
+	font-size: 0.75rem;
+	color: var(--text-secondary);
+}
+
+/* Progress section */
+.blacksmith-slot-progress {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.blacksmith-slot-progress-info {
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.875rem;
+	color: var(--text-secondary);
 }
 
 .blacksmith-slot:hover {
-	transform: translateY(-4px) scale(1.02);
-	border-color: var(--glass-border-hover);
+	transform: translateY(-4px);
+	border-color: rgba(255, 255, 255, 0.2);
 	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 
@@ -157,6 +245,65 @@
 
 .blacksmith-slot:active {
 	transform: translateY(-2px) scale(1.01);
+}
+
+.blacksmith-slot.empty {
+	border-style: dashed;
+	justify-content: center;
+	align-items: center;
+	min-height: 200px;
+}
+
+.blacksmith-slot.empty .empty-text {
+	color: var(--text-muted);
+	font-size: 0.875rem;
+}
+
+.blacksmith-slot.crafting {
+	border-color: rgba(102, 126, 234, 0.3);
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+/* Resources section */
+.slot-resources {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 0.75rem;
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 0.5rem;
+}
+
+.resource-item {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.875rem;
+}
+
+.resource-icon {
+	width: 20px;
+	height: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.resource-name {
+	flex: 1;
+	color: var(--text-secondary);
+}
+
+.resource-count {
+	font-weight: 600;
+}
+
+.resource-count.sufficient {
+	color: #51cf66;
+}
+
+.resource-count.insufficient {
+	color: #ff6b6b;
 }
 
 /* Slot content */
@@ -324,4 +471,168 @@
 .resource-quantity {
 	font-size: 0.75rem;
 	color: var(--text-secondary);
+}
+
+.selection-header {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 0.5rem;
+}
+
+.back-button {
+	width: 32px;
+	height: 32px;
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid var(--glass-border);
+	border-radius: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.back-button:hover {
+	background: rgba(255, 255, 255, 0.12);
+	border-color: rgba(255, 255, 255, 0.2);
+}
+
+.selection-title {
+	flex: 1;
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+/* Scrollable Options List */
+.craft-options-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	max-height: 300px;
+	overflow-y: auto;
+	margin: -0.5rem;
+	padding: 0.5rem;
+}
+
+/* Custom Scrollbar */
+.craft-options-list::-webkit-scrollbar {
+	width: 6px;
+}
+
+.craft-options-list::-webkit-scrollbar-track {
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 3px;
+}
+
+.craft-options-list::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 3px;
+}
+
+.craft-options-list::-webkit-scrollbar-thumb:hover {
+	background: rgba(255, 255, 255, 0.3);
+}
+
+/* Craft Option Item */
+.craft-option {
+	background: rgba(0, 0, 0, 0.2);
+	border: 1px solid var(--glass-border);
+	border-radius: 0.75rem;
+	padding: 0.75rem;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.craft-option:hover {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: rgba(255, 255, 255, 0.2);
+	transform: translateX(4px);
+}
+
+.craft-option-header {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-bottom: 0.5rem;
+}
+
+.craft-option-icon {
+	width: 36px;
+	height: 36px;
+	background: rgba(255, 255, 255, 0.08);
+	border-radius: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.25rem;
+}
+
+.craft-option-info {
+	flex: 1;
+}
+
+.craft-option-name {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.craft-option-type {
+	font-size: 0.75rem;
+	color: var(--text-secondary);
+}
+
+/* Resources for craft option */
+.craft-option-resources {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	margin-left: 3rem;
+}
+
+.craft-resource-item {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.75rem;
+}
+
+.craft-resource-icon {
+	width: 16px;
+	height: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.75rem;
+}
+
+.craft-resource-name {
+	flex: 1;
+	color: var(--text-secondary);
+}
+
+.craft-resource-count {
+	font-weight: 600;
+	font-size: 0.75rem;
+}
+
+.craft-resource-count.sufficient {
+	color: #51cf66;
+}
+
+.craft-resource-count.insufficient {
+	color: #ff6b6b;
+}
+
+/* Can't craft overlay */
+.craft-option.unavailable {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.craft-option.unavailable:hover {
+	transform: none;
+	background: rgba(0, 0, 0, 0.2);
+	border-color: var(--glass-border);
 }
