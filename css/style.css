@@ -790,3 +790,13 @@ body::before {
 	color: #bbb;
 	font-size: 0.65rem;
 }
+
+.screen-clean,
+.screen-clean * {
+	all: unset;
+	box-sizing: border-box;
+	font-family: sans-serif;
+	color: #fff;
+	background: transparent;
+	display: revert; /* Fixes some broken layout issues after `all: unset` */
+}
