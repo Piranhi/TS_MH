@@ -44,6 +44,8 @@ export class SettlementManager extends GameBase implements Saveable {
 
 	constructor() {
 		super();
+		// Seed all building instances immediately, so UI components depending on them are ready before screens mount.
+		this.seedMissingBuildings();
 		// When the game is ready, setup everything
 		bus.on("game:gameReady", () => {
 			// Setup variables for the first reward cycle:
