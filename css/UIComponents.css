@@ -581,16 +581,7 @@ section + section {
 	font-size: 0.8rem;
 	color: var(--text-muted, #ccc);
 }
-.upgrade-level {
-	position: absolute;
-	bottom: 4px;
-	right: 6px;
-	font-size: 0.75rem;
-	background: rgba(0, 0, 0, 0.6);
-	padding: 0 4px;
-	border-radius: 4px;
-	pointer-events: none;
-}
+
 .upgrade-progress {
 	display: flex;
 	align-items: center;

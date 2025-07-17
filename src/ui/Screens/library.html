@@ -1,17 +1,30 @@
 <div class="library-page">
-    <div id="library-building-status"></div>
-    <div class="basic-section">
-        <div class="basic-title">Current Research</div>
-        <span class="basic-subtitle" id="library-section-speed">Research Speed</span>
-        <div class="basic-section-invisible" id="libraryActiveList"></div>
+    <!-- Building Status -->
+    <div id="library-building-status" class="library_building-status"></div>
 
+    <!-- Current Research Section -->
+    <div class="library_current-research">
+        <h3 class="library_section-title">Current Research</h3>
+        <span class="library_research-speed" id="library-section-speed">Research Speed: 1x</span>
+
+        <div class="library_active-research" id="libraryActiveList">
+            <!-- Active research will be populated by JavaScript -->
+        </div>
     </div>
-    <div class="basic-section">
-        <div class="basic-title">Available Research</div>
-        <div class="library-upgrade-grid" id="libraryUpgradeGrid"></div>
+
+    <!-- Available Research Section -->
+    <div class="library_available-research">
+        <h3 class="library_section-title">Available Research</h3>
+        <div class="library_upgrade-grid" id="libraryUpgradeGrid">
+            <!-- Available upgrades will be populated by JavaScript -->
+        </div>
     </div>
-    <div class="basic-section">
-        <div class="library-completed-header">Completed</div>
-        <ul class="library-completed-list" id="libraryCompletedList"></ul>
+
+    <!-- Completed Research Section -->
+    <div class="library_completed-research">
+        <h3 class="library_section-title">Completed Research</h3>
+        <ul class="library_completed-list" id="libraryCompletedList">
+            <!-- Completed research will be populated by JavaScript -->
+        </ul>
     </div>
 </div>

@@ -1,5 +1,5 @@
 /* ============================================
-   LIBRARY SCREEN - GLASSMORPHISM
+   LIBRARY SCREEN - GLASSMORPHISM DESIGN
    ============================================ */
 
 .library-page {
@@ -8,49 +8,49 @@
 	gap: 1.5rem;
 	padding: 1.5rem;
 	width: 100%;
+	min-height: 100%;
 }
 
-/* Building status */
-#library-building-status {
+/* Building Status */
+.library_building-status {
 	margin-bottom: 1rem;
 }
 
-/* Basic sections with glass effect */
-.library-page .basic-section {
+/* Current Research Section */
+.library_current-research {
 	background: var(--glass-bg);
-	backdrop-filter: blur(var(--glass-blur-medium));
-	-webkit-backdrop-filter: blur(var(--glass-blur-medium));
+	backdrop-filter: blur(var(--glass-blur));
 	border: 1px solid var(--glass-border);
 	border-radius: 1rem;
 	padding: 1.5rem;
 	box-shadow: var(--glass-shadow);
-	transition: all var(--transition-medium);
+	transition: all 0.3s ease;
 }
 
-.library-page .basic-section:hover {
+.library_current-research:hover {
 	border-color: var(--glass-border-hover);
 	transform: translateY(-2px);
 	box-shadow: var(--glass-shadow-hover);
 }
 
-/* Section titles */
-.library-page .basic-title {
+/* Section Titles */
+.library_section-title {
 	font-size: 1.25rem;
 	font-weight: 600;
 	color: var(--text-primary);
-	margin-bottom: 1rem;
+	margin: 0 0 1rem 0;
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
 }
 
-.library-page .basic-title::before {
+.library_section-title::before {
 	content: "📚";
 	font-size: 1.5rem;
 }
 
-/* Research speed badge */
-#library-section-speed {
+/* Research Speed Badge */
+.library_research-speed {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;
@@ -63,28 +63,38 @@
 	color: var(--text-primary);
 	margin-bottom: 1rem;
 	box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
-	transition: all var(--transition-fast);
+	transition: all 0.3s ease;
 }
 
-#library-section-speed:hover {
+.library_research-speed:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-#library-section-speed::before {
+.library_research-speed::before {
 	content: "⚡";
 }
 
-/* Active research list */
-#libraryActiveList {
+/* Active Research */
+.library_active-research {
 	display: flex;
 	flex-direction: column;
 	gap: 0.75rem;
-	min-height: 100px;
+	min-height: 80px;
 }
 
-/* Research row with glass effect */
-.library-research-row {
+.library_empty-state {
+	text-align: center;
+	padding: 2rem;
+	color: var(--text-muted);
+	font-style: italic;
+	background: rgba(255, 255, 255, 0.02);
+	border-radius: 0.75rem;
+	border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+/* Research Row */
+.library_research-row {
 	display: flex;
 	align-items: center;
 	gap: 1rem;
@@ -94,30 +104,41 @@
 	border-radius: 0.75rem;
 	position: relative;
 	overflow: hidden;
-	transition: all var(--transition-fast);
+	transition: all 0.3s ease;
+	animation: research-pulse 2s ease-in-out infinite;
 }
 
-.library-research-row::before {
+@keyframes research-pulse {
+	0%,
+	100% {
+		box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+	}
+	50% {
+		box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+	}
+}
+
+.library_research-row::before {
 	content: "";
 	position: absolute;
 	inset: 0;
 	background: linear-gradient(135deg, transparent 0%, rgba(102, 126, 234, 0.05) 100%);
 	opacity: 0;
-	transition: opacity var(--transition-fast);
+	transition: opacity 0.3s ease;
 }
 
-.library-research-row:hover {
+.library_research-row:hover {
 	background: rgba(255, 255, 255, 0.05);
 	border-color: rgba(255, 255, 255, 0.12);
 	transform: translateX(4px);
 }
 
-.library-research-row:hover::before {
+.library_research-row:hover::before {
 	opacity: 1;
 }
 
-/* Research icon */
-.library-research-icon {
+/* Research Icon */
+.library_research-icon {
 	width: 48px;
 	height: 48px;
 	background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
@@ -132,80 +153,83 @@
 	flex-shrink: 0;
 }
 
-/* Research info */
-.library-research-info {
+/* Research Info */
+.library_research-info {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
 }
 
-.library-research-title {
+.library_research-title {
 	font-weight: 600;
 	color: var(--text-primary);
 	font-size: 1rem;
+	margin: 0;
 }
 
-/* Progress container */
-.library-research-progress {
+.library_research-description {
+	font-size: 0.875rem;
+	color: var(--text-secondary);
+	margin: 0;
+}
+
+.library_research-progress {
+	margin-top: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.library_time-remaining {
+	font-size: 0.75rem;
+	color: var(--text-muted);
 	margin-top: 0.25rem;
 }
 
-/* Upgrade grid */
-.library-upgrade-grid {
+/* Available Research Section */
+.library_available-research {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur));
+	border: 1px solid var(--glass-border);
+	border-radius: 1rem;
+	padding: 1.5rem;
+	box-shadow: var(--glass-shadow);
+	transition: all 0.3s ease;
+}
+
+.library_available-research:hover {
+	border-color: var(--glass-border-hover);
+	transform: translateY(-2px);
+	box-shadow: var(--glass-shadow-hover);
+}
+
+/* Upgrade Grid */
+.library_upgrade-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 	gap: 1rem;
 }
 
-/* Upgrade cards */
-.upgrade-selection-component {
-	background: rgba(255, 255, 255, 0.03);
-	backdrop-filter: blur(8px);
-	border: 1px solid rgba(255, 255, 255, 0.08);
-	border-radius: 0.75rem;
-	padding: 1.25rem;
-	cursor: pointer;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	position: relative;
-	overflow: hidden;
+/* Completed Research Section */
+.library_completed-research {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur));
+	border: 1px solid var(--glass-border);
+	border-radius: 1rem;
+	padding: 1.5rem;
+	box-shadow: var(--glass-shadow);
+	transition: all 0.3s ease;
 }
 
-.upgrade-selection-component::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: linear-gradient(135deg, transparent 0%, rgba(102, 126, 234, 0.1) 100%);
-	opacity: 0;
-	transition: opacity 0.3s ease;
+.library_completed-research:hover {
+	border-color: var(--glass-border-hover);
+	transform: translateY(-2px);
+	box-shadow: var(--glass-shadow-hover);
 }
 
-.upgrade-selection-component:hover {
-	transform: translateY(-4px);
-	border-color: rgba(102, 126, 234, 0.3);
-	box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
-}
-
-.upgrade-selection-component:hover::before {
-	opacity: 1;
-}
-
-/* Completed research section */
-.library-completed-header {
-	font-size: 1.125rem;
-	font-weight: 600;
-	margin-bottom: 1rem;
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.library-completed-header::before {
-	content: "✅";
-}
-
-/* Completed list with glass badges */
-.library-completed-list {
+/* Completed Research List */
+.library_completed-list {
 	list-style: none;
 	padding: 0;
 	margin: 0;
@@ -214,7 +238,7 @@
 	gap: 0.5rem;
 }
 
-.library-completed-list li {
+.library_completed-item {
 	background: linear-gradient(135deg, rgba(81, 207, 102, 0.1) 0%, rgba(51, 207, 102, 0.05) 100%);
 	backdrop-filter: blur(8px);
 	border: 1px solid rgba(81, 207, 102, 0.3);
@@ -225,62 +249,61 @@
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
-	transition: all var(--transition-fast);
+	transition: all 0.3s ease;
 	cursor: default;
+	color: var(--text-primary);
 }
 
-.library-completed-list li:hover {
+.library_completed-item:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 4px 12px rgba(81, 207, 102, 0.2);
 }
 
-.library-completed-list li::before {
+.library_completed-item::before {
 	content: "✓";
 	color: #51cf66;
 	font-weight: bold;
 }
 
-/* Empty state */
-.library-page .basic-section-invisible:empty::before {
-	content: "No active research";
-	display: block;
-	text-align: center;
-	padding: 2rem;
+.library_completed-empty {
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px dashed rgba(255, 255, 255, 0.1);
+	border-radius: 2rem;
+	padding: 0.75rem 1.5rem;
+	font-size: 0.875rem;
 	color: var(--text-muted);
 	font-style: italic;
+	text-align: center;
+	width: 100%;
 }
 
-/* Animations */
-@keyframes research-pulse {
-	0%,
-	100% {
-		box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-	}
-	50% {
-		box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
-	}
-}
-
-.library-research-row {
-	animation: research-pulse 2s ease-in-out infinite;
-}
-
-/* Responsive design */
+/* Responsive Design */
 @media (max-width: 768px) {
 	.library-page {
 		padding: 1rem;
 	}
 
-	.library-upgrade-grid {
+	.library_upgrade-grid {
 		grid-template-columns: 1fr;
 	}
 
-	.library-completed-list {
+	.library_completed-list {
 		flex-direction: column;
 	}
 
-	.library-completed-list li {
+	.library_completed-item {
 		width: 100%;
 		text-align: center;
+		justify-content: center;
+	}
+
+	.library_research-row {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.75rem;
+	}
+
+	.library_research-info {
+		width: 100%;
 	}
 }
