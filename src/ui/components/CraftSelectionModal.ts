@@ -81,9 +81,9 @@ export class CraftSelectionModal extends UIBase {
 
 		// Initial affordability check
 		const canCraft =
-			spec.costs?.every((cost) => {
-				const have = this.context.resources.getResource(cost.resource)?.amount || 0;
-				return have >= cost.amount;
+			spec.requires?.every((cost) => {
+				const have = this.context.resources.getResourceQuantity(cost.resource) || 0;
+				return have >= cost.quantity;
 			}) ?? true;
 
 		if (!canCraft) {
@@ -113,8 +113,8 @@ export class CraftSelectionModal extends UIBase {
 		const resources = document.createElement("div");
 		resources.className = "craft-option-resources";
 
-		spec.costs?.forEach((cost) => {
-			const resourceItem = this.createResourceItem(cost);
+		spec.requires?.forEach((cost) => {
+			const resourceItem = this.createResourceItem({ resource: cost.resource, amount: cost.quantity });
 			if (resourceItem) {
 				resources.appendChild(resourceItem);
 			}
@@ -129,7 +129,7 @@ export class CraftSelectionModal extends UIBase {
 		const resourceSpec = Resource.getSpec(cost.resource);
 		if (!resourceSpec) return null;
 
-		const have = this.context.resources.getResource(cost.resource)?.amount || 0;
+		const have = this.context.resources.getResourceQuantity(cost.resource) || 0;
 		const sufficient = have >= cost.amount;
 
 		const item = document.createElement("div");

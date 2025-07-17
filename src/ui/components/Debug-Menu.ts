@@ -163,7 +163,7 @@ export class DebugMenu {
 		this.addButton("Test Prestige Scaling", () => BalanceDebug.validatePrestigeBalance());
 		this.addButton("Progression Curves", () => BalanceDebug.logProgressionCurves());
 		this.addButton("Unlock all buildings", () => context.settlement.unlockAllBuildings());
-		this.addButton("Unlock all buildings", () => context.settlement.unlockAllBuildings());
+		this.addButton("Unlock all resources", () => context.resources.debugUnlockAllResources());
 		this.addButton("Level Up Player Character", () => context.character.gainXp(-1));
 		this.addButton("Level Up Resource", () => context.blacksmith.debugLevelUpResource());
 		this.addButton("Test Toast", () => ToastManager.instance.enqueue("Test", "Test"));
