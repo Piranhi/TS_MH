@@ -31,6 +31,14 @@ export class BlacksmithManager extends Destroyable implements Saveable, OfflineP
 		super();
 		this.initaliseResearch();
 		this.setupEventBindings();
+		this.createDefaultSlots();
+	}
+
+	private createDefaultSlots(): void {
+		this.slots = [];
+		for (let i = 0; i < this.unlockedSlots; i++) {
+			this.slots.push({ resourceId: null, progress: 0 });
+		}
 	}
 
 	private setupEventBindings() {

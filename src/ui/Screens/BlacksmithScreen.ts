@@ -5,6 +5,7 @@ import { bindEvent } from "@/shared/utils/busUtils";
 import { Resource } from "@/features/inventory/Resource";
 import { Tooltip } from "../components/Tooltip";
 import { BlacksmithSlot } from "../components/BlacksmithSlot";
+import { CraftSelectionModal } from "../components/CraftSelectionModal";
 import { UpgradeSelectionContainer, UpgradeSelectionData } from "../components/UpgradeSelectionContainer";
 import { BuildingStatus } from "../components/BuildingStatus";
 import { formatNumberShort } from "@/shared/utils/stringUtils";
@@ -12,13 +13,14 @@ import { formatNumberShort } from "@/shared/utils/stringUtils";
 interface ResourceRowData {
 	element: HTMLElement;
 	quantityEl: HTMLSpanElement;
+	levelEl: HTMLSpanElement;
 	lastQuantity: number;
 	lastLevel: number;
 }
 
 /**
- * Optimized BlacksmithScreen that updates only what changes.
- * Uses component-based architecture to avoid rebuilding the UI.
+ * BlacksmithScreen - Main screen coordinator
+ * Manages slots, resources display, and upgrades
  */
 export class BlacksmithScreen extends BaseScreen {
 	readonly screenName = "blacksmith";
@@ -29,8 +31,9 @@ export class BlacksmithScreen extends BaseScreen {
 
 	// Component instances
 	private slotComponents: BlacksmithSlot[] = [];
+	private currentModal: CraftSelectionModal | null = null;
 
-	// Cached resource row elements for efficient updates
+	// Cached resource row elements
 	private resourceRows: Map<string, ResourceRowData> = new Map();
 
 	// Upgrade selection component
@@ -45,6 +48,7 @@ export class BlacksmithScreen extends BaseScreen {
 		const statusEl = root.querySelector("#bs-building-status") as HTMLElement;
 		const building = this.context.settlement.getBuilding("blacksmith");
 		if (building && statusEl) new BuildingStatus(statusEl, building);
+
 		this.slotGrid = this.byId("bsSlotGrid");
 		this.resourceList = this.byId("bsResourceList");
 		this.upgradeGrid = this.byId("bsUpgradeGrid");
@@ -63,24 +67,18 @@ export class BlacksmithScreen extends BaseScreen {
 	}
 
 	hide() {
-		// Cleanup tooltips when hidden
+		// Cleanup tooltips and modals when hidden
 		Tooltip.instance.hide();
+		this.closeModal();
 	}
 
-	/**
-	 * Builds the initial UI structure once.
-	 * All future updates will modify existing elements.
-	 */
 	private buildInitial() {
 		this.buildSlots();
 		this.buildResourceRows();
 		this.buildUpgradeContainer();
-		this.updateRawOre(); // initialise bar
+		this.updateRawOre();
 	}
 
-	/**
-	 * Binds event handlers for UI updates.
-	 */
 	private bindEvents() {
 		// Update slots every tick
 		bus.on("Game:UITick", () => {
@@ -100,8 +98,7 @@ export class BlacksmithScreen extends BaseScreen {
 	}
 
 	/**
-	 * Creates BlacksmithSlot components for each slot.
-	 * Only called once during initialization or when slot count changes.
+	 * Creates BlacksmithSlot components for each slot
 	 */
 	private buildSlots() {
 		// Clear existing components
@@ -115,22 +112,76 @@ export class BlacksmithScreen extends BaseScreen {
 			const container = document.createElement("div");
 			this.slotGrid.appendChild(container);
 
-			const component = new BlacksmithSlot(container, idx);
+			const component = new BlacksmithSlot(container, idx, () => this.handleSlotClick(idx));
 			this.slotComponents.push(component);
 		});
 	}
 
 	/**
-	 * Updates all slot components.
-	 * Called every tick - components handle their own efficient updates.
+	 * Handle clicking on a slot - show selection modal
+	 */
+	private handleSlotClick(slotIndex: number): void {
+		console.log("Slot clicked:", slotIndex);
+
+		// Close any existing modal
+		this.closeModal();
+
+		// Create modal container
+		const modalContainer = document.createElement("div");
+		modalContainer.className = "blacksmith-modal-overlay";
+		document.body.appendChild(modalContainer);
+
+		console.log("Modal container added to body");
+
+		// Add click handler to close on background click
+		modalContainer.addEventListener("click", (e) => {
+			if (e.target === modalContainer) {
+				this.closeModal();
+			}
+		});
+
+		// Create the inner modal wrapper
+		const modalWrapper = document.createElement("div");
+		modalWrapper.className = "craft-selection-modal-wrapper";
+		modalContainer.appendChild(modalWrapper);
+
+		// Create selection modal
+		this.currentModal = new CraftSelectionModal(
+			modalWrapper,
+			(resourceId) => {
+				console.log("Resource selected:", resourceId);
+				this.context.blacksmith.setSlotResource(slotIndex, resourceId);
+				this.closeModal();
+			},
+			() => this.closeModal()
+		);
+
+		console.log("Modal created");
+	}
+
+	/**
+	 * Close the current modal if any
+	 */
+	private closeModal(): void {
+		if (this.currentModal) {
+			const container = this.currentModal.element.parentElement; // Get the overlay
+			this.currentModal.destroy();
+			this.currentModal = null;
+			if (container) {
+				container.remove();
+			}
+		}
+	}
+
+	/**
+	 * Updates all slot components
 	 */
 	private updateSlots() {
 		this.slotComponents.forEach((slot) => slot.update());
 	}
 
 	/**
-	 * Rebuilds slots only when the number of slots changes.
-	 * Rare event - typically only happens with upgrades.
+	 * Rebuilds slots only when the number changes
 	 */
 	private rebuildSlots() {
 		const currentCount = this.slotComponents.length;
@@ -142,8 +193,7 @@ export class BlacksmithScreen extends BaseScreen {
 	}
 
 	/**
-	 * Creates resource row elements once.
-	 * Updates will modify these elements rather than recreating them.
+	 * Creates resource row elements once
 	 */
 	private buildResourceRows() {
 		this.resourceList.innerHTML = "<h3 style='margin: 0 0 1rem 0; font-size: 1.125rem;'>Resources</h3>";
@@ -164,9 +214,6 @@ export class BlacksmithScreen extends BaseScreen {
 		}
 	}
 
-	/**
-	 * Creates a single resource row with cached element references.
-	 */
 	private createResourceRow(id: string, spec: any, data: any): ResourceRowData {
 		const row = document.createElement("div");
 		row.className = "resource-item";
@@ -185,35 +232,52 @@ export class BlacksmithScreen extends BaseScreen {
 		name.textContent = spec.name;
 		info.appendChild(name);
 
-		const quantity = document.createElement("div");
+		const details = document.createElement("div");
+		details.className = "resource-details";
+		info.appendChild(details);
+
+		const quantity = document.createElement("span");
 		quantity.className = "resource-quantity";
-		quantity.textContent = `${formatNumberShort(data.quantity)} (Lv. ${data.level})`;
-		info.appendChild(quantity);
+		quantity.textContent = formatNumberShort(data.amount ?? 0);
+		details.appendChild(quantity);
+
+		const separator = document.createElement("span");
+		separator.className = "resource-separator";
+		separator.textContent = " • ";
+		details.appendChild(separator);
+
+		const level = document.createElement("span");
+		level.className = "resource-level";
+		level.textContent = `Lv. ${data.level}`;
+		details.appendChild(level);
 
 		// Tooltip handling
 		row.addEventListener("mouseenter", () => {
-			const tooltipData = {
-				icon: spec.iconUrl,
-				name: spec.name,
-				description: spec.description,
-				list: this.getResourceUnlockList(id, spec, data),
-			};
-
-			Tooltip.instance.show(row, tooltipData);
+			this.showResourceTooltip(row, id, spec, data);
 		});
 		row.addEventListener("mouseleave", () => Tooltip.instance.hide());
 
 		return {
 			element: row,
 			quantityEl: quantity,
-			lastQuantity: data.quantity,
+			levelEl: level,
+			lastQuantity: data.amount,
 			lastLevel: data.level,
 		};
 	}
 
-	/**
-	 * Gets the unlock list for a resource tooltip
-	 */
+	private showResourceTooltip(element: HTMLElement, resourceId: string, spec: any, data: any): void {
+		const tooltipData = {
+			icon: spec.iconUrl,
+			name: spec.name,
+			type: "Resource",
+			description: spec.description,
+			list: this.getResourceUnlockList(resourceId, spec, data),
+		};
+
+		Tooltip.instance.show(element, tooltipData);
+	}
+
 	private getResourceUnlockList(resourceId: string, spec: any, data: any): string[] {
 		const unlockList: string[] = [];
 
@@ -234,18 +298,17 @@ export class BlacksmithScreen extends BaseScreen {
 	}
 
 	/**
-	 * Updates only the resource values that have changed.
-	 * Much more efficient than rebuilding all rows.
+	 * Updates only changed resource values
 	 */
 	private updateResourcesDisplay() {
 		const resources = this.context.resources.getAllResources();
 
-		// Check for new resources that need rows
+		// Check for new resources
 		for (let [id, data] of resources) {
 			if (!data.isUnlocked || data.infinite) continue;
 
 			if (!this.resourceRows.has(id)) {
-				// New resource unlocked - add its row
+				// New resource unlocked
 				const spec = Resource.getSpec(id);
 				if (spec) {
 					const row = this.createResourceRow(id, spec, data);
@@ -259,66 +322,52 @@ export class BlacksmithScreen extends BaseScreen {
 		this.resourceRows.forEach((row, id) => {
 			const data = resources.get(id);
 			if (!data) {
-				// Resource no longer exists - remove row
+				// Resource removed
 				row.element.remove();
 				this.resourceRows.delete(id);
 				return;
 			}
 
-			// Only update if values changed
-			if (data.quantity !== row.lastQuantity) {
-				row.quantityEl.textContent = formatNumberShort(data.quantity);
-				row.lastQuantity = data.quantity;
+			// Update values if changed
+			if (data.amount !== row.lastQuantity) {
+				row.quantityEl.textContent = formatNumberShort(data.amount);
+				row.lastQuantity = data.amount;
 			}
 
 			if (data.level !== row.lastLevel) {
-				row.levelEl.textContent = `Lv ${data.level}`;
+				row.levelEl.textContent = `Lv. ${data.level}`;
 				row.lastLevel = data.level;
-				// Level changed - need to update tooltip event handler for unlock info
-				this.updateTooltipForRow(row.element, id);
+
+				// Update tooltip with new unlock info
+				const spec = Resource.getSpec(id);
+				if (spec) {
+					this.updateResourceTooltip(row.element, id, spec, data);
+				}
 			}
 		});
-
-		// Notify slots that resources changed (for cost updates)
-		this.slotComponents.forEach((slot) => slot.updateSlot());
 	}
 
-	/**
-	 * Updates the tooltip event handler for a resource row
-	 */
-	private updateTooltipForRow(element: HTMLElement, resourceId: string) {
-		const spec = Resource.getSpec(resourceId);
-		const data = this.context.resources.getResourceData(resourceId);
-		if (!spec || !data) return;
-
-		// Remove old event listeners by cloning the element
+	private updateResourceTooltip(element: HTMLElement, resourceId: string, spec: any, data: any): void {
+		// Remove old listeners by cloning
 		const newElement = element.cloneNode(true) as HTMLElement;
 		element.parentNode?.replaceChild(newElement, element);
 
-		// Add new event listeners with updated data
+		// Add updated listeners
 		newElement.addEventListener("mouseenter", () => {
-			const tooltipData = {
-				icon: spec.iconUrl,
-				name: spec.name,
-				description: spec.description,
-				list: this.getResourceUnlockList(resourceId, spec, data),
-			};
-
-			Tooltip.instance.show(newElement, tooltipData);
+			this.showResourceTooltip(newElement, resourceId, spec, data);
 		});
 		newElement.addEventListener("mouseleave", () => Tooltip.instance.hide());
 
-		// Update the row reference
+		// Update row reference
 		const rowData = this.resourceRows.get(resourceId);
 		if (rowData) {
 			rowData.element = newElement;
+			// Re-cache the child elements
+			rowData.quantityEl = newElement.querySelector(".resource-quantity") as HTMLSpanElement;
+			rowData.levelEl = newElement.querySelector(".resource-level") as HTMLSpanElement;
 		}
 	}
 
-	/**
-	 * Creates upgrade cards once.
-	 * Updates will modify these elements rather than recreating them.
-	 */
 	private buildUpgradeContainer() {
 		this.upgradeContainer = new UpgradeSelectionContainer({
 			container: this.upgradeGrid,
@@ -349,10 +398,6 @@ export class BlacksmithScreen extends BaseScreen {
 		}));
 	}
 
-	/**
-	 * Updates all UI elements.
-	 * Called when screen is shown or major changes occur.
-	 */
 	private updateAll() {
 		this.updateSlots();
 		this.updateResourcesDisplay();
@@ -360,9 +405,6 @@ export class BlacksmithScreen extends BaseScreen {
 		this.updateRawOre();
 	}
 
-	/**
-	 * Updates the raw ore progress bar and output text.
-	 */
 	private updateRawOre() {
 		if (!this.rawOreFill || !this.rawOreOutput) return;
 		const status = this.context.blacksmith.getRawOreStatus();
@@ -371,11 +413,9 @@ export class BlacksmithScreen extends BaseScreen {
 		this.rawOreOutput.textContent = `+${status.orePerCycle}`;
 	}
 
-	/**
-	 * Cleanup when screen is destroyed.
-	 */
 	destroy() {
 		this.slotComponents.forEach((slot) => slot.destroy());
+		this.closeModal();
 		super.destroy();
 	}
 }
