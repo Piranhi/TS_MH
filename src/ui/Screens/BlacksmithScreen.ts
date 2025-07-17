@@ -9,6 +9,7 @@ import { CraftSelectionModal } from "../components/CraftSelectionModal";
 import { UpgradeSelectionContainer, UpgradeSelectionData } from "../components/UpgradeSelectionContainer";
 import { BuildingStatus } from "../components/BuildingStatus";
 import { formatNumberShort } from "@/shared/utils/stringUtils";
+import { ResourceData, ResourceSpec } from "@/shared/types";
 
 interface ResourceRowData {
 	element: HTMLElement;
@@ -196,13 +197,12 @@ export class BlacksmithScreen extends BaseScreen {
 	 * Creates resource row elements once
 	 */
 	private buildResourceRows() {
-		this.resourceList.innerHTML = "<h3 style='margin: 0 0 1rem 0; font-size: 1.125rem;'>Resources</h3>";
-
+		this.resourceList.innerHTML = "";
 		this.resourceRows.clear();
 
 		const resources = this.context.resources.getAllResources();
 
-		for (let [id, data] of resources) {
+		for (const [id, data] of resources) {
 			if (!data.isUnlocked || data.infinite) continue;
 
 			const spec = Resource.getSpec(id);
@@ -214,7 +214,7 @@ export class BlacksmithScreen extends BaseScreen {
 		}
 	}
 
-	private createResourceRow(id: string, spec: any, data: any): ResourceRowData {
+	private createResourceRow(id: string, spec: ResourceSpec, data: ResourceData): ResourceRowData {
 		const row = document.createElement("div");
 		row.className = "resource-item";
 
@@ -238,7 +238,7 @@ export class BlacksmithScreen extends BaseScreen {
 
 		const quantity = document.createElement("span");
 		quantity.className = "resource-quantity";
-		quantity.textContent = formatNumberShort(data.amount ?? 0);
+		quantity.textContent = formatNumberShort(data.quantity, 0, true);
 		details.appendChild(quantity);
 
 		const separator = document.createElement("span");
@@ -261,7 +261,7 @@ export class BlacksmithScreen extends BaseScreen {
 			element: row,
 			quantityEl: quantity,
 			levelEl: level,
-			lastQuantity: data.amount,
+			lastQuantity: data.quantity,
 			lastLevel: data.level,
 		};
 	}
@@ -329,9 +329,9 @@ export class BlacksmithScreen extends BaseScreen {
 			}
 
 			// Update values if changed
-			if (data.amount !== row.lastQuantity) {
-				row.quantityEl.textContent = formatNumberShort(data.amount);
-				row.lastQuantity = data.amount;
+			if (data.quantity !== row.lastQuantity) {
+				row.quantityEl.textContent = formatNumberShort(data.quantity, 0, true);
+				row.lastQuantity = data.quantity;
 			}
 
 			if (data.level !== row.lastLevel) {

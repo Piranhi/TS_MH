@@ -247,7 +247,7 @@ export class BlacksmithSlot extends UIBase {
 			const have = this.context.resources.getResourceQuantity(resource) || 0;
 			const countEl = item.querySelector(".resource-count");
 			if (countEl) {
-				countEl.textContent = `${have}/${amount}`;
+				countEl.textContent = `${amount}/${formatNumberShort(have)}`;
 				countEl.className = "resource-count " + (have >= amount ? "sufficient" : "insufficient");
 			}
 		});

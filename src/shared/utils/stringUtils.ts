@@ -24,7 +24,7 @@ export function formatTimeFull(ms: number): string {
 	return `${hours}:${pad(minutes)}:${pad(seconds)}`;
 }
 
-export function formatNumberShort(value: number, fixed?: number): string {
+export function formatNumberShort(value: number, fixed?: number, removeTrailingZero?: boolean): string {
 	const units = ["", "K", "M", "B", "T", "Q"];
 	let unitIndex = 0;
 	let displayValue = value; // Use a separate variable for display calculation
@@ -43,6 +43,8 @@ export function formatNumberShort(value: number, fixed?: number): string {
 
 	// Remove trailing .0 if present, but only if it's not a value under 1000 where we want the decimal
 	if (str.endsWith(".0") && Math.abs(value) >= 1000) {
+		str = str.slice(0, -2);
+	} else if (removeTrailingZero && str.endsWith(".0")) {
 		str = str.slice(0, -2);
 	}
 

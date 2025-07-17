@@ -131,6 +131,40 @@ body::after {
 }
 
 /* ============================================
+	BASIC SECTIONS
+	============================================ */
+
+/* Override basic-section with glass */
+.basic-section {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur-medium));
+	-webkit-backdrop-filter: blur(var(--glass-blur-medium));
+	border: 1px solid var(--glass-border);
+	border-radius: 1rem;
+	padding: 1.5rem;
+	box-shadow: var(--glass-shadow);
+	transition: all var(--transition-medium);
+}
+
+/* Section title */
+.basic-title {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: var(--text-primary);
+	margin-bottom: 1rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+/* Resource list */
+.basic-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+/* ============================================
    HEADER GLASS STYLING
    ============================================ */
 .header {
@@ -784,36 +818,6 @@ button {
 	margin: 0;
 	font-size: 1.125rem;
 	color: var(--text-primary);
-}
-
-.section-icon {
-	font-size: 1.25rem;
-}
-
-/* Toggle button */
-.toggle-btn {
-	width: 28px;
-	height: 28px;
-	padding: 0;
-	background: rgba(255, 255, 255, 0.05);
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 0.375rem;
-	color: var(--text-secondary);
-	font-size: 0.75rem;
-	cursor: pointer;
-	transition: all var(--transition-fast);
-}
-
-.toggle-btn:hover {
-	background: rgba(255, 255, 255, 0.1);
-	transform: scale(1.1);
-}
-
-/* Collapsed state */
-.player-stats-section.collapsed .table-wrapper,
-.player-stats-section.collapsed .trait-list-wrapper,
-.player-stats-section.collapsed .level-display-container {
-	display: none;
 }
 
 /* Level display */

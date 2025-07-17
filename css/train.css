@@ -9,44 +9,6 @@
 	flex-direction: column;
 }
 
-/* Glass panels */
-.panel {
-	background: var(--glass-bg);
-	backdrop-filter: blur(var(--glass-blur-medium));
-	-webkit-backdrop-filter: blur(var(--glass-blur-medium));
-	border: 1px solid var(--glass-border);
-	border-radius: 1rem;
-	padding: 1.5rem;
-	box-shadow: var(--glass-shadow);
-	transition: all var(--transition-medium);
-}
-
-.panel:hover {
-	border-color: var(--glass-border-hover);
-	transform: translateY(-2px);
-	box-shadow: var(--glass-shadow-hover);
-}
-
-/* Info panel */
-.info-panel {
-	background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-}
-
-/* Section title */
-.section-title {
-	font-size: 1.5rem;
-	color: var(--text-primary);
-	margin-bottom: 1rem;
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.section-title::before {
-	content: "💪";
-	font-size: 1.75rem;
-}
-
 /* Training list */
 .training-list {
 	display: flex;
@@ -109,21 +71,6 @@
 .training-item.locked .locked-label::before {
 	content: "🔒";
 	font-size: 1.25rem;
-}
-
-/* Training icon */
-.training-icon {
-	flex: none;
-	width: 48px;
-	height: 48px;
-	margin-right: 1.25rem;
-	background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-	border-radius: 0.75rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 1.5rem;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Training content */

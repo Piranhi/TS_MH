@@ -15,26 +15,6 @@ body,
 	height: 100%;
 	width: 100%;
 }
-body {
-	font-family: var(--font-sans);
-	background: radial-gradient(at 30% 30%, var(--bg-tint-1) 0%, var(--bg-tint-2) 100%);
-	color: var(--text-default);
-	min-height: 100vh;
-	position: relative;
-	line-height: 1.6;
-	-webkit-font-smoothing: antialiased;
-}
-body::before {
-	content: "";
-	position: fixed;
-	inset: 0;
-	z-index: -1;
-	opacity: 1;
-	pointer-events: none;
-	background-color: #292b30;
-	/*background: url("/public/images/backgrounds/background-main.png") center/cover no-repeat;
-	filter: blur(20px);*/
-}
 
 .basic-section {
 	background: rgb(52, 58, 61);

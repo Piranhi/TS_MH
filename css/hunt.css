@@ -1,7 +1,11 @@
 /* ============================================
            HUNT SCREEN
            ============================================ */
-
+:root {
+	--combat-player: hsl(var(--primary-hue), 70%, 60%);
+	--combat-enemy: hsl(var(--danger-hue), 70%, 60%);
+	--combat-heal: hsl(var(--success-hue), 60%, 55%);
+}
 /* make this fill 100% of the screen */
 .hunt-screen {
 	display: grid;

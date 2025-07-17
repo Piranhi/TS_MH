@@ -4,6 +4,7 @@ import { AbilityModifierStats, StatKey, Stats, StatsModifier } from "@/models/St
 import { MilestoneTag } from "./Milestones";
 import { GameEvents } from "@/core/EventBus";
 import { BaseCharacter } from "@/models/BaseCharacter";
+import { RecruitProfession } from "@/models/Recruit";
 
 // --------------------- SETTLEMENT + BUILDINGS ----------------------------
 export const STARTING_BUILDING_UNLOCKS = ["guildHall"];
@@ -23,20 +24,21 @@ export interface BuildingSpec {
 	description: string;
 	icon: string;
 	baseCost: number;
+	requiredProfession: RecruitProfession;
 }
 
 export interface BuildingState {
-        unlockStatus: BuildingUnlockStatus;
-        pointsAllocated: number;
-        nextUnlock: number;
-        level: number;
+	unlockStatus: BuildingUnlockStatus;
+	pointsAllocated: number;
+	nextUnlock: number;
+	level: number;
 	/** Current efficiency level earned by spending gold */
 	goldEfficiencyLevel?: number;
 	/** Base gold cost allocated for maintaining efficiency */
 	goldAllocation?: number;
-        /** Whether the building is currently running in an efficiency state */
-        efficiencyActive?: boolean;
-        staffId?: string;
+	/** Whether the building is currently running in an efficiency state */
+	efficiencyActive?: boolean;
+	staffId?: string;
 }
 
 export interface BuildingSnapshot {
@@ -267,11 +269,11 @@ export interface InventoryItemSpec extends Identifiable {
 }
 
 export interface EquipmentItemSpec extends InventoryItemSpec {
-        category: "equipment";
-        equipType: EquipmentType;
-        statMod: StatsModifier;
-        resistances?: Partial<Resistances>;
-        baseRenown: number;
+	category: "equipment";
+	equipType: EquipmentType;
+	statMod: StatsModifier;
+	resistances?: Partial<Resistances>;
+	baseRenown: number;
 }
 
 export interface ResourceItemSpec extends InventoryItemSpec {
@@ -292,10 +294,10 @@ export interface InventoryItemState {
 	status?: ItemEquipStatus;
 	level?: number;
 	progress?: number;
-        rarity?: ItemRarity;
-        heirloom?: number;
-        renown?: number;
-        renownRequired?: number;
+	rarity?: ItemRarity;
+	heirloom?: number;
+	renown?: number;
+	renownRequired?: number;
 }
 
 export function getItemCategoryLabel(category: ItemCategory): string {

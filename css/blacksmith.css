@@ -283,13 +283,6 @@
 	border-radius: 0.5rem;
 }
 
-.resource-item {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	font-size: 0.875rem;
-}
-
 .resource-icon {
 	width: 20px;
 	height: 20px;

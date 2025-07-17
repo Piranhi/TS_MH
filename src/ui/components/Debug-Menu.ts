@@ -169,6 +169,7 @@ export class DebugMenu {
 		this.addButton("Test Toast", () => ToastManager.instance.enqueue("Test", "Test"));
 		this.addButton("Grant Class Points", () => context.classes.gainPoints(100));
 		this.addButton("Add Blacksmith Resources", () => context.blacksmith.debugAddResources());
+		this.addButton("Add Staff", () => context.recruits.createRecruit("blacksmith"));
 		//  Player.getInstance().inventory.addItemToInventory);
 		//this.addButton("Test Loot", () => console.log(InventoryRegistry.getSpecsByTags(["t1"])));
 	}

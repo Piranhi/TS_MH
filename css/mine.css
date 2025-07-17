@@ -120,40 +120,6 @@
 	margin-bottom: 1rem;
 }
 
-/* Override basic-section with glass */
-.mine-page .basic-section {
-	background: var(--glass-bg);
-	backdrop-filter: blur(var(--glass-blur-medium));
-	-webkit-backdrop-filter: blur(var(--glass-blur-medium));
-	border: 1px solid var(--glass-border);
-	border-radius: 1rem;
-	padding: 1.5rem;
-	box-shadow: var(--glass-shadow);
-	transition: all var(--transition-medium);
-}
-
-/* Section title */
-.mine-page .basic-title {
-	font-size: 1.25rem;
-	font-weight: 600;
-	color: var(--text-primary);
-	margin-bottom: 1rem;
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.mine-page .basic-title::before {
-	content: "⛏️";
-	font-size: 1.5rem;
-}
-
-/* Resource list */
-.mine-page .basic-list {
-	display: flex;
-	flex-direction: column;
-	gap: 0.75rem;
-}
 
 /* Individual resource row */
 .mine-resource-row {

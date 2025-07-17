@@ -57,7 +57,7 @@ export class PlayerStatsDisplay extends UIBase {
             <div class="player-stats-section glass-panel">
                 <div class="section-header">
                     <h3 class="section-title">
-                        <span class="section-icon">📊</span>
+                        <span class="section-icon"></span>
                         Character Level
                     </h3>
                 </div>
@@ -75,10 +75,8 @@ export class PlayerStatsDisplay extends UIBase {
             <div class="player-stats-section glass-panel">
                 <div class="section-header">
                     <h3 class="section-title">
-                        <span class="section-icon">⚔️</span>
                         Combat Stats
                     </h3>
-                    <button class="toggle-btn glass-btn-mini">▼</button>
                 </div>
                 <div id="stats-table-wrapper" class="table-wrapper"></div>
             </div>
@@ -86,10 +84,8 @@ export class PlayerStatsDisplay extends UIBase {
             <div class="player-stats-section glass-panel">
                 <div class="section-header">
                     <h3 class="section-title">
-                        <span class="section-icon">✨</span>
                         Traits
                     </h3>
-                    <button class="toggle-btn glass-btn-mini">▼</button>
                 </div>
                 <div id="trait-list" class="trait-list-wrapper"></div>
             </div>
@@ -107,7 +103,7 @@ export class PlayerStatsDisplay extends UIBase {
 			headers: ["Stat", "Value"],
 			banded: true,
 			boldFirstColumn: true,
-			collapsible: true,
+			collapsible: false,
 			className: "glass-table",
 		});
 
@@ -118,7 +114,7 @@ export class PlayerStatsDisplay extends UIBase {
 			headers: ["Trait", "Rarity"],
 			banded: true,
 			boldFirstColumn: true,
-			collapsible: true,
+			collapsible: false,
 			className: "glass-table",
 		});
 	}
@@ -176,14 +172,14 @@ export class PlayerStatsDisplay extends UIBase {
 		});
 
 		// Toggle buttons
-		const toggleBtns = this.element.querySelectorAll(".toggle-btn");
+		/* 		const toggleBtns = this.element.querySelectorAll(".toggle-btn");
 		toggleBtns.forEach((btn) => {
 			btn.addEventListener("click", (e) => {
 				const section = (e.target as HTMLElement).closest(".player-stats-section");
 				section?.classList.toggle("collapsed");
 				(e.target as HTMLElement).textContent = section?.classList.contains("collapsed") ? "▶" : "▼";
 			});
-		});
+		}); */
 	}
 
 	private updateTraitsTable(traits: any[]) {
