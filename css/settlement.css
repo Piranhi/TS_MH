@@ -238,8 +238,8 @@
 }
 
 .settlement_building-icon-container {
-	width: 56px;
-	height: 56px;
+	width: 72px;
+	height: 72px;
 	background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
 	border: 1px solid rgba(102, 126, 234, 0.3);
 	border-radius: 0.75rem;

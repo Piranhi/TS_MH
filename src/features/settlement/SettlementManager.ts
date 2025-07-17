@@ -9,13 +9,13 @@ import { debugManager } from "@/core/DebugManager";
 import { GAME_BALANCE } from "@/balance/GameBalance";
 
 interface SettlementSaveState {
-        buildings: [BuildingType, Building][];
-        buildPoints: number;
-        settlementRenown: number;
-        passive: { currentReward: number; lastTimestamp: number; maxReward: number };
-        // Add outpost saving
-        outposts: [string, Outpost][];
-        availableOutposts: string[];
+	buildings: [BuildingType, Building][];
+	buildPoints: number;
+	settlementRenown: number;
+	passive: { currentReward: number; lastTimestamp: number; maxReward: number };
+	// Add outpost saving
+	outposts: [string, Outpost][];
+	availableOutposts: string[];
 }
 
 interface SettlementRewardSnapshot {
@@ -35,15 +35,16 @@ export class SettlementManager extends GameBase implements Saveable {
 	private lastRewardTimestamp: number = Date.now(); // when we last granted (or initialized)
 
 	// ── Other settlement state ────────────────────────────────────────────────
-        private buildingsMap = new Map<BuildingType, Building>();
-        private settlementBuildPoints: number = 0;
-        private settlementRenown = 0;
+	private buildingsMap = new Map<BuildingType, Building>();
+	private settlementBuildPoints: number = 0;
+	private settlementRenown = 0;
 	// ── NEW: Outpost management ────────────────────────────────────────────────
 	private outposts = new Map<string, Outpost>();
 	private availableOutposts = new Set<string>();
 
 	constructor() {
 		super();
+		this.seedMissingBuildings();
 		// When the game is ready, setup everything
 		bus.on("game:gameReady", () => {
 			// Setup variables for the first reward cycle:
@@ -204,7 +205,6 @@ export class SettlementManager extends GameBase implements Saveable {
 		}
 	}
 
-
 	/**
 	 * Core passive-reward updater.
 	 * Computes how many full intervals have passed since lastRewardTimestamp,
@@ -267,18 +267,18 @@ export class SettlementManager extends GameBase implements Saveable {
 		return this.maxReward;
 	}
 
-        get totalBuildPoints(): number {
-                return this.settlementBuildPoints;
-        }
+	get totalBuildPoints(): number {
+		return this.settlementBuildPoints;
+	}
 
-        get totalSettlementRenown(): number {
-                return this.settlementRenown;
-        }
+	get totalSettlementRenown(): number {
+		return this.settlementRenown;
+	}
 
-        modifySettlementRenown(amt: number): void {
-                this.settlementRenown += amt;
-                bus.emit("settlement:renownChanged", this.settlementRenown);
-        }
+	modifySettlementRenown(amt: number): void {
+		this.settlementRenown += amt;
+		bus.emit("settlement:renownChanged", this.settlementRenown);
+	}
 
 	getBuildPointsFromPrestige(): number {
 		return Math.floor((this.passiveCurrent / this.passiveMax) * GAME_BALANCE.settlement.baseBuildPointsPerPrestige);
@@ -339,26 +339,26 @@ export class SettlementManager extends GameBase implements Saveable {
 		bus.emit("settlement:changed");
 	}
 
-        save(): SettlementSaveState {
-                return {
-                        buildings: Array.from(this.buildingsMap),
-                        buildPoints: this.settlementBuildPoints,
-                        settlementRenown: this.settlementRenown,
-                        passive: {
-                                currentReward: this.currentReward,
-                                lastTimestamp: this.lastRewardTimestamp,
-                                maxReward: this.maxReward,
-                        },
+	save(): SettlementSaveState {
+		return {
+			buildings: Array.from(this.buildingsMap),
+			buildPoints: this.settlementBuildPoints,
+			settlementRenown: this.settlementRenown,
+			passive: {
+				currentReward: this.currentReward,
+				lastTimestamp: this.lastRewardTimestamp,
+				maxReward: this.maxReward,
+			},
 			// Save outpost data
 			outposts: Array.from(this.outposts),
 			availableOutposts: Array.from(this.availableOutposts),
 		};
 	}
 
-        load(state: SettlementSaveState): void {
-                this.buildingsMap = new Map(state.buildings || []);
-                this.settlementBuildPoints = state.buildPoints;
-                this.settlementRenown = state.settlementRenown || 0;
+	load(state: SettlementSaveState): void {
+		this.buildingsMap = new Map(state.buildings || []);
+		this.settlementBuildPoints = state.buildPoints;
+		this.settlementRenown = state.settlementRenown || 0;
 
 		// restore saved passive state…
 		this.currentReward = state.passive.currentReward;
@@ -366,8 +366,8 @@ export class SettlementManager extends GameBase implements Saveable {
 		this.maxReward = state.passive.maxReward;
 
 		// Load outpost data
-                this.outposts = new Map(state.outposts || []);
-                this.availableOutposts = new Set(state.availableOutposts || []);
+		this.outposts = new Map(state.outposts || []);
+		this.availableOutposts = new Set(state.availableOutposts || []);
 
 		// …then immediately catch up any offline progress
 		this.updatePassiveRewards();

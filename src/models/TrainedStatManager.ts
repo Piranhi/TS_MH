@@ -17,6 +17,7 @@ interface TrainedStatManagerSave {
 export class TrainedStatManager extends Destroyable implements Saveable, OfflineProgressHandler {
 	private trainedStats: Map<string, TrainedStat> = new Map();
 	private context: GameContext;
+	private _maxStamina: number = 10;
 
 	constructor() {
 		super();
@@ -83,6 +84,10 @@ export class TrainedStatManager extends Destroyable implements Saveable, Offline
 
 	get stats() {
 		return this.trainedStats;
+	}
+
+	get maxStamina() {
+		return this._maxStamina;
 	}
 
 	save(): TrainedStatManagerSave {

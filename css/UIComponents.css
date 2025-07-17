@@ -598,64 +598,6 @@ section + section {
 	margin-top: auto;
 	gap: 0.4rem;
 }
-.upgrade-costs {
-	display: flex;
-	gap: 0.25rem;
-	flex-wrap: wrap;
-}
-.upgrade-cost {
-	display: flex;
-	align-items: center;
-	gap: 2px;
-	font-size: 0.8rem;
-}
-.upgrade-cost-icon {
-	width: 16px;
-	height: 16px;
-	border-radius: 3px;
-}
-.upgrade-action-btn {
-	min-width: 70px;
-}
-
-/* Building Status */
-.building-status {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 0.5rem 1rem;
-	background: rgba(32, 32, 32, 0.719);
-	border-radius: 12px;
-	margin-bottom: 1rem;
-}
-
-.recruit-portrait {
-	width: 48px;
-	height: 48px;
-	border-radius: 50%;
-	border: 2px solid var(--recruit-border, #888);
-	margin-right: 0.5rem;
-	cursor: pointer;
-	object-fit: cover;
-}
-.recruit-portrait.rarity-common {
-	--recruit-border: #888;
-}
-.recruit-portrait.rarity-uncommon {
-	--recruit-border: #4caf50;
-}
-.recruit-portrait.rarity-rare {
-	--recruit-border: #2196f3;
-}
-.recruit-portrait.rarity-epic {
-	--recruit-border: #9c27b0;
-}
-.recruit-portrait.rarity-legendary {
-	--recruit-border: #ff99008e;
-}
-.recruit-portrait.rarity-unique {
-	--recruit-border: #e91e63;
-}
 
 .mh-progress-container {
 	display: flex;

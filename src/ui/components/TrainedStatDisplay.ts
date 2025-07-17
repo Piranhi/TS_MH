@@ -4,6 +4,7 @@ import { UIBase } from "./UIBase";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { ProgressBar } from "./ProgressBar";
 import { UIButton } from "./UIButton";
+import { formatNumberShort } from "@/shared/utils/stringUtils";
 
 interface StatCardElements {
 	container: HTMLElement;
@@ -11,7 +12,6 @@ interface StatCardElements {
 	levelText: HTMLElement;
 	progressBarContainer: HTMLElement;
 	progressBar: ProgressBar;
-	progressText: HTMLElement;
 	currentAllocation: HTMLElement;
 	toAllocate: HTMLElement;
 	controlsContainer: HTMLElement;
@@ -43,7 +43,6 @@ export class TrainedStatDisplay extends UIBase {
 		this.attachTo(this.root);
 
 		const progressBarContainer = this.element.querySelector("#training-progressbar") as HTMLElement;
-		const progressText = this.element.querySelector("#training-progress-text") as HTMLElement;
 		const currentAllocation = this.element.querySelector("#training-assigned") as HTMLElement;
 		const toAllocate = this.element.querySelector("#training-assigned") as HTMLElement;
 		const controlsContainer = this.element.querySelector("#training-controls") as HTMLElement;
@@ -71,7 +70,6 @@ export class TrainedStatDisplay extends UIBase {
 			levelText,
 			progressBarContainer,
 			progressBar,
-			progressText,
 			currentAllocation,
 			toAllocate,
 			controlsContainer,
@@ -109,24 +107,21 @@ export class TrainedStatDisplay extends UIBase {
 	}
 
 	private updateElement() {
-		const { statName, levelText, progressBar, progressText, currentAllocation, toAllocate } = this.els;
+		const { statName, levelText, progressBar, currentAllocation, toAllocate } = this.els;
 
 		// Update stat info
 		statName.textContent = this.trainedStat.name;
-		levelText.textContent = `Level ${this.trainedStat.level}  •  ${
+		levelText.textContent = `Level ${this.trainedStat.level}  •  ${formatNumberShort(
 			this.trainedStat.progress
-		} / ${this.trainedStat.getLevelThreshold()} XP`;
+		)} / ${this.trainedStat.getLevelThreshold()} XP`;
 
 		// Update progress bar
 		const levelThreshold = this.trainedStat.getLevelThreshold();
 		progressBar.setValue(this.trainedStat.progress);
 		progressBar.setMax(levelThreshold);
 
-		// Update progress text (matches the design format)
-		//progressText.textContent = `${Math.floor(this.trainedStat.progress)} / ${levelThreshold}`;
-
 		// Update allocation info
-		const maxPoints = this.trainedStat.maxAssignedPoints;
+		const maxPoints = this.context.currentRun?.trainedStats.maxStamina; // this.trainedStat.maxAssignedPoints;
 		const assignedPoints = this.trainedStat.assignedPoints;
 		currentAllocation.textContent = `Assigned: ${assignedPoints}/${maxPoints}`;
 	}

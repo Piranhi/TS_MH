@@ -4,6 +4,7 @@ import { bindEvent } from "@/shared/utils/busUtils";
 import { formatTimeFull, formatNumberShort } from "@/shared/utils/stringUtils";
 import { ProgressBar } from "../components/ProgressBar";
 import { BuildingType } from "@/shared/types";
+import { Building } from "@/features/settlement/Building";
 
 interface BuildingDisplay {
 	element: HTMLElement;
@@ -94,13 +95,13 @@ export class SettlementScreen extends BaseScreen {
 		});
 	}
 
-	private createBuildingCard(building: any): BuildingDisplay {
+	private createBuildingCard(building: Building): BuildingDisplay {
 		// Clone template
 		const clone = this.buildingTemplate.content.cloneNode(true) as DocumentFragment;
 		const element = clone.querySelector(".settlement_building-card") as HTMLElement;
 
 		// Get elements from template
-		const icon = element.querySelector(".settlement_building-icon") as HTMLElement;
+		const icon = element.querySelector(".settlement_building-icon") as HTMLImageElement;
 		const name = element.querySelector(".settlement_building-name") as HTMLElement;
 		const level = element.querySelector(".settlement_building-level") as HTMLElement;
 		const description = element.querySelector(".settlement_building-description") as HTMLElement;
@@ -109,16 +110,17 @@ export class SettlementScreen extends BaseScreen {
 		const upgradeButton = element.querySelector(".settlement_building-upgrade-btn") as HTMLButtonElement;
 
 		// Set building data
-		icon.textContent = building.icon || "🏗️";
-		name.textContent = building.name;
+		icon.src = building.iconUrl || "";
+		name.textContent = building.displayName;
 		level.textContent = `Level ${building.level}`;
-		description.textContent = building.description || "No description available";
+		description.textContent = building.description || "";
 
 		// Create progress bar
 		const progressBar = new ProgressBar({
 			container: progressContainer,
-			maxValue: building.upgradeRequirement || 100,
-			initialValue: building.currentProgress || 0,
+			maxValue: building.getUnlockCostData().cost || 100,
+			initialValue: building.getUnlockCostData().spent || 0,
+			showLabel: true,
 		});
 
 		// Update progress text
@@ -146,14 +148,11 @@ export class SettlementScreen extends BaseScreen {
 		}
 	}
 
-	private setupUpgradeButton(button: HTMLButtonElement, building: any) {
+	private setupUpgradeButton(button: HTMLButtonElement, building: Building) {
 		// Set button text based on building state
-		if (building.isUpgrading) {
-			button.textContent = "Upgrading...";
-			button.disabled = true;
-		} else if (building.canUpgrade) {
-			button.textContent = `Upgrade (${formatNumberShort(building.upgradeCost)} BP)`;
-			button.disabled = !this.context.settlement.canAffordUpgrade(building.id);
+		if (building.level < 6) {
+			button.textContent = `Upgrade (${formatNumberShort(building.getUnlockCostData().cost)} BP)`;
+			//button.disabled = !this.context.settlement.canAffordUpgrade(building.id);
 		} else {
 			button.textContent = "Max Level";
 			button.disabled = true;
@@ -161,9 +160,8 @@ export class SettlementScreen extends BaseScreen {
 
 		// Add click handler
 		button.addEventListener("click", () => {
-			if (building.canUpgrade && !building.isUpgrading) {
-				this.context.settlement.upgradeBuilding(building.id);
-			}
+			building.spendPoints(building.getUnlockCostData().cost);
+			//this.context.settlement.upgradeBuilding(building.id);
 		});
 	}
 
@@ -177,27 +175,28 @@ export class SettlementScreen extends BaseScreen {
 		});
 	}
 
-	/* 	private updateDynamicElements() {
+	private updateDynamicElements() {
+		const snapshot = this.context.settlement.getPassiveSnapshot();
 		// Update settlement reward info
-		const rewardMultiplier = this.context.settlement.getRewardMultiplier();
+		const rewardMultiplier = snapshot.reward;
 		this.rewardInfo.textContent = `Reward: ${rewardMultiplier.toFixed(1)}x`;
 
 		// Update time to next reward peak
-		const timeToNext = this.context.settlement.getTimeToNextReward();
+		const timeToNext = snapshot.timeToNext;
 		this.timeInfo.textContent = `Next reward in: ${formatTimeFull(timeToNext)}`;
 
 		// Update building progress bars
 		this.buildingDisplays.forEach((display) => {
-			const building = this.context.settlement.getBuilding(display.buildingId);
-			if (building && building.isUpgrading) {
+			const building = this.context.settlement.getBuilding(display.buildingId as BuildingType);
+			/* 			if (building && building.isUpgrading) {
 				display.progressBar.setValue(building.currentProgress);
 
 				// Update progress text
 				const progressText = display.element.querySelector(".settlement_building-progress-text") as HTMLElement;
 				this.updateProgressText(progressText, building);
-			}
+			} */
 		});
-	} */
+	}
 
 	// Update method called by game loop
 	update(deltaMs: number) {
