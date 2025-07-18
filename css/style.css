@@ -1,6 +1,95 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
+:root {
+	--font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+
+	--nav-height: 100px;
+
+	--text-strong: #fff;
+	--text-muted: #9cabba;
+	--text-secondary: #eef7ff;
+	--accent: #6a96c9;
+	--accent-secondary: #55bb77;
+	--accent-tertiary: #facc15;
+	--accent-quaternary: #a855f7;
+
+	--sb-bg: #202020;
+	--modal-bg: #202020;
+	--panel-bg: #202020;
+	--border-glass: #4d4d4d;
+	--shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+	--transition: 0.18s;
+	--transition-fast: 0.12s;
+	--transition-medium: 0.24s;
+
+	--sb-bg: #24262b;
+	--sb-btn: #2d3036;
+	--sb-btn-hover: #353941;
+	--sb-accent: #c995e7;
+	--sb-accent-sec: #73c3cc;
+	--sb-text: #d9dee8;
+	--sb-text-muted: #99a2b7;
+	--sb-badge-bg: #93b7d4b9;
+
+	/* Core Colors */
+	--primary-hue: 200;
+	--accent-hue: 160;
+	--danger-hue: 0;
+	--success-hue: 120;
+	--warning-hue: 45;
+
+	/* Glass Effects */
+	--glass-bg: rgba(255, 255, 255, 0.05);
+	--glass-bg-hover: rgba(255, 255, 255, 0.08);
+	--glass-bg-active: rgba(255, 255, 255, 0.03);
+	--glass-bg-dark: rgba(0, 0, 0, 0.3);
+	--glass-border: rgba(255, 255, 255, 0.1);
+	--glass-border-hover: rgba(255, 255, 255, 0.15);
+	--glass-blur-light: 8px;
+	--glass-blur-medium: 12px;
+	--glass-blur-heavy: 20px;
+	--glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+	--glass-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.3);
+
+	/* Text Colors */
+	--text-primary: rgba(255, 255, 255, 0.95);
+	--text-secondary: rgba(255, 255, 255, 0.7);
+	--text-muted: rgba(255, 255, 255, 0.5);
+
+	/* Rarity Colors */
+	--rarity-common: #b0b0b0;
+	--rarity-uncommon: #51cf66;
+	--rarity-rare: #339af0;
+	--rarity-epic: #cc5de8;
+	--rarity-legendary: #ffd43b;
+	--rarity-mythic: #ff6b6b;
+
+	/* Accent Colors */
+	--accent-primary: hsl(var(--primary-hue), 70%, 60%);
+	--accent-secondary: hsl(var(--accent-hue), 60%, 55%);
+	--accent-danger: hsl(var(--danger-hue), 70%, 60%);
+	--accent-success: hsl(var(--success-hue), 60%, 55%);
+
+	/* Smooth transitions */
+	--transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-medium: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+	/* Spacing */
+	--space-xs: 0.25rem;
+	--space-sm: 0.5rem;
+	--space-md: 1rem;
+	--space-lg: 1.5rem;
+	--space-xl: 2rem;
+
+	/* Border Radius */
+	--radius-sm: 0.5rem;
+	--radius-md: 0.75rem;
+	--radius-lg: 1rem;
+	--radius-xl: 1.5rem;
+}
+
 /* --- NEW BASIC STYLES --- */
 *,
 *::before,
@@ -9,6 +98,7 @@
 	padding: 0;
 	box-sizing: border-box;
 }
+
 html,
 body,
 #app {
@@ -300,16 +390,6 @@ body,
 	flex-shrink: 0;
 }
 
-/* --- Glass utility --- */
-.glass {
-	position: relative;
-	margin: var(--glass-gap);
-	background: var(--glass-fill);
-	border-radius: var(--glass-radius);
-	box-shadow: var(--glass-shadow-drop);
-	overflow: hidden;
-}
-
 /* --- Header --- */
 .header {
 	display: flex;
@@ -375,19 +455,17 @@ body,
 .main {
 	display: flex;
 	height: calc(100vh - var(--nav-height));
-	min-height: 0;
 	width: 100%;
 }
 .menu {
-	display: flex;
-	flex-direction: column;
-	min-width: 220px;
+	min-width: 200px;
 	height: 100%;
+	flex: 1;
 }
 .menu-nav {
 	background: var(--sb-bg);
 	padding: 0.5rem 0.5rem;
-	min-width: 220px;
+	min-width: 200px;
 	height: 100%;
 	overflow-y: auto;
 	display: flex;
@@ -406,46 +484,6 @@ body,
 	position: relative;
 }
 
-/* --- Sidebar Buttons --- */
-
-.menu-nav button {
-	all: unset;
-	box-sizing: border-box;
-	display: flex;
-	align-items: center;
-	justify-content: flex-start; /* 🔑 left-align icon+text */
-	gap: 0.65rem;
-	width: 100%;
-	padding: 0.75rem 2rem 0.8rem 1rem;
-	font-size: 0.9rem;
-	font-weight: 600;
-	color: var(--sb-text-muted);
-	cursor: pointer;
-	text-align: left; /* for multiline text, too */
-	transition: background 0.18s, color 0.18s, box-shadow 0.12s;
-}
-.menu-nav button:active {
-	background: none;
-	box-shadow: none;
-	border-radius: 0;
-}
-
-/* --- Icon & Badge --- */
-.menu-nav .icon {
-	width: 18px;
-	text-align: center;
-	font-size: 1rem;
-	color: var(--sb-text);
-}
-.badge {
-	margin-left: auto;
-	padding: 2px 6px;
-	font-size: 0.75rem;
-	border-radius: 6px;
-	background: var(--sb-badge-bg);
-	color: #fff;
-}
-
 /* --- Accent Bar --- */
 .menu-nav li::before {
 	content: "";
@@ -459,44 +497,13 @@ body,
 	transition: opacity 0.18s;
 }
 
-/* --- Hover/Active States --- */
-.menu-nav button:hover,
-.menu-nav li.active > button {
-	background: var(--sb-btn-hover);
-	color: var(--sb-text);
-	box-shadow: 0 2px 10px 0 #00000010;
-}
-.menu-nav li:hover::before,
-.menu-nav li.active::before {
-	opacity: 1;
-}
-
-/* Top-level vs sub-button tweaks */
-.nav-btn {
-	font-size: 1rem;
-}
-.nav-subbtn {
-	font-size: 0.82rem;
-	padding-left: 3.6rem;
-}
-
-/* Submenu indentation */
-.menu-nav ul.submenu-nav {
-	margin: 0.2rem 0 0 0;
-}
-
-/* Focus feedback */
-.menu-nav button:focus-visible {
-	outline: 2px dashed var(--sb-accent);
-	outline-offset: 3px;
-}
-
 /* ... SCREENS ... */
 
 .screen {
 	display: none;
 	flex-direction: column;
 	width: 100%;
+	height: 100%;
 	margin: 0;
 	gap: 0rem;
 }
@@ -774,14 +781,4 @@ body,
 #debug-menu .loot-entry small {
 	color: #bbb;
 	font-size: 0.65rem;
-}
-
-.screen-clean,
-.screen-clean * {
-	all: unset;
-	box-sizing: border-box;
-	font-family: sans-serif;
-	color: #fff;
-	background: transparent;
-	display: revert; /* Fixes some broken layout issues after `all: unset` */
 }

@@ -246,10 +246,15 @@ export class CharacterDisplay extends UIBase {
 		this.hpBar.setValue(hpCurrent);
 		this.hpBar.setMax(hpMax);
 
-		this.hpValueEl.textContent = `${formatNumberShort(hpCurrent, 0)} / ${formatNumberShort(hpMax, 0)} HP`;
+		this.hpValueEl.textContent = `${formatNumberShort(hpCurrent, 0)} / ${formatNumberShort(hpMax, 0)}`;
 		this.staminaBar.setValue(staminaCurrent);
 		this.staminaBar.setMax(staminaMax);
-		this.staminaValueEl.textContent = `${formatNumberShort(staminaCurrent, 0)} / ${formatNumberShort(staminaMax, 0)} ST`;
+		this.staminaValueEl.textContent = `${formatNumberShort(staminaCurrent, 0)} / ${formatNumberShort(staminaMax, 0)}`;
+		
+		// For now, mana uses stamina values as placeholder until mana system is implemented
+		this.manaBar.setValue(staminaCurrent);
+		this.manaBar.setMax(staminaMax);
+		this.manaValueEl.textContent = `${formatNumberShort(staminaCurrent, 0)} / ${formatNumberShort(staminaMax, 0)}`;
 
 		abilities.forEach((ability, i) => {
 			const bar = this.abilitiesListMap.get(ability.id);

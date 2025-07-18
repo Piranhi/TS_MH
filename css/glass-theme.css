@@ -2,62 +2,6 @@
    GLASS MORPHISM DESIGN SYSTEM
    ============================================ */
 :root {
-	/* Core Colors */
-	--primary-hue: 200;
-	--accent-hue: 160;
-	--danger-hue: 0;
-	--success-hue: 120;
-	--warning-hue: 45;
-
-	/* Glass Effects */
-	--glass-bg: rgba(255, 255, 255, 0.05);
-	--glass-bg-hover: rgba(255, 255, 255, 0.08);
-	--glass-bg-active: rgba(255, 255, 255, 0.03);
-	--glass-bg-dark: rgba(0, 0, 0, 0.3);
-	--glass-border: rgba(255, 255, 255, 0.1);
-	--glass-border-hover: rgba(255, 255, 255, 0.15);
-	--glass-blur-light: 8px;
-	--glass-blur-medium: 12px;
-	--glass-blur-heavy: 20px;
-	--glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-	--glass-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.3);
-
-	/* Text Colors */
-	--text-primary: rgba(255, 255, 255, 0.95);
-	--text-secondary: rgba(255, 255, 255, 0.7);
-	--text-muted: rgba(255, 255, 255, 0.5);
-
-	/* Rarity Colors */
-	--rarity-common: #b0b0b0;
-	--rarity-uncommon: #51cf66;
-	--rarity-rare: #339af0;
-	--rarity-epic: #cc5de8;
-	--rarity-legendary: #ffd43b;
-	--rarity-mythic: #ff6b6b;
-
-	/* Accent Colors */
-	--accent-primary: hsl(var(--primary-hue), 70%, 60%);
-	--accent-secondary: hsl(var(--accent-hue), 60%, 55%);
-	--accent-danger: hsl(var(--danger-hue), 70%, 60%);
-	--accent-success: hsl(var(--success-hue), 60%, 55%);
-
-	/* Smooth transitions */
-	--transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-	--transition-medium: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-	--transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
-
-	/* Spacing */
-	--space-xs: 0.25rem;
-	--space-sm: 0.5rem;
-	--space-md: 1rem;
-	--space-lg: 1.5rem;
-	--space-xl: 2rem;
-
-	/* Border Radius */
-	--radius-sm: 0.5rem;
-	--radius-md: 0.75rem;
-	--radius-lg: 1rem;
-	--radius-xl: 1.5rem;
 }
 
 h1 {
@@ -218,6 +162,19 @@ body::after {
 
 /* Nav buttons with glass effect */
 .menu-nav button {
+	all: unset;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start; /* 🔑 left-align icon+text */
+	gap: 0.65rem;
+	width: 100%;
+	padding: 0.75rem 2rem 0.8rem 1rem;
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: var(--sb-text-muted);
+	cursor: pointer;
+	text-align: left; /* for multiline text, too */
 	position: relative;
 	background: transparent;
 	border: none;
@@ -253,7 +210,19 @@ body::after {
 }
 
 /* Badges with glass effect */
+
+/* --- Icon & Badge --- */
+.menu-nav .icon {
+	width: 18px;
+	text-align: center;
+	font-size: 1rem;
+	color: var(--sb-text);
+}
 .badge {
+	margin-left: auto;
+	padding: 2px 6px;
+	font-size: 0.75rem;
+	border-radius: 6px;
 	background: var(--accent-primary);
 	color: white;
 	box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
@@ -753,8 +722,9 @@ button {
 .player-stats-glass-container {
 	display: flex;
 	flex-direction: column;
-	gap: 1.5rem;
-	padding: 1rem;
+	gap: 1rem;
+	padding: 1.5rem 0rem;
+	min-width: 400px;
 }
 
 .player-stats-section {

@@ -40,7 +40,10 @@ export class AreaDisplay extends UIBase {
 	}
 
 	private bindEvents() {
-		bindEvent(this.eventBindings, "hunt:areaChanged", (area) => this.createAreaStatsSection(area));
+		bindEvent(this.eventBindings, "hunt:areaChanged", (area) => {
+			this.createAreaStatsSection(area);
+			this.updateAreaStats(this.getAreaStats());
+		});
 		bindEvent(this.eventBindings, "stats:areaStatsChanged", (stats) => this.updateAreaStats(stats));
 	}
 
@@ -234,19 +237,28 @@ export class AreaDisplay extends UIBase {
 	 */
 	private createStatRow(label: string, value: string, valueId: string): HTMLDivElement {
 		const row = this.createElement("div", {
-			className: "basic-row-entry",
+			className: "area-stat-item",
 		});
 
-		const labelSpan = this.createElement("p", {
+		const labelSpan = this.createElement("span", {
 			textContent: label,
-			className: "basic-row-entry.first-child",
+			className: "area-stat-label",
 		});
 
-		const valueSpan = this.createElement("p", {
+		const valueSpan = this.createElement("span", {
 			id: valueId,
 			textContent: value,
-			className: "basic-row-entry.last-child",
+			className: "area-stat-value",
 		});
+
+		// Add special styling for certain values
+		if (label === "Boss Unlocked" || label === "Boss Killed This Run") {
+			if (value === "Yes") {
+				valueSpan.style.color = "var(--success-hue)";
+			} else {
+				valueSpan.style.color = "var(--text-secondary)";
+			}
+		}
 
 		row.appendChild(labelSpan);
 		row.appendChild(valueSpan);

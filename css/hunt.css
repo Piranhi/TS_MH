@@ -6,25 +6,27 @@
 	--combat-enemy: hsl(var(--danger-hue), 70%, 60%);
 	--combat-heal: hsl(var(--success-hue), 60%, 55%);
 }
+
 /* make this fill 100% of the screen */
 .hunt-screen {
-	display: grid;
-	grid-template-columns: 1fr 300px;
+	display: flex;
 	min-height: 600px;
 	width: 100%;
-	gap: 1.5rem;
+	gap: 1rem;
+	flex-shrink: 1;
 }
 
 .hunt-main {
 	display: flex;
 	flex-direction: column;
 	gap: 1.5rem;
+	flex-grow: 1;
 }
 
 /* Combat Area */
 .combat-area {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 1.5fr 1fr;
 	gap: 1.5rem;
 	min-height: 400px;
 }
@@ -48,6 +50,12 @@
 	inset: 0;
 	background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
 	pointer-events: none;
+	z-index: 1;
+}
+
+.character-card > * {
+	position: relative;
+	z-index: 2;
 }
 
 .character-card.player {
@@ -77,20 +85,22 @@
 .char-level {
 	font-size: 0.875rem;
 	color: var(--text-secondary);
+	border-radius: 0.5rem;
+	padding: 0.25rem 0.5rem;
+	background-color: rgba(0, 0, 0, 0.3);
 }
 
 /* Portrait with glass frame */
 .char-portrait {
-	width: 120px;
-	height: 120px;
-	margin: 0 auto 1rem;
+	width: 164px;
+	height: 164px;
+	margin: 0 auto 0.25rem;
 	background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
 	border: 2px solid var(--glass-border);
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 4rem;
 	position: relative;
 	box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.3);
 }
@@ -126,15 +136,13 @@
 	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-
-
 /* Searching Overlay */
 .searching-overlay {
 	position: absolute;
 	inset: 0;
-	background: rgba(0, 0, 0, 0.8);
-	backdrop-filter: blur(8px);
-	-webkit-backdrop-filter: blur(8px);
+	background: rgba(20, 20, 20, 0.85);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
 	border-radius: 1rem;
 	display: flex;
 	align-items: center;
@@ -142,6 +150,7 @@
 	opacity: 0;
 	visibility: hidden;
 	transition: all var(--transition-fast);
+	z-index: 10;
 }
 
 .searching-overlay.active {
@@ -154,8 +163,8 @@
 }
 
 .searching-spinner {
-	width: 80px;
-	height: 80px;
+	width: 50px;
+	height: 50px;
 	border: 3px solid rgba(255, 255, 255, 0.1);
 	border-top-color: var(--combat-player);
 	border-radius: 50%;
@@ -170,7 +179,7 @@
 }
 
 .searching-text {
-	font-size: 1.125rem;
+	font-size: 1rem;
 	color: var(--text-primary);
 }
 
@@ -334,11 +343,12 @@
 
 /* Animations */
 @keyframes critGlow {
-	0%, 100% { 
+	0%,
+	100% {
 		text-shadow: 0 0 10px rgba(255, 149, 0, 0.5);
 		transform: scale(1);
 	}
-	50% { 
+	50% {
 		text-shadow: 0 0 20px rgba(255, 149, 0, 0.8);
 		transform: scale(1.05);
 	}
@@ -349,64 +359,247 @@
 	display: flex;
 	flex-direction: column;
 	gap: 1.5rem;
+	min-width: 320px;
 }
 
-/* Area Selection */
+/* Area Selection Panel */
 .area-select-panel {
 	background: var(--glass-bg);
 	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
 	border: 1px solid var(--glass-border);
 	border-radius: 1rem;
 	padding: 1.5rem;
+	position: relative;
+	overflow: hidden;
+	box-shadow: var(--glass-shadow), 0 0 40px rgba(102, 126, 234, 0.05);
+	transition: all var(--transition-medium);
 }
 
+.area-select-panel::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+	pointer-events: none;
+}
+
+.area-select-panel h3 {
+	color: var(--text-primary);
+	font-size: 1.125rem;
+	font-weight: 600;
+	margin: 0 0 1rem 0;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	position: relative;
+	z-index: 1;
+}
+
+/* Custom Styled Select */
 .area-select {
 	width: 100%;
-	padding: 0.75rem 1rem;
-	background: rgba(0, 0, 0, 0.3);
+	padding: 0.875rem 1rem;
+	padding-right: 2.5rem;
+	background: rgba(0, 0, 0, 0.4);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
 	border: 1px solid var(--glass-border);
-	border-radius: 0.5rem;
+	border-radius: 0.75rem;
 	color: var(--text-primary);
 	font-size: 1rem;
-	margin-top: 0.75rem;
+	font-weight: 500;
 	cursor: pointer;
 	transition: all var(--transition-fast);
+	position: relative;
+	z-index: 1;
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ffffff'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 0.75rem center;
+	background-size: 1.25rem;
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .area-select:hover {
-	background: rgba(255, 255, 255, 0.05);
+	background: rgba(255, 255, 255, 0.08);
 	border-color: var(--glass-border-hover);
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(102, 126, 234, 0.1);
 }
 
 .area-select:focus {
 	outline: none;
 	border-color: var(--combat-player);
-	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* Area Stats */
+.area-select option {
+	background: rgba(20, 20, 20, 0.95);
+	color: var(--text-primary);
+	padding: 0.5rem;
+	font-weight: 500;
+}
+
+.area-select option:disabled {
+	color: var(--text-muted);
+	font-style: italic;
+}
+
+/* Area Stats Panel */
 .area-stats {
 	background: var(--glass-bg);
 	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
 	border: 1px solid var(--glass-border);
 	border-radius: 1rem;
 	padding: 1.5rem;
+	position: relative;
+	overflow: hidden;
+	box-shadow: var(--glass-shadow), 0 0 40px rgba(102, 126, 234, 0.05);
+	transition: all var(--transition-medium);
 }
 
+.area-stats::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+	pointer-events: none;
+}
+
+.area-stats h3,
+.area-stats h2 {
+	color: var(--text-primary);
+	font-size: 1.125rem;
+	font-weight: 600;
+	margin: 0 0 1rem 0;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	position: relative;
+	z-index: 1;
+}
+
+/* Area Progress Section */
+.area-progress {
+	position: relative;
+	z-index: 1;
+	margin-bottom: 1.5rem;
+}
+
+.area-progress .basic-subtitle {
+	color: var(--text-secondary);
+	font-size: 0.875rem;
+	font-weight: 500;
+	margin-bottom: 0.5rem;
+	display: block;
+}
+
+/* Area Stats Items */
 .area-stat-item {
 	display: flex;
 	justify-content: space-between;
-	padding: 0.5rem 0;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	align-items: center;
+	padding: 0.875rem 1rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	position: relative;
+	z-index: 1;
+	transition: all var(--transition-fast);
+	background: rgba(0, 0, 0, 0.1);
+	border-radius: 0.5rem;
+	margin-bottom: 0.5rem;
+	border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.area-stat-item:last-child {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	margin-bottom: 0;
+}
+
+.area-stat-item:hover {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: rgba(255, 255, 255, 0.1);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .area-stat-label {
 	font-size: 0.875rem;
 	color: var(--text-secondary);
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.area-stat-label::before {
+	content: "▸";
+	color: var(--combat-player);
+	font-size: 0.75rem;
+	opacity: 0.7;
 }
 
 .area-stat-value {
 	font-weight: 600;
+	color: var(--text-primary);
+	font-size: 0.875rem;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+	padding: 0.25rem 0.5rem;
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 0.375rem;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	min-width: 2rem;
+	text-align: center;
+}
+
+/* Special styling for specific stat types */
+.area-stat-item .area-stat-value[style*="success"] {
+	color: var(--success-hue);
+	text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+	background: rgba(16, 185, 129, 0.1);
+	border-color: rgba(16, 185, 129, 0.3);
+}
+
+.area-stat-item .area-stat-value[style*="text-secondary"] {
+	color: var(--text-muted);
+	background: rgba(255, 255, 255, 0.02);
+	border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Enhanced visual feedback for different stat types */
+.area-stat-item:has(.area-stat-value[style*="success"]) {
+	border-left: 3px solid var(--success-hue);
+}
+
+.area-stat-item:has(.area-stat-value[style*="success"]):hover {
+	box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+/* Area Options */
+.area-options {
+	position: relative;
+	z-index: 1;
+	margin-top: 1rem;
+	padding-top: 1rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* UI Buttons in area stats */
+.area-stats .ui-button {
+	margin-top: 0.5rem;
+	background: rgba(102, 126, 234, 0.1);
+	border: 1px solid rgba(102, 126, 234, 0.3);
+	color: var(--combat-player);
+}
+
+.area-stats .ui-button:hover {
+	background: rgba(102, 126, 234, 0.2);
+	border-color: rgba(102, 126, 234, 0.5);
+	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.area-stats .ui-button:disabled {
+	background: rgba(255, 255, 255, 0.02);
+	border-color: rgba(255, 255, 255, 0.05);
+	color: var(--text-muted);
 }
 
 /* Stats Row */
