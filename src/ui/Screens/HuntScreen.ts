@@ -170,22 +170,56 @@ export class HuntScreen extends BaseScreen {
 		);
 	}
 
-	private updateCombatLog(s: string) {
+	private updateCombatLog(s: string, entryClass?: string) {
 		if (!s) return;
 		const container = document.createElement("div");
-		container.className = "log-entry";
+		container.className = `log-entry ${entryClass || ""}`.trim();
 		const msg = document.createElement("span");
 		msg.innerHTML = s;
 		container.appendChild(msg);
 		this.huntUpdateEl.append(container);
 
-		/* 		const li = document.createElement("li");
-		li.innerHTML = s;
-		this.huntUpdateEl.append(li); */
-
 		while (this.huntUpdateEl.children.length > this.MAX_LOG_LINES) {
 			this.huntUpdateEl.removeChild(this.huntUpdateEl.firstElementChild!);
 		}
+	}
+
+	// Utility methods for easier combat log formatting
+	public logDamage(attacker: string, target: string, damage: number, isCrit = false): void {
+		const critClass = isCrit ? "log-crit" : "";
+		const attackerClass = attacker === "You" ? "log-player" : "log-enemy";
+		const targetClass = target === "You" ? "log-player" : "log-enemy";
+		this.updateCombatLog(
+			`<span class="${attackerClass}">${attacker}</span> deals <span class="log-damage ${critClass}">${damage}</span> damage to <span class="${targetClass}">${target}</span>`
+		);
+	}
+
+	public logHeal(healer: string, target: string, amount: number): void {
+		const healerClass = healer === "You" ? "log-player" : "log-enemy";
+		const targetClass = target === "You" ? "log-player" : "log-enemy";
+		this.updateCombatLog(
+			`<span class="${healerClass}">${healer}</span> heals <span class="${targetClass}">${target}</span> for <span class="log-heal">${amount}</span> HP`
+		);
+	}
+
+	public logMiss(attacker: string, target: string): void {
+		const attackerClass = attacker === "You" ? "log-player" : "log-enemy";
+		const targetClass = target === "You" ? "log-player" : "log-enemy";
+		this.updateCombatLog(
+			`<span class="${attackerClass}">${attacker}</span> <span class="log-miss">misses</span> <span class="${targetClass}">${target}</span>`
+		);
+	}
+
+	public logStatus(target: string, statusName: string, isPositive = true): void {
+		const targetClass = target === "You" ? "log-player" : "log-enemy";
+		const statusClass = isPositive ? "log-buff" : "log-debuff";
+		this.updateCombatLog(
+			`<span class="${targetClass}">${target}</span> is affected by <span class="${statusClass}">${statusName}</span>`
+		);
+	}
+
+	public logImportant(message: string): void {
+		this.updateCombatLog(`<span class="log-important">${message}</span>`);
 	}
 
 	public destroy() {
