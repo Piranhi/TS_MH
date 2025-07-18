@@ -16,6 +16,7 @@ import { MarketScreen } from "@/ui/Screens/MarketScreen";
 import { MineScreen } from "@/ui/Screens/MineScreen";
 import { GuildHallScreen } from "@/ui/Screens/GuildHallScreen";
 import { BestiaryScreen } from "@/ui/Screens/BestiaryScreen";
+import { HousingScreen } from "@/ui/Screens/HousingScreen";
 
 // Screen Factory
 
@@ -33,6 +34,7 @@ export class ScreenManager<Name extends ScreenName = ScreenName> {
 		research: () => new ResearchScreen(),
 		mine: () => new MineScreen(),
 		guildHall: () => new GuildHallScreen(),
+		housing: () => new HousingScreen(),
 		bestiary: () => new BestiaryScreen(),
 	};
 

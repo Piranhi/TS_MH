@@ -6,7 +6,8 @@ export type RecruitProfession =
     | "apothecary"
     | "scout"
     | "miner"
-    | "librarian";
+    | "librarian"
+    | "builder";
 
 export interface RecruitState {
     id: string;

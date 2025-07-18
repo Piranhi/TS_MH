@@ -1,0 +1,97 @@
+<!-- ------------- #game-area ------------- -->
+<section class="game housing-screen">
+    <div class="housing-screen">
+        <!-- Building Status -->
+        <div id="housing-building-status"></div>
+        
+        <!-- Header Section -->
+        <div class="housing-header">
+            <div class="housing-title">
+                <h2>🏠 Housing Management</h2>
+                <p class="housing-subtitle">Manage your settlement's residents and staff</p>
+            </div>
+            <div class="population-counter">
+                <div class="population-display">
+                    <div class="population-current" id="population-current">12</div>
+                    <div class="population-separator">/</div>
+                    <div class="population-max" id="population-max">15</div>
+                </div>
+                <div class="population-label">Population</div>
+            </div>
+        </div>
+
+        <!-- Staff Overview Cards -->
+        <div class="staff-overview">
+            <div class="housing-staff-stat-card">
+                <div class="housing-stat-icon">⚔️</div>
+                <div class="housing-stat-content">
+                    <div class="housing-stat-value" id="assigned-staff">8</div>
+                    <div class="housing-stat-label">Assigned Staff</div>
+                </div>
+            </div>
+            <div class="housing-staff-stat-card">
+                <div class="housing-stat-icon">🏠</div>
+                <div class="housing-stat-content">
+                    <div class="housing-stat-value" id="unassigned-staff">4</div>
+                    <div class="housing-stat-label">Unassigned</div>
+                </div>
+            </div>
+            <div class="housing-staff-stat-card">
+                <div class="housing-stat-icon">⭐</div>
+                <div class="housing-stat-content">
+                    <div class="housing-stat-value" id="total-efficiency">+24%</div>
+                    <div class="housing-stat-label">Total Efficiency</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Controls -->
+        <div class="housing-controls">
+            <div class="filter-section">
+                <h3>Filters</h3>
+                <div class="filter-options">
+                    <label class="filter-option glass-toggle">
+                        <input type="checkbox" id="filter-all" checked>
+                        <span>All Staff</span>
+                    </label>
+                    <label class="filter-option glass-toggle">
+                        <input type="checkbox" id="filter-assigned">
+                        <span>Assigned Only</span>
+                    </label>
+                    <label class="filter-option glass-toggle">
+                        <input type="checkbox" id="filter-unassigned">
+                        <span>Unassigned Only</span>
+                    </label>
+                </div>
+            </div>
+            <div class="profession-filter">
+                <h3>Profession</h3>
+                <select id="profession-select" class="glass-select">
+                    <option value="">All Professions</option>
+                    <option value="blacksmith">Blacksmith</option>
+                    <option value="miner">Miner</option>
+                    <option value="librarian">Librarian</option>
+                    <option value="builder">Builder</option>
+                    <option value="apothecary">Apothecary</option>
+                    <option value="scout">Scout</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Staff List -->
+        <div class="staff-list-container">
+            <div class="staff-list-header">
+                <h3>Settlement Staff</h3>
+                <div class="list-controls">
+                    <button class="sort-button" id="sort-by-name">Name</button>
+                    <button class="sort-button" id="sort-by-profession">Profession</button>
+                    <button class="sort-button" id="sort-by-rarity">Rarity</button>
+                    <button class="sort-button" id="sort-by-assignment">Assignment</button>
+                </div>
+            </div>
+            <div class="staff-list" id="staff-list">
+                <!-- Staff entries will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+</section>

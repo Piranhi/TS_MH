@@ -427,6 +427,112 @@ button {
 }
 
 /* ============================================
+   FORM CONTROLS - UNIVERSAL STYLES
+   ============================================ */
+
+/* Glass Toggle/Checkbox Styles */
+.glass-toggle,
+.glass-checkbox {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+	user-select: none;
+}
+
+.glass-toggle:hover,
+.glass-checkbox:hover {
+	color: var(--text-primary);
+}
+
+.glass-toggle input[type="checkbox"],
+.glass-checkbox input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	accent-color: rgba(102, 126, 234, 0.8);
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 3px;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+}
+
+.glass-toggle input[type="checkbox"]:hover,
+.glass-checkbox input[type="checkbox"]:hover {
+	background: rgba(255, 255, 255, 0.08);
+	border-color: rgba(102, 126, 234, 0.4);
+}
+
+.glass-toggle input[type="checkbox"]:checked,
+.glass-checkbox input[type="checkbox"]:checked {
+	background: rgba(102, 126, 234, 0.3);
+	border-color: rgba(102, 126, 234, 0.6);
+	box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+}
+
+.glass-toggle span,
+.glass-checkbox span {
+	font-size: 0.875rem;
+	color: var(--text-secondary);
+	font-weight: 500;
+	transition: color var(--transition-fast);
+}
+
+.glass-toggle:hover span,
+.glass-checkbox:hover span {
+	color: var(--text-primary);
+}
+
+/* Glass Dropdown/Select Styles */
+.glass-select,
+.glass-dropdown {
+	width: 100%;
+	padding: 0.75rem 1rem;
+	background: rgba(0, 0, 0, 0.3);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	border: 1px solid var(--glass-border);
+	border-radius: 0.5rem;
+	color: var(--text-primary);
+	font-size: 0.875rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ffffff'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 0.75rem center;
+	background-size: 1rem;
+	padding-right: 2.5rem;
+}
+
+.glass-select:hover,
+.glass-dropdown:hover {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: var(--glass-border-hover);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.glass-select:focus,
+.glass-dropdown:focus {
+	outline: none;
+	border-color: rgba(102, 126, 234, 0.6);
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.glass-select option,
+.glass-dropdown option {
+	background: rgba(20, 20, 30, 0.95);
+	color: var(--text-primary);
+	padding: 0.5rem;
+}
+
+/* ============================================
    UTILITIES
    ============================================ */
 .glass-glow {

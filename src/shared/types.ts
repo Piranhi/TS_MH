@@ -9,7 +9,7 @@ import { RecruitProfession } from "@/models/Recruit";
 // --------------------- SETTLEMENT + BUILDINGS ----------------------------
 export const STARTING_BUILDING_UNLOCKS = ["guildHall"];
 
-export type BuildingType = "guild_hall" | "mine" | "library" | "blacksmith" | "market";
+export type BuildingType = "guild_hall" | "mine" | "library" | "blacksmith" | "market" | "housing";
 export type BuildingUnlockStatus = "unlocked" | "construction" | "hidden";
 
 export type ProgressionTrigger = {
