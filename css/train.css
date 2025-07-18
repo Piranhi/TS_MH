@@ -259,7 +259,7 @@
 	backdrop-filter: blur(var(--glass-blur));
 	border: 1px solid var(--glass-border);
 	border-radius: 1rem;
-	padding: 1.5rem;
+	padding: 0.75rem;
 	display: flex;
 	align-items: center;
 	gap: 1.5rem;

@@ -55,12 +55,6 @@ export class PlayerStatsDisplay extends UIBase {
 		// Create glass panels for different sections
 		this.element.innerHTML = `
             <div class="player-stats-section glass-panel">
-                <div class="section-header">
-                    <h3 class="section-title">
-                        <span class="section-icon"></span>
-                        Character Level
-                    </h3>
-                </div>
                 <div class="level-display-container">
                     <div class="level-circle">
                         <span id="player-level-number" class="level-number">1</span>

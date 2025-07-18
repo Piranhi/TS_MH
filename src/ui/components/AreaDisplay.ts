@@ -58,11 +58,7 @@ export class AreaDisplay extends UIBase {
 		const section = this.createElement("section", {});
 		if (!area) return section;
 
-		// Create and add the title
-		const title = this.createElement("h2", {
-			className: "basic-title",
-			textContent: area.displayName, // "Area Stats",
-		}); // Create action buttons
+		// Create action buttons
 
 		const statsDiv = this.createElement("div", {
 			id: AreaDisplay.DOM_IDS.STATS_ROWS,
@@ -120,7 +116,6 @@ export class AreaDisplay extends UIBase {
 		});
 
 		// Assemble the section
-		section.appendChild(title);
 		section.appendChild(progressDiv);
 		section.appendChild(this.optionsContainer);
 		section.appendChild(statsDiv);

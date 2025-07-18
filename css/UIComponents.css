@@ -242,51 +242,6 @@ button#genericModalButton:disabled {
 	border: none;
 }
 
-/* Core button style—use your theme tokens as needed */
-.ui-button {
-	background: var(--btn-bg, rgba(255, 255, 255, 0.15));
-	color: var(--btn-text, #fff);
-	transition: background 0.15s, transform 0.1s;
-	display: flex;
-	min-width: 64px;
-	max-width: 480px;
-	cursor: pointer;
-	align-items: center;
-	justify-content: center;
-	overflow: hidden;
-	border-radius: 8px;
-	height: 40px;
-	padding-left: 16px;
-	padding-right: 16px;
-	font-size: 0.875rem;
-	font-weight: 700;
-	line-height: normal;
-	letter-spacing: 0.015em;
-	width: 100%;
-	border: none;
-}
-.ui-button-small {
-	height: 20px;
-	width: 20px;
-	font-size: 0.7rem;
-}
-.ui-button-medium {
-	height: 32px;
-}
-.ui-button-large {
-	height: 40px;
-}
-
-.ui-button:hover {
-	background: var(--btn-bg-hover, rgba(255, 255, 255, 0.24));
-}
-
-.ui-button:disabled {
-	opacity: 0.5;
-	cursor: not-allowed;
-	background: var(--btn-bg-disabled, rgba(255, 255, 255, 0.15));
-}
-
 /*  ===============  Layout wrapper  =============== */
 .offline-progress-modal {
 	position: fixed;

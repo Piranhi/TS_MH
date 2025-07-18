@@ -285,12 +285,18 @@ button {
 	border: 1px solid var(--glass-border);
 	border-radius: 0.5rem;
 	color: var(--text-primary);
-	padding: 0.5rem 1rem;
+	padding: 0.35rem 1rem;
 	font-weight: 500;
 	cursor: pointer;
 	transition: all var(--transition-fast);
 	position: relative;
 	overflow: hidden;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	min-width: 64px;
 }
 
 /* Button shine effect */
@@ -767,8 +773,8 @@ button {
 }
 
 .level-circle {
-	width: 80px;
-	height: 80px;
+	width: 52px;
+	height: 52px;
 	background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
 	border: 2px solid rgba(102, 126, 234, 0.4);
 	border-radius: 50%;
@@ -780,7 +786,7 @@ button {
 }
 
 .level-number {
-	font-size: 2rem;
+	font-size: 1.25rem;
 	font-weight: bold;
 	color: var(--text-primary);
 	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);

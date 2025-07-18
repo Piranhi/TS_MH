@@ -1,62 +1,63 @@
 <!-- training.html -->
 <section class="game train-screen" id="train-root">
+    <div class="basic-panel info-panel">
+        <h2>Stat Bonuses</h2>
+        <div class="info-grid"></div>
+    </div>
     <div id="training-section" class="training-section">
         <div class="training-list" id="trained-stats-list"></div>
     </div>
-    <section class="basic-panel info-panel">
-        <h2>Stat Bonuses</h2>
-        <div class="info-grid"></div>
-        </div>
 
 
-        <template id="training-item-unlocked">
-            <div class="basic-subsection-row" data-key="agility">
-                <div class="training-icon">
-                    <img src="icons/agility.svg" alt="Agility" />
-                </div>
-                <div class="training-content">
-                    <div class="training-header" id="training-header">
-                        <span class="basic-title" id="training-name">Agility</span>
-                        <span class="basic-subtitle" id="training-level">Lvl 3</span>
-                    </div>
-                    <div class="training-bar" id="training-bar"></div>
-                </div>
-                <div>
-                    <div class="training-assigned">500</div>
-                    <div class="controls"></div>
-                </div>
+
+
+    <template id="training-item-unlocked">
+        <div class="basic-subsection-row" data-key="agility">
+            <div class="training-icon">
+                <img src="icons/agility.svg" alt="Agility" />
             </div>
-        </template>
-
-        <template id="training-item-template">
+            <div class="training-content">
+                <div class="training-header" id="training-header">
+                    <span class="basic-title" id="training-name">Agility</span>
+                    <span class="basic-subtitle" id="training-level">Lvl 3</span>
+                </div>
+                <div class="training-bar" id="training-bar"></div>
+            </div>
             <div>
-                <div class="training-item-container">
-                    <div class="training-icon">⚔️</div>
-                    <div class="training-content">
-                        <div class="training-header">
-                            <div>
-                                <h4 style="margin: 0;" id="training-name">Strength Training</h4>
-                                <div style="font-size: 0.875rem; color: var(--text-secondary);" id="training-level">
-                                    Level 5
-                                    •
-                                    1250/2000 XP
-                                </div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 0.875rem; color: var(--text-muted);" id="training-assigned">
-                                    Assigned:
-                                    15/20</div>
+                <div class="training-assigned">500</div>
+                <div class="controls"></div>
+            </div>
+        </div>
+    </template>
+
+    <template id="training-item-template">
+        <div>
+            <div class="training-item-container">
+                <div class="training-icon">⚔️</div>
+                <div class="training-content">
+                    <div class="training-header">
+                        <div>
+                            <h4 style="margin: 0;" id="training-name">Strength Training</h4>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary);" id="training-level">
+                                Level 5
+                                •
+                                1250/2000 XP
                             </div>
                         </div>
-                        <div class="progress-bar-training" style="margin-top: 0.5rem;" id="training-progressbar">
-                            <!--                         <div class="progress-fill-training progress-health" style="width: 62.5%;"
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.875rem; color: var(--text-muted);" id="training-assigned">
+                                Assigned:
+                                15/20</div>
+                        </div>
+                    </div>
+                    <div class="progress-bar-training" style="margin-top: 0.5rem;" id="training-progressbar">
+                        <!--                         <div class="progress-fill-training progress-health" style="width: 62.5%;"
                             id="training-progress-fill"></div>
                     </div> -->
-                        </div>
-                        <div class="training-controls" id="training-controls">
-                        </div>
+                    </div>
+                    <div class="training-controls" id="training-controls">
                     </div>
                 </div>
-        </template>
-
-    </section>
+            </div>
+    </template>
+</section>
