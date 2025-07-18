@@ -87,7 +87,7 @@ export class TrainedStatDisplay extends UIBase {
 
 		new UIButton(controlsContainer, {
 			text: "0",
-			onClick: () => this.confirmAllocation(),
+			onClick: () => this.setToZero(),
 		});
 
 		new UIButton(controlsContainer, {

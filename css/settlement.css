@@ -47,11 +47,6 @@
 	gap: 0.75rem;
 }
 
-.settlement_name::before {
-	content: "🏘️";
-	font-size: 2rem;
-}
-
 .settlement_level {
 	font-size: 0.875rem;
 	color: var(--text-secondary);
@@ -184,11 +179,6 @@
 	gap: 0.5rem;
 }
 
-.settlement_section-title::before {
-	content: "🏗️";
-	font-size: 1.5rem;
-}
-
 /* Building Grid */
 .settlement_building-grid {
 	display: grid;
@@ -313,6 +303,115 @@
 .settlement_building-progress-text {
 	font-size: 0.75rem;
 	color: var(--text-muted);
+}
+
+/* Building Efficiency Section */
+.settlement_efficiency-section {
+	margin-bottom: 1rem;
+	padding: 1rem;
+	background: rgba(255, 255, 255, 0.02);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	border-radius: 0.75rem;
+}
+
+.settlement_efficiency-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 0.75rem;
+}
+
+.settlement_efficiency-percentage {
+	font-size: 1rem;
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.efficiency-value.normal {
+	color: var(--text-primary);
+}
+
+.efficiency-value.medium {
+	color: #f7b731;
+}
+
+.efficiency-value.high {
+	color: #51cf66;
+}
+
+.settlement_gold-allocation {
+	font-size: 0.875rem;
+	color: var(--text-secondary);
+}
+
+.settlement_efficiency-progress-text {
+	font-size: 0.75rem;
+	color: var(--text-muted);
+	margin-bottom: 0.75rem;
+}
+
+.settlement_efficiency-controls {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+	margin-bottom: 0.5rem;
+}
+
+.settlement_gold-btn {
+	padding: 0.5rem 0.75rem;
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+	border: 1px solid rgba(102, 126, 234, 0.3);
+	border-radius: 0.375rem;
+	color: var(--text-primary);
+	font-size: 0.875rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	min-width: 40px;
+}
+
+.settlement_gold-btn:hover:not(:disabled) {
+	background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+	border-color: rgba(102, 126, 234, 0.5);
+	transform: translateY(-1px);
+}
+
+.settlement_gold-btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.settlement_gold-input {
+	padding: 0.5rem;
+	background: rgba(0, 0, 0, 0.3);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 0.375rem;
+	color: var(--text-primary);
+	font-size: 0.875rem;
+	width: 80px;
+	text-align: center;
+}
+
+.settlement_gold-input:focus {
+	outline: none;
+	border-color: rgba(102, 126, 234, 0.5);
+	box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.settlement_not-enough-gold {
+	font-size: 0.75rem;
+	color: #ff6b6b;
+	background: rgba(255, 107, 107, 0.1);
+	border: 1px solid rgba(255, 107, 107, 0.3);
+	border-radius: 0.375rem;
+	padding: 0.5rem;
+	margin-top: 0.5rem;
+	text-align: center;
+}
+
+.settlement_not-enough-gold.hidden {
+	display: none;
 }
 
 /* Building Actions */

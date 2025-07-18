@@ -7,7 +7,7 @@ import { bindEvent } from "@/shared/utils/busUtils";
 
 export class HeaderDisplay extends UIBase {
 	private PlayerStatsEl: HTMLElement;
-	private energyProgressBar!: ProgressBar;
+	// private energyProgressBar!: ProgressBar;
 
 	constructor(container: HTMLElement) {
 		super();
@@ -95,7 +95,7 @@ export class HeaderDisplay extends UIBase {
 		const progressContainer = document.createElement("div");
 		progressContainer.className = "stat-progress-container";
 
-		this.energyProgressBar = new ProgressBar({
+		/* 		this.energyProgressBar = new ProgressBar({
 			container: progressContainer,
 			maxValue: 100,
 			initialValue: 0,
@@ -103,7 +103,7 @@ export class HeaderDisplay extends UIBase {
 			color: "yellow", // Energy color
 		});
 
-		contentContainer.appendChild(progressContainer);
+		contentContainer.appendChild(progressContainer); */
 
 		const value = document.createElement("span");
 		value.className = "stat-value";
@@ -117,8 +117,8 @@ export class HeaderDisplay extends UIBase {
 			const curr = Math.floor(payload.current);
 			const mx = Math.floor(payload.max);
 			value.textContent = `${curr}/${mx}`;
-			this.energyProgressBar.setMax(payload.max);
-			this.energyProgressBar.setValue(Math.floor(payload.current));
+			// this.energyProgressBar.setMax(payload.max);
+			// this.energyProgressBar.setValue(Math.floor(payload.current));
 
 			// Add glow effect when energy is full
 			if (curr >= mx) {
