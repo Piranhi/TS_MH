@@ -11,7 +11,6 @@ export class ClassManager extends Destroyable implements Saveable<ClassSystemSta
 	private specs = new Map<string, ClassSpec>();
 	private unlocked = new Set<string>();
 	private nodePoints = new Map<string, Map<string, number>>();
-	private availablePoints = 5;
 
 	constructor(specs: ClassSpec[] = []) {
 		super();
@@ -24,8 +23,8 @@ export class ClassManager extends Destroyable implements Saveable<ClassSystemSta
 
 	private bindEvents() {
 		bindEvent(this.eventBindings, "player:level-up", () => this.gainPoints(GAME_BALANCE.classes.pointsPerLevel));
-		bindEvent(this.eventBindings, "game:prestigePrep", () => this.resetPoints());
 		bindEvent(this.eventBindings, "game:gameReady", () => this.recalculate());
+		// Note: Removed prestige reset since class points are now permanent bloodline stats
 	}
 
 	unlockClass(id: string) {
@@ -33,12 +32,16 @@ export class ClassManager extends Destroyable implements Saveable<ClassSystemSta
 	}
 
 	gainPoints(amount: number) {
-		this.availablePoints += amount;
-		bus.emit("classes:pointsChanged");
+		const context = GameContext.getInstance();
+		if (context.player) {
+			context.player.modifyBloodlineStat("classPoints", amount);
+			bus.emit("classes:pointsChanged");
+		}
 	}
 
 	getAvailablePoints(): number {
-		return this.availablePoints;
+		const context = GameContext.getInstance();
+		return context.player?.getBloodlineStat("classPoints") ?? 0;
 	}
 
 	/** Get all registered class specs */
@@ -65,11 +68,17 @@ export class ClassManager extends Destroyable implements Saveable<ClassSystemSta
 	}
 
 	allocatePoint(classId: string, nodeId: string): boolean {
+		const context = GameContext.getInstance();
+		if (!context.player) return false;
+
 		const classSpec = this.specs.get(classId);
 		if (!classSpec) return false;
 		const node = classSpec.nodes.find((n) => n.id === nodeId);
 		if (!node) return false;
-		if (this.availablePoints < node.cost) return false;
+		
+		const availablePoints = context.player.getBloodlineStat("classPoints");
+		if (availablePoints < node.cost) return false;
+		
 		const map = this.nodePoints.get(classId)!;
 		const current = map.get(nodeId) || 0;
 		if (current >= node.maxPoints) return false;
@@ -77,7 +86,9 @@ export class ClassManager extends Destroyable implements Saveable<ClassSystemSta
 			const pre = map.get(node.prereq) || 0;
 			if (pre === 0) return false;
 		}
-		this.availablePoints -= node.cost;
+		
+		// Spend the points from bloodline stats
+		context.player.modifyBloodlineStat("classPoints", -node.cost);
 		map.set(nodeId, current + 1);
 		this.recalculate();
 		bus.emit("classes:pointsChanged");
@@ -131,12 +142,6 @@ export class ClassManager extends Destroyable implements Saveable<ClassSystemSta
 		this.recalculate();
 	}
 
-	resetPoints() {
-		for (const map of this.nodePoints.values()) map.clear();
-		this.availablePoints = 0;
-		this.recalculate();
-	}
-
 	save(): ClassSystemState {
 		const nodePointsObj: Record<string, Record<string, number>> = {};
 		for (const [c, map] of this.nodePoints) {
@@ -145,13 +150,13 @@ export class ClassManager extends Destroyable implements Saveable<ClassSystemSta
 		return {
 			unlockedClasses: Array.from(this.unlocked),
 			nodePoints: nodePointsObj,
-			availablePoints: this.availablePoints,
+			// availablePoints now managed by Player's BloodlineStats
 		};
 	}
 
 	load(state: ClassSystemState): void {
 		this.unlocked = new Set(state.unlockedClasses || []);
-		this.availablePoints = state.availablePoints || 0;
+		// availablePoints now managed by Player's BloodlineStats
 		for (const [cid, nodes] of Object.entries(state.nodePoints || {})) {
 			let map = this.nodePoints.get(cid);
 			if (!map) {

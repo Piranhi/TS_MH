@@ -1,7 +1,6 @@
 import { bindEvent } from "@/shared/utils/busUtils";
 import { UIBase } from "./UIBase";
 import { AreaStats } from "@/shared/stats-types";
-import { ProgressBar } from "./ProgressBar";
 import { GAME_BALANCE } from "@/balance/GameBalance";
 import { Area } from "@/models/Area";
 import { UIButton } from "./UIButton";
@@ -18,14 +17,10 @@ export class AreaDisplay extends UIBase {
 		STATS_ROWS: "stats-rows",
 		AREA_PROGRESS: "area-progress",
 		FIGHT_BOSS_BTN: "fight-boss-btn",
-		BUILD_OUTPOST_BTN: "build-outpost-btn",
 		OPTIONS: "area-options",
 	} as const;
 
-	private killsNeededForBossEl!: ProgressBar;
-	private clearsNeededForOutpostEl!: ProgressBar;
 	private fightBossBtn!: UIButton;
-	private buildOutpostBtn!: UIButton;
 	private optionsContainer!: HTMLDivElement;
 	private autoAdvanceCb!: HTMLInputElement;
 
@@ -58,14 +53,8 @@ export class AreaDisplay extends UIBase {
 		const section = this.createElement("section", {});
 		if (!area) return section;
 
-		// Create action buttons
-
 		const statsDiv = this.createElement("div", {
 			id: AreaDisplay.DOM_IDS.STATS_ROWS,
-		});
-		const progressDiv = this.createElement("div", {
-			id: "AreaDisplay.DOM_IDS.AREA_PROGRESS",
-			className: "area-progress",
 		});
 
 		// Container for extra options like auto progression
@@ -77,46 +66,15 @@ export class AreaDisplay extends UIBase {
 		// Create auto advance checkbox
 		this.createAutoAdvanceCheckbox();
 
-		const killsNeeded = this.createElement("span", {
-			textContent: "Kills Needed",
-			className: "basic-subtitle",
-		});
-		const clearsNeeded = this.createElement("span", {
-			textContent: "Clears Needed",
-			className: "basic-subtitle",
-		});
-		progressDiv.appendChild(killsNeeded);
-		this.killsNeededForBossEl = new ProgressBar({
-			container: progressDiv,
-			label: "0/100",
-			showLabel: true,
-			initialValue: 0,
-			maxValue: GAME_BALANCE.hunt.enemiesNeededForBoss,
-		});
-		this.fightBossBtn = new UIButton(progressDiv, {
+		// Create fight boss button
+		this.fightBossBtn = new UIButton(this.optionsContainer, {
 			text: "Fight Boss",
 			disabled: true,
 			id: AreaDisplay.DOM_IDS.FIGHT_BOSS_BTN,
 			onClick: this.onFightBoss,
 		});
 
-		progressDiv.appendChild(clearsNeeded);
-		this.clearsNeededForOutpostEl = new ProgressBar({
-			container: progressDiv,
-			label: "0/100",
-			showLabel: true,
-			initialValue: 0,
-			maxValue: GAME_BALANCE.hunt.clearsNeededForOutpost,
-		});
-		this.buildOutpostBtn = new UIButton(progressDiv, {
-			text: "Build Outpost",
-			disabled: true,
-			id: AreaDisplay.DOM_IDS.BUILD_OUTPOST_BTN,
-			onClick: this.onFightBoss,
-		});
-
 		// Assemble the section
-		section.appendChild(progressDiv);
 		section.appendChild(this.optionsContainer);
 		section.appendChild(statsDiv);
 
@@ -168,7 +126,6 @@ export class AreaDisplay extends UIBase {
 		if (!stats) return;
 		try {
 			this.fightBossBtn.setState(stats.bossUnlockedThisRun ? "enabled" : "disabled");
-			this.buildOutpostBtn.setState(stats.outpostAvailable ? "enabled" : "disabled");
 
 			const container = this.$(`#${AreaDisplay.DOM_IDS.STATS_ROWS}`) as HTMLDivElement;
 			container.innerHTML = "<h3 style='margin: 0 0 1rem 0;'>Area Progress</h3>";
@@ -178,19 +135,36 @@ export class AreaDisplay extends UIBase {
 
 			// Add all stat rows
 			statRows.forEach((row) => container.appendChild(row));
-			this.updateProgressbar(stats);
 		} catch (e) {
-			console.error("Error updating progressbar", e);
+			console.error("Error updating area stats", e);
 		}
 	}
 
-	private updateProgressbar(stats: AreaStats) {
-		this.killsNeededForBossEl.setValue(stats.killsThisRun);
-		this.killsNeededForBossEl.setLabel(
-			`${Math.min(stats.killsThisRun, GAME_BALANCE.hunt.enemiesNeededForBoss)}/${GAME_BALANCE.hunt.enemiesNeededForBoss}`
-		);
-		this.clearsNeededForOutpostEl.setValue(stats.bossKillsTotal);
-		this.clearsNeededForOutpostEl.setLabel(`${stats.bossKillsTotal}/${GAME_BALANCE.hunt.clearsNeededForOutpost}`);
+	/**
+	 * Calculates area completion percentage based on progress toward boss unlock
+	 */
+	private calculateCompletionPercentage(stats: AreaStats): string {
+		const killsNeeded = GAME_BALANCE.hunt.enemiesNeededForBoss;
+		const killsProgress = Math.min(stats.killsThisRun, killsNeeded);
+		const baseProgress = (killsProgress / killsNeeded) * 100;
+		
+		// If boss is killed this run, add bonus completion
+		const bossBonus = stats.bossKilledThisRun ? 20 : 0;
+		
+		const totalCompletion = Math.min(100, baseProgress + bossBonus);
+		return `${Math.round(totalCompletion)}%`;
+	}
+
+	/**
+	 * Gets the area level range for display
+	 */
+	private getAreaLevelRange(): string {
+		const activeArea = this.context.hunt.getActiveArea();
+		if (!activeArea) return "1-5";
+		
+		// For now, return a basic level range. This could be enhanced later
+		// to use actual area data if available
+		return `${activeArea.minLevel || 1}-${activeArea.maxLevel || 5}`;
 	}
 
 	/**
@@ -216,11 +190,10 @@ export class AreaDisplay extends UIBase {
 	private createStatRows(stats: AreaStats): HTMLDivElement[] {
 		// Define the stats structure - this makes it easy to add/remove stats later
 		const statsData = [
+			{ label: "Monsters Killed", value: `${stats.killsThisRun} / ${GAME_BALANCE.hunt.enemiesNeededForBoss}`, id: "area-monsters-killed" },
 			{ label: "Boss Unlocked", value: stats.bossUnlockedThisRun ? "Yes" : "No", id: "area-boss-unlocked" },
-			{ label: "Boss Killed This Run", value: stats.bossKilledThisRun ? "Yes" : "No", id: "area-boss-killed" },
-			{ label: "Boss Kills", value: stats.bossKillsTotal.toString(), id: "area-boss-kills" },
-			{ label: "Total Kills", value: stats.killsTotal.toString(), id: "area-total-kills" },
-			{ label: "Kills This Run", value: stats.killsThisRun.toString(), id: "area-kills-this-run" },
+			{ label: "Completion", value: this.calculateCompletionPercentage(stats), id: "area-completion" },
+			{ label: "Area Level", value: this.getAreaLevelRange(), id: "area-level" },
 		];
 
 		// Map over the data to create DOM elements
@@ -247,7 +220,7 @@ export class AreaDisplay extends UIBase {
 		});
 
 		// Add special styling for certain values
-		if (label === "Boss Unlocked" || label === "Boss Killed This Run") {
+		if (label === "Boss Unlocked") {
 			if (value === "Yes") {
 				valueSpan.style.color = "var(--success-hue)";
 			} else {

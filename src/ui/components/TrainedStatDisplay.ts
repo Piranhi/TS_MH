@@ -79,30 +79,11 @@ export class TrainedStatDisplay extends UIBase {
 	private setupControls() {
 		const { controlsContainer } = this.els;
 
-		// Create buttons matching the design
+		// Create single train/untrain button
+		const isTraining = this.trainedStat.assignedPoints > 0;
 		new UIButton(controlsContainer, {
-			text: "-1",
-			onClick: () => this.adjustAmount(-1),
-		});
-
-		new UIButton(controlsContainer, {
-			text: "0",
-			onClick: () => this.setToZero(),
-		});
-
-		new UIButton(controlsContainer, {
-			text: "+1",
-			onClick: () => this.adjustAmount(1),
-		});
-
-		new UIButton(controlsContainer, {
-			text: "Half",
-			onClick: () => this.setToHalf(),
-		});
-
-		new UIButton(controlsContainer, {
-			text: "Max",
-			onClick: () => this.setToMax(),
+			text: isTraining ? "Stop Training" : "Train",
+			onClick: () => this.toggleTraining(),
 		});
 	}
 
@@ -120,56 +101,50 @@ export class TrainedStatDisplay extends UIBase {
 		progressBar.setValue(this.trainedStat.progress);
 		progressBar.setMax(levelThreshold);
 
-		// Update allocation info
-		const maxPoints = this.context.currentRun?.trainedStats.maxStamina; // this.trainedStat.maxAssignedPoints;
+		// Update allocation info and time to level
 		const assignedPoints = this.trainedStat.assignedPoints;
-		currentAllocation.textContent = `Assigned: ${assignedPoints}/${maxPoints}`;
-	}
-
-	private adjustAmount(delta: number) {
-		this.manager.allocateTrainedStat(this.trainedStat.id, delta);
-	}
-
-	private setToZero() {
-		const currentlyAllocated = this.trainedStat.assignedPoints;
-		if (currentlyAllocated > 0) {
-			this.adjustAmount(-currentlyAllocated);
-		}
-	}
-
-	private setToMax() {
-		const maxPointsForThisStat = this.trainedStat.maxAssignedPoints;
-		const currentlyAllocated = this.trainedStat.assignedPoints;
-		const pointsNeeded = maxPointsForThisStat - currentlyAllocated;
-
-		if (pointsNeeded > 0) {
-			const availableEnergy = this.context.player.energyPool.current;
-			const pointsToAllocate = Math.min(pointsNeeded, availableEnergy);
-			if (pointsToAllocate > 0) {
-				this.adjustAmount(pointsToAllocate);
+		if (assignedPoints > 0) {
+			const vigourMultiplier = this.context.player.vigourLevel;
+			const timeToLevel = this.trainedStat.getTimeToNextLevel(vigourMultiplier);
+			
+			if (timeToLevel !== null) {
+				const timeString = this.formatTime(timeToLevel);
+				currentAllocation.textContent = `Training • ${timeString} to next level`;
+			} else {
+				currentAllocation.textContent = "Training";
 			}
+		} else {
+			currentAllocation.textContent = "Not Training";
 		}
 	}
 
-	private setToHalf() {
-		const targetPoints = Math.floor(this.trainedStat.maxAssignedPoints / 2);
-		const currentlyAllocated = this.trainedStat.assignedPoints;
-		const neededPoints = targetPoints - currentlyAllocated;
-
-		if (neededPoints > 0) {
-			const availableEnergy = this.context.player.energyPool.current;
-			const pointsToAllocate = Math.min(neededPoints, availableEnergy);
-			if (pointsToAllocate > 0) {
-				this.adjustAmount(pointsToAllocate);
-			}
-		} else if (neededPoints < 0) {
-			this.adjustAmount(neededPoints);
+	private toggleTraining() {
+		const isCurrentlyTraining = this.trainedStat.assignedPoints > 0;
+		
+		if (isCurrentlyTraining) {
+			// Stop training - deallocate stamina
+			this.manager.allocateTrainedStat(this.trainedStat.id, -1);
+		} else {
+			// Start training - allocate exactly 1 stamina
+			this.manager.allocateTrainedStat(this.trainedStat.id, 1);
 		}
+		
+		// Recreate controls to update button text
+		this.els.controlsContainer.innerHTML = '';
+		this.setupControls();
 	}
 
-	private confirmAllocation() {
-		// This would handle confirming the allocation
-		// You might want to emit an event or call a method on the manager
-		console.log("Confirming allocation for", this.trainedStat.name);
+	private formatTime(seconds: number): string {
+		if (seconds < 60) {
+			return `${Math.ceil(seconds)}s`;
+		} else if (seconds < 3600) {
+			const minutes = Math.floor(seconds / 60);
+			const remainingSeconds = Math.ceil(seconds % 60);
+			return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+		} else {
+			const hours = Math.floor(seconds / 3600);
+			const minutes = Math.floor((seconds % 3600) / 60);
+			return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+		}
 	}
 }

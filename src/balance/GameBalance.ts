@@ -90,7 +90,6 @@ export const GAME_BALANCE = {
 			critDamage: 0,
 			evasion: 0,
 			lifesteal: 0,
-			encounterChance: 1,
 			fireBonus: 0,
 			iceBonus: 0,
 			poisonBonus: 0,
@@ -421,7 +420,7 @@ export const BalanceCalculators = {
 	// === HUNT CALCULATIONS ===
 	getHuntSearchTime(): number {
 		// Each point in encounterchance reduces the search time by 1%
-		const encounterChance = GameContext.getInstance().character.stats.get("encounterChance");
+		const encounterChance = GameContext.getInstance().player.getBloodlineStat("encounterChance");
 		const searchTime = GAME_BALANCE.hunt.baseSearchTime * (1 - encounterChance / 100);
 		return searchTime;
 	},
@@ -507,7 +506,6 @@ export const BalanceCalculators = {
 			critDamage: 0,
 			evasion: 0,
 			lifesteal: 0,
-			encounterChance: Math.floor(GAME_BALANCE.player.baseStats.speed * utilityMultiplier),
 			fireBonus: 0,
 			iceBonus: 0,
 			poisonBonus: 0,

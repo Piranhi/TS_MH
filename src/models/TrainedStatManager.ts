@@ -63,8 +63,9 @@ export class TrainedStatManager extends Destroyable implements Saveable, Offline
 
 	private handleTick(dt: number) {
 		if (this.context.isOfflinePaused) return;
+		const vigourMultiplier = this.context.player.vigourLevel;
 		for (const stat of this.trainedStats.values()) {
-			stat.handleTick(dt);
+			stat.handleTick(dt, vigourMultiplier);
 		}
 	}
 

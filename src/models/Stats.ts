@@ -12,7 +12,6 @@ export const STAT_KEYS: (keyof Stats)[] = [
 	"critDamage",
 	"evasion",
 	"lifesteal",
-	"encounterChance",
 	"fireBonus",
 	"iceBonus",
 	"poisonBonus",
@@ -34,20 +33,27 @@ export interface EnemyArchetypeData extends CoreStats {
 	defaultAbilities: string[];
 }
 
-/** Build Stats */
+/** Build Stats - Combat related stats that can be modified by equipment/abilities */
 export interface BuildStats {
 	regen: number;
 	critChance: number;
 	critDamage: number;
 	evasion: number;
 	lifesteal: number;
-	encounterChance: number;
 	physicalBonus: number;
 	fireBonus: number;
 	iceBonus: number;
 	poisonBonus: number;
 	lightningBonus: number;
 	lightBonus: number;
+}
+
+/** Bloodline Stats - Permanent player progression stats */
+export interface BloodlineStats {
+	encounterChance: number;
+	vigour: number;
+	luck: number;
+	classPoints: number;
 }
 
 // Friendly names for stats
@@ -64,13 +70,18 @@ export const STAT_DISPLAY_NAMES: Record<string, string> = {
 	critDamage: "Crit Damage",
 	evasion: "Evasion",
 	lifesteal: "Lifesteal",
-	encounterChance: "Encounter Chance",
 	physicalBonus: "Physical Bonus",
 	fireBonus: "Fire Bonus",
 	iceBonus: "Ice Bonus",
 	poisonBonus: "Poison Bonus",
 	lightningBonus: "Lightning Bonus",
 	lightBonus: "Light Bonus",
+
+	// Bloodline Stats
+	encounterChance: "Encounter Chance",
+	vigour: "Vigour",
+	luck: "Luck",
+	classPoints: "Class Points",
 };
 
 export interface TrainedStatState {
@@ -104,13 +115,19 @@ export const defaultPlayerStats: Stats = {
 	critDamage: 0,
 	evasion: 0,
 	lifesteal: 0,
-	encounterChance: 0,
 	fireBonus: 0,
 	iceBonus: 0,
 	poisonBonus: 0,
 	lightningBonus: 0,
 	lightBonus: 0,
 	physicalBonus: 0,
+};
+
+export const defaultBloodlineStats: BloodlineStats = {
+	encounterChance: 0,
+	vigour: 1,
+	luck: 0,
+	classPoints: 5,
 };
 
 export interface AreaScaling {
@@ -125,5 +142,6 @@ export interface AreaScaling {
 export type Stats = CoreStats & BuildStats;
 export type StatKey = keyof Stats;
 export type StatsModifier = Partial<Stats>;
+export type BloodlineStatKey = keyof BloodlineStats;
 export type TrainedStatType = "attack1" | "attack2" | "defence1" | "defence2";
 export type TrainedStatStatus = "Unlocked" | "Locked" | "Hidden";

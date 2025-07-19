@@ -40,7 +40,7 @@ export class TrainedStat {
 		return this.state.assignedPoints;
 	}
 	get maxAssignedPoints() {
-		return Infinity;
+		return 1;
 	}
 	get availablePoints() {
 		return Infinity;
@@ -52,10 +52,11 @@ export class TrainedStat {
 	/**
 	 * Call on each "tick" (deltaTime in seconds).
 	 */
-	public handleTick(deltaTime: number) {
+	public handleTick(deltaTime: number, vigourMultiplier: number = 1) {
 		if (this.state.assignedPoints === 0) return;
 
-		this.state.progress += this.state.assignedPoints * deltaTime;
+		// Progress is now influenced by vigour multiplier
+		this.state.progress += this.state.assignedPoints * deltaTime * vigourMultiplier;
 
 		let levelledUp = false;
 		while (this.state.progress >= this.getLevelThreshold()) {
@@ -68,7 +69,7 @@ export class TrainedStat {
 
 	public adjustAssignedPoints(delta: number): boolean {
 		const newTotal = this.state.assignedPoints + delta;
-		if (newTotal < 0) {
+		if (newTotal < 0 || newTotal > 1) {
 			return false;
 		}
 		this.state.assignedPoints = newTotal;
@@ -93,6 +94,18 @@ export class TrainedStat {
 	 */
 	public getLevelThreshold(): number {
 		return Math.floor(this.spec.levelUpBase * Math.pow(GAME_BALANCE.training.levelUpCostMultiplier, this.state.level - 1));
+	}
+
+	/**
+	 * Calculate time to next level based on vigour multiplier and current assignment
+	 */
+	public getTimeToNextLevel(vigourMultiplier: number = 1): number | null {
+		if (this.state.assignedPoints === 0) return null;
+		
+		const remaining = this.getLevelThreshold() - this.state.progress;
+		const progressPerSecond = this.state.assignedPoints * vigourMultiplier;
+		
+		return remaining / progressPerSecond;
 	}
 
 	getState(): TrainedStatState {

@@ -3,6 +3,7 @@ import { bindEvent } from "@/shared/utils/busUtils";
 import { ProgressBar } from "./ProgressBar";
 import { TableDisplay } from "./TableDisplay";
 import { formatNumberShort } from "@/shared/utils/stringUtils";
+import { BloodlineStats, STAT_DISPLAY_NAMES } from "@/models/Stats";
 
 interface StatMapping {
 	displayName: string;
@@ -11,11 +12,13 @@ interface StatMapping {
 
 export class PlayerStatsDisplay extends UIBase {
 	private tableWrapper!: HTMLElement;
+	private bloodlineTableWrapper!: HTMLElement;
 	private traitListEl!: HTMLElement;
 	private levelNumberEl!: HTMLElement;
 	private xpTextEl!: HTMLElement;
 	private xpProgressBar!: ProgressBar;
 	private statsTable!: TableDisplay;
+	private bloodlineStatsTable!: TableDisplay;
 	private traitTable!: TableDisplay;
 
 	private statMappings: StatMapping[] = [
@@ -28,13 +31,19 @@ export class PlayerStatsDisplay extends UIBase {
 		{ displayName: "Crit Chance", getValue: (stats) => formatNumberShort(stats.critChance) || 0 },
 		{ displayName: "Crit Damage", getValue: (stats) => formatNumberShort(stats.critDamage) || 0 },
 		{ displayName: "Evasion", getValue: (stats) => formatNumberShort(stats.evasion) || 0 },
-		{ displayName: "Encounter Chance", getValue: (stats) => formatNumberShort(stats.encounterChance) || 0 },
 		{ displayName: "Fire Bonus", getValue: (stats) => formatNumberShort(stats.fireBonus) || 0 },
 		{ displayName: "Ice Bonus", getValue: (stats) => formatNumberShort(stats.iceBonus) || 0 },
 		{ displayName: "Poison Bonus", getValue: (stats) => formatNumberShort(stats.poisonBonus) || 0 },
 		{ displayName: "Lightning Bonus", getValue: (stats) => formatNumberShort(stats.lightningBonus) || 0 },
 		{ displayName: "Light Bonus", getValue: (stats) => formatNumberShort(stats.lightBonus) || 0 },
 		{ displayName: "Physical Bonus", getValue: (stats) => formatNumberShort(stats.physicalBonus) || 0 },
+	];
+
+	private bloodlineStatMappings: StatMapping[] = [
+		{ displayName: STAT_DISPLAY_NAMES.encounterChance, getValue: (stats: BloodlineStats) => formatNumberShort(stats.encounterChance) || 0 },
+		{ displayName: STAT_DISPLAY_NAMES.vigour, getValue: (stats: BloodlineStats) => formatNumberShort(stats.vigour) || 0 },
+		{ displayName: STAT_DISPLAY_NAMES.luck, getValue: (stats: BloodlineStats) => formatNumberShort(stats.luck) || 0 },
+		{ displayName: STAT_DISPLAY_NAMES.classPoints, getValue: (stats: BloodlineStats) => formatNumberShort(stats.classPoints) || 0 },
 	];
 
 	constructor(container: HTMLElement) {
@@ -45,6 +54,7 @@ export class PlayerStatsDisplay extends UIBase {
 		this.setupLevelDisplay();
 		this.bindEvents();
 		this.updateFromPlayerStats();
+		this.updateBloodlineStatsTable();
 		this.updateTraitDisplay();
 
 		// Add glass effect to main container
@@ -78,6 +88,15 @@ export class PlayerStatsDisplay extends UIBase {
             <div class="player-stats-section glass-panel">
                 <div class="section-header">
                     <h3 class="section-title">
+                        Bloodline Stats
+                    </h3>
+                </div>
+                <div id="bloodline-stats-table-wrapper" class="table-wrapper"></div>
+            </div>
+            
+            <div class="player-stats-section glass-panel">
+                <div class="section-header">
+                    <h3 class="section-title">
                         Traits
                     </h3>
                 </div>
@@ -86,6 +105,7 @@ export class PlayerStatsDisplay extends UIBase {
         `;
 
 		this.tableWrapper = this.element.querySelector("#stats-table-wrapper")!;
+		this.bloodlineTableWrapper = this.element.querySelector("#bloodline-stats-table-wrapper")!;
 		this.traitListEl = this.element.querySelector("#trait-list")!;
 	}
 
@@ -93,6 +113,17 @@ export class PlayerStatsDisplay extends UIBase {
 		// Stats table with glass styling
 		this.statsTable = new TableDisplay({
 			container: this.tableWrapper,
+			columns: 2,
+			headers: ["Stat", "Value"],
+			banded: true,
+			boldFirstColumn: true,
+			collapsible: false,
+			className: "glass-table",
+		});
+
+		// Bloodline stats table with glass styling
+		this.bloodlineStatsTable = new TableDisplay({
+			container: this.bloodlineTableWrapper,
 			columns: 2,
 			headers: ["Stat", "Value"],
 			banded: true,
@@ -163,6 +194,12 @@ export class PlayerStatsDisplay extends UIBase {
 
 		bindEvent(this.eventBindings, "game:gameReady", () => {
 			this.updateTraitDisplay();
+			this.updateBloodlineStatsTable();
+		});
+
+		// Listen for bloodline stats changes (class points, etc.)
+		bindEvent(this.eventBindings, "classes:pointsChanged", () => {
+			this.updateBloodlineStatsTable();
 		});
 
 		// Toggle buttons
@@ -201,6 +238,7 @@ export class PlayerStatsDisplay extends UIBase {
 	private updateFromPlayerStats() {
 		if (!this.context.currentRun) return;
 		this.updateStatsTable();
+		this.updateBloodlineStatsTable();
 		this.updateTraitDisplay();
 	}
 
@@ -211,6 +249,14 @@ export class PlayerStatsDisplay extends UIBase {
 		const character = this.context.character;
 		const stats = character.statsEngine.getAll();
 		this.statsTable.updateData(this.statMappings.map((stat) => [stat.displayName, stat.getValue(stats)]));
+	}
+
+	// Update bloodline stats table
+	public updateBloodlineStatsTable() {
+		if (!this.context.player) return;
+
+		const bloodlineStats = this.context.player.bloodlineStatsData;
+		this.bloodlineStatsTable.updateData(this.bloodlineStatMappings.map((stat) => [stat.displayName, stat.getValue(bloodlineStats)]));
 	}
 
 	private updateTraitDisplay() {

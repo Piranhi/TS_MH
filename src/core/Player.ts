@@ -4,7 +4,7 @@ import { printLog } from "@/core/DebugManager";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { PrestigeState } from "@/shared/stats-types";
 import { RegenPool } from "@/models/value-objects/RegenPool";
-import { StatsModifier } from "@/models/Stats";
+import { StatsModifier, BloodlineStats, defaultBloodlineStats } from "@/models/Stats";
 import { BalanceCalculators } from "@/balance/GameBalance";
 import { GameBase } from "./GameBase";
 
@@ -14,6 +14,7 @@ interface PlayerSaveState {
 	gold: number;
 	energy: RegenPool;
 	experience: number;
+	bloodlineStats: BloodlineStats;
 	prestigeState: PrestigeState;
 }
 
@@ -38,6 +39,7 @@ export class Player extends GameBase implements Saveable {
 	private gold = 0;
 	private experience: number = 0;
 	private energy: RegenPool;
+	private bloodlineStats: BloodlineStats;
 	private prestigeState: PrestigeState;
 
 	/** Rolling window of gold gains for income estimation */
@@ -45,7 +47,8 @@ export class Player extends GameBase implements Saveable {
 
 	private constructor() {
 		super();
-		this.energy = new RegenPool(5, 1, false, true);
+		this.energy = new RegenPool(5, 0, true, true); // Start with max stamina, no regeneration
+		this.bloodlineStats = { ...defaultBloodlineStats };
 		this.prestigeState = { ...DEFAULT_PRESTIGE_STATE };
 
 		this.setupEventBindings();
@@ -60,7 +63,7 @@ export class Player extends GameBase implements Saveable {
 	private async handleNewGame() {}
 
 	private handleGameReady() {
-		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.regenEnergy(dt));
+		// Removed energy regeneration - stamina is now instant
 		bindEvent(this.eventBindings, "Game:GameTick", () => this.calculateGoldIncome());
 		bindEvent(this.eventBindings, "renown:award", (amt) => this.adjustRenown(amt));
 		bus.emit("player:initialized", this);
@@ -255,6 +258,22 @@ export class Player extends GameBase implements Saveable {
 		return this.energy;
 	}
 
+	public get vigourLevel(): number {
+		return this.bloodlineStats.vigour;
+	}
+
+	public get bloodlineStatsData(): BloodlineStats {
+		return { ...this.bloodlineStats };
+	}
+
+	public modifyBloodlineStat(stat: keyof BloodlineStats, amount: number): void {
+		this.bloodlineStats[stat] += amount;
+	}
+
+	public getBloodlineStat(stat: keyof BloodlineStats): number {
+		return this.bloodlineStats[stat];
+	}
+
 	public getPrestigeState(): PrestigeState {
 		return { ...this.prestigeState };
 	}
@@ -299,6 +318,7 @@ export class Player extends GameBase implements Saveable {
 			gold: this.gold,
 			energy: this.energy,
 			experience: this.experience,
+			bloodlineStats: this.bloodlineStats,
 			prestigeState: this.prestigeState,
 		};
 	}
@@ -308,7 +328,8 @@ export class Player extends GameBase implements Saveable {
 		this.experience = state.experience ?? 0;
 		this.renown = state.renown ?? 0;
 		this.gold = state.gold ?? 0;
-		this.energy = state.energy ? RegenPool.fromJSON(state.energy) : new RegenPool(10, 1, false);
+		this.bloodlineStats = state.bloodlineStats ?? { ...defaultBloodlineStats };
+		this.energy = state.energy ? RegenPool.fromJSON(state.energy) : new RegenPool(5, 0, true, true);
 		this.prestigeState = state.prestigeState ?? { ...DEFAULT_PRESTIGE_STATE };
 
 		// Emit initial state

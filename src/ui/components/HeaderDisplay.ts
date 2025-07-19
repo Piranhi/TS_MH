@@ -88,7 +88,7 @@ export class HeaderDisplay extends UIBase {
 
 		const label = document.createElement("span");
 		label.className = "stat-label";
-		label.textContent = "Energy";
+		label.textContent = "Stamina";
 		contentContainer.appendChild(label);
 
 		// Progress bar container
