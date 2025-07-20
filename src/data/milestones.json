@@ -1,0 +1,63 @@
+[
+	{
+		"id": "hunt.boss.tier1",
+		"name": "First Blood",
+		"description": "Defeat your first Tier 1 boss",
+		"type": "both"
+	},
+	{
+		"id": "hunt.boss.tier2",
+		"name": "Second Blood",
+		"description": "Defeat your second Tier 1 boss",
+		"type": "both"
+	},
+	{
+		"id": "building.housing",
+		"name": "Housing Unlocked",
+		"description": "Housing is now unlocked",
+		"type": "persistent"
+	},
+	{
+		"id": "building.blacksmith",
+		"name": "Blacksmith Unlocked",
+		"description": "Blacksmith is now unlocked",
+		"type": "persistent"
+	},
+	{
+		"id": "building.library",
+		"name": "Library Unlocked",
+		"description": "Library is now unlocked",
+		"type": "persistent"
+	},
+	{
+		"id": "building.market",
+		"name": "Market Unlocked",
+		"description": "Market is now unlocked",
+		"type": "persistent"
+	},
+	{
+		"id": "building.mine",
+		"name": "Mine Unlocked",
+		"description": "Mine is now unlocked",
+		"type": "persistent"
+	},
+	{
+		"id": "building.guildHall",
+		"name": "Guild Hall Unlocked",
+		"description": "Guild Hall is now unlocked",
+		"type": "persistent"
+	},
+
+	{
+		"id": "screen.outposts",
+		"name": "Outposts Unlocked",
+		"description": "Outposts are now unlocked",
+		"type": "persistent"
+	},
+	{
+		"id": "screen.settlement",
+		"name": "Settlement Unlocked",
+		"description": "Settlement is now unlocked",
+		"type": "persistent"
+	}
+]

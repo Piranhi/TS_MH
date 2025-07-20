@@ -1,11 +1,14 @@
-import { bus } from "@/core/EventBus";
 import { prettify } from "../../shared/utils/stringUtils";
-import { ScreenName, screenNav, ScreenNav } from "@/shared/ui-types";
+import { progressionUnlockRequirements, ScreenName, screenNav, ScreenNav } from "@/shared/ui-types";
 import { UIBase } from "./UIBase";
+import { MilestoneManager } from "@/models/MilestoneManager";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export class SidebarDisplay extends UIBase {
 	private sidebarMap = new Map<ScreenName, HTMLLIElement>();
 	private navContainer = document.getElementById("sidebar")!;
+	private navList!: HTMLUListElement;
+
 	constructor(private onSelect: (name: ScreenName) => void) {
 		super();
 	}
@@ -16,12 +19,12 @@ export class SidebarDisplay extends UIBase {
 		// Add glass effect to sidebar container
 		this.navContainer.classList.add("menu-nav-glass");
 
-		const ul = document.createElement("ul");
-		ul.className = "nav-list";
-		this.buildNavItems(screenNav, ul);
-		this.navContainer.append(ul);
+		this.navList = document.createElement("ul");
+		this.navList.className = "nav-list";
+		this.buildNavItems(screenNav, this.navList);
+		this.navContainer.append(this.navList);
 
-		bus.on("ui:screenChanged", (screen) => {
+		bindEvent(this.eventBindings, "ui:screenChanged", (screen) => {
 			for (const [name, li] of this.sidebarMap) {
 				if (name === screen) {
 					li.classList.add("active");
@@ -33,10 +36,19 @@ export class SidebarDisplay extends UIBase {
 				}
 			}
 		});
+		bindEvent(this.eventBindings, "ui:screenUnlocked", () => {
+			this.buildNavItems(screenNav, this.navList);
+		});
 	}
 
 	private buildNavItems(items: ScreenNav[], parent: HTMLElement, depth = 0) {
+		parent.innerHTML = "";
 		for (const item of items) {
+			if (progressionUnlockRequirements.has(item.name)) {
+				if (!MilestoneManager.instance.hasAll(progressionUnlockRequirements.get(item.name)!)) {
+					continue;
+				}
+			}
 			const li = document.createElement("li");
 			li.className = "nav-item";
 
@@ -106,6 +118,7 @@ export class SidebarDisplay extends UIBase {
 			bestiary: "📖",
 			outposts: "🏕️",
 			guildHall: "🏰",
+			housing: "🏠",
 			mine: "⛏️",
 			library: "📚",
 			blacksmith: "🔨",

@@ -82,7 +82,7 @@ export class SettlementScreen extends BaseScreen {
 		bindEvent(this.eventBindings, "Game:UITick", () => this.updateDynamicElements());
 		bindEvent(this.eventBindings, "Game:GameTick", () => this.updateHeader());
 		bindEvent(this.eventBindings, "resources:changed", () => this.updateBuildingButtons());
-		bindEvent(this.eventBindings, "gold:changed", () => this.updateEfficiencyDisplays());
+		bindEvent(this.eventBindings, "player:goldChanged", () => this.updateEfficiencyDisplays());
 	}
 
 	private build() {
@@ -144,6 +144,7 @@ export class SettlementScreen extends BaseScreen {
 
 		// Create building cards
 		buildings.forEach((building) => {
+			if (!building.checkUnlockRequirements()) return;
 			const buildingCard = this.createBuildingCard(building);
 			this.buildingGrid.appendChild(buildingCard.element);
 			this.buildingDisplays.push(buildingCard);
@@ -263,7 +264,7 @@ export class SettlementScreen extends BaseScreen {
 
 		// Max button (set to affordable amount)
 		elements.maxBtn.addEventListener("click", () => {
-			const playerGold = this.context.player.gold;
+			const playerGold = this.context.player.currentGold;
 			const efficiency = (building as any).state?.goldEfficiencyLevel || 0;
 			const costMultiplier = Math.pow(1.5, efficiency);
 			const maxAffordable = Math.floor(playerGold / costMultiplier / 10) * 10; // Round down to nearest 10
@@ -291,7 +292,7 @@ export class SettlementScreen extends BaseScreen {
 		const efficiencyLevel = (building as any).state?.goldEfficiencyLevel || 0;
 		const costMultiplier = Math.pow(1.5, efficiencyLevel);
 		const nextCost = Math.ceil(allocation * costMultiplier);
-		const playerGold = this.context.player.gold;
+		const playerGold = this.context.player.currentGold;
 
 		// Update efficiency percentage
 		elements.percentageEl.textContent = percentage.toString();

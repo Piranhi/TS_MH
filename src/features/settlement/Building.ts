@@ -4,6 +4,7 @@ import { SpecRegistryBase } from "@/models/SpecRegistryBase";
 import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 import { GameContext } from "@/core/GameContext";
 import { Recruit, RecruitProfession } from "@/models/Recruit";
+import { MilestoneManager } from "@/models/MilestoneManager";
 
 export class Building extends SpecRegistryBase<BuildingSpec> {
 	private constructor(private readonly spec: BuildingSpec, private state: BuildingState) {
@@ -72,6 +73,12 @@ export class Building extends SpecRegistryBase<BuildingSpec> {
 		this.state.efficiencyActive = false;
 		this.state.goldAllocation = 0;
 		this.goldTimer = 0;
+	}
+
+	// Checks to see if the building is unlocked
+	public checkUnlockRequirements() {
+		if (this.spec.unlockRequirements.length === 0) return true;
+		return MilestoneManager.instance.hasAll(this.spec.unlockRequirements);
 	}
 
 	/**

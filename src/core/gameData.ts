@@ -9,6 +9,7 @@ import rawTriggers from "@/data/progression-triggers.json" assert { type: "json"
 import rawOutposts from "@/data/outposts.json" assert { type: "json" };
 import rawTraits from "@/data/traits.json" assert { type: "json" };
 import rawResource from "@/data/resources.json" assert { type: "json" };
+import rawMilestones from "@/data/milestones.json" assert { type: "json" };
 
 /* ---------- Bring in the class constructors -------------- */
 import { Area } from "@/models/Area";
@@ -24,28 +25,30 @@ import { ResearchUpgrade } from "@/features/settlement/ResearchUpgrade";
 import { Trait } from "@/models/Trait";
 import { Resource } from "@/features/inventory/Resource";
 import { BlacksmithUpgrade } from "@/features/settlement/BlacksmithUpgrade";
+import { Milestone, MilestoneSpec } from "@/models/Milestone";
 
 /* ---------- Register Data ---------------------------- */
 
 //export let areaManager: AreaManager
 export const milestoneManager = MilestoneManager.instance;
 export function initGameData() {
-    console.log("📦 Registering game data…");
+	console.log("📦 Registering game data…");
 
-    const { research = [], blacksmith = [] } = rawUpgrades as any;
+	const { research = [], blacksmith = [] } = rawUpgrades as any;
 
-    Building.registerSpecs(rawBuilding);
-    ResearchUpgrade.registerSpecs(research as ResearchSpec[]);
-    BlacksmithUpgrade.registerSpecs(blacksmith as BlacksmithUpgradeSpec[]);
-    Equipment.registerSpecs(rawEquipment as EquipmentItemSpec[]);
-    Monster.registerSpecs(rawMonsters as MonsterSpec[]);
-    Area.registerSpecs(rawAreas);
-    Ability.registerSpecs(rawAbilities as AbilitySpec[]);
-    Outpost.registerSpecs(rawOutposts as OutpostSpec[]);
-    Trait.registerSpecs(rawTraits as TraitSpec[]);
-    Resource.registerSpecs(rawResource as ResourceSpec[]);
+	Building.registerSpecs(rawBuilding);
+	ResearchUpgrade.registerSpecs(research as ResearchSpec[]);
+	BlacksmithUpgrade.registerSpecs(blacksmith as BlacksmithUpgradeSpec[]);
+	Equipment.registerSpecs(rawEquipment as EquipmentItemSpec[]);
+	Monster.registerSpecs(rawMonsters as MonsterSpec[]);
+	Area.registerSpecs(rawAreas);
+	Ability.registerSpecs(rawAbilities as AbilitySpec[]);
+	Outpost.registerSpecs(rawOutposts as OutpostSpec[]);
+	Trait.registerSpecs(rawTraits as TraitSpec[]);
+	Resource.registerSpecs(rawResource as ResourceSpec[]);
+	Milestone.registerSpecs(rawMilestones as MilestoneSpec[]);
 
-    InventoryRegistry.init();
+	InventoryRegistry.init();
 
-    milestoneManager.registerSpecs(rawTriggers as ProgressionTrigger[]);
+	milestoneManager.registerSpecs(rawTriggers as ProgressionTrigger[]);
 }

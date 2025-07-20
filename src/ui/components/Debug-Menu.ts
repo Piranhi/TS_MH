@@ -9,6 +9,7 @@ import { BalanceDebug } from "@/balance/GameBalance";
 import { Area } from "@/models/Area";
 import { Monster } from "@/models/Monster";
 import { ToastManager } from "./ToastManager";
+import { MilestoneManager } from "@/models/MilestoneManager";
 
 export class DebugMenu {
 	private rootEl!: HTMLElement;
@@ -136,6 +137,10 @@ export class DebugMenu {
 		this.addButton("Save", () => context.saves.saveAll());
 		this.addButton("Load", () => window.location.reload()); //saveManager.loadAll());
 		this.addButton("New Game", () => context.saves.startNewGame());
+		this.addButton("New Debug Game", () => {
+			//context.saves.startNewGame();
+			MilestoneManager.instance.debugUnlockAll();
+		});
 		this.addButton("Add Renown", () => bus.emit("renown:award", 100000));
 		//this.addButton("Kill Player", () => Player.getInstance().character?.takeDamage(new BigNumber(1000000)));
 		this.addButton("Kill Enemy", () => bus.emit("debug:killEnemy"));

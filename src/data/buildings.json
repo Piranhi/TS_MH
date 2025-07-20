@@ -5,39 +5,8 @@
 		"description": "Track your progress and unlock prestige mechanics.",
 		"icon": "/images/buildings/building_guild_hall.png",
 		"baseCost": 10,
+		"unlockRequirements": [],
 		"requiredProfession": "clerk"
-	},
-	{
-		"id": "mine",
-		"displayName": "Mine",
-		"description": "Blacksmith todo",
-		"icon": "/images/buildings/building_mine.png",
-		"baseCost": 10,
-		"requiredProfession": "miner"
-	},
-	{
-		"id": "blacksmith",
-		"displayName": "Blacksmith",
-		"description": "Blacksmith todo",
-		"icon": "/images/buildings/building_blacksmith.png",
-		"baseCost": 10,
-		"requiredProfession": "blacksmith"
-	},
-	{
-		"id": "market",
-		"displayName": "Market",
-		"description": "Market todo",
-		"icon": "",
-		"baseCost": 100,
-		"requiredProfession": "scout"
-	},
-	{
-		"id": "library",
-		"displayName": "Library",
-		"description": "Study tomes to unlock powerful upgrades.",
-		"icon": "/images/buildings/building_library.png",
-		"baseCost": 50,
-		"requiredProfession": "librarian"
 	},
 	{
 		"id": "housing",
@@ -45,6 +14,45 @@
 		"description": "Manage your settlement's residents and staff assignments.",
 		"icon": "/images/buildings/building_housing.png",
 		"baseCost": 25,
+		"unlockRequirements": ["building.housing"],
 		"requiredProfession": "builder"
+	},
+
+	{
+		"id": "blacksmith",
+		"displayName": "Blacksmith",
+		"description": "Blacksmith todo",
+		"icon": "/images/buildings/building_blacksmith.png",
+		"baseCost": 10,
+		"unlockRequirements": ["hunt.boss.tier2"],
+		"requiredProfession": "blacksmith"
+	},
+	{
+		"id": "mine",
+		"displayName": "Mine",
+		"description": "Blacksmith todo",
+		"icon": "/images/buildings/building_mine.png",
+		"baseCost": 10,
+		"unlockRequirements": ["hunt.boss.tier2"],
+		"requiredProfession": "miner"
+	},
+
+	{
+		"id": "library",
+		"displayName": "Library",
+		"description": "Study tomes to unlock powerful upgrades.",
+		"icon": "/images/buildings/building_library.png",
+		"baseCost": 50,
+		"unlockRequirements": ["hunt.boss.tier2"],
+		"requiredProfession": "librarian"
+	},
+	{
+		"id": "market",
+		"displayName": "Market",
+		"description": "Market todo",
+		"icon": "",
+		"baseCost": 100,
+		"unlockRequirements": ["hunt.boss.tier2"],
+		"requiredProfession": "scout"
 	}
 ]

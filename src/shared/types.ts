@@ -24,6 +24,7 @@ export interface BuildingSpec {
 	description: string;
 	icon: string;
 	baseCost: number;
+	unlockRequirements: MilestoneTag[];
 	requiredProfession: RecruitProfession;
 }
 

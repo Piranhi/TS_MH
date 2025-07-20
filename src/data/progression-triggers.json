@@ -2,12 +2,12 @@
 	{
 		"event": "monster-killed",
 		"id": "treant",
-		"unlocks": ["hunt.boss.tier1"]
+		"unlocks": ["hunt.boss.tier1", "building.housing", "screen.settlement"]
 	},
 	{
 		"event": "monster-killed",
 		"id": "duskwolf_matriarch",
-		"unlocks": ["hunt.boss.tier2"]
+		"unlocks": ["hunt.boss.tier2", "building.blacksmith", "screen.outposts"]
 	},
 	{
 		"event": "monster-killed",
