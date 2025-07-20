@@ -12,50 +12,50 @@
 		"type": "both"
 	},
 	{
-		"id": "building.housing",
+		"id": "feature.housing",
 		"name": "Housing Unlocked",
 		"description": "Housing is now unlocked",
 		"type": "persistent"
 	},
 	{
-		"id": "building.blacksmith",
+		"id": "feature.blacksmith",
 		"name": "Blacksmith Unlocked",
 		"description": "Blacksmith is now unlocked",
 		"type": "persistent"
 	},
 	{
-		"id": "building.library",
+		"id": "feature.library",
 		"name": "Library Unlocked",
 		"description": "Library is now unlocked",
 		"type": "persistent"
 	},
 	{
-		"id": "building.market",
+		"id": "feature.market",
 		"name": "Market Unlocked",
 		"description": "Market is now unlocked",
 		"type": "persistent"
 	},
 	{
-		"id": "building.mine",
+		"id": "feature.mine",
 		"name": "Mine Unlocked",
 		"description": "Mine is now unlocked",
 		"type": "persistent"
 	},
 	{
-		"id": "building.guildHall",
+		"id": "feature.guildHall",
 		"name": "Guild Hall Unlocked",
 		"description": "Guild Hall is now unlocked",
 		"type": "persistent"
 	},
 
 	{
-		"id": "screen.outposts",
+		"id": "feature.outposts",
 		"name": "Outposts Unlocked",
 		"description": "Outposts are now unlocked",
 		"type": "persistent"
 	},
 	{
-		"id": "screen.settlement",
+		"id": "feature.settlement",
 		"name": "Settlement Unlocked",
 		"description": "Settlement is now unlocked",
 		"type": "persistent"

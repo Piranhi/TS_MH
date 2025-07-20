@@ -2,17 +2,17 @@
 	{
 		"event": "monster-killed",
 		"id": "treant",
-		"unlocks": ["hunt.boss.tier1", "building.housing", "screen.settlement"]
+		"unlocks": ["hunt.boss.tier1", "feature.settlement", "feature.housing"]
 	},
 	{
 		"event": "monster-killed",
 		"id": "duskwolf_matriarch",
-		"unlocks": ["hunt.boss.tier2", "building.blacksmith", "screen.outposts"]
+		"unlocks": ["hunt.boss.tier2", "feature.outposts", "feature.guildHall"]
 	},
 	{
 		"event": "monster-killed",
 		"id": "mireback_behemoth",
-		"unlocks": ["hunt.boss.tier3"]
+		"unlocks": ["hunt.boss.tier3", "feature.outposts", "feature.blacksmith"]
 	},
 	{
 		"event": "monster-killed",

@@ -36,7 +36,7 @@ export class SidebarDisplay extends UIBase {
 				}
 			}
 		});
-		bindEvent(this.eventBindings, "ui:screenUnlocked", () => {
+		bindEvent(this.eventBindings, "milestone:featureUnlocked", () => {
 			this.buildNavItems(screenNav, this.navList);
 		});
 	}

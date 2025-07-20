@@ -29,17 +29,16 @@ export const screenNav: ScreenNav[] = [
 
 // Add progression unlock requirements to some screens
 export const progressionUnlockRequirements: Map<ScreenName, MilestoneTag[]> = new Map([
-	["settlement", ["screen.settlement"]],
-	["outposts", ["screen.outposts"]],
-	["bestiary", ["screen.beasiary"]],
-	["character", ["screen.character"]],
-	["blacksmith", ["building.blacksmith"]],
-	["library", ["building.library"]],
-	["market", ["building.market"]],
-	["mine", ["building.mine"]],
-	["guildHall", ["building.guildHall"]],
-	["housing", ["building.housing"]],
-	["bestiary", ["hunt.boss.tier1"]],
+	["settlement", ["feature.settlement"]],
+	["outposts", ["feature.outposts"]],
+	["bestiary", ["feature.bestiary"]],
+	["character", ["feature.character"]],
+	["blacksmith", ["feature.blacksmith"]],
+	["library", ["feature.library"]],
+	["market", ["feature.market"]],
+	["mine", ["feature.mine"]],
+	["guildHall", ["feature.guildHall"]],
+	["housing", ["feature.housing"]],
 ]);
 
 export type ScreenName =

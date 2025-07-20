@@ -2,8 +2,8 @@ import { bus } from "@/core/EventBus";
 import { ResearchUpgrade } from "./ResearchUpgrade";
 import { Saveable } from "@/shared/storage-types";
 import { OfflineProgressHandler } from "@/models/OfflineProgress";
-import { GameBase } from "@/core/GameBase";
 import { GameContext } from "@/core/GameContext";
+import { FeatureBase } from "@/core/FeatureBase";
 
 interface LibrarySaveState {
 	active: any[];
@@ -11,15 +11,18 @@ interface LibrarySaveState {
 	slots: number;
 }
 
-export class LibraryManager extends GameBase implements Saveable, OfflineProgressHandler {
+export class LibraryManager extends FeatureBase implements Saveable, OfflineProgressHandler {
 	private researchMap = new Map<string, ResearchUpgrade>();
 	private activeResearch: ResearchUpgrade[] = [];
 	private completedResearch = new Set<string>();
 	private unlockedSlots = 1;
 
 	constructor() {
-		super();
+		super("feature.library");
 		this.initResearch();
+	}
+
+	protected onFeatureActivated(): void {
 		bus.on("Game:GameTick", (dt) => this.handleTick(dt));
 	}
 
@@ -46,6 +49,7 @@ export class LibraryManager extends GameBase implements Saveable, OfflineProgres
 	}
 
 	public handleTick(dt: number) {
+		if (!this.featureActive) return;
 		const finished: ResearchUpgrade[] = [];
 		for (const upgrade of this.activeResearch) {
 			const done = upgrade.tick(dt, GameContext.getInstance().modifiers.getValue("researchSpeed"));

@@ -124,6 +124,7 @@ export class AreaDisplay extends UIBase {
 
 	private updateAreaStats(stats: AreaStats) {
 		if (!stats) return;
+		if (!this.context.hunt.getActiveArea()) return;
 		try {
 			this.fightBossBtn.setState(stats.bossUnlockedThisRun ? "enabled" : "disabled");
 
@@ -147,10 +148,10 @@ export class AreaDisplay extends UIBase {
 		const killsNeeded = GAME_BALANCE.hunt.enemiesNeededForBoss;
 		const killsProgress = Math.min(stats.killsThisRun, killsNeeded);
 		const baseProgress = (killsProgress / killsNeeded) * 100;
-		
+
 		// If boss is killed this run, add bonus completion
 		const bossBonus = stats.bossKilledThisRun ? 20 : 0;
-		
+
 		const totalCompletion = Math.min(100, baseProgress + bossBonus);
 		return `${Math.round(totalCompletion)}%`;
 	}
@@ -161,7 +162,7 @@ export class AreaDisplay extends UIBase {
 	private getAreaLevelRange(): string {
 		const activeArea = this.context.hunt.getActiveArea();
 		if (!activeArea) return "1-5";
-		
+
 		// For now, return a basic level range. This could be enhanced later
 		// to use actual area data if available
 		return `${activeArea.minLevel || 1}-${activeArea.maxLevel || 5}`;
@@ -190,7 +191,11 @@ export class AreaDisplay extends UIBase {
 	private createStatRows(stats: AreaStats): HTMLDivElement[] {
 		// Define the stats structure - this makes it easy to add/remove stats later
 		const statsData = [
-			{ label: "Monsters Killed", value: `${stats.killsThisRun} / ${GAME_BALANCE.hunt.enemiesNeededForBoss}`, id: "area-monsters-killed" },
+			{
+				label: "Monsters Killed",
+				value: `${stats.killsThisRun} / ${GAME_BALANCE.hunt.enemiesNeededForBoss}`,
+				id: "area-monsters-killed",
+			},
 			{ label: "Boss Unlocked", value: stats.bossUnlockedThisRun ? "Yes" : "No", id: "area-boss-unlocked" },
 			{ label: "Completion", value: this.calculateCompletionPercentage(stats), id: "area-completion" },
 			{ label: "Area Level", value: this.getAreaLevelRange(), id: "area-level" },

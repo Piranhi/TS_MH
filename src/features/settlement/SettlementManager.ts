@@ -3,10 +3,9 @@ import { Building } from "./Building";
 import { Saveable } from "@/shared/storage-types";
 import { BuildingType, BuildingUnlockStatus } from "@/shared/types";
 import { Outpost } from "../hunt/Outpost";
-import { GameBase } from "@/core/GameBase";
-import { DebugMenu } from "@/ui/components/Debug-Menu";
 import { debugManager } from "@/core/DebugManager";
 import { GAME_BALANCE } from "@/balance/GameBalance";
+import { FeatureBase } from "@/core/FeatureBase";
 
 interface SettlementSaveState {
 	buildings: [BuildingType, Building][];
@@ -26,7 +25,7 @@ interface SettlementRewardSnapshot {
 	earnedPoints: number;
 }
 
-export class SettlementManager extends GameBase implements Saveable {
+export class SettlementManager extends FeatureBase implements Saveable {
 	// ── Passive-reward config ─────────────────────────────────────────────────
 	private readonly rewardIntervalMs = 8640000; // 8640000 for 10 in a day
 	private readonly rewardIncrement = 0.1; // how much each interval gives
@@ -43,7 +42,7 @@ export class SettlementManager extends GameBase implements Saveable {
 	private availableOutposts = new Set<string>();
 
 	constructor() {
-		super();
+		super("feature.settlement");
 		this.seedMissingBuildings();
 		// When the game is ready, setup everything
 		bus.on("game:gameReady", () => {
@@ -72,8 +71,10 @@ export class SettlementManager extends GameBase implements Saveable {
 		});
 	}
 
-	private Init() {
-		this.seedMissingBuildings();
+	private Init() {}
+
+	protected onFeatureActivated(): void {
+		bus.on("Game:GameTick", (dt) => this.updatePassiveRewards());
 	}
 
 	// ── OUTPOST METHODS ───────────────────────────────────────────────────────
@@ -212,6 +213,7 @@ export class SettlementManager extends GameBase implements Saveable {
 	 * by the amount of time actually consumed.
 	 */
 	private updatePassiveRewards() {
+		if (!this.featureActive) return;
 		// Only process rewards if we haven't hit max
 		if (this.currentReward >= this.maxReward) return;
 		const now = Date.now();

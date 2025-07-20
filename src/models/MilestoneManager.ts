@@ -74,8 +74,8 @@ export class MilestoneManager implements Saveable {
 				break;
 		}
 
-		if (tag.startsWith("screen.")) {
-			bus.emit("ui:screenUnlocked");
+		if (tag.startsWith("feature.")) {
+			bus.emit("milestone:featureUnlocked", tag);
 		}
 	}
 
