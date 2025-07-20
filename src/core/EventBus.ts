@@ -141,13 +141,16 @@ export class EventBus {
 	emit<E extends EventKey>(event: E): void;
 	emit<E extends EventKey>(event: E, payload: GameEvents[E]): void;
 
-	public emit(event: EventKey, payload?: any): void {
-		const set = this.listeners.get(event);
-		if (!set) return;
-		set.forEach((fn) => {
-			(fn as any)(payload);
-		});
-	}
+    public emit(event: EventKey, payload?: any): void {
+        // Save the payload so future listeners can immediately receive it
+        this.lastValue.set(event, payload);
+
+        const set = this.listeners.get(event);
+        if (!set) return;
+        set.forEach((fn) => {
+            (fn as any)(payload);
+        });
+    }
 }
 
 export const bus: EventBus = new EventBus();
