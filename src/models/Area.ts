@@ -111,9 +111,10 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 			const selectedItem = candidates[randomIndex];
 
 			// Optional: Respect drop chance (reduced for offline to avoid too many rares)
-			const offlineDropChance = baseDropChance * 0.5; // 50% of normal drop rate for offline
-
-			ids.push(selectedItem.id);
+                        const offlineDropChance = baseDropChance * 0.5; // 50% of normal drop rate for offline
+                        if (Math.random() < offlineDropChance) {
+                                ids.push(selectedItem.id);
+                        }
 		}
 
 		return ids;
