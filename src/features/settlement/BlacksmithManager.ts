@@ -30,8 +30,16 @@ export class BlacksmithManager extends Destroyable implements Saveable, OfflineP
 	constructor() {
 		super();
 		this.initaliseResearch();
-		this.setupEventBindings();
-		this.createDefaultSlots();
+		this.setupTickingFeature("feature.blacksmith", () => {
+			this.setupEventBindings();
+			this.createDefaultSlots();
+		});
+	}
+
+	protected handleTick(dt: number) {
+		if (!this.isFeatureActive()) return;
+		this.addRawOre(dt);
+		this.processSlots(dt);
 	}
 
 	private createDefaultSlots(): void {
@@ -42,7 +50,7 @@ export class BlacksmithManager extends Destroyable implements Saveable, OfflineP
 	}
 
 	private setupEventBindings() {
-		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
+		//bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
 		bindEvent(this.eventBindings, "game:prestigePrep", () => this.prestigeReset());
 	}
 
@@ -146,10 +154,6 @@ export class BlacksmithManager extends Destroyable implements Saveable, OfflineP
 	 * - `if (slot.progress <= 0) { ... }` (inside progress decrement)
 	 *   If crafting is complete, awards the resource and XP, and resets progress.
 	 */
-	handleTick(dt: number) {
-		this.addRawOre(dt);
-		this.processSlots(dt);
-	}
 
 	handleOfflineProgress(offlineSeconds: number): null {
 		this.addRawOre(offlineSeconds);

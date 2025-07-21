@@ -21,15 +21,19 @@ export class BestiaryScreen extends BaseScreen {
 		this.detailEl = root.querySelector("#bestiaryDetail") as HTMLElement;
 		this.countEl = root.querySelector("#bestiaryCount") as HTMLElement;
 
-		this.buildList();
+		this.setupTickingFeature("feature.bestiary", () => {
+			this.buildList();
+		});
 	}
 
 	show(): void {
+		if (!this.isFeatureActive()) return;
 		// Refresh icons and discovered counter in case new enemies were killed this run
 		this.refreshList();
 	}
 
 	hide(): void {
+		if (!this.isFeatureActive()) return;
 		Tooltip.instance.hide();
 	}
 

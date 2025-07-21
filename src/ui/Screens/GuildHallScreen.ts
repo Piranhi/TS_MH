@@ -54,21 +54,23 @@ export class GuildHallScreen extends BaseScreen {
 		this.activeChallengeEl = root.querySelector("#gh-active-challenge") as HTMLElement;
 
 		CHALLENGES.forEach((c) => this.challengeLevels.set(c.id, 0));
-		this.buildChallenges();
-		this.buildPrestigeInfo();
 
-		bindEvent(this.eventBindings, "Game:UITick", () => this.update());
-		bindEvent(this.eventBindings, "settlement:changed", () => this.buildPrestigeInfo());
+		this.setupTickingFeature("feature.guildhall", () => {
+			this.buildChallenges();
+			this.buildPrestigeInfo();
+			bindEvent(this.eventBindings, "settlement:changed", () => this.buildPrestigeInfo());
+		});
 	}
 
-	show() {
-		this.update();
-	}
+	show() {}
 	hide() {}
 
-	update() {
+	protected handleTick(dt: number) {
+		if (!this.isFeatureActive()) return;
+
 		const run = this.context.currentRun;
 		if (!run) return;
+
 		const duration = Date.now() - run.runStartTime;
 		this.runTimeEl.textContent = formatTimeFull(duration);
 		this.levelEl.textContent = String(this.context.character.level);

@@ -12,7 +12,9 @@ export interface UIButtonOptions {
 	className?: string;
 	disabled?: boolean;
 	tooltip?: string;
+	colour?: "primary" | "secondary" | "tertiary" | "quaternary" | "none";
 	size?: "small" | "medium" | "large";
+	UIfeature?: string;
 }
 
 export class UIButton extends UIBase {
@@ -43,6 +45,22 @@ export class UIButton extends UIBase {
 				this.el.classList.add("ui-button");
 				break;
 		}
+		switch (options.colour) {
+			case "none":
+				break;
+			case "primary":
+				this.el.classList.add("ui-button-primary");
+				break;
+			case "secondary":
+				this.el.classList.add("ui-button-secondary");
+				break;
+			case "tertiary":
+				this.el.classList.add("ui-button-tertiary");
+				break;
+			case "quaternary":
+				this.el.classList.add("ui-button-quaternary");
+				break;
+		}
 		if (options.className) {
 			const classes = Array.isArray(options.className)
 				? options.className // already an array
@@ -50,6 +68,7 @@ export class UIButton extends UIBase {
 
 			this.el.classList.add(...classes); // ✅ pass each token separately
 		}
+
 		//this.el.classList.add(!options.className ? "ui-button" : options.className);
 		//this.el.classList.add("ui-button");
 
@@ -63,6 +82,12 @@ export class UIButton extends UIBase {
 			this.bindDomEvent(this.el, "click", options.onClick as EventListener);
 		}
 		this.setState(options.disabled ? "disabled" : "enabled");
+
+		// Setup feature gating (hidden/visible based on feature unlock)
+		if (options.UIfeature) {
+			this.UIfeature = options.UIfeature;
+			this.setupUIFeatureGating();
+		}
 	}
 
 	public setState(state: "disabled" | "enabled") {

@@ -1,9 +1,8 @@
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./character.html?raw";
-import { bus } from "@/core/EventBus";
-import { Tooltip } from "../components/Tooltip";
 import { ClassSpec, ClassNodeSpec } from "@/features/classes/ClassTypes";
 import { ClassNode } from "../components/ClassNode";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export class CharacterScreen extends BaseScreen {
 	readonly screenName = "character";
@@ -35,19 +34,34 @@ export class CharacterScreen extends BaseScreen {
 		this.treeEl = this.byId("class-tree");
 		this.zoomIndicatorEl = this.byId("zoom-indicator");
 
-		// Build the tree
-		this.buildTree();
-		this.updateUI();
+		this.setupTickingFeature("feature.classes", () => {
+			// Build the tree
+			this.buildTree();
+			this.updateUI();
 
-		// Setup events
-		this.setupPanning();
-		this.setupEventListeners();
+			// Setup events
+			this.setupPanning();
+			this.setupEventListeners();
+		});
+	}
+
+	show() {
+		// Update UI when screen is shown
+		this.updateUI();
+	}
+
+	hide() {
+		// Clean up if needed
+		if (this.zoomTimeout) {
+			clearTimeout(this.zoomTimeout);
+			this.zoomTimeout = null;
+		}
 	}
 
 	private setupEventListeners() {
 		// Listen for class system changes
-		bus.on("classes:pointsChanged", () => this.updateUI());
-		bus.on("classes:nodesChanged", () => this.updateUI());
+		bindEvent(this.eventBindings, "classes:pointsChanged", () => this.updateUI());
+		bindEvent(this.eventBindings, "classes:nodesChanged", () => this.updateUI());
 	}
 
 	private updateUI() {
@@ -402,19 +416,6 @@ export class CharacterScreen extends BaseScreen {
 		this.zoomTimeout = window.setTimeout(() => {
 			this.zoomIndicatorEl.classList.remove("active");
 		}, 1500);
-	}
-
-	show() {
-		// Update UI when screen is shown
-		this.updateUI();
-	}
-
-	hide() {
-		// Clean up if needed
-		if (this.zoomTimeout) {
-			clearTimeout(this.zoomTimeout);
-			this.zoomTimeout = null;
-		}
 	}
 
 	// Cleanup on screen destroy

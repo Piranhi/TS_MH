@@ -1,14 +1,14 @@
-// src/core/FeatureBase.ts
-import { GameBase } from "./GameBase";
+// src/core/FeatureUnlockManager.ts
 import { bus } from "./EventBus";
 import { MilestoneManager } from "@/models/MilestoneManager";
 
-export abstract class FeatureBase extends GameBase {
-	protected featureActive = false;
+export class FeatureUnlockManager {
+	private featureActive = false;
 	private unsubscribeUnlock?: () => void;
+	private onActivatedCallback?: () => void;
 
-	constructor(private readonly requiredMilestone: string) {
-		super();
+	constructor(private readonly requiredMilestone: string, onActivated?: () => void) {
+		this.onActivatedCallback = onActivated;
 		this.checkAndSetupFeature();
 	}
 
@@ -26,29 +26,26 @@ export abstract class FeatureBase extends GameBase {
 		this.unsubscribeUnlock = bus.on("milestone:achieved", (payload) => {
 			if (payload.tag === this.requiredMilestone) {
 				this.activateFeature();
-				this.unsubscribeUnlock?.(); // Clean up the listener
-				this.unsubscribeUnlock = undefined;
+				this.cleanupListener(); // Auto-cleanup after activation
 			}
 		});
 	}
 
 	private activateFeature() {
 		this.featureActive = true;
-		this.onFeatureActivated();
-	}
-
-	/**
-	 * Override this method to define what happens when your feature unlocks
-	 * This is where you'd subscribe to GameTick or set up other systems
-	 */
-	protected abstract onFeatureActivated(): void;
-
-	protected cleanUp() {
-		super.cleanUp();
-		this.unsubscribeUnlock?.();
+		this.onActivatedCallback?.();
 	}
 
 	public isActive(): boolean {
 		return this.featureActive;
+	}
+
+	private cleanupListener() {
+		this.unsubscribeUnlock?.();
+		this.unsubscribeUnlock = undefined;
+	}
+
+	public cleanup() {
+		this.cleanupListener();
 	}
 }

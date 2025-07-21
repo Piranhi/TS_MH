@@ -13,5 +13,5 @@ export interface GameScreen {
 	destroy(): void;
 
 	/** Optional per-frame or interval updates */
-	update?(deltaMs: number): void;
+	//handleTick?(deltaMs: number): void;
 }

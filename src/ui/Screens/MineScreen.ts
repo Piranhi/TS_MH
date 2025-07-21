@@ -15,14 +15,14 @@ export class MineScreen extends BaseScreen {
 		const building = this.context.settlement.getBuilding("mine");
 		if (building && statusEl) new BuildingStatus(statusEl, building);
 		this.build();
-		bus.on("Game:UITick", () => this.update());
+		bus.on("Game:UITick", () => this.handleTick());
 		bus.on("settlement:changed", () => this.syncShafts());
 	}
 
 	show() {}
 	hide() {}
 
-	update() {
+	handleTick() {
 		for (const shaft of this.shafts) shaft.tick();
 	}
 

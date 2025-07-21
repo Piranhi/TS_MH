@@ -15,21 +15,22 @@ export class MineManager extends Destroyable implements Saveable<MineSaveState> 
 	constructor() {
 		super();
 		const initialShafts = GameContext.getInstance().settlement.getBuilding("mine")?.level || 0;
-		this.timers = Array(initialShafts).fill(0);
-		this.setupEventBindings();
+		this.setupTickingFeature("feature.mine", () => {
+			this.timers = Array(initialShafts).fill(0);
+			this.setupEventBindings();
+		});
 	}
 
-	private setupEventBindings() {
-		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
-		bindEvent(this.eventBindings, "settlement:changed", () => this.checkForNewShafts());
-	}
-
-	private handleTick(dt: number) {
+	protected handleTick(dt: number) {
+		if (!this.isFeatureActive()) return;
 		for (let i = 0; i < this.timers.length; i++) {
 			if (this.timers[i] < this.durations[i]) {
 				this.timers[i] += dt;
 			}
 		}
+	}
+	private setupEventBindings() {
+		bindEvent(this.eventBindings, "settlement:changed", () => this.checkForNewShafts());
 	}
 
 	private checkForNewShafts() {

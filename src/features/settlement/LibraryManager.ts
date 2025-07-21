@@ -3,7 +3,7 @@ import { ResearchUpgrade } from "./ResearchUpgrade";
 import { Saveable } from "@/shared/storage-types";
 import { OfflineProgressHandler } from "@/models/OfflineProgress";
 import { GameContext } from "@/core/GameContext";
-import { FeatureBase } from "@/core/FeatureBase";
+import { GameBase } from "@/core/GameBase";
 
 interface LibrarySaveState {
 	active: any[];
@@ -11,22 +11,36 @@ interface LibrarySaveState {
 	slots: number;
 }
 
-export class LibraryManager extends FeatureBase implements Saveable, OfflineProgressHandler {
+export class LibraryManager extends GameBase implements Saveable, OfflineProgressHandler {
 	private researchMap = new Map<string, ResearchUpgrade>();
 	private activeResearch: ResearchUpgrade[] = [];
 	private completedResearch = new Set<string>();
 	private unlockedSlots = 1;
 
 	constructor() {
-		super("feature.library");
+		super();
+		this.setupTickingFeature("feature.library", () => {});
 		this.initResearch();
 	}
 
-	protected onFeatureActivated(): void {
-		bus.on("Game:GameTick", (dt) => this.handleTick(dt));
+	protected handleTick(dt: number) {
+		if (!this.isFeatureActive()) return;
+		const finished: ResearchUpgrade[] = [];
+		for (const upgrade of this.activeResearch) {
+			const done = upgrade.tick(dt, GameContext.getInstance().modifiers.getValue("researchSpeed"));
+			if (done) {
+				if (upgrade.unlocked) this.handleResearchComplete(upgrade);
+				finished.push(upgrade);
+			}
+		}
+		if (finished.length > 0) {
+			this.activeResearch = this.activeResearch.filter((u) => !finished.includes(u));
+			bus.emit("library:changed");
+		}
 	}
 
 	handleOfflineProgress(offlineSeconds: number): null {
+		if (!this.isFeatureActive()) return null;
 		this.handleTick(offlineSeconds);
 		return null;
 	}
@@ -46,22 +60,6 @@ export class LibraryManager extends FeatureBase implements Saveable, OfflineProg
 		if (this.activeResearch.includes(upgrade)) return;
 		this.activeResearch.push(upgrade);
 		bus.emit("library:changed");
-	}
-
-	public handleTick(dt: number) {
-		if (!this.featureActive) return;
-		const finished: ResearchUpgrade[] = [];
-		for (const upgrade of this.activeResearch) {
-			const done = upgrade.tick(dt, GameContext.getInstance().modifiers.getValue("researchSpeed"));
-			if (done) {
-				if (upgrade.unlocked) this.handleResearchComplete(upgrade);
-				finished.push(upgrade);
-			}
-		}
-		if (finished.length > 0) {
-			this.activeResearch = this.activeResearch.filter((u) => !finished.includes(u));
-			bus.emit("library:changed");
-		}
 	}
 
 	private handleResearchComplete(upgrade: ResearchUpgrade) {

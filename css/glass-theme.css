@@ -273,76 +273,7 @@ body::after {
 	border-color: var(--glass-border-hover);
 }
 
-/* ============================================
-   BUTTONS
-   ============================================ */
-.ui-button,
-.btn,
-button {
-	background: var(--glass-bg);
-	backdrop-filter: blur(var(--glass-blur-light));
-	-webkit-backdrop-filter: blur(var(--glass-blur-light));
-	border: 1px solid var(--glass-border);
-	border-radius: 0.5rem;
-	color: var(--text-primary);
-	padding: 0.35rem 1rem;
-	font-weight: 500;
-	cursor: pointer;
-	transition: all var(--transition-fast);
-	position: relative;
-	overflow: hidden;
-	width: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.5rem;
-	min-width: 64px;
-}
 
-/* Button shine effect */
-.ui-button::before,
-.btn::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
-	transform: translateX(-100%);
-	transition: transform var(--transition-medium);
-}
-
-.ui-button:hover,
-.btn:hover {
-	background: var(--glass-bg-hover);
-	border-color: var(--glass-border-hover);
-	transform: translateY(-2px);
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-}
-
-.ui-button:hover::before,
-.btn:hover::before {
-	transform: translateX(100%);
-}
-
-.ui-button:active,
-.btn:active {
-	transform: translateY(0);
-	background: var(--glass-bg-active);
-}
-
-/* Primary button variant */
-.btn-primary,
-.ui-button-primary {
-	background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
-	border-color: rgba(102, 126, 234, 0.3);
-	color: var(--text-primary);
-}
-
-.btn-primary:hover,
-.ui-button-primary:hover {
-	background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
-	border-color: rgba(102, 126, 234, 0.4);
-	box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-}
 
 /* ============================================
    PROGRESS BARS

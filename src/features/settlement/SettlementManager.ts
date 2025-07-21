@@ -5,7 +5,9 @@ import { BuildingType, BuildingUnlockStatus } from "@/shared/types";
 import { Outpost } from "../hunt/Outpost";
 import { debugManager } from "@/core/DebugManager";
 import { GAME_BALANCE } from "@/balance/GameBalance";
-import { FeatureBase } from "@/core/FeatureBase";
+import { GameBase } from "@/core/GameBase";
+import { bindEvent } from "@/shared/utils/busUtils";
+import { MilestoneManager } from "@/models/MilestoneManager";
 
 interface SettlementSaveState {
 	buildings: [BuildingType, Building][];
@@ -25,7 +27,7 @@ interface SettlementRewardSnapshot {
 	earnedPoints: number;
 }
 
-export class SettlementManager extends FeatureBase implements Saveable {
+export class SettlementManager extends GameBase implements Saveable {
 	// ── Passive-reward config ─────────────────────────────────────────────────
 	private readonly rewardIntervalMs = 8640000; // 8640000 for 10 in a day
 	private readonly rewardIncrement = 0.1; // how much each interval gives
@@ -42,40 +44,46 @@ export class SettlementManager extends FeatureBase implements Saveable {
 	private availableOutposts = new Set<string>();
 
 	constructor() {
-		super("feature.settlement");
+		super();
 		this.seedMissingBuildings();
+		this.setupTickingFeature("feature.settlement", () => {
+			this.setupEventBindings();
+		});
+	}
+
+	protected handleTick(dt: number) {
+		if (!this.isFeatureActive()) return;
+		this.updatePassiveRewards();
+	}
+
+	private setupEventBindings() {
 		// When the game is ready, setup everything
-		bus.on("game:gameReady", () => {
+		bindEvent(this.eventBindings, "game:gameReady", () => {
 			// Setup variables for the first reward cycle:
 			this.Init();
 			this.changeBuildingStatus("guild_hall", "construction");
-			bus.on("Game:GameTick", (delta) => {
-				this.updatePassiveRewards();
-			});
 			this.emitChange();
 		});
-
 		// On prestige, reset progress for a new run
-		bus.on("game:prestige", () => {
+		bindEvent(this.eventBindings, "game:prestige", () => {
 			this.resetPassiveReward();
 		});
 
-		bus.on("game:gameLoaded", () => {
+		bindEvent(this.eventBindings, "game:gameLoaded", () => {
 			this.Init();
 			this.updatePassiveRewards();
 		});
 
 		// Listen for outpost availability from AreaManager
-		bus.on("outpost:available", ({ areaId }) => {
+		bindEvent(this.eventBindings, "outpost:available", ({ areaId }) => {
 			this.markOutpostAvailable(areaId);
+		});
+		bindEvent(this.eventBindings, "milestone:featureUnlocked", () => {
+			this.seedMissingBuildings();
 		});
 	}
 
 	private Init() {}
-
-	protected onFeatureActivated(): void {
-		bus.on("Game:GameTick", (dt) => this.updatePassiveRewards());
-	}
 
 	// ── OUTPOST METHODS ───────────────────────────────────────────────────────
 
@@ -199,6 +207,8 @@ export class SettlementManager extends FeatureBase implements Saveable {
 	seedMissingBuildings(): void {
 		const specs = Building.getAllSpecs();
 		for (const spec of specs) {
+			// Only seed if all unlock requirements are met
+			if (!MilestoneManager.instance.hasAll(spec.unlockRequirements)) continue;
 			const key = spec.id as BuildingType;
 			if (!this.buildingsMap.has(key)) {
 				this.buildingsMap.set(key, Building.create(spec.id));
@@ -213,7 +223,7 @@ export class SettlementManager extends FeatureBase implements Saveable {
 	 * by the amount of time actually consumed.
 	 */
 	private updatePassiveRewards() {
-		if (!this.featureActive) return;
+		if (!this.isFeatureActive()) return;
 		// Only process rewards if we haven't hit max
 		if (this.currentReward >= this.maxReward) return;
 		const now = Date.now();

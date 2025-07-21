@@ -1,5 +1,4 @@
 import { Equipment } from "@/models/Equipment";
-import { ClassCard } from "@/features/classcards/ClassCard";
 import { TrainedStat } from "@/models/TrainedStat";
 import { BoundedNumber } from "@/models/value-objects/Bounded";
 import { RegenPool } from "@/models/value-objects/RegenPool";
@@ -17,8 +16,6 @@ export function reviveGame(_key: string, value: any): any {
 		switch ((value as any).__type) {
 			case "Equipment":
 				return Equipment.fromJSON(value);
-			case "ClassCard":
-				return ClassCard.fromJSON(value);
 			case "TrainedStat":
 				return TrainedStat.fromJSON(value);
 			case "BoundedNumber":

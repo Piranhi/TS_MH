@@ -19,6 +19,23 @@ export class UIBase extends GameBase {
 	protected dragLeave: ((e: DragEvent) => void) | null = null;
 	protected drop: ((e: DragEvent) => void) | null = null;
 
+	protected UIfeature?: string;
+	protected onUIUnlocked?(): void; // Optional callback
+
+	constructor() {
+		super();
+	}
+
+	protected setupUIFeatureGating() {
+		if (this.UIfeature) {
+			this.element.style.display = "none";
+			this.setupFeatureUnlock(this.UIfeature, () => {
+				this.element.style.display = "";
+				this.onUIUnlocked?.(); // Call if defined
+			});
+		}
+	}
+
 	// ------------ HELPERS ---------------
 
 	destroy() {

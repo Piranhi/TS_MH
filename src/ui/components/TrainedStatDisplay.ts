@@ -31,7 +31,10 @@ export class TrainedStatDisplay extends UIBase {
 	public init() {
 		this.createCard();
 		this.setupControls();
-		bindEvent(this.eventBindings, "Game:GameTick", () => this.updateElement());
+	}
+
+	protected handleTick(dt: number) {
+		if (!this.isFeatureActive()) return;
 		this.updateElement();
 	}
 
@@ -83,6 +86,7 @@ export class TrainedStatDisplay extends UIBase {
 		const isTraining = this.trainedStat.assignedPoints > 0;
 		new UIButton(controlsContainer, {
 			text: isTraining ? "Stop Training" : "Train",
+			colour: isTraining ? "secondary" : "none",
 			onClick: () => this.toggleTraining(),
 		});
 	}
@@ -106,7 +110,7 @@ export class TrainedStatDisplay extends UIBase {
 		if (assignedPoints > 0) {
 			const vigourMultiplier = this.context.player.vigourLevel;
 			const timeToLevel = this.trainedStat.getTimeToNextLevel(vigourMultiplier);
-			
+
 			if (timeToLevel !== null) {
 				const timeString = this.formatTime(timeToLevel);
 				currentAllocation.textContent = `Training • ${timeString} to next level`;
@@ -120,7 +124,7 @@ export class TrainedStatDisplay extends UIBase {
 
 	private toggleTraining() {
 		const isCurrentlyTraining = this.trainedStat.assignedPoints > 0;
-		
+
 		if (isCurrentlyTraining) {
 			// Stop training - deallocate stamina
 			this.manager.allocateTrainedStat(this.trainedStat.id, -1);
@@ -128,9 +132,9 @@ export class TrainedStatDisplay extends UIBase {
 			// Start training - allocate exactly 1 stamina
 			this.manager.allocateTrainedStat(this.trainedStat.id, 1);
 		}
-		
+
 		// Recreate controls to update button text
-		this.els.controlsContainer.innerHTML = '';
+		this.els.controlsContainer.innerHTML = "";
 		this.setupControls();
 	}
 

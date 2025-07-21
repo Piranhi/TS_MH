@@ -11,18 +11,22 @@ export class TrainScreen extends BaseScreen {
 	init() {
 		this.rootEl = this.addMarkuptoPage(Markup);
 		this.trainingListEl = this.byId("trained-stats-list");
+
 		this.bindEvents();
 		this.addStatElements();
 	}
 
 	show() {}
+
 	hide() {}
+
 	bindEvents() {
-		bindEvent(this.eventBindings, "Game:UITick", (dt) => this.handleTick(dt));
 		bindEvent(this.eventBindings, "game:gameReady", () => this.addStatElements()); // USED TO BE GAME LOADED
 	}
 
-	handleTick(dt: number) {}
+	protected handleTick(dt: number) {
+		if (!this.isFeatureActive()) return;
+	}
 
 	addStatElements() {
 		this.trainingListEl.innerHTML = "";

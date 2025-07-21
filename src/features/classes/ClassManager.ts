@@ -18,7 +18,9 @@ export class ClassManager extends Destroyable implements Saveable<ClassSystemSta
 			this.specs.set(s.id, s);
 			this.nodePoints.set(s.id, new Map());
 		});
-		this.bindEvents();
+		this.setupFeatureUnlock("feature.classes", () => {
+			this.bindEvents();
+		});
 	}
 
 	private bindEvents() {
@@ -75,10 +77,10 @@ export class ClassManager extends Destroyable implements Saveable<ClassSystemSta
 		if (!classSpec) return false;
 		const node = classSpec.nodes.find((n) => n.id === nodeId);
 		if (!node) return false;
-		
+
 		const availablePoints = context.player.getBloodlineStat("classPoints");
 		if (availablePoints < node.cost) return false;
-		
+
 		const map = this.nodePoints.get(classId)!;
 		const current = map.get(nodeId) || 0;
 		if (current >= node.maxPoints) return false;
@@ -86,7 +88,7 @@ export class ClassManager extends Destroyable implements Saveable<ClassSystemSta
 			const pre = map.get(node.prereq) || 0;
 			if (pre === 0) return false;
 		}
-		
+
 		// Spend the points from bloodline stats
 		context.player.modifyBloodlineStat("classPoints", -node.cost);
 		map.set(nodeId, current + 1);

@@ -411,7 +411,7 @@ export class SettlementScreen extends BaseScreen {
 	}
 
 	// Update method called by game loop
-	update(deltaMs: number) {
+	handleTick(deltaMs: number) {
 		// Update dynamic elements that change frequently
 		this.updateDynamicElements();
 	}

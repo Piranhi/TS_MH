@@ -1,8 +1,6 @@
 import { debugManager, type DebugOptions, printLog } from "@/core/DebugManager";
 import { bus } from "@/core/EventBus";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
-import { PlayerCharacter } from "@/models/PlayerCharacter";
-import { BigNumber } from "@/models/utils/BigNumber";
 import { GameContext } from "@/core/GameContext";
 import { OfflineSession, OfflineReason } from "@/models/OfflineProgress";
 import { BalanceDebug } from "@/balance/GameBalance";
@@ -142,24 +140,17 @@ export class DebugMenu {
 			MilestoneManager.instance.debugUnlockAll();
 		});
 		this.addButton("Add Renown", () => bus.emit("renown:award", 100000));
-		//this.addButton("Kill Player", () => Player.getInstance().character?.takeDamage(new BigNumber(1000000)));
 		this.addButton("Kill Enemy", () => bus.emit("debug:killEnemy"));
 		this.addButton("Test Enemy", () => context.hunt.debugForceEnemy("test_enemy", 6));
-		this.addButton("Unlock Boss", () => {
-			context.stats.debugUnlockBoss(context.hunt.getActiveAreaID());
-		});
-		this.addButton("Set Boss Killed", () => {
-			bus.emit("hunt:bossKill", { areaId: context.hunt.getActiveAreaID() });
-		});
+		this.addButton("Unlock Boss", () => context.stats.debugUnlockBoss(context.hunt.getActiveAreaID()));
+		this.addButton("Set Boss Killed", () => bus.emit("hunt:bossKill", { areaId: context.hunt.getActiveAreaID() }));
 		this.addButton("Test Loot", () => {
 			const specs = InventoryRegistry.getSpecsByTags(["t1"]);
 			const spec = specs[Math.floor(Math.random() * specs.length)];
-			context.inventory.addLootById(spec.id, 1);
+			context.inventory.addLootById(spec.id, 20);
 		});
 		this.addButton("Clear Loot", () => context.inventory.clearSlots());
-		this.addButton("Print Stats", () => {
-			context.character.statsEngine.printStats();
-		});
+		this.addButton("Print Stats", () => context.character.statsEngine.printStats());
 		this.addButton("Fake Offline Session", () => this.testOfflineSession());
 		this.addButton("Set Max Energy", () => context.player.debugEnergy());
 		this.addButton("Char Level Up", () => context.character.gainXp(context.character.nextXpThreshold));

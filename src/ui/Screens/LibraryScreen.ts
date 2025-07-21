@@ -223,7 +223,7 @@ export class LibraryScreen extends BaseScreen {
 	}
 
 	// Update method called by game loop
-	update(deltaMs: number) {
+	handleTick(deltaMs: number) {
 		// Update active research progress bars
 		const activeResearch = this.context.library.getActive();
 

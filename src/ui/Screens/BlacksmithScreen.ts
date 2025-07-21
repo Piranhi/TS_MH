@@ -58,16 +58,26 @@ export class BlacksmithScreen extends BaseScreen {
 		this.rawOreFill = this.byId("bsRawOreFill");
 		this.rawOreOutput = this.byId("bsRawOreOutput") as HTMLSpanElement;
 
-		this.buildInitial();
-		this.bindEvents();
+		this.setupTickingFeature("feature.blacksmith", () => {
+			this.buildInitial();
+			this.bindEvents();
+		});
+	}
+
+	protected handleTick(dt: number) {
+		if (!this.isFeatureActive()) return;
+		this.updateSlots();
+		this.updateRawOre();
 	}
 
 	show() {
+		if (!this.isFeatureActive()) return;
 		// Update everything when screen is shown
 		this.updateAll();
 	}
 
 	hide() {
+		if (!this.isFeatureActive()) return;
 		// Cleanup tooltips and modals when hidden
 		Tooltip.instance.hide();
 		this.closeModal();
@@ -81,12 +91,6 @@ export class BlacksmithScreen extends BaseScreen {
 	}
 
 	private bindEvents() {
-		// Update slots every tick
-		bus.on("Game:UITick", () => {
-			this.updateSlots();
-			this.updateRawOre();
-		});
-
 		// Update resources when they change
 		bindEvent(this.eventBindings, "resources:changed", () => this.updateResourcesDisplay());
 

@@ -45,10 +45,12 @@ export class HousingScreen extends BaseScreen {
 	}
 
 	init() {
-		this.setupElements();
-		this.bindEvents();
-		this.initializeBuildingStatus();
-		this.loadStaffData();
+		this.setupFeatureUnlock("feature.housing", () => {
+			this.setupElements();
+			this.bindEvents();
+			this.initializeBuildingStatus();
+			this.loadStaffData();
+		});
 	}
 
 	private initializeBuildingStatus() {
@@ -60,6 +62,7 @@ export class HousingScreen extends BaseScreen {
 	}
 
 	show() {
+		if (!this.isFeatureActive()) return;
 		this.refreshStaffList();
 		this.updateStatistics();
 	}

@@ -23,10 +23,21 @@ export class TrainedStatManager extends Destroyable implements Saveable, Offline
 		super();
 		this.context = GameContext.getInstance();
 		this.initializeStats();
+		this.setupEventBindings();
+	}
 
+	protected handleTick(dt: number) {
+		if (!this.isFeatureActive()) return;
+		if (this.context.isOfflinePaused) return;
+		const vigourMultiplier = this.context.player.vigourLevel;
+		for (const stat of this.trainedStats.values()) {
+			stat.handleTick(dt, vigourMultiplier);
+		}
+	}
+
+	private setupEventBindings() {
 		bindEvent(this.eventBindings, "game:gameReady", () => this.recalculate());
 		bindEvent(this.eventBindings, "player:trainedStatChanged", () => this.recalculate());
-		bindEvent(this.eventBindings, "Game:GameTick", (dt) => this.handleTick(dt));
 	}
 
 	handleOfflineProgress(offlineSeconds: number): null {
@@ -58,14 +69,6 @@ export class TrainedStatManager extends Destroyable implements Saveable, Offline
 			if (stat.assignedPoints < pts) return;
 			if (!this.context.player.refundEnergy(pts)) return;
 			stat.adjustAssignedPoints(delta);
-		}
-	}
-
-	private handleTick(dt: number) {
-		if (this.context.isOfflinePaused) return;
-		const vigourMultiplier = this.context.player.vigourLevel;
-		for (const stat of this.trainedStats.values()) {
-			stat.handleTick(dt, vigourMultiplier);
 		}
 	}
 

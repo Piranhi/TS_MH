@@ -1,7 +1,5 @@
 import { PrestigeManager } from "@/models/PrestigeManager";
 import { UIBase } from "./UIBase";
-import { bus } from "@/core/EventBus";
-import { ProgressBar } from "./ProgressBar";
 import { UIButton } from "./UIButton";
 import { bindEvent } from "@/shared/utils/busUtils";
 
@@ -59,6 +57,7 @@ export class HeaderDisplay extends UIBase {
 			text: "✨ Prestige",
 			className: "btn-primary glass-btn-glow",
 			onClick: () => new PrestigeManager().prestige(),
+			UIfeature: "feature.prestige",
 		});
 
 		// Listen for level changes

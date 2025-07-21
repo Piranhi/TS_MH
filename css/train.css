@@ -160,50 +160,6 @@
 	cursor: not-allowed;
 }
 
-/* Special buttons */
-.controls .ui-button:nth-child(2) {
-	/* Confirm button */
-	background: rgba(81, 207, 102, 0.15);
-	border-color: rgba(81, 207, 102, 0.3);
-	color: #51cf66;
-}
-
-.controls .ui-button:nth-child(2):hover:not(:disabled) {
-	background: rgba(81, 207, 102, 0.25);
-	border-color: rgba(81, 207, 102, 0.4);
-	box-shadow: 0 4px 12px rgba(81, 207, 102, 0.3);
-}
-
-/* Energy allocation */
-.energy-allocation-container {
-	margin-top: 1rem;
-	padding: 1rem;
-	background: rgba(247, 183, 49, 0.05);
-	border: 1px solid rgba(247, 183, 49, 0.2);
-	border-radius: 0.5rem;
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-}
-
-.energy-allocation-label {
-	font-size: 0.875rem;
-	color: var(--text-secondary);
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.energy-allocation-label::before {
-	content: "⚡";
-}
-
-.energy-allocation-value {
-	font-size: 1.125rem;
-	font-weight: bold;
-	color: #f7b731;
-}
-
 /* Stat card glassmorphism (for detailed stat view) */
 .stat-card {
 	background: linear-gradient(135deg, rgba(66, 88, 99, 0.1) 0%, rgba(50, 59, 61, 0.1) 100%);
@@ -221,8 +177,6 @@
 	width: 100%;
 	margin-top: 0.5rem;
 }
-
-
 
 /* Responsive design */
 @media (max-width: 768px) {

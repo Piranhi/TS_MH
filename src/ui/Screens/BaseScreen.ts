@@ -16,7 +16,10 @@ export abstract class BaseScreen extends UIBase implements GameScreen {
 	abstract init(): void;
 	abstract show(): void;
 	abstract hide(): void;
-	update?(deltaMs: number): void;
+	//handleTick?(deltaMs: number): void;
+	protected handleTick?(dt: number) {
+		if (!this.isFeatureActive()) return;
+	}
 
 	// Add HTML into page.
 	protected addMarkuptoPage(markup: string): HTMLElement {

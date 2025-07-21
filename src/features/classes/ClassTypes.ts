@@ -30,7 +30,6 @@ export interface ClassSpec {
 export interface ClassSystemState {
 	unlockedClasses: string[];
 	nodePoints: Record<string, Record<string, number>>;
-	availablePoints: number;
 }
 
 // Example class specs for testing

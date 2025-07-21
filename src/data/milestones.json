@@ -1,15 +1,21 @@
 [
 	{
-		"id": "hunt.boss.tier1",
-		"name": "First Blood",
-		"description": "Defeat your first Tier 1 boss",
-		"type": "both"
+		"id": "feature.prestige",
+		"name": "Prestige Unlocked",
+		"description": "Prestige is now unlocked",
+		"type": "persistent"
 	},
 	{
-		"id": "hunt.boss.tier2",
-		"name": "Second Blood",
-		"description": "Defeat your second Tier 1 boss",
-		"type": "both"
+		"id": "feature.training",
+		"name": "Training Unlocked",
+		"description": "Training is now unlocked",
+		"type": "persistent"
+	},
+	{
+		"id": "feature.classes",
+		"name": "Classes Unlocked",
+		"description": "Classes are now unlocked",
+		"type": "persistent"
 	},
 	{
 		"id": "feature.housing",
@@ -47,7 +53,6 @@
 		"description": "Guild Hall is now unlocked",
 		"type": "persistent"
 	},
-
 	{
 		"id": "feature.outposts",
 		"name": "Outposts Unlocked",
@@ -59,5 +64,17 @@
 		"name": "Settlement Unlocked",
 		"description": "Settlement is now unlocked",
 		"type": "persistent"
+	},
+	{
+		"id": "hunt.boss.tier1",
+		"name": "First Blood",
+		"description": "Defeat your first Tier 1 boss",
+		"type": "both"
+	},
+	{
+		"id": "hunt.boss.tier2",
+		"name": "Second Blood",
+		"description": "Defeat your second Tier 1 boss",
+		"type": "both"
 	}
 ]
