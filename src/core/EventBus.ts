@@ -125,11 +125,13 @@ type Listener<E extends EventKey> = (payload: GameEvents[E]) => void;
 export class EventBus {
 	private listeners = new Map<EventKey, Set<Listener<any>>>();
 	private lastValue = new Map<EventKey, unknown>();
+	private bShowDebug = false;
 
 	public on<E extends EventKey>(event: E, fn: Listener<E>) {
-		if (this.lastValue.has(event)) {
+		// Temp disable - Performance gains
+		/* 		if (this.lastValue.has(event)) {
 			fn(this.lastValue.get(event) as GameEvents[E]);
-		}
+		} */
 		if (!this.listeners.has(event)) {
 			this.listeners.set(event, new Set());
 		}
@@ -153,6 +155,15 @@ export class EventBus {
 		set.forEach((fn) => {
 			(fn as any)(payload);
 		});
+
+		if (bShowDebug) {
+			// debug to see count of listeners
+			//console.count(event); // See what's spamming
+			// Show listener count for problematic events
+			if (event === "Game:UITick" || event === "Game:GameTick") {
+				console.log(`${event}: ${set.size} listeners`); // This shows the real problem!
+			}
+		}
 	}
 }
 
