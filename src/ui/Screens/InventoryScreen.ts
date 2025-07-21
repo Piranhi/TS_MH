@@ -30,16 +30,13 @@ export class InventoryScreen extends BaseScreen {
 
 	private bindEvents() {
 		bindEvent(this.eventBindings, "slot:drop", ({ fromId, toId }) => {
-			const changed = this.context.inventory.moveItem(fromId, toId);
-			if (changed) bus.emit("inventory:changed");
+			this.context.inventory.moveItem(fromId, toId);
 		});
 		bindEvent(this.eventBindings, "slot:dblclick", (slotId) => {
-			const changed = this.context.inventory.autoEquip(slotId);
-			if (changed) bus.emit("inventory:changed");
+			this.context.inventory.autoEquip(slotId);
 		});
 		bindEvent(this.eventBindings, "slot:ctrlclick", (slotId) => {
-			const changed = this.context.inventory.moveToRecycleBin(slotId);
-			if (changed) bus.emit("inventory:changed");
+			this.context.inventory.moveToRecycleBin(slotId);
 		});
 		bindEvent(this.eventBindings, "inventory:changed", () => this.renderInventory());
 		bindEvent(this.eventBindings, "player:equipmentChanged", () => this.renderInventory());

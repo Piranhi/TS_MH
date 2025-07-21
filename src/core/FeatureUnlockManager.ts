@@ -8,6 +8,7 @@ export class FeatureUnlockManager {
 	private onActivatedCallback?: () => void;
 
 	constructor(private readonly requiredMilestone: string, onActivated?: () => void) {
+		if (!requiredMilestone) return;
 		this.onActivatedCallback = onActivated;
 		this.checkAndSetupFeature();
 	}

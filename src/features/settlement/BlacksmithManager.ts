@@ -114,7 +114,6 @@ export class BlacksmithManager extends Destroyable implements Saveable, OfflineP
 			const bonus = 0.1 * currentLevel;
 			context.modifiers.addModifier("equipmentQuality", "permanent", id, 1 + bonus);
 			bus.emit("inventory:changed");
-			bus.emit("player:equipmentChanged");
 		} else if (id.startsWith("slot_")) {
 			this.unlockedSlots += 1;
 			this.slots.push({ resourceId: null, progress: 0 });
