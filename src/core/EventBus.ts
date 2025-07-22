@@ -62,7 +62,7 @@ export interface GameEvents {
 	// PLAYER
 	"player:initialized": Player;
 	"player:level-up": number;
-	"player:energy-changed": poolChangedPayload;
+	"player:energy-changed": { current: number; max: number; allocated: number };
 	"player:trainedStatChanged": string;
 	"player:equipmentChanged": InventoryItemSpec[];
 	"player:classCardsChanged": InventoryItemSpec[];
@@ -156,7 +156,7 @@ export class EventBus {
 			(fn as any)(payload);
 		});
 
-		if (bShowDebug) {
+		if (this.bShowDebug) {
 			// debug to see count of listeners
 			//console.count(event); // See what's spamming
 			// Show listener count for problematic events

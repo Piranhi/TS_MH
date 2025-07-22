@@ -3,7 +3,6 @@ import { Saveable } from "@/shared/storage-types";
 import { printLog } from "@/core/DebugManager";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { PrestigeState } from "@/shared/stats-types";
-import { RegenPool } from "@/models/value-objects/RegenPool";
 import { StatsModifier, BloodlineStats, defaultBloodlineStats } from "@/models/Stats";
 import { BalanceCalculators } from "@/balance/GameBalance";
 import { GameBase } from "./GameBase";
@@ -12,7 +11,8 @@ interface PlayerSaveState {
 	level: number;
 	renown: number;
 	gold: number;
-	energy: RegenPool;
+	energyCurrent: number;
+	energyMax: number;
 	experience: number;
 	bloodlineStats: BloodlineStats;
 	prestigeState: PrestigeState;
@@ -38,7 +38,8 @@ export class Player extends GameBase implements Saveable {
 	private renown = 0;
 	private gold = 0;
 	private experience: number = 0;
-	private energy: RegenPool;
+	private energyCurrent: number = 5;
+	private energyMax: number = 5;
 	private bloodlineStats: BloodlineStats;
 	private prestigeState: PrestigeState;
 
@@ -47,7 +48,9 @@ export class Player extends GameBase implements Saveable {
 
 	private constructor() {
 		super();
-		this.energy = new RegenPool(5, 0, true, true); // Start with max stamina, no regeneration
+		//this.energy = new RegenPool(5, 0, true, true); // Start with max energy, no regeneration
+		this.energyCurrent = this.energyMax;
+
 		this.bloodlineStats = { ...defaultBloodlineStats };
 		this.prestigeState = { ...DEFAULT_PRESTIGE_STATE };
 
@@ -107,29 +110,30 @@ export class Player extends GameBase implements Saveable {
 	// ================ ENERGY MANAGEMENT ================
 
 	public spendEnergy(amount: number): boolean {
-		if (!this.energy.spendAllocation(amount)) return false;
+		if (this.energyCurrent < amount) return false;
+		this.energyCurrent -= amount;
 		this.emitEnergyChanged();
 		return true;
 	}
 
 	public refundEnergy(amount: number): boolean {
-		if (!this.energy.refundAllocation(amount)) return false;
+		if (this.energyCurrent + amount > this.energyMax) return false;
+		this.energyCurrent += amount;
 		this.emitEnergyChanged();
 		return true;
 	}
 
-	private regenEnergy(dt: number): void {
-		this.energy.regen(dt);
-		this.emitEnergyChanged();
-	}
-
 	private emitEnergyChanged() {
 		bus.emit("player:energy-changed", {
-			current: this.energy.current,
-			allocated: this.energy.allocated,
-			max: this.energy.max,
-			effective: this.energy.effective,
+			current: this.energyCurrent,
+			max: this.energyMax,
+			allocated: this.energyMax - this.energyCurrent,
 		});
+	}
+
+	public increaseEnergyMax(amount: number) {
+		this.energyMax += amount;
+		this.emitEnergyChanged();
 	}
 
 	// ================ LEVEL & EXPERIENCE ================
@@ -147,7 +151,6 @@ export class Player extends GameBase implements Saveable {
 
 	private levelUp(): void {
 		this.level++;
-		this.energy.setMax(this.energy.max + 2); // Increase max energy on level up
 		bus.emit("player:level-up", this.level);
 	}
 
@@ -231,10 +234,6 @@ export class Player extends GameBase implements Saveable {
 		this.experience = 0;
 		this.renown = 0;
 
-		// Reset energy but keep max upgrades?
-		const baseEnergy = 10 + Math.floor(this.prestigeState.runsCompleted * 2);
-		this.energy = new RegenPool(baseEnergy, 1 + this.prestigeState.runsCompleted * 0.1, false);
-
 		// Reset gold and tracking
 		this.gold = 0;
 		this.goldIncomeWindow = [];
@@ -254,8 +253,8 @@ export class Player extends GameBase implements Saveable {
 	public get currentExperience(): number {
 		return this.experience;
 	}
-	public get energyPool(): RegenPool {
-		return this.energy;
+	public get energy(): { current: number; max: number } {
+		return { current: this.energyCurrent, max: this.energyMax };
 	}
 
 	public get vigourLevel(): number {
@@ -309,6 +308,10 @@ export class Player extends GameBase implements Saveable {
 		}
 	}
 
+	private destroy() {
+		// TODO
+	}
+
 	// ================ SAVE/LOAD ================
 
 	save(): PlayerSaveState {
@@ -316,7 +319,8 @@ export class Player extends GameBase implements Saveable {
 			level: this.level,
 			renown: this.renown,
 			gold: this.gold,
-			energy: this.energy,
+			energyCurrent: this.energyCurrent,
+			energyMax: this.energyMax,
 			experience: this.experience,
 			bloodlineStats: this.bloodlineStats,
 			prestigeState: this.prestigeState,
@@ -329,7 +333,8 @@ export class Player extends GameBase implements Saveable {
 		this.renown = state.renown ?? 0;
 		this.gold = state.gold ?? 0;
 		this.bloodlineStats = state.bloodlineStats ?? { ...defaultBloodlineStats };
-		this.energy = state.energy ? RegenPool.fromJSON(state.energy) : new RegenPool(5, 0, true, true);
+		this.energyCurrent = state.energyCurrent ?? 5;
+		this.energyMax = state.energyMax ?? 5;
 		this.prestigeState = state.prestigeState ?? { ...DEFAULT_PRESTIGE_STATE };
 
 		// Emit initial state
@@ -341,7 +346,8 @@ export class Player extends GameBase implements Saveable {
 
 	// DEBUG
 	debugEnergy() {
-		this.energy.setMax(5000);
-		this.energy.setCurrent(5000);
+		this.energyMax = 5000;
+		this.energyCurrent = 5000;
+		this.emitEnergyChanged();
 	}
 }

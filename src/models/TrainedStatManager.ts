@@ -38,6 +38,7 @@ export class TrainedStatManager extends Destroyable implements Saveable, Offline
 	private setupEventBindings() {
 		bindEvent(this.eventBindings, "game:gameReady", () => this.recalculate());
 		bindEvent(this.eventBindings, "player:trainedStatChanged", () => this.recalculate());
+		bindEvent(this.eventBindings, "Game:GameTick", (dt: number) => this.handleTick(dt));
 	}
 
 	handleOfflineProgress(offlineSeconds: number): null {

@@ -33,11 +33,6 @@ export class TrainedStatDisplay extends UIBase {
 		this.setupControls();
 	}
 
-	protected handleTick(dt: number) {
-		if (!this.isFeatureActive()) return;
-		this.updateElement();
-	}
-
 	private createCard() {
 		// Copy the template: training-item-template
 		const template = document.getElementById("training-item-template") as HTMLTemplateElement;
@@ -91,14 +86,14 @@ export class TrainedStatDisplay extends UIBase {
 		});
 	}
 
-	private updateElement() {
+	public updateElement() {
 		const { statName, levelText, progressBar, currentAllocation, toAllocate } = this.els;
 
 		// Update stat info
 		statName.textContent = this.trainedStat.name;
-		levelText.textContent = `Level ${this.trainedStat.level}  •  ${formatNumberShort(
-			this.trainedStat.progress
-		)} / ${this.trainedStat.getLevelThreshold()} XP`;
+		levelText.textContent = `Level ${this.trainedStat.level}  •  ${formatNumberShort(this.trainedStat.progress, 5)} / ${formatNumberShort(
+			this.trainedStat.getLevelThreshold()
+		)} XP`;
 
 		// Update progress bar
 		const levelThreshold = this.trainedStat.getLevelThreshold();
@@ -123,9 +118,7 @@ export class TrainedStatDisplay extends UIBase {
 	}
 
 	private toggleTraining() {
-		const isCurrentlyTraining = this.trainedStat.assignedPoints > 0;
-
-		if (isCurrentlyTraining) {
+		if (this.isTraining) {
 			// Stop training - deallocate stamina
 			this.manager.allocateTrainedStat(this.trainedStat.id, -1);
 		} else {
@@ -136,6 +129,10 @@ export class TrainedStatDisplay extends UIBase {
 		// Recreate controls to update button text
 		this.els.controlsContainer.innerHTML = "";
 		this.setupControls();
+	}
+
+	public get isTraining() {
+		return this.trainedStat.assignedPoints > 0;
 	}
 
 	private formatTime(seconds: number): string {
