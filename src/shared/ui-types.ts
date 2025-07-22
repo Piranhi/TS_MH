@@ -32,12 +32,12 @@ export const progressionUnlockRequirements: Map<ScreenName, MilestoneTag[]> = ne
 	["settlement", ["feature.settlement"]],
 	["outposts", ["feature.outposts"]],
 	["bestiary", ["feature.bestiary"]],
-	["character", ["feature.character"]],
+	["character", ["feature.classes"]],
 	["blacksmith", ["feature.blacksmith"]],
 	["library", ["feature.library"]],
 	["market", ["feature.market"]],
 	["mine", ["feature.mine"]],
-	["guildHall", ["feature.guildHall"]],
+	["guildHall", ["feature.guildhall"]],
 	["housing", ["feature.housing"]],
 ]);
 

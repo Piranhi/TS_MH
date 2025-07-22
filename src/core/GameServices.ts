@@ -15,6 +15,7 @@ import { ClassSpec } from "@/features/classes/ClassTypes";
 import rawClasses from "@/data/classes.json" assert { type: "json" };
 import { ModifierEngine } from "./ModifierEngine";
 import { GAME_BALANCE } from "@/balance/GameBalance";
+import { RewardSystem } from "@/features/rewards/RewardSystem";
 
 export class GameServices {
 	private static _instance: GameServices;
@@ -29,9 +30,10 @@ export class GameServices {
 	// Persistent managers that survive prestige
 	public readonly inventoryManager: InventoryManager;
 	public readonly settlementManager: SettlementManager;
-        public readonly libraryManager: LibraryManager;
-        public readonly recruitService: RecruitService;
-        public readonly classManager: ClassManager;
+	public readonly libraryManager: LibraryManager;
+	public readonly recruitService: RecruitService;
+	public readonly classManager: ClassManager;
+	public readonly rewardSystem: RewardSystem;
 
 	private constructor() {
 		this.saveManager = new SaveManager();
@@ -40,10 +42,11 @@ export class GameServices {
 		this.milestoneManager = MilestoneManager.instance;
 		this.inventoryManager = new InventoryManager();
 		this.settlementManager = new SettlementManager();
-                this.libraryManager = new LibraryManager();
-                this.recruitService = new RecruitService();
+		this.libraryManager = new LibraryManager();
+		this.recruitService = new RecruitService();
 		this.offlineManager = new OfflineProgressManager();
 		this.classManager = new ClassManager(rawClasses as ClassSpec[]);
+		this.rewardSystem = new RewardSystem();
 		this.modifierEngine = new ModifierEngine({
 			...GAME_BALANCE.modifiers,
 			layers: [...GAME_BALANCE.modifiers.layers],

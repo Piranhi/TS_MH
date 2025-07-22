@@ -7,7 +7,7 @@
 	{
 		"event": "monster-killed",
 		"id": "duskwolf_matriarch",
-		"unlocks": ["hunt.boss.tier2", "feature.outposts", "feature.guildHall"]
+		"unlocks": ["hunt.boss.tier2", "feature.outposts", "feature.guildhall"]
 	},
 	{
 		"event": "monster-killed",

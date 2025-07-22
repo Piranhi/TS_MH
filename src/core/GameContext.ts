@@ -21,13 +21,14 @@ import { ResourceManager } from "@/features/inventory/ResourceManager";
 import { MineManager } from "@/features/mine/MineManager";
 import { ModifierEngine } from "./ModifierEngine";
 import { StatsManager } from "@/models/StatsManager";
+import { RewardSystem } from "@/features/rewards/RewardSystem";
 
 export class GameContext {
 	private static _instance: GameContext | null = null;
 
 	public readonly player: Player;
-        public readonly services: GameServices;
-        public currentRun: GameRun | null = null;
+	public readonly services: GameServices;
+	public currentRun: GameRun | null = null;
 
 	public flags = {
 		isNewRun: true, // Used to prevent loading of old data when prestiging
@@ -100,13 +101,13 @@ export class GameContext {
 		return this.services.inventoryManager;
 	}
 
-        public get settlement(): SettlementManager {
-                return this.services.settlementManager;
-        }
+	public get settlement(): SettlementManager {
+		return this.services.settlementManager;
+	}
 
-        public get recruits(): RecruitService {
-                return this.services.recruitService;
-        }
+	public get recruits(): RecruitService {
+		return this.services.recruitService;
+	}
 
 	public get library(): LibraryManager {
 		return this.services.libraryManager;
@@ -139,6 +140,10 @@ export class GameContext {
 
 	public get offlineManager(): OfflineProgressManager {
 		return this.services.offlineManager;
+	}
+
+	public get rewards(): RewardSystem {
+		return this.services.rewardSystem;
 	}
 
 	public get isOfflinePaused(): boolean {

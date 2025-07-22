@@ -48,7 +48,7 @@
 		"type": "persistent"
 	},
 	{
-		"id": "feature.guildHall",
+		"id": "feature.guildhall",
 		"name": "Guild Hall Unlocked",
 		"description": "Guild Hall is now unlocked",
 		"type": "persistent"
@@ -63,6 +63,12 @@
 		"id": "feature.settlement",
 		"name": "Settlement Unlocked",
 		"description": "Settlement is now unlocked",
+		"type": "persistent"
+	},
+	{
+		"id": "feature.bestiary",
+		"name": "Bestiary Unlocked",
+		"description": "Bestiary is now unlocked",
 		"type": "persistent"
 	},
 	{
