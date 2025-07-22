@@ -113,26 +113,47 @@ export class DebugMenu {
 		this.optionsEl.appendChild(wrap);
 	}
 
-	private addNumber(label: string, key: keyof DebugOptions, step: number) {
-		const wrap = document.createElement("label");
-		wrap.classList.add("debug-option");
-		const span = document.createElement("span");
-		span.textContent = label + ": ";
-		const input = document.createElement("input");
-		input.type = "number";
-		input.step = String(step);
-		input.value = String(debugManager.get(key));
-		input.addEventListener("change", () => {
-			debugManager.set(key, Number(input.value) as any);
-		});
-		wrap.appendChild(span);
-		wrap.appendChild(input);
-		this.optionsEl.appendChild(wrap);
-	}
+        private addNumber(label: string, key: keyof DebugOptions, step: number) {
+                const wrap = document.createElement("label");
+                wrap.classList.add("debug-option");
+                const span = document.createElement("span");
+                span.textContent = label + ": ";
+                const input = document.createElement("input");
+                input.type = "number";
+                input.step = String(step);
+                input.value = String(debugManager.get(key));
+                input.addEventListener("change", () => {
+                        debugManager.set(key, Number(input.value) as any);
+                });
+                wrap.appendChild(span);
+                wrap.appendChild(input);
+                this.optionsEl.appendChild(wrap);
+        }
 
-	private addActions() {
-		const context = GameContext.getInstance();
-		this.addButton("Save", () => context.saves.saveAll());
+        private addMilestoneTrigger() {
+                const wrap = document.createElement("label");
+                wrap.classList.add("debug-option");
+                const input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = "Milestone ID";
+                const btn = document.createElement("button");
+                btn.textContent = "Trigger";
+                btn.addEventListener("click", () => {
+                        const id = input.value.trim();
+                        if (id) {
+                                MilestoneManager.instance.triggerMilestone(id);
+                                input.value = "";
+                        }
+                });
+                wrap.appendChild(input);
+                wrap.appendChild(btn);
+                this.optionsEl.appendChild(wrap);
+        }
+
+        private addActions() {
+                const context = GameContext.getInstance();
+                this.addMilestoneTrigger();
+                this.addButton("Save", () => context.saves.saveAll());
 		this.addButton("Load", () => window.location.reload()); //saveManager.loadAll());
 		this.addButton("New Game", () => context.saves.startNewGame());
 		this.addButton("New Debug Game", () => {
