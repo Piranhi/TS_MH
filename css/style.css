@@ -700,11 +700,14 @@ body,
 	font-size: 0.8rem;
 }
 #debug-menu .debug-option input[type="number"] {
-	width: 60px;
+        width: 60px;
+}
+#debug-menu .debug-option input[type="text"] {
+        width: 120px;
 }
 #debug-menu button {
-	font-size: 0.8rem;
-	padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
 }
 
 #debug-menu .debug-column.player-stats,
