@@ -167,11 +167,11 @@ export class LibraryScreen extends BaseScreen {
 		return row;
 	}
 
-	private updateUpgrades() {
-		// Update the upgrade container with latest data
-		const upgrades = this.getAvailableUpgrades();
-		this.upgradeContainer.setUpgrades(upgrades);
-	}
+        private updateUpgrades() {
+                // Update the upgrade container with latest data
+                const upgrades = this.getAvailableUpgrades();
+                this.upgradeContainer.updateUpgrades(upgrades);
+        }
 
 	private getAvailableUpgrades(): UpgradeSelectionData[] {
 		const availableResearch = this.context.library.getAvailable();

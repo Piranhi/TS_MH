@@ -28,9 +28,13 @@ export interface UpgradeSelectionComponentOptions {
 }
 
 export class UpgradeSelectionComponent extends UIBase {
-	private data: UpgradeSelectionData;
-	private progressBar?: ProgressBar;
-	private timerEl?: HTMLElement;
+        private data: UpgradeSelectionData;
+        private progressBar?: ProgressBar;
+        private timerEl?: HTMLElement;
+        private levelEl?: HTMLElement;
+        private titleEl!: HTMLElement;
+        private descEl!: HTMLElement;
+        private actionBtn!: HTMLButtonElement;
 
 	constructor(options: UpgradeSelectionComponentOptions) {
 		super();
@@ -40,21 +44,24 @@ export class UpgradeSelectionComponent extends UIBase {
 		root.className = "upgrade-card";
 		if (data.purchased) root.classList.add("purchased");
 
-		const title = document.createElement("div");
-		title.className = "upgrade-title";
-		title.textContent = data.title;
-		root.appendChild(title);
+                const title = document.createElement("div");
+                title.className = "upgrade-title";
+                title.textContent = data.title;
+                root.appendChild(title);
+                this.titleEl = title;
 
-		const desc = document.createElement("div");
-		desc.className = "upgrade-desc";
-		desc.textContent = data.description;
-		root.appendChild(desc);
+                const desc = document.createElement("div");
+                desc.className = "upgrade-desc";
+                desc.textContent = data.description;
+                root.appendChild(desc);
+                this.descEl = desc;
 
                 if (data.level !== undefined && data.maxLevel !== undefined) {
                         const level = document.createElement("div");
                         level.className = "upgrade-level";
                         level.textContent = `${data.level}/${data.maxLevel}`;
                         root.appendChild(level);
+                        this.levelEl = level;
                 }
 
 		if (data.requiredTime) {
@@ -91,10 +98,11 @@ export class UpgradeSelectionComponent extends UIBase {
 		});
 		footer.appendChild(costContainer);
 
-		const btn = document.createElement("button");
-		btn.className = "ui-button upgrade-action-btn";
-		btn.textContent = data.purchased ? "Purchased" : data.buttonOverride || "Buy";
-		if (data.purchased || data.canAfford === false) btn.disabled = true;
+                const btn = document.createElement("button");
+                btn.className = "ui-button upgrade-action-btn";
+                btn.textContent = data.purchased ? "Purchased" : data.buttonOverride || "Buy";
+                if (data.purchased || data.canAfford === false) btn.disabled = true;
+                this.actionBtn = btn;
 		if (onClick) {
 			this.bindDomEvent(btn, "click", () => onClick(data.id));
 		}
@@ -110,12 +118,36 @@ export class UpgradeSelectionComponent extends UIBase {
 		return this.data;
 	}
 
-	public updateProgress(value: number) {
-		if (!this.progressBar) return;
-		this.data.progress = value;
-		this.progressBar.setValue(value);
-		this.updateTimer();
-	}
+        public updateProgress(value: number) {
+                if (!this.progressBar) return;
+                this.data.progress = value;
+                this.progressBar.setValue(value);
+                this.updateTimer();
+        }
+
+        public update(data: UpgradeSelectionData) {
+                this.data = { ...data };
+                this.titleEl.textContent = data.title;
+                this.descEl.textContent = data.description;
+                if (this.levelEl && data.level !== undefined && data.maxLevel !== undefined) {
+                        this.levelEl.textContent = `${data.level}/${data.maxLevel}`;
+                }
+
+                if (this.progressBar && data.requiredTime !== undefined) {
+                        this.progressBar.setMax(data.requiredTime);
+                        this.updateProgress(data.progress ?? 0);
+                }
+
+                if (data.purchased) {
+                        this.element.classList.add("purchased");
+                        this.actionBtn.textContent = "Purchased";
+                        this.actionBtn.disabled = true;
+                } else {
+                        this.element.classList.remove("purchased");
+                        this.actionBtn.textContent = data.buttonOverride || "Buy";
+                        this.actionBtn.disabled = data.canAfford === false;
+                }
+        }
 
 	private updateTimer() {
 		if (!this.timerEl || this.data.requiredTime === undefined) return;
