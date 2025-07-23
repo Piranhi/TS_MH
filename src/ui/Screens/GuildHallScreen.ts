@@ -62,8 +62,8 @@ export class GuildHallScreen extends BaseScreen {
 		});
 	}
 
-	show() {}
-	hide() {}
+	protected onShow() {}
+	protected onHide() {}
 
 	protected handleTick(dt: number) {
 		if (!this.isFeatureActive()) return;

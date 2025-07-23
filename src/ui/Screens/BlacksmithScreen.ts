@@ -1,4 +1,3 @@
-import { bus } from "@/core/EventBus";
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./blacksmith.html?raw";
 import { bindEvent } from "@/shared/utils/busUtils";
@@ -70,13 +69,13 @@ export class BlacksmithScreen extends BaseScreen {
 		this.updateRawOre();
 	}
 
-	show() {
+	protected onShow() {
 		if (!this.isFeatureActive()) return;
 		// Update everything when screen is shown
 		this.updateAll();
 	}
 
-	hide() {
+	protected onHide() {
 		if (!this.isFeatureActive()) return;
 		// Cleanup tooltips and modals when hidden
 		Tooltip.instance.hide();
@@ -126,7 +125,7 @@ export class BlacksmithScreen extends BaseScreen {
 	 * Handle clicking on a slot - show selection modal
 	 */
 	private handleSlotClick(slotIndex: number): void {
-		console.log("Slot clicked:", slotIndex);
+		//console.log("Slot clicked:", slotIndex);
 
 		// Close any existing modal
 		this.closeModal();
@@ -160,8 +159,6 @@ export class BlacksmithScreen extends BaseScreen {
 			},
 			() => this.closeModal()
 		);
-
-		console.log("Modal created");
 	}
 
 	/**
@@ -189,6 +186,7 @@ export class BlacksmithScreen extends BaseScreen {
 	 * Rebuilds slots only when the number changes
 	 */
 	private rebuildSlots() {
+		if (!this.isActive) return;
 		const currentCount = this.slotComponents.length;
 		const newCount = this.context.blacksmith.getSlots().length;
 
@@ -305,6 +303,7 @@ export class BlacksmithScreen extends BaseScreen {
 	 * Updates only changed resource values
 	 */
 	private updateResourcesDisplay() {
+		if (!this.isActive) return;
 		const resources = this.context.resources.getAllResources();
 
 		// Check for new resources
@@ -381,6 +380,7 @@ export class BlacksmithScreen extends BaseScreen {
 	}
 
 	private refreshUpgrades() {
+		if (!this.isActive) return;
 		if (this.upgradeContainer) {
 			this.upgradeContainer.setUpgrades(this.getUpgradeData());
 		}
@@ -410,6 +410,7 @@ export class BlacksmithScreen extends BaseScreen {
 	}
 
 	private updateRawOre() {
+		if (!this.isActive) return;
 		if (!this.rawOreFill || !this.rawOreOutput) return;
 		const status = this.context.blacksmith.getRawOreStatus();
 		const pct = Math.min(1, Math.max(0, status.ratio));

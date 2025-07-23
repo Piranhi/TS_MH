@@ -1,8 +1,8 @@
 import { BaseScreen } from "./BaseScreen";
 import Markup from "./mine.html?raw";
-import { bus } from "@/core/EventBus";
 import { MineShaftDisplay } from "../components/MineShaftDisplay";
 import { BuildingStatus } from "../components/BuildingStatus";
+import { bindEvent } from "@/shared/utils/busUtils";
 
 export class MineScreen extends BaseScreen {
 	readonly screenName = "mine";
@@ -15,18 +15,21 @@ export class MineScreen extends BaseScreen {
 		const building = this.context.settlement.getBuilding("mine");
 		if (building && statusEl) new BuildingStatus(statusEl, building);
 		this.build();
-		bus.on("Game:UITick", () => this.handleTick());
-		bus.on("settlement:changed", () => this.syncShafts());
+		this.setupTickingFeature("feature.mine", () => {
+			bindEvent(this.eventBindings, "settlement:changed", () => this.syncShafts());
+		});
 	}
 
-	show() {}
-	hide() {}
+	protected onShow() {}
+	protected onHide() {}
 
-	handleTick() {
+	protected handleTick(dt: number) {
+		if (!this.isActive) return;
 		for (const shaft of this.shafts) shaft.tick();
 	}
 
 	private syncShafts() {
+		if (!this.isActive) return;
 		const level = this.context.settlement.getBuilding("mine")?.level || 0;
 		while (this.shafts.length < level) {
 			const listEl = this.byId("mineResourceList");

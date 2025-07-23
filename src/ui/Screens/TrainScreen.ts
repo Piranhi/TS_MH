@@ -5,21 +5,20 @@ import { bindEvent } from "@/shared/utils/busUtils";
 
 export class TrainScreen extends BaseScreen {
 	readonly screenName = "train";
-	private rootEl!: HTMLElement;
 	private trainingListEl!: HTMLElement;
 	private trainedStats: TrainedStatDisplay[] = [];
 
 	init() {
-		this.rootEl = this.addMarkuptoPage(Markup);
+		this.addMarkuptoPage(Markup);
 		this.trainingListEl = this.byId("trained-stats-list");
 
 		this.bindEvents();
 		this.addStatElements();
 	}
 
-	show() {}
+	protected onShow() {}
 
-	hide() {}
+	protected onHide() {}
 
 	bindEvents() {
 		bindEvent(this.eventBindings, "game:gameReady", () => this.addStatElements()); // USED TO BE GAME LOADED
@@ -27,7 +26,7 @@ export class TrainScreen extends BaseScreen {
 	}
 
 	protected handleTick(dt: number) {
-		if (!this.isFeatureActive()) return;
+		if (!this.isActive) return;
 		for (const trainedStat of this.trainedStats) {
 			if (trainedStat.isTraining) {
 				trainedStat.updateElement();

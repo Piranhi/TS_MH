@@ -1,9 +1,12 @@
 import { GameContext } from "@/core/GameContext";
 import { bus } from "@/core/EventBus";
 import { Area } from "@/models/Area";
-import { BalanceCalculators } from "@/balance/GameBalance";
+import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 import { GameBase } from "@/core/GameBase";
 import { RecruitProfession } from "@/models/Recruit";
+import { Monster } from "@/models/Monster";
+import { debugManager } from "@/core/DebugManager";
+import { MilestoneManager } from "@/models/MilestoneManager";
 
 interface RewardSpec {
 	type: "equipment" | "gold" | "xp" | "chest" | "recruit" | "story" | "rune" | "renown";
@@ -56,23 +59,18 @@ export class RewardSystem extends GameBase {
 
 	// Generate rewards based on context
 	public generateRewards(context: RewardContext): RewardSpec[] {
-		const rewards: RewardSpec[] = [];
-
 		switch (context.source) {
 			case "combat":
-				rewards.push(...this.generateCombatRewards(context));
-				break;
+				return this.generateCombatRewards(context);
 			case "offline":
-				rewards.push(...this.generateOfflineRewards(context));
-				break;
+				return this.generateOfflineRewards(context);
 			case "story":
 			case "milestone":
 			case "exploration":
-				// These will be manually crafted rewards, not random
-				break;
+			default:
+				console.warn("Unknown reward source:", context.source);
+				return [];
 		}
-
-		return rewards;
 	}
 
 	// Actually give rewards to the player
@@ -122,8 +120,17 @@ export class RewardSystem extends GameBase {
 			});
 		}
 
+		const renownAmount = this.calculateRenownReward(context);
+		if (renownAmount > 0) {
+			rewards.push({
+				type: "renown",
+				data: { amount: renownAmount },
+				source,
+			});
+		}
+
 		// Recruits (if feature is unlocked)
-		if (this.isFeatureActive() && this.shouldDropRecruit(context)) {
+		if (MilestoneManager.instance.has("feature.recruits") && this.shouldDropRecruit(context)) {
 			const recruitData = this.generateRecruitDrop(context);
 			if (recruitData) {
 				rewards.push({
@@ -194,6 +201,9 @@ export class RewardSystem extends GameBase {
 			case "story":
 				this.giveStoryItem(reward);
 				break;
+			case "renown":
+				this.giveRenown(reward);
+				break;
 			case "rune":
 				this.giveRune(reward);
 				break;
@@ -211,15 +221,17 @@ export class RewardSystem extends GameBase {
 		this.context.player.adjustRenown(reward.data.amount);
 		this.context.inventory.awardRenownToEquipped(reward.data.amount);
 		this.context.settlement.modifySettlementRenown(reward.data.amount);
-		bus.emit("renown:changed", reward.data.amount);
+		bus.emit("reward:renown", reward.data.amount);
 	}
 
 	private giveGold(reward: RewardSpec): void {
 		this.context.player.adjustGold(reward.data.amount);
+		bus.emit("reward:gold", reward.data.amount);
 	}
 
 	private giveXp(reward: RewardSpec): void {
 		this.context.character.gainXp(reward.data.amount);
+		bus.emit("reward:xp", reward.data.amount);
 	}
 
 	private giveChest(reward: RewardSpec): void {
@@ -239,7 +251,7 @@ export class RewardSystem extends GameBase {
 	}
 
 	private giveRecruit(reward: RewardSpec): void {
-		if (!this.isFeatureActive()) {
+		if (!MilestoneManager.instance.has("feature.recruits")) {
 			console.warn("Recruit feature not unlocked yet, skipping recruit reward");
 			return;
 		}
@@ -248,7 +260,7 @@ export class RewardSystem extends GameBase {
 		const recruit = this.context.recruits.createRecruit(profession);
 
 		// Emit event for UI notification
-		bus.emit("recruit:found", { recruit, source: reward.source });
+		bus.emit("reward:recruit", { recruit, source: reward.source });
 		console.log(`Found a new ${profession} recruit: ${recruit.id}!`);
 	}
 
@@ -308,7 +320,7 @@ export class RewardSystem extends GameBase {
 					summary.renown += reward.data.amount;
 					break;
 				case "recruit":
-					summary.recruit = reward.data;
+					summary.recruit = reward.data.profession;
 					break;
 				case "chest":
 					summary.chests.push(reward.data);
@@ -362,21 +374,24 @@ export class RewardSystem extends GameBase {
 		return baseXp;
 	}
 
+	private calculateRenownReward(context: RewardContext): number {
+		if (!context.area) return 0;
+		if (!context.enemyId) return 0;
+		const monsterSpec = Monster.getSpec(context.enemyId);
+		const renownAmount = BalanceCalculators.getMonsterRenown(context.area.tier, monsterSpec?.rarity ?? "common");
+		return renownAmount;
+	}
+
 	// =============================================
 	// RECRUIT GENERATION LOGIC
 	// =============================================
 
 	private shouldDropRecruit(context: RewardContext): boolean {
 		if (!context.area) return false;
+		if (debugManager.get("rewards_alwaysDropAllLoot")) return true;
 
-		// Base drop chance: 2% for normal areas, 5% for boss areas
-		// Note: boss detection happens at enemy level, not area level
-		const baseChance = 0.02;
-
-		// Slightly higher chance in higher tier areas
-		const tierBonus = context.area.tier * 0.005;
-
-		const finalChance = baseChance + tierBonus;
+		const tierBonus = context.area.tier * GAME_BALANCE.recruits.tierBonus;
+		const finalChance = GAME_BALANCE.recruits.baseDropChance + tierBonus;
 		return Math.random() < finalChance;
 	}
 
@@ -404,6 +419,11 @@ export class RewardSystem extends GameBase {
 		professions.push(...allProfessions);
 
 		return professions;
+	}
+
+	public debugRewardCombat(context: RewardContext): void {
+		const rewards = this.generateRewards(context);
+		this.distributeRewards(rewards);
 	}
 }
 

@@ -6,6 +6,7 @@ export abstract class BaseScreen extends UIBase implements GameScreen {
 	abstract readonly screenName: ScreenName;
 	public element: HTMLElement;
 	private unlocked = false;
+	private _isActive = false;
 
 	constructor() {
 		super();
@@ -14,11 +15,25 @@ export abstract class BaseScreen extends UIBase implements GameScreen {
 	}
 
 	abstract init(): void;
-	abstract show(): void;
-	abstract hide(): void;
+	show(): void {
+		this._isActive = true;
+		this.onShow();
+	}
+	hide(): void {
+		this._isActive = false;
+		this.onHide();
+	}
+
+	protected abstract onShow(): void;
+	protected abstract onHide(): void;
+
+	get isActive(): boolean {
+		return this._isActive;
+	}
+
 	//handleTick?(deltaMs: number): void;
 	protected handleTick?(dt: number) {
-		if (!this.isFeatureActive()) return;
+		if (!this.isFeatureActive() || !this._isActive) return;
 	}
 
 	// Add HTML into page.

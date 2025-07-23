@@ -255,6 +255,11 @@ export const GAME_BALANCE = {
 			["rare", 0.6],
 			["uncommon", 0.3],
 		] as [ItemRarity, number][],
+		// Base drop chance: 2% for normal areas, 5% for boss areas
+		// Note: boss detection happens at enemy level, not area level
+		// Slightly higher chance in higher tier areas
+		baseDropChance: 0.02,
+		tierBonus: 0.005,
 	},
 
 	// === HUNT BALANCE ===
@@ -468,7 +473,8 @@ export const BalanceCalculators = {
 	 */
 	getGoldReward(tier: number, isBoss: boolean, rarity: keyof typeof GAME_BALANCE.monsters.renownMultipliers): number {
 		// Base gold scales with tier quadratically for better progression
-		let gold = 5 * Math.pow(tier, 2);
+		const baseGold = Math.floor(Math.random() * 5) + 1;
+		let gold = baseGold * Math.pow(tier, 2);
 
 		// Bosses give a hefty bonus
 		if (isBoss) gold *= 5;

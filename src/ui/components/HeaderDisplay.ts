@@ -2,6 +2,7 @@ import { PrestigeManager } from "@/models/PrestigeManager";
 import { UIBase } from "./UIBase";
 import { UIButton } from "./UIButton";
 import { bindEvent } from "@/shared/utils/busUtils";
+import { formatNumberShort } from "@/shared/utils/stringUtils";
 
 export class HeaderDisplay extends UIBase {
 	private playerStatsEl!: HTMLElement;
@@ -119,7 +120,7 @@ export class HeaderDisplay extends UIBase {
 
 		const value = document.createElement("span");
 		value.className = "stat-value gold-value";
-		value.textContent = "0";
+		value.textContent = formatNumberShort(this.context.player.currentGold ?? 0, 2, true);
 		contentContainer.appendChild(value);
 
 		const income = document.createElement("span");
@@ -131,10 +132,10 @@ export class HeaderDisplay extends UIBase {
 		this.playerStatsEl.appendChild(li);
 
 		bindEvent(this.eventBindings, "gold:changed" as any, (payload: { amount: number; incomePerSec: number }) => {
-			value.textContent = payload.amount.toLocaleString();
+			value.textContent = formatNumberShort(payload.amount, 2, true);
 
 			if (payload.incomePerSec > 0) {
-				income.textContent = `+${payload.incomePerSec.toFixed(1)}/s`;
+				income.textContent = `+${formatNumberShort(payload.incomePerSec, 1, true)}/s`;
 				income.style.display = "block";
 			} else {
 				income.style.display = "none";
@@ -169,18 +170,19 @@ export class HeaderDisplay extends UIBase {
 
 		const value = document.createElement("span");
 		value.className = "stat-value renown-value";
-		value.textContent = "0";
+		value.textContent = formatNumberShort(this.context.player.currentRenown ?? 0, 2, true);
+
 		contentContainer.appendChild(value);
 
 		li.appendChild(contentContainer);
 		this.playerStatsEl.appendChild(li);
 
 		bindEvent(this.eventBindings, "renown:changed", (amt) => {
-			value.textContent = amt.toLocaleString();
+			value.textContent = formatNumberShort(amt, 2, true);
 
 			// Add pulse effect on renown gain
-			li.classList.add("renown-pulse");
-			setTimeout(() => li.classList.remove("renown-pulse"), 600);
+			//li.classList.add("renown-pulse");
+			//setTimeout(() => li.classList.remove("renown-pulse"), 600);
 		});
 	}
 

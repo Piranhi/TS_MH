@@ -4,6 +4,6 @@ export class MarketScreen extends BaseScreen {
 	readonly screenName = "market";
 
 	init() {}
-	show() {}
-	hide() {}
+	protected onShow() {}
+	protected onHide() {}
 }

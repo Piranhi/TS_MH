@@ -9,6 +9,7 @@ import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { AreaDisplay } from "../components/AreaDisplay";
 import { Area } from "@/models/Area";
+import { InventoryManager } from "@/features/inventory/InventoryManager";
 
 export class HuntScreen extends BaseScreen {
 	readonly screenName = "hunt";
@@ -41,14 +42,15 @@ export class HuntScreen extends BaseScreen {
 		this.bindEvents();
 	}
 
-	show() {
+	protected onShow() {
 		this.context.hunt.areaManager.refresh();
 		this.buildAreaSelect();
 	}
 
-	hide() {}
+	protected onHide() {}
 
-	handleTick(dt: number): void {
+	protected handleTick(dt: number): void {
+		if (!this.isActive) return;
 		this.playerCard.render();
 		this.enemyCard?.render();
 	}
@@ -164,9 +166,51 @@ export class HuntScreen extends BaseScreen {
 		this.searchingOverlay.classList.remove("active");
 	}
 
-	private combatPostCombatReport(report: { enemy: EnemyCharacter; area: Area; xp: number; loot: string[]; renown: number }) {
+	/* 	private combatPostCombatReport(report: { enemy: EnemyCharacter; area: Area; xp: number; loot: string[]; renown: number }) {
 		this.updateCombatLog(
 			`<span class ="log-player">You</span> have defeated <span class="log-enemy rarity-${report.enemy.spec.rarity}"> ${report.enemy.name}</span> and gained <span class="log-xp">${report.xp} XP</span> and <span class="log-renown">${report.renown} renown</span>!`
+		);
+	} */
+
+	private combatPostCombatReport(report: {
+		enemy: EnemyCharacter;
+		area: Area;
+		xp: number;
+		loot: any[];
+		renown: number;
+		gold?: number;
+		recruit?: any;
+		rewards?: any[];
+	}) {
+		// Build individual reward strings only when present
+		const rewardParts: string[] = [];
+
+		if (report.xp) {
+			rewardParts.push(`<span class="log-xp">${report.xp} XP</span>`);
+		}
+		if (report.gold) {
+			rewardParts.push(`<span class="log-gold">${report.gold} gold</span>`);
+		}
+		if (report.renown) {
+			rewardParts.push(`<span class="log-renown">${report.renown} renown</span>`);
+		}
+		if (report.recruit) {
+			rewardParts.push(`<span class="log-recruits">${report.recruit} recruit</span>`);
+		}
+		if (report.loot && report.loot.length) {
+			const lootList = report.loot.map((l) => `<span class="log-loot">${InventoryRegistry.getItemById(l).name}</span>`).join(", ");
+			rewardParts.push(`looted ${lootList}`);
+			//rewardParts.push(`<span class="log-equipment">${InventoryRegistry.getItemById(report.loot[0]).name}</span>`);
+		}
+
+		// Nice grammar: “10 XP and 3 gold” (Oxford comma handled automatically)
+		const formatter = new Intl.ListFormat("en", { style: "long", type: "conjunction" });
+		const rewardsStr = rewardParts.length ? ` and gained ${formatter.format(rewardParts)}` : "";
+
+		this.updateCombatLog(
+			`<span class="log-player">You</span> have defeated ` +
+				`<span class="log-enemy rarity-${report.enemy.spec.rarity}">${report.enemy.name}</span>` +
+				`${rewardsStr}!`
 		);
 	}
 

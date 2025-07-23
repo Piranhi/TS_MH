@@ -41,12 +41,12 @@ export class LibraryScreen extends BaseScreen {
 		this.build();
 	}
 
-	show() {
+	protected onShow() {
 		// Update everything when screen becomes visible
 		this.build();
 	}
 
-	hide() {
+	protected onHide() {
 		// Clean up any resources if needed
 	}
 
@@ -79,6 +79,7 @@ export class LibraryScreen extends BaseScreen {
 	}
 
 	private updateSpeed() {
+		if (!this.isActive) return;
 		const speed = this.context.library.getResearchSpeed();
 		this.speedEl.textContent = `Research Speed: ${speed.toFixed(1)}x`;
 	}
@@ -91,6 +92,7 @@ export class LibraryScreen extends BaseScreen {
 	}
 
 	private updateActiveResearch() {
+		if (!this.isActive) return;
 		const activeResearch = this.context.library.getActive();
 
 		// Clear existing content
@@ -168,6 +170,7 @@ export class LibraryScreen extends BaseScreen {
 	}
 
 	private updateUpgrades() {
+		if (!this.isActive) return;
 		// Update the upgrade container with latest data
 		const upgrades = this.getAvailableUpgrades();
 		this.upgradeContainer.setUpgrades(upgrades);

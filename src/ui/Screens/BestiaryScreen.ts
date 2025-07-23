@@ -26,13 +26,13 @@ export class BestiaryScreen extends BaseScreen {
 		});
 	}
 
-	show(): void {
+	protected onShow(): void {
 		if (!this.isFeatureActive()) return;
 		// Refresh icons and discovered counter in case new enemies were killed this run
 		this.refreshList();
 	}
 
-	hide(): void {
+	protected onHide(): void {
 		if (!this.isFeatureActive()) return;
 		Tooltip.instance.hide();
 	}
@@ -146,7 +146,7 @@ export class BestiaryScreen extends BaseScreen {
 			columns: 2,
 			boldFirstColumn: true,
 		});
-		table.setRows(rows);
+		table.updateData(rows);
 	}
 
 	/** Update the found/total counter */

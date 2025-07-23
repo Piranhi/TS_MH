@@ -62,17 +62,18 @@ export class SettlementScreen extends BaseScreen {
 		this.rewardInfo = this.byId("settlement-reward-info");
 		this.timeInfo = this.byId("settlement-time-info");
 		this.settlementLevelEl = root.querySelector(".settlement_level") as HTMLElement;
-
-		this.setupEvents();
+		this.setupTickingFeature("feature.settlement", () => {
+			this.setupEvents();
+		});
 		this.build();
 	}
 
-	show() {
+	protected onShow() {
 		// Update everything when screen becomes visible
 		this.build();
 	}
 
-	hide() {
+	protected onHide() {
 		// Clean up any resources if needed
 	}
 
@@ -85,13 +86,22 @@ export class SettlementScreen extends BaseScreen {
 		bindEvent(this.eventBindings, "player:goldChanged", () => this.updateEfficiencyDisplays());
 	}
 
+	// Update method called by game loop
+	protected handleTick(deltaMs: number) {
+		if (!this.isActive) return;
+		// Update dynamic elements that change frequently
+		this.updateDynamicElements();
+	}
+
 	private build() {
+		if (!this.isActive) return;
 		this.updateHeader();
 		this.updateBuildings();
 		this.updateDynamicElements();
 	}
 
 	private updateHeader() {
+		if (!this.isActive) return;
 		// Update build points
 		const buildPoints = this.context.settlement.totalBuildPoints;
 		this.buildPointsEl.textContent = formatNumberShort(buildPoints);
@@ -353,6 +363,7 @@ export class SettlementScreen extends BaseScreen {
 	}
 
 	private updateBuildingButtons() {
+		if (!this.isActive) return;
 		// Update button states based on current build points
 		this.buildingDisplays.forEach((display) => {
 			const building = this.context.settlement.getBuilding(display.buildingId as BuildingType);
@@ -363,6 +374,7 @@ export class SettlementScreen extends BaseScreen {
 	}
 
 	private updateEfficiencyDisplays() {
+		if (!this.isActive) return;
 		// Update all efficiency displays when gold changes
 		this.buildingDisplays.forEach((display) => {
 			const building = this.context.settlement.getBuilding(display.buildingId as BuildingType);
@@ -373,6 +385,7 @@ export class SettlementScreen extends BaseScreen {
 	}
 
 	private updateDynamicElements() {
+		if (!this.isActive) return;
 		const snapshot = this.context.settlement.getPassiveSnapshot();
 
 		// Update settlement reward info
@@ -408,11 +421,5 @@ export class SettlementScreen extends BaseScreen {
 
 		// Update settlement level info
 		this.updateSettlementLevel();
-	}
-
-	// Update method called by game loop
-	handleTick(deltaMs: number) {
-		// Update dynamic elements that change frequently
-		this.updateDynamicElements();
 	}
 }

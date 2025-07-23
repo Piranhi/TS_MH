@@ -13,7 +13,7 @@ export class OutpostsScreen extends BaseScreen {
 		this.addMarkuptoPage(Markup);
 		const header = new PageHeaderDisplay(this.byId("outposts-screen"), "Outposts", "test2");
 		this.outpostsPanel = this.byId("outposts-panel");
-		
+
 		this.setupTickingFeature("feature.outposts", () => {
 			this.bindToEvents();
 		});
@@ -23,11 +23,11 @@ export class OutpostsScreen extends BaseScreen {
 		if (!this.isFeatureActive()) return;
 	}
 
-	show() {
+	protected onShow() {
 		if (!this.isFeatureActive()) return;
 		this.populate();
 	}
-	hide() {}
+	protected onHide() {}
 
 	bindToEvents() {
 		bindEvent(this.eventBindings, "stats:areaStatsChanged", () => {

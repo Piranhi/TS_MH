@@ -187,11 +187,6 @@ export class CombatManager extends Destroyable {
 	}
 
 	private rewardPlayer() {
-		// Award renown (still handled directly as it's equipment-specific)
-		const renownReward = BalanceCalculators.getMonsterRenown(this.area.tier, this.enemyCharacter.spec.rarity);
-		this.context.player.adjustRenown(renownReward);
-		this.context.inventory.awardRenownToEquipped(renownReward);
-
 		// Use RewardSystem for all standard rewards (gold, xp, loot, recruits)
 		const rewards = this.context.services.rewardSystem.awardRewards({
 			source: "combat",

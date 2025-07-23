@@ -87,7 +87,7 @@ export class TrainedStatDisplay extends UIBase {
 	}
 
 	public updateElement() {
-		const { statName, levelText, progressBar, currentAllocation, toAllocate } = this.els;
+		const { statName, levelText, progressBar, currentAllocation } = this.els;
 
 		// Update stat info
 		statName.textContent = this.trainedStat.name;

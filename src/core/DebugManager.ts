@@ -18,6 +18,7 @@ export type DebugOptions = {
 	reseach_unlockAll: boolean;
 	research_instantResearch: boolean;
 	showcombatstats: boolean;
+	rewards_alwaysDropAllLoot: boolean;
 };
 export class DebugManager {
 	public readonly printDebug = false;
@@ -44,6 +45,7 @@ export class DebugManager {
 			reseach_unlockAll: false,
 			research_instantResearch: false,
 			showcombatstats: false,
+			rewards_alwaysDropAllLoot: false,
 		},
 		overrides: Partial<DebugOptions> = {}
 	) {

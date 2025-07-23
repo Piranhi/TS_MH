@@ -2,6 +2,7 @@ import { BalanceCalculators, GAME_BALANCE } from "@/balance/GameBalance";
 import { Monster, MonsterSpec } from "./Monster";
 import { SpecRegistryBase } from "./SpecRegistryBase";
 import { InventoryRegistry } from "@/features/inventory/InventoryRegistry";
+import { debugManager } from "@/core/DebugManager";
 
 export interface AreaSpec {
 	id: string;
@@ -77,6 +78,10 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 		const minFloor = GAME_BALANCE.loot.baseDropChance;
 		const scaledDropChance = minFloor + (baseDropChance - minFloor) * Math.pow(decayFactor, tier - 1);
 
+		if (debugManager.get("rewards_alwaysDropAllLoot")) {
+			return [candidates[0].id];
+		}
+
 		for (const spec of candidates) {
 			if (Math.random() < scaledDropChance) {
 				ids.push(spec.id);
@@ -111,10 +116,10 @@ export class Area extends SpecRegistryBase<AreaSpec> {
 			const selectedItem = candidates[randomIndex];
 
 			// Optional: Respect drop chance (reduced for offline to avoid too many rares)
-                        const offlineDropChance = baseDropChance * 0.5; // 50% of normal drop rate for offline
-                        if (Math.random() < offlineDropChance) {
-                                ids.push(selectedItem.id);
-                        }
+			const offlineDropChance = baseDropChance * 0.5; // 50% of normal drop rate for offline
+			if (Math.random() < offlineDropChance) {
+				ids.push(selectedItem.id);
+			}
 		}
 
 		return ids;

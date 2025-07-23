@@ -1,11 +1,9 @@
 import { BaseScreen } from "./BaseScreen";
 
 export class ResearchScreen extends BaseScreen {
+	readonly screenName = "research";
 
-    readonly screenName = 'research'
-
-    init(){};
-    show(){};
-    hide(){};
-
+	init() {}
+	protected onShow() {}
+	protected onHide() {}
 }

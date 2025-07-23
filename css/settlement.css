@@ -577,16 +577,16 @@
 	border: 2px solid #1a1a2e;
 }
 
-.rarity-common {
+.staff-rarity-common {
 	background: #9ca3af;
 }
-.rarity-uncommon {
+.staff-rarity-uncommon {
 	background: #34d399;
 }
-.rarity-rare {
+.staff-rarity-rare {
 	background: #60a5fa;
 }
-.rarity-epic {
+.staff-rarity-epic {
 	background: #a78bfa;
 }
 .rarity-legendary {

@@ -8,7 +8,6 @@ import { BuildingStatus } from "../components/BuildingStatus";
 
 interface StaffMember {
 	id: string;
-	name: string;
 	profession: RecruitProfession;
 	rarity: ItemRarity;
 	bondXp: number;
@@ -61,13 +60,13 @@ export class HousingScreen extends BaseScreen {
 		}
 	}
 
-	show() {
+	protected onShow() {
 		if (!this.isFeatureActive()) return;
 		this.refreshStaffList();
 		this.updateStatistics();
 	}
 
-	hide() {
+	protected onHide() {
 		// Clean up any timers or subscriptions if needed
 	}
 
@@ -128,7 +127,6 @@ export class HousingScreen extends BaseScreen {
 
 		this.staffMembers = recruits.map((recruit) => ({
 			id: recruit.id,
-			name: recruit.displayName,
 			profession: recruit.profession,
 			rarity: recruit.rarity,
 			bondXp: recruit.bondXp,
@@ -147,6 +145,7 @@ export class HousingScreen extends BaseScreen {
 	}
 
 	private refreshStaffList() {
+		if (!this.isActive) return;
 		this.loadStaffData();
 		this.applyFilters();
 		this.updateStatistics();
@@ -201,10 +200,6 @@ export class HousingScreen extends BaseScreen {
 			let bValue: string | number;
 
 			switch (sortBy) {
-				case "name":
-					aValue = a.name;
-					bValue = b.name;
-					break;
 				case "profession":
 					aValue = a.profession;
 					bValue = b.profession;
@@ -218,8 +213,8 @@ export class HousingScreen extends BaseScreen {
 					bValue = b.assignedBuilding || "Unassigned";
 					break;
 				default:
-					aValue = a.name;
-					bValue = b.name;
+					aValue = a.id;
+					bValue = b.id;
 			}
 
 			if (this.sortDirection === "asc") {
@@ -239,7 +234,7 @@ export class HousingScreen extends BaseScreen {
 			rare: 3,
 			epic: 4,
 			legendary: 5,
-			mythic: 6,
+			unique: 6,
 		};
 		return rarityOrder[rarity] || 0;
 	}
@@ -278,7 +273,6 @@ export class HousingScreen extends BaseScreen {
                 </div>
             </div>
             <div class="staff-details">
-                <div class="staff-name">${staff.name}</div>
                 <div class="staff-profession">${staff.profession.charAt(0).toUpperCase() + staff.profession.slice(1)}</div>
                 <div class="staff-assignment">${assignmentText}</div>
                 <div class="staff-efficiency">+${staff.efficiency}% Efficiency</div>

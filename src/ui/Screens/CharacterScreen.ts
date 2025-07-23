@@ -45,12 +45,12 @@ export class CharacterScreen extends BaseScreen {
 		});
 	}
 
-	show() {
+	protected onShow() {
 		// Update UI when screen is shown
 		this.updateUI();
 	}
 
-	hide() {
+	protected onHide() {
 		// Clean up if needed
 		if (this.zoomTimeout) {
 			clearTimeout(this.zoomTimeout);
@@ -65,6 +65,7 @@ export class CharacterScreen extends BaseScreen {
 	}
 
 	private updateUI() {
+		if (!this.isActive) return;
 		this.updatePoints();
 		this.updateNodeStates();
 		this.updateLines();
