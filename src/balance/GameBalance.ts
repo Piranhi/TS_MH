@@ -290,8 +290,9 @@ export const GAME_BALANCE = {
 
 	// === RESOURCES SCALING ===
 	resources: {
-		baseXpRequirementPerLevel: 10, // Base XP needed per level
-		levelXPMultiplier: 2, // Each level needs 2x more XP than the last
+		baseXPPerTier: [10, 100, 1000, 5000, 10000], // Base XP needed per level
+		xpStepPerLevel: 25, // You can tune this value for pacing
+		levelXPMultiplier: 1.125, // Each level needs 1.125x more XP than the last
 		tierXPMultiplier: 5, // Each tier is 5x harder than the previous
 	},
 } as const;
@@ -595,11 +596,11 @@ export const BalanceCalculators = {
 	},
 
 	getResourceXPThreshold(currentLevel: number, tier: number): number {
-		const baseXP = GAME_BALANCE.resources.baseXpRequirementPerLevel;
-		const levelMultiplier = Math.pow(GAME_BALANCE.resources.levelXPMultiplier, currentLevel - 1);
-		const tierMultiplier = Math.pow(GAME_BALANCE.resources.tierXPMultiplier, tier - 1);
+		// Clamp to a valid tier
+		const clampedTier = Math.max(1, Math.min(tier, GAME_BALANCE.resources.baseXPPerTier.length));
+		const baseXP = GAME_BALANCE.resources.baseXPPerTier[clampedTier - 1];
 
-		return Math.floor(baseXP * levelMultiplier * tierMultiplier);
+		return baseXP + (currentLevel - 1) * GAME_BALANCE.resources.xpStepPerLevel;
 	},
 
 	// === BESTIARY / KILL TRACKING ===

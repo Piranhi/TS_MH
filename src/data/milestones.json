@@ -72,6 +72,12 @@
 		"type": "persistent"
 	},
 	{
+		"id": "feature.recruits",
+		"name": "Recruits Unlocked",
+		"description": "Recruit system is now available",
+		"type": "persistent"
+	},
+	{
 		"id": "hunt.boss.tier1",
 		"name": "First Blood",
 		"description": "Defeat your first Tier 1 boss",

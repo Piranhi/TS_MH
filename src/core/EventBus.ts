@@ -87,7 +87,7 @@ export interface GameEvents {
 
 	"combat:started": { player: PlayerCharacter; enemy: EnemyCharacter };
 	"combat:ended": string;
-	"combat:postCombatReport": { enemy: EnemyCharacter; area: Area; xp: number; loot: string[]; renown: number };
+	"combat:postCombatReport": { enemy: EnemyCharacter; area: Area; xp: number; loot: string[]; renown: number; gold?: number; recruit?: any; rewards?: any[] };
 
 	"classCard:levelUp": string;
 	"inventory:changed": void;
@@ -101,6 +101,10 @@ export interface GameEvents {
 	"slot:dblclick": string;
 
 	"recruits:changed": void;
+	"recruit:found": { recruit: any; source: string };
+	
+	// REWARDS
+	"reward:chestOpened": { tier: number; contents: string[]; source: string };
 	// ----------------- STATS -----------------
 	"stats:userStatsChanged": UserStats;
 	"stats:enemyStatsChanged": EnemyStats;

@@ -302,14 +302,34 @@ class HuntOfflineHandler implements OfflineProgressHandler {
 		const efficiency = GAME_BALANCE.offline.defaultOfflineEfficiency;
 		const kills = Math.floor((offlineSeconds / avgKillTime) * efficiency);
 
-		// Apply the rewards directly here since we're calculating them
+		// Apply the rewards via RewardSystem for consistency
 		const renownGained = kills * area.tier;
-		const xpGained = kills * area.getXpPerKill(false);
+		context.player.adjustRenown(renownGained);
+		context.inventory.awardRenownToEquipped(renownGained);
 
-                context.player.adjustRenown(renownGained);
-                context.inventory.awardRenownToEquipped(renownGained);
-                context.character.gainXp(xpGained);
+		// Calculate how many "sessions" to simulate for offline rewards
+		const sessionsToSimulate = Math.max(1, Math.floor(kills / 10)); // Group kills into sessions
+		const allRewards: any[] = [];
 
+		for (let session = 0; session < sessionsToSimulate; session++) {
+			const sessionRewards = context.services.rewardSystem.awardRewards({
+				source: 'offline',
+				area: area,
+				isOffline: true,
+				multiplier: efficiency
+			});
+			allRewards.push(...sessionRewards);
+		}
+
+		// Calculate total XP from rewards (for reporting)
+		let xpGained = 0;
+		allRewards.forEach(reward => {
+			if (reward.type === 'xp') {
+				xpGained += reward.data.amount;
+			}
+		});
+
+		// Legacy treasure chest system (keep for now until fully migrated)
 		const chests = this.treasure.calculateTreasureRewards(offlineSeconds);
 		if (chests.chestsEarned > 0) {
 			for (let i = 0; i < chests.chestsEarned; i++) {

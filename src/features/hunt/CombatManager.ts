@@ -187,41 +187,27 @@ export class CombatManager extends Destroyable {
 	}
 
 	private rewardPlayer() {
-		// Award renown
+		// Award renown (still handled directly as it's equipment-specific)
 		const renownReward = BalanceCalculators.getMonsterRenown(this.area.tier, this.enemyCharacter.spec.rarity);
 		this.context.player.adjustRenown(renownReward);
 		this.context.inventory.awardRenownToEquipped(renownReward);
 
-		// Award experience
-		const enemyId = this.enemyCharacter.spec.id;
-		const kills = this.context.stats.getEnemyStats(enemyId).killsTotal;
-		const xpBonusPct = BalanceCalculators.getEnemyKillXpBonus(kills);
-		const baseXp = this.area.getXpPerKill(false);
-		const xpWithBonus = Math.floor(baseXp * (1 + xpBonusPct / 100));
-		this.context.character.gainXp(xpWithBonus);
+		// Use RewardSystem for all standard rewards (gold, xp, loot, recruits)
+		const rewards = this.context.services.rewardSystem.awardRewards({
+			source: "combat",
+			area: this.area,
+			isOffline: false,
+			enemyId: this.enemyCharacter.spec.id,
+		});
 
-		//this.context.player.gainExperience(expReward);
+		const summary = this.context.services.rewardSystem.summarizeRewards(rewards);
 
-		// Roll and award loot
-		const lootArray = this.area.rollLoot();
-		if (lootArray && lootArray.length > 0) {
-			lootArray.forEach((lootId) => {
-				this.context.inventory.addLootById(lootId, 1);
-			});
-			bus.emit("inventory:dropped", lootArray);
-		}
-
-		// Award gold
-		const isBoss = this.enemyCharacter.spec.id === this.area.boss.monsterId;
-		const goldReward = BalanceCalculators.getGoldReward(this.area.tier, isBoss, this.enemyCharacter.spec.rarity);
-		this.context.player.adjustGold(goldReward);
-
+		// Emit enhanced combat report with all reward types
 		bus.emit("combat:postCombatReport", {
 			enemy: this.enemyCharacter,
 			area: this.area,
-			xp: xpWithBonus,
-			loot: lootArray,
-			renown: renownReward,
+			rewards: rewards,
+			...summary,
 		});
 	}
 }

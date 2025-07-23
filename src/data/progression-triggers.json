@@ -2,7 +2,7 @@
 	{
 		"event": "monster-killed",
 		"id": "treant",
-		"unlocks": ["hunt.boss.tier1", "feature.settlement", "feature.housing"]
+		"unlocks": ["hunt.boss.tier1", "feature.settlement", "feature.housing", "feature.recruits"]
 	},
 	{
 		"event": "monster-killed",
