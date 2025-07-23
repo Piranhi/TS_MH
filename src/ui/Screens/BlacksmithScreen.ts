@@ -381,10 +381,11 @@ export class BlacksmithScreen extends BaseScreen {
 
 	private refreshUpgrades() {
 		if (!this.isActive) return;
+
 		if (this.upgradeContainer) {
-			this.upgradeContainer.setUpgrades(this.getUpgradeData());
+				this.upgradeContainer.updateUpgrades(this.getUpgradeData());
 		}
-	}
+}
 
 	private getUpgradeData(): UpgradeSelectionData[] {
 		return this.context.blacksmith.getUpgrades().map((upg) => ({

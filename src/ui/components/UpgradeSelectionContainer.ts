@@ -72,6 +72,37 @@ export class UpgradeSelectionContainer extends UIBase {
         this.applyFilters();
     }
 
+    public updateUpgrades(upgrades: UpgradeSelectionData[]) {
+        this.upgrades = upgrades;
+        const byId = new Map<string, UpgradeSelectionData>();
+        upgrades.forEach((u) => byId.set(u.id, u));
+
+        // Update or remove existing components
+        this.components.forEach((comp, id) => {
+            const data = byId.get(id);
+            if (data) {
+                comp.update(data);
+            } else {
+                comp.destroy();
+                this.components.delete(id);
+            }
+        });
+
+        // Add new components
+        upgrades.forEach((u) => {
+            if (!this.components.has(u.id)) {
+                const comp = new UpgradeSelectionComponent({
+                    parent: this.gridEl,
+                    data: u,
+                    onClick: this.onUpgradeClick,
+                });
+                this.components.set(u.id, comp);
+            }
+        });
+
+        this.applyFilters();
+    }
+
     private applyFilters() {
         const showPurchased = this.filterPurchased.checked;
         const showUnaffordable = this.filterAffordable.checked;

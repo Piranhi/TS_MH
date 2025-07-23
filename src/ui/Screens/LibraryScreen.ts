@@ -171,9 +171,10 @@ export class LibraryScreen extends BaseScreen {
 
 	private updateUpgrades() {
 		if (!this.isActive) return;
+
 		// Update the upgrade container with latest data
 		const upgrades = this.getAvailableUpgrades();
-		this.upgradeContainer.setUpgrades(upgrades);
+		this.upgradeContainer.updateUpgrades(upgrades);
 	}
 
 	private getAvailableUpgrades(): UpgradeSelectionData[] {
