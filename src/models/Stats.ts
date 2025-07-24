@@ -1,5 +1,7 @@
 // EQUIPMENT SCALING
 
+import { PrestigeState } from "@/shared/stats-types";
+
 // PLAYER SCALING
 
 export const STAT_KEYS: (keyof Stats)[] = [
@@ -105,7 +107,7 @@ export interface StatsProvider {
 	get(stat: StatKey): number;
 }
 
-export const defaultPlayerStats: Stats = {
+export const defaultPlayerCharStats: Stats = {
 	attack: 10,
 	defence: 10,
 	speed: 1,
@@ -124,10 +126,29 @@ export const defaultPlayerStats: Stats = {
 };
 
 export const defaultBloodlineStats: BloodlineStats = {
-	encounterChance: 0,
+	encounterChance: 1,
 	vigour: 1,
 	luck: 0,
-	classPoints: 5,
+	classPoints: 0,
+};
+
+export const defaultPrestigeState: PrestigeState = {
+	runsCompleted: 0,
+	totalMetaPoints: 0,
+	permanentAttack: 0,
+	permanentDefence: 0,
+	permanentHP: 0,
+};
+
+export const defaultPlayerStats = {
+	level: 1,
+	renown: 0,
+	gold: 0,
+	energyCurrent: 1,
+	energyMax: 1,
+	experience: 0,
+	bloodlineStats: defaultBloodlineStats,
+	prestigeState: defaultPrestigeState,
 };
 
 export interface AreaScaling {

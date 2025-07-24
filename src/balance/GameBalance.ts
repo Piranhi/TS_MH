@@ -167,7 +167,7 @@ export const GAME_BALANCE = {
 	// === TRAINING SCALING ===
 	training: {
 		// Level up cost scaling multiplier for trained stats
-		levelUpCostMultiplier: 1.5,
+		levelUpCostMultiplier: 1.3,
 	},
 
 	// === CLASS SYSTEM ===
@@ -181,8 +181,11 @@ export const GAME_BALANCE = {
 		permanentBonusRate: 0.02, // 2% of stats become permanent
 
 		// Energy growth per prestige
-		energyPerPrestige: 2,
+		energyPerPrestige: 1,
 		energyRegenPerPrestige: 0.1,
+
+		// Vigor per prestige
+		vigorPerPrestige: 0.01,
 
 		// Meta progression scaling
 		metaPointsPerLevel: 10,

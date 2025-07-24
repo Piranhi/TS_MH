@@ -16,7 +16,11 @@ export class TrainScreen extends BaseScreen {
 		this.addStatElements();
 	}
 
-	protected onShow() {}
+	protected onShow() {
+		for (const trainedStat of this.trainedStats) {
+			trainedStat.updateElement();
+		}
+	}
 
 	protected onHide() {}
 
@@ -42,6 +46,7 @@ export class TrainScreen extends BaseScreen {
 				const trainedStatDisplay = new TrainedStatDisplay(this.trainingListEl, stat);
 				trainedStatDisplay.init();
 				this.trainedStats.push(trainedStatDisplay);
+				
 			});
 		}
 	}

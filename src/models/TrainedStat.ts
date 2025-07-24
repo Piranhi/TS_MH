@@ -93,7 +93,7 @@ export class TrainedStat {
 	 * Get the level threshold (points needed to gain one level)
 	 */
 	public getLevelThreshold(): number {
-		return Math.floor(this.spec.levelUpBase * Math.pow(GAME_BALANCE.training.levelUpCostMultiplier, this.state.level - 1));
+		return Math.floor(this.spec.levelUpBase * Math.pow(GAME_BALANCE.training.levelUpCostMultiplier, this.state.level));
 	}
 
 	/**
@@ -101,10 +101,10 @@ export class TrainedStat {
 	 */
 	public getTimeToNextLevel(vigourMultiplier: number = 1): number | null {
 		if (this.state.assignedPoints === 0) return null;
-		
+
 		const remaining = this.getLevelThreshold() - this.state.progress;
 		const progressPerSecond = this.state.assignedPoints * vigourMultiplier;
-		
+
 		return remaining / progressPerSecond;
 	}
 

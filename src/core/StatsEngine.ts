@@ -1,4 +1,4 @@
-import { StatsModifier, Stats, defaultPlayerStats } from "@/models/Stats";
+import { StatsModifier, Stats, defaultPlayerCharStats } from "@/models/Stats";
 import { bus } from "./EventBus";
 
 export type LayerFn = () => StatsModifier;
@@ -29,8 +29,8 @@ export class StatsEngine {
 	private current: Stats;
 
 	constructor() {
-		this.base = { ...defaultPlayerStats };
-		this.current = { ...defaultPlayerStats };
+		this.base = { ...defaultPlayerCharStats };
+		this.current = { ...defaultPlayerCharStats };
 
 		// Initialize all layers with empty functions
 		for (const layerDef of LAYER_DEFINITIONS) {

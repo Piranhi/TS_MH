@@ -31,6 +31,7 @@ export class TrainedStatDisplay extends UIBase {
 	public init() {
 		this.createCard();
 		this.setupControls();
+		this.updateElement();
 	}
 
 	private createCard() {
@@ -91,9 +92,11 @@ export class TrainedStatDisplay extends UIBase {
 
 		// Update stat info
 		statName.textContent = this.trainedStat.name;
-		levelText.textContent = `Level ${this.trainedStat.level}  •  ${formatNumberShort(this.trainedStat.progress, 5)} / ${formatNumberShort(
-			this.trainedStat.getLevelThreshold()
-		)} XP`;
+		levelText.textContent = `Level ${this.trainedStat.level}  •  ${formatNumberShort(
+			this.trainedStat.progress,
+			0,
+			true
+		)} / ${formatNumberShort(this.trainedStat.getLevelThreshold(), 0, true)} XP`;
 
 		// Update progress bar
 		const levelThreshold = this.trainedStat.getLevelThreshold();

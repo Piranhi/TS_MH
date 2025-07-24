@@ -3,7 +3,7 @@ import { Saveable } from "@/shared/storage-types";
 import { printLog } from "@/core/DebugManager";
 import { bindEvent } from "@/shared/utils/busUtils";
 import { PrestigeState } from "@/shared/stats-types";
-import { StatsModifier, BloodlineStats, defaultBloodlineStats } from "@/models/Stats";
+import { StatsModifier, BloodlineStats, defaultBloodlineStats, defaultPrestigeState, defaultPlayerStats } from "@/models/Stats";
 import { BalanceCalculators } from "@/balance/GameBalance";
 import { GameBase } from "./GameBase";
 
@@ -18,14 +18,6 @@ interface PlayerSaveState {
 	prestigeState: PrestigeState;
 }
 
-const DEFAULT_PRESTIGE_STATE: PrestigeState = {
-	runsCompleted: 0,
-	totalMetaPoints: 0,
-	permanentAttack: 0,
-	permanentDefence: 0,
-	permanentHP: 0,
-};
-
 /**
  * Player represents persistent player data that survives prestige.
  * All transient/run-specific data lives in GameRun instead.
@@ -34,26 +26,20 @@ export class Player extends GameBase implements Saveable {
 	private static _instance: Player | null = null;
 
 	// Persistent player stats
-	private level: number = 1;
-	private renown = 0;
-	private gold = 0;
+	private level: number = 0;
+	private renown: number = 0;
+	private gold: number = 0;
 	private experience: number = 0;
-	private energyCurrent: number = 5;
-	private energyMax: number = 5;
-	private bloodlineStats: BloodlineStats;
-	private prestigeState: PrestigeState;
+	private energyCurrent: number = 0;
+	private energyMax: number = 0;
+	private bloodlineStats: BloodlineStats = { ...defaultBloodlineStats };
+	private prestigeState: PrestigeState = { ...defaultPrestigeState };
 
 	/** Rolling window of gold gains for income estimation */
 	private goldIncomeWindow: Array<{ amount: number; time: number }> = [];
 
 	private constructor() {
 		super();
-		//this.energy = new RegenPool(5, 0, true, true); // Start with max energy, no regeneration
-		this.energyCurrent = this.energyMax;
-
-		this.bloodlineStats = { ...defaultBloodlineStats };
-		this.prestigeState = { ...DEFAULT_PRESTIGE_STATE };
-
 		this.setupEventBindings();
 	}
 
@@ -63,7 +49,16 @@ export class Player extends GameBase implements Saveable {
 		bindEvent(this.eventBindings, "game:prestigePrep", () => this.handlePrestigePrep());
 	}
 
-	private async handleNewGame() {}
+	private handleNewGame() {
+		this.level = defaultPlayerStats.level;
+		this.renown = defaultPlayerStats.renown;
+		this.gold = defaultPlayerStats.gold;
+		this.experience = defaultPlayerStats.experience;
+		this.bloodlineStats = defaultPlayerStats.bloodlineStats;
+		this.prestigeState = defaultPlayerStats.prestigeState;
+		this.energyCurrent = defaultPlayerStats.energyCurrent;
+		this.energyMax = defaultPlayerStats.energyMax;
+	}
 
 	private handleGameReady() {
 		// Removed energy regeneration - stamina is now instant
@@ -335,7 +330,7 @@ export class Player extends GameBase implements Saveable {
 		this.bloodlineStats = state.bloodlineStats ?? { ...defaultBloodlineStats };
 		this.energyCurrent = state.energyCurrent ?? 5;
 		this.energyMax = state.energyMax ?? 5;
-		this.prestigeState = state.prestigeState ?? { ...DEFAULT_PRESTIGE_STATE };
+		this.prestigeState = state.prestigeState ?? { ...defaultPrestigeState };
 
 		// Emit initial state
 		this.emitEnergyChanged();
