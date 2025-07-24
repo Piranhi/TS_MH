@@ -132,18 +132,18 @@ export class DebugMenu {
 		this.optionsEl.appendChild(wrap);
 	}
 
-	private addMilestoneTrigger() {
+	private addInputTrigger(label: string, func: (id: string) => void) {
 		const wrap = document.createElement("label");
 		wrap.classList.add("debug-option");
 		const input = document.createElement("input");
 		input.type = "text";
-		input.placeholder = "Milestone ID";
+		input.placeholder = label;
 		const btn = document.createElement("button");
 		btn.textContent = "Trigger";
 		btn.addEventListener("click", () => {
 			const id = input.value.trim();
 			if (id) {
-				MilestoneManager.instance.triggerMilestone(id);
+				func(id);
 				input.value = "";
 			}
 		});
@@ -154,7 +154,8 @@ export class DebugMenu {
 
 	private addActions() {
 		const context = GameContext.getInstance();
-		this.addMilestoneTrigger();
+		this.addInputTrigger("Trigger Milestone", (id) => MilestoneManager.instance.triggerMilestone(id));
+		this.addInputTrigger("Give Equipment", (id) => context.inventory.addLootById(id));
 		this.addButton("Save", () => context.saves.saveAll());
 		this.addButton("Load", () => window.location.reload()); //saveManager.loadAll());
 		this.addButton("New Game", () => context.saves.startNewGame());

@@ -88,7 +88,7 @@ export class PlayerCharacter extends BaseCharacter implements Saveable {
 			this.calcLevelBonuses();
 			bus.emit("char:levelUp", this._charLevel);
 		}
-		bus.emit("char:gainedXp", amt);
+		bus.emit("char:XPChanged", amt);
 	}
 
 	public levelUp() {

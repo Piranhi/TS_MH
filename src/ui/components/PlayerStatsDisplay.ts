@@ -40,7 +40,10 @@ export class PlayerStatsDisplay extends UIBase {
 	];
 
 	private bloodlineStatMappings: StatMapping[] = [
-		{ displayName: STAT_DISPLAY_NAMES.encounterChance, getValue: (stats: BloodlineStats) => formatNumberShort(stats.encounterChance) || 0 },
+		{
+			displayName: STAT_DISPLAY_NAMES.encounterChance,
+			getValue: (stats: BloodlineStats) => formatNumberShort(stats.encounterChance) || 0,
+		},
 		{ displayName: STAT_DISPLAY_NAMES.vigour, getValue: (stats: BloodlineStats) => formatNumberShort(stats.vigour) || 0 },
 		{ displayName: STAT_DISPLAY_NAMES.luck, getValue: (stats: BloodlineStats) => formatNumberShort(stats.luck) || 0 },
 		{ displayName: STAT_DISPLAY_NAMES.classPoints, getValue: (stats: BloodlineStats) => formatNumberShort(stats.classPoints) || 0 },
@@ -169,32 +172,36 @@ export class PlayerStatsDisplay extends UIBase {
 			const levelCircle = this.element.querySelector(".level-circle") as HTMLElement;
 			levelCircle.classList.add("level-up-burst");
 			setTimeout(() => levelCircle.classList.remove("level-up-burst"), 1000);
-		});
-
-		// XP change event
-		bindEvent(this.eventBindings, "player:xp-changed", (data: { current: number; max: number }) => {
-			this.xpProgressBar.setMax(data.max);
-			this.xpProgressBar.setValue(data.current);
-			this.xpTextEl.textContent = `${formatNumberShort(data.current)} / ${formatNumberShort(data.max)} XP`;
-		});
-
-		// Stats update event
-		bindEvent(this.eventBindings, "player:stats-changed", (stats: any) => {
-			this.updateStatsTable(stats);
-		});
-
-		// Traits update event
-		bindEvent(this.eventBindings, "player:traits-changed", (traits: any[]) => {
-			this.updateTraitsTable(traits);
-		});
-
-		bindEvent(this.eventBindings, "Game:UITick", () => {
 			this.updateLevelDisplay();
 		});
 
+		// XP change event
+		bindEvent(this.eventBindings, "char:XPChanged", (amt: number) => {
+			this.updateLevelDisplay();
+		});
+
+		// Stats update event
+		bindEvent(this.eventBindings, "player:statsChanged", (stats: any) => {
+			this.updateStatsTable();
+		});
+
+		// Traits update event
+		bindEvent(this.eventBindings, "game:prestige", () => {
+			this.updateStatsTable();
+			this.updateTraitDisplay();
+			this.updateTraitsTable();
+			this.updateLevelDisplay();
+		});
+
+		/* 		bindEvent(this.eventBindings, "Game:UITick", () => {
+			this.updateLevelDisplay();
+		}); */
+
 		bindEvent(this.eventBindings, "game:gameReady", () => {
+			this.updateLevelDisplay();
 			this.updateTraitDisplay();
 			this.updateBloodlineStatsTable();
+			this.updateTraitsTable();
 		});
 
 		// Listen for bloodline stats changes (class points, etc.)
@@ -213,7 +220,9 @@ export class PlayerStatsDisplay extends UIBase {
 		}); */
 	}
 
-	private updateTraitsTable(traits: any[]) {
+	private updateTraitsTable() {
+		if (!this.context.character) return;
+		const traits = this.context.character.getTraits();
 		const rows: [string, string][] = traits.map((trait) => {
 			const rarityClass = `rarity-${trait.rarity}`;
 			const rarityIcon = this.getRarityIcon(trait.rarity);
@@ -278,6 +287,6 @@ export class PlayerStatsDisplay extends UIBase {
 		this.xpProgressBar.setValue(currentXP);
 
 		// Update XP text
-		this.xpTextEl.textContent = `${formatNumberShort(currentXP)} / ${formatNumberShort(xpForNextLevel)} XP`;
+		this.xpTextEl.textContent = `${formatNumberShort(currentXP, 0, true)} / ${formatNumberShort(xpForNextLevel, 0, true)} XP`;
 	}
 }

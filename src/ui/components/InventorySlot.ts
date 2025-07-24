@@ -38,16 +38,16 @@ export class InventorySlot extends UIBase {
 		if (!this.itemState || !this.spec) return;
 
 		// Common tooltip data
-                const baseTooltip = {
-                        icon: this.spec.iconUrl,
-                        name: `Lvl:${this.itemState.level} - ${prettify(this.spec.name)}`,
-                        rarity: prettify(this.itemState.rarity!),
-                        type: getItemCategoryLabel(this.spec.category),
-                        tintColour: this.itemState.rarity,
-                        heirloom: this.itemState.heirloom,
-                        renownCurrent: this.itemState.renown,
-                        renownRequired: this.itemState.renownRequired,
-                };
+		const baseTooltip = {
+			icon: this.spec.iconUrl,
+			name: `Lvl:${this.itemState.level} - ${prettify(this.spec.name)}`,
+			rarity: prettify(this.itemState.rarity!),
+			type: getItemCategoryLabel(this.spec.category),
+			tintColour: this.itemState.rarity,
+			heirloom: this.itemState.heirloom,
+			renownCurrent: this.itemState.renown,
+			renownRequired: this.itemState.renownRequired,
+		};
 
 		// TODO: This is a hack to get the stat modifiers for equipment
 		// TODO: We should have a better way to do this
@@ -109,12 +109,27 @@ export class InventorySlot extends UIBase {
 
 	/* ─── rendering & hover ──────────────────────────────── */
 	private render() {
+		const hasItem = !!this.itemState;
+		const hasIcon = !!(this.spec && this.spec.iconUrl);
+
 		this.element.classList.toggle("filled", !!this.itemState);
 		this.element.classList.toggle("empty", !this.itemState);
-		this.element.innerHTML = this.itemState
-			? `<div class="item-icon"><img src="${this.spec ? this.spec.iconUrl : ""}"></div>
-			   <div class="item-count">${this.itemState.quantity}</div>`
-			: "";
+
+		if (!hasItem) {
+			this.element.innerHTML = "";
+			return;
+		}
+
+		const itemName = prettify(this.spec!.name);
+
+		const iconMarkup = hasIcon
+			? `<img src="${this.spec!.iconUrl}" alt="${itemName}">`
+			: `<span class="item-icon__placeholder">${itemName}</span>`;
+
+		this.element.innerHTML = `
+			<div class="item-icon">${iconMarkup}</div>
+			<div class="item-count">${this.itemState!.quantity}</div>
+		  `;
 
 		if (this.itemState) {
 			this.element.classList.add(`rarity-${this.itemState.rarity}`);

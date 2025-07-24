@@ -1,0 +1,14 @@
+[
+	{
+		"id": "test_weapon",
+		"category": "equipment",
+		"name": "Test Weapon",
+		"description": "Todo",
+		"equipType": "weapon",
+		"statMod": { "defence": 1, "hp": 20, "poisonBonus": 10 },
+		"iconUrl": "",
+		"resistances": {},
+		"baseRenown": 100,
+		"tags": ["t1"]
+	}
+]

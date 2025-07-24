@@ -71,7 +71,7 @@ export interface GameEvents {
 
 	// PLAYER CHARACTER
 	"char:levelUp": number; // New Level
-	"char:gainedXp": number; // Amount incoming
+	"char:XPChanged": number; // Amount incoming
 	"char:hpChanged": { char: BaseCharacter; amount: number; isCrit?: boolean };
 	"classes:pointsChanged": void;
 	"classes:nodesChanged": void;

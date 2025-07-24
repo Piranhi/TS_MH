@@ -11,6 +11,9 @@ import rawTraits from "@/data/traits.json" assert { type: "json" };
 import rawResource from "@/data/resources.json" assert { type: "json" };
 import rawMilestones from "@/data/milestones.json" assert { type: "json" };
 
+// Debug Data
+import rawEquipmentDebug from "@/data/equipment_debug.json" assert { type: "json" };
+
 /* ---------- Bring in the class constructors -------------- */
 import { Area } from "@/models/Area";
 import { Monster, MonsterSpec } from "@/models/Monster";
@@ -40,6 +43,7 @@ export function initGameData() {
 	ResearchUpgrade.registerSpecs(research as ResearchSpec[]);
 	BlacksmithUpgrade.registerSpecs(blacksmith as BlacksmithUpgradeSpec[]);
 	Equipment.registerSpecs(rawEquipment as EquipmentItemSpec[]);
+	Equipment.registerSpecs(rawEquipmentDebug as EquipmentItemSpec[]);
 	Monster.registerSpecs(rawMonsters as MonsterSpec[]);
 	Area.registerSpecs(rawAreas);
 	Ability.registerSpecs(rawAbilities as AbilitySpec[]);

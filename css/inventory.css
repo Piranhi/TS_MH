@@ -119,6 +119,22 @@
 	display: none;
 }
 
+.item-icon {
+	width: 100%;
+	height: 100%;
+	display: flex; /* keeps both <img> and text centred */
+	align-items: center;
+	justify-content: center;
+}
+
+.item-icon__placeholder {
+	text-align: center;
+	font-size: 0.7rem;
+	line-height: 1.1;
+	pointer-events: none; /* prevents drag-start on the text itself */
+	user-select: none;
+}
+
 /* 5) Shared item visuals */
 .item-icon img {
 	width: 100%;
